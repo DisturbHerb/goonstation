@@ -282,6 +282,221 @@
 					name = "zero"
 					icon_state = "0"
 
+		stencil_ru // literally just cogwerks' werk, but... russian!
+			name = "stencil_ru"
+			desc = ""
+			icon = 'icons/obj/decals/stencils_ru.dmi'
+			alpha = 200
+			pixel_y = 9
+			mouse_opacity = 0
+			icon_state = "a"
+
+			left
+				pixel_x = -3 //fine-tune from this offset
+
+				a
+					name = "a"
+					icon_state = "a"
+				be
+					name = "be"
+					icon_state = "be"
+				ve
+					name = "ve"
+					icon_state = "ve"
+				ge
+					name = "ge"
+					icon_state = "ge"
+				de
+					name = "de"
+					icon_state = "de"
+				ye
+					name = "ye"
+					icon_state = "ye"
+				yo
+					name = "yo"
+					icon_state = "yo"
+				zhe
+					name = "zhe"
+					icon_state = "zhe"
+				ze
+					name = "ze"
+					icon_state = "ze"
+				i
+					name = "i"
+					icon_state = "i"
+				yot
+					name = "yot"
+					icon_state = "yot"
+				ka
+					name = "ka"
+					icon_state = "ka"
+				el
+					name = "el"
+					icon_state = "el"
+				em
+					name = "em"
+					icon_state = "em"
+				en
+					name = "en"
+					icon_state = "en"
+				o
+					name = "o"
+					icon_state = "o"
+				pe
+					name = "pe"
+					icon_state = "pe"
+				er
+					name = "er"
+					icon_state = "er"
+				es
+					name = "es"
+					icon_state = "es"
+				te
+					name = "te"
+					icon_state = "te"
+				u
+					name = "u"
+					icon_state = "u"
+				ef
+					name = "ef"
+					icon_state = "ef"
+				kha
+					name = "kha"
+					icon_state = "kha"
+				tse
+					name = "tse"
+					icon_state = "tse"
+				che
+					name = "che"
+					icon_state = "che"
+				sha
+					name = "sha"
+					icon_state = "sha"
+				shta
+					name = "shta"
+					icon_state = "shta"
+				tvjordyy_znak
+					name = "tvjordyy_znak"
+					icon_state = "tvjordyy_znak"
+				yery
+					name = "yery"
+					icon_state = "yery"
+				yer
+					name = "yer"
+					icon_state = "yer"
+				e
+					name = "e"
+					icon_state = "e"
+				yu
+					name = "yu"
+					icon_state = "yu"
+				ya
+					name = "ya"
+					icon_state = "ya"
+
+			right
+				pixel_x = 11 // fine-tune from this offset
+
+				a
+					name = "a"
+					icon_state = "a"
+				be
+					name = "be"
+					icon_state = "be"
+				ve
+					name = "ve"
+					icon_state = "ve"
+				ge
+					name = "ge"
+					icon_state = "ge"
+				de
+					name = "de"
+					icon_state = "de"
+				ye
+					name = "ye"
+					icon_state = "ye"
+				yo
+					name = "yo"
+					icon_state = "yo"
+				zhe
+					name = "zhe"
+					icon_state = "zhe"
+				ze
+					name = "ze"
+					icon_state = "ze"
+				i
+					name = "i"
+					icon_state = "i"
+				yot
+					name = "yot"
+					icon_state = "yot"
+				ka
+					name = "ka"
+					icon_state = "ka"
+				el
+					name = "el"
+					icon_state = "el"
+				em
+					name = "em"
+					icon_state = "em"
+				en
+					name = "en"
+					icon_state = "en"
+				o
+					name = "o"
+					icon_state = "o"
+				pe
+					name = "pe"
+					icon_state = "pe"
+				er
+					name = "er"
+					icon_state = "er"
+				es
+					name = "es"
+					icon_state = "es"
+				te
+					name = "te"
+					icon_state = "te"
+				u
+					name = "u"
+					icon_state = "u"
+				ef
+					name = "ef"
+					icon_state = "ef"
+				kha
+					name = "kha"
+					icon_state = "kha"
+				tse
+					name = "tse"
+					icon_state = "tse"
+				che
+					name = "che"
+					icon_state = "che"
+				sha
+					name = "sha"
+					icon_state = "sha"
+				shta
+					name = "shta"
+					icon_state = "shta"
+				tvjordyy_znak
+					name = "tvjordyy_znak"
+					icon_state = "tvjordyy_znak"
+				yery
+					name = "yery"
+					icon_state = "yery"
+				yer
+					name = "yer"
+					icon_state = "yer"
+				e
+					name = "e"
+					icon_state = "e"
+				yu
+					name = "yu"
+					icon_state = "yu"
+				ya
+					name = "ya"
+					icon_state = "ya"
+
 		chsl
 			name = "CLEAN HANDS SAVE LIVES"
 			desc = "A poster that reads 'CLEAN HANDS SAVE LIVES'."
@@ -491,6 +706,11 @@
 			icon = 'icons/obj/decals/posters.dmi'
 			icon_state = "wall_poster_human"
 			//todo: implement procedural celebrities
+
+		nosmoking
+			desc = "A sign that's obviously telling you to put out that cigarette, silly!"
+			name = "no smoking sign"
+			icon_state = 'nosmoking'
 
 		poster_borg
 			name = "poster"
