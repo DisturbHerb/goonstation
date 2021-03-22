@@ -57,6 +57,10 @@
 /area/station/medical/medbay/lobby)
 "aK" = (
 /obj/decal/cleanable/dirt/jen,
+/obj/disposalpipe/segment/mail{
+	dir = 1;
+	icon_state = "pipe-c"
+	},
 /turf/simulated/floor/black,
 /area/station/medical/robotics)
 "aR" = (
@@ -540,7 +544,7 @@
 "gp" = (
 /obj/decal/cleanable/dirt/dirt2,
 /obj/machinery/disposal/mail/small/autoname/medbay/robotics/west,
-/obj/disposalpipe/trunk/mail/south,
+/obj/disposalpipe/trunk/mail/west,
 /turf/simulated/floor/black,
 /area/station/medical/robotics)
 "gs" = (
@@ -1052,10 +1056,8 @@
 	},
 /area/space)
 "me" = (
-/obj/disposalpipe/segment/mail,
-/turf/simulated/floor/stairs/dark/wide{
-	dir = 6
-	},
+/obj/machinery/computer/robot_module_rewriter,
+/turf/simulated/floor/black,
 /area/station/medical/robotics)
 "mj" = (
 /obj/cable/blue{
@@ -1104,7 +1106,8 @@
 /turf/simulated/floor/black,
 /area/station/medical/robotics)
 "mu" = (
-/turf/simulated/floor/stairs/dark{
+/obj/disposalpipe/segment/mail,
+/turf/simulated/floor/stairs/dark/wide{
 	dir = 6
 	},
 /area/station/medical/robotics)
@@ -1200,7 +1203,7 @@
 /obj/cable/blue{
 	icon_state = "5-8"
 	},
-/turf/simulated/floor,
+/turf/simulated/floor/green/corner,
 /area/station/medical/medbay)
 "nq" = (
 /obj/machinery/glass_recycler/chemistry,
@@ -1257,6 +1260,7 @@
 "nL" = (
 /obj/table/glass/reinforced,
 /obj/decal/cleanable/cobweb,
+/obj/item/paper/book/the_trial,
 /turf/simulated/floor/blue/checker{
 	dir = 1
 	},
@@ -1266,6 +1270,7 @@
 /area/station/medical/medbay)
 "nU" = (
 /obj/table/glass/reinforced,
+/obj/item/decoration/flower_vase/vase7,
 /turf/simulated/floor/blue/checker{
 	dir = 1
 	},
@@ -1426,13 +1431,6 @@
 	},
 /turf/simulated/floor/darkblue/checker,
 /area/station/medical/staff)
-"pA" = (
-/obj/disposalpipe/junction/right/south,
-/obj/cable/blue{
-	icon_state = "1-2"
-	},
-/turf/simulated/floor/black,
-/area/station/medical/robotics)
 "pC" = (
 /turf/simulated/floor/blue/side{
 	dir = 8
@@ -1698,10 +1696,23 @@
 /obj/cable/blue{
 	icon_state = "0-8"
 	},
+/obj/random_item_spawner/organs/bloody/one_to_three,
+/obj/item/organ/appendix{
+	desc = "Tastes about as good as a real appendix!";
+	name = "doktorskaya kolbasa"
+	},
+/obj/item/organ/spleen{
+	desc = "Feels delicate to the touch.";
+	name = "squishy bit"
+	},
+/obj/item/organ/liver{
+	desc = "15% ABV, sweet!";
+	name = "functioning liver"
+	},
 /turf/simulated/floor/grey/blackgrime,
 /area/station/medical/morgue)
 "rS" = (
-/obj/machinery/computer/robot_module_rewriter,
+/obj/machinery/vending/medical,
 /turf/simulated/floor/black,
 /area/station/medical/robotics)
 "rU" = (
@@ -2085,6 +2096,10 @@
 	},
 /obj/access_spawn/medical,
 /obj/item/kitchen/food_box/lollipop,
+/obj/item/reagent_containers/food/drinks/mug/random_color{
+	pixel_x = 8;
+	pixel_y = 4
+	},
 /turf/simulated/floor/blue,
 /area/station/medical/medbay/lobby)
 "wa" = (
@@ -2151,11 +2166,7 @@
 /obj/decal/poster/wallsign/nosmoking{
 	pixel_x = 30
 	},
-/obj/machinery/disposal/small/west,
-/obj/disposalpipe/segment/mail,
-/obj/disposalpipe/trunk{
-	dir = 8
-	},
+/obj/machinery/vending/standard,
 /turf/simulated/floor/black,
 /area/station/medical/robotics)
 "wZ" = (
@@ -2313,7 +2324,7 @@
 /turf/simulated/floor/plating,
 /area/station/medical/medbay)
 "zQ" = (
-/obj/machinery/vending/standard,
+/obj/machinery/manufacturer/medical,
 /turf/simulated/floor/black,
 /area/station/medical/robotics)
 "zV" = (
@@ -2448,10 +2459,10 @@
 	},
 /area/station/medical/medbay/lobby)
 "Bo" = (
-/obj/disposalpipe/segment,
 /obj/cable/blue{
 	icon_state = "1-2"
 	},
+/obj/disposalpipe/segment,
 /turf/simulated/floor/black,
 /area/station/medical/robotics)
 "Bq" = (
@@ -2932,7 +2943,9 @@
 "Fk" = (
 /obj/random_item_spawner/junk/few,
 /obj/decal/cleanable/dirt/dirt2,
-/turf/simulated/floor/green/side,
+/turf/simulated/floor/green/side{
+	dir = 6
+	},
 /area/station/medical/medbay)
 "Fu" = (
 /obj/wingrille_spawn/auto,
@@ -2976,9 +2989,7 @@
 /area/station/medical/robotics)
 "FK" = (
 /obj/decal/cleanable/dirt/jen,
-/obj/disposalpipe/segment{
-	dir = 4
-	},
+/obj/disposalpipe/segment/mail,
 /turf/simulated/floor/black,
 /area/station/medical/robotics)
 "FP" = (
@@ -3170,10 +3181,7 @@
 /turf/simulated/floor/white,
 /area/station/medical/medbay/surgery/storage)
 "HA" = (
-/obj/disposalpipe/segment{
-	dir = 4;
-	icon_state = "pipe-c"
-	},
+/obj/disposalpipe/junction/right/south,
 /turf/simulated/floor/black,
 /area/station/medical/robotics)
 "HH" = (
@@ -3963,9 +3971,12 @@
 	},
 /area/station/medical/medbay/treatment2)
 "QM" = (
-/obj/machinery/manufacturer/medical,
-/turf/simulated/floor/blue/side,
-/area/station/medical/medbay)
+/obj/disposalpipe/segment/mail{
+	dir = 4;
+	icon_state = "pipe-c"
+	},
+/turf/simulated/floor/black,
+/area/station/medical/robotics)
 "QU" = (
 /obj/machinery/door/airlock/pyro/medical/alt,
 /obj/access_spawn/pathology,
@@ -4276,7 +4287,8 @@
 /area/station/medical/medbay/lobby)
 "Ty" = (
 /obj/decal/cleanable/dirt/dirt2,
-/obj/machinery/vending/medical,
+/obj/machinery/disposal,
+/obj/disposalpipe/trunk,
 /turf/simulated/floor/black,
 /area/station/medical/robotics)
 "Tz" = (
@@ -4640,7 +4652,7 @@
 	pixel_y = 30
 	},
 /obj/table/glass/reinforced,
-/obj/item/paper/book/the_trial,
+/obj/deskclutter,
 /turf/simulated/floor/blue/side{
 	dir = 9
 	},
@@ -4862,6 +4874,13 @@
 /obj/storage/secure/closet/medical/medkit,
 /turf/simulated/floor/white,
 /area/station/medical/medbay/surgery/storage)
+"ZG" = (
+/obj/disposalpipe/segment/mail{
+	dir = 2;
+	icon_state = "pipe-c"
+	},
+/turf/simulated/floor/black,
+/area/station/medical/robotics)
 "ZH" = (
 /obj/decal/cleanable/dirt,
 /obj/disposalpipe/segment/morgue{
@@ -6078,7 +6097,7 @@ qd
 Cm
 SV
 eK
-pA
+Bo
 ZY
 Bo
 Dh
@@ -6113,7 +6132,7 @@ XG
 Wj
 Io
 LW
-FF
+QM
 FK
 mu
 aK
@@ -6146,13 +6165,13 @@ oA
 wQ
 vB
 Ot
-QM
+Wj
 Io
 LW
 gp
 wS
 me
-wZ
+ZG
 vL
 Cx
 ZT
