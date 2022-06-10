@@ -524,7 +524,7 @@
 			if ("listbasic")
 				src.show_text("smile, grin, smirk, frown, scowl, grimace, sulk, pout, nod, blink, drool, shrug, tremble, quiver, shiver, shudder, shake, \
 				think, ponder, clap, wave, salute, flap, aflap, laugh, chuckle, giggle, chortle, guffaw, cough, hiccup, sigh, mumble, grumble, groan, moan, sneeze, \
-				wheeze, sniff, snore, whimper, yawn, choke, gasp, weep, sob, wail, whine, gurgle, gargle, blush, flinch, blink_r, eyebrow, shakehead, shakebutt, \
+				wheeze, sniff, snore, whimper, yawn, choke, gasp, weep, sob, wail, whine, gurgle, gargle, blush, flinch, blink_r, eyebrow, eyelick, shakehead, shakebutt, \
 				pale, flipout, rage, shame, raisehand, crackknuckles, stretch, rude, cry, retch, raspberry, tantrum, gesticulate, wgesticulate, smug, \
 				nosepick, flex, facepalm, panic, snap, airquote, twitch, twitch_v, faint, deathgasp, signal, wink, collapse, trip, dance, scream, \
 				burp, fart, monologue, contemplate, custom")
@@ -823,7 +823,6 @@
 			if ("cough","hiccup","sigh","mumble","grumble","groan","moan","sneeze","wheeze","sniff","snore","whimper","yawn","choke","gasp","weep","sob","wail","whine","gurgle","gargle","wheeze","sputter")
 				// basic audible single-word emotes
 				if (!muzzled)
-					if (lowertext(act) == "sigh" && prob(1)) act = "singh" //1% chance to change sigh to singh. a bad joke for drsingh fans.
 					var/obj/item/I = src.equipped()
 					if (istype(I, /obj/item/cloth/handkerchief))
 						message = "<B>[src]</B> [act]s into [I]."
@@ -1096,6 +1095,15 @@
 				else
 					message = "<B>[src]</B> looks rather exasperated."
 					maptext_out = "<I>looks rather exasperated</I>"
+				m_type = 1
+
+			if ("eyelick")
+				if (src.glasses || src.wear_mask)
+					message = "<B>[src]</B> screams internally."
+					maptext_out = "<I>screams internally.</I>"
+				else
+					message = "<B>[src]</B> licks [his_or_her(src)] own eyeball."
+					maptext_out = "<I>licks [his_or_her(src)] own eyeball</I>"
 				m_type = 1
 
 			if ("panic","freakout")
