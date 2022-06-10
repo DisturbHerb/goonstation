@@ -1018,3 +1018,49 @@ proc/empty_mouse_params()//TODO MOVE THIS!!!
 
 
 #undef BILL_PICK
+
+// yaya
+/mob/living/carbon/human/jennifer
+
+	New()
+		..()
+		src.real_name = "Jennifer Dodge"
+		src.bioHolder.AddEffect("lizard")
+		src.equip_new_if_possible(/obj/item/storage/backpack , slot_back)
+		src.equip_new_if_possible(/obj/item/clothing/gloves/ring/gold , slot_gloves)
+		src.equip_new_if_possible(/obj/item/clothing/under/gimmick/wedding_dress, slot_w_uniform)
+
+	initializeBioholder()
+		. = ..()
+		bioHolder.age = 22
+		bioHolder.mobAppearance.customization_first_color = "#ff5050"
+		bioHolder.mobAppearance.customization_second_color = "#ff7c80"
+		bioHolder.mobAppearance.customization_third_color = "#ff7c80"
+		bioHolder.mobAppearance.e_color = "#ffa200"
+		bioHolder.mobAppearance.gender = "female"
+		bioHolder.mobAppearance.flavor_text = "Curiously tall lizard. What's she doing here?"
+
+	Life(datum/controller/process/mobs/parent)
+		if (..(parent))
+			return 1
+
+		if(prob(20) && !src.stat)
+			step_rand(src)
+
+		if(prob(3) && !src.stat)
+			if(prob(50))
+				SPAWN(0) src.emote("eyelick")
+			else
+				SPAWN(0) src.say("Yaya!!")
+
+	zoomy
+
+		Life(datum/controller/process/mobs/parent)
+			if(prob(100) && !src.stat)
+				walk_rand(src)
+
+			if(prob(20) && !src.stat)
+				if(prob(50))
+					SPAWN(0) src.emote("eyelick")
+				else
+					SPAWN(0) src.say("Yaya!!")
