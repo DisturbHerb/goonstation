@@ -1020,7 +1020,32 @@ proc/empty_mouse_params()//TODO MOVE THIS!!!
 #undef BILL_PICK
 
 // yaya
+
+/mob/living/carbon/human/jennifer/proc/yayaMode(var/fast)
+	var/emotePicker = rand(0,2)
+	if(fast)
+		switch(emotePicker)
+			if(0)
+				SPAWN(0) src.emote("eyelick")
+			if(1)
+				SPAWN(0) src.emote("scream")
+			if(2)
+				SPAWN(0) src.say("Yaya!!")
+	else
+		switch(emotePicker)
+			if(0)
+				SPAWN(0) src.emote("eyelick")
+			if(1)
+				SPAWN(0) src.emote("scream")
+				walk_rand(src)
+				sleep(10)
+				walk(src, 0)
+			if(2)
+				SPAWN(0) src.say("Yaya!!")
+
 /mob/living/carbon/human/jennifer
+	is_npc = 1
+	uses_mobai = 1
 
 	New()
 		..()
@@ -1030,6 +1055,9 @@ proc/empty_mouse_params()//TODO MOVE THIS!!!
 		src.equip_new_if_possible(/obj/item/clothing/gloves/ring/gold , slot_gloves)
 		src.equip_new_if_possible(/obj/item/clothing/under/gimmick/wedding_dress, slot_w_uniform)
 
+		src.ai = new /datum/aiHolder/human/yank(src)
+		src.ai.enabled = 0
+
 	initializeBioholder()
 		. = ..()
 		bioHolder.age = 22
@@ -1037,30 +1065,36 @@ proc/empty_mouse_params()//TODO MOVE THIS!!!
 		bioHolder.mobAppearance.customization_second_color = "#ff7c80"
 		bioHolder.mobAppearance.customization_third_color = "#ff7c80"
 		bioHolder.mobAppearance.e_color = "#ffa200"
-		bioHolder.mobAppearance.gender = "female"
+		bioHolder.mobAppearance.screamsound = "femalescream4"
+		bioHolder.mobAppearance.fartsound = "fart2"
+		bioHolder.mobAppearance.gender = "male"
+		bioHolder.mobAppearance.pronouns = get_singleton(/datum/pronouns/sheHer)
+		bioHolder.mobAppearance.voicetype = "Two"
 		bioHolder.mobAppearance.flavor_text = "Curiously tall lizard. What's she doing here?"
 
 	Life(datum/controller/process/mobs/parent)
 		if (..(parent))
 			return 1
 
-		if(prob(20) && !src.stat)
+		if(prob(20) && !src.stat && src.ai_state != AI_ATTACKING)
 			step_rand(src)
 
-		if(prob(3) && !src.stat)
-			if(prob(50))
-				SPAWN(0) src.emote("eyelick")
-			else
-				SPAWN(0) src.say("Yaya!!")
+		if(prob(5) && !src.stat && src.ai_state != AI_ATTACKING)
+			yayaMode(FALSE)
 
+	was_harmed(var/mob/M as mob, var/obj/item/weapon = 0, var/special = 0, var/intent = null)
+		. = ..()
+		SPAWN(0) src.emote("scream")
+		src.target = M
+		src.ai_state = AI_ATTACKING
+		src.ai_threatened = world.timeofday
+		src.ai_target = M
+		src.ai.enabled = 1
 	zoomy
 
 		Life(datum/controller/process/mobs/parent)
-			if(prob(100) && !src.stat)
+			if(!src.stat)
 				walk_rand(src)
 
-			if(prob(20) && !src.stat)
-				if(prob(50))
-					SPAWN(0) src.emote("eyelick")
-				else
-					SPAWN(0) src.say("Yaya!!")
+			if(prob(50))
+				yayaMode(TRUE)
