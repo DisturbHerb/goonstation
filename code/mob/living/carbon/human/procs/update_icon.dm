@@ -590,17 +590,6 @@
 				if (S.active)
 					shielded = 1
 					break
-			if (istype(A,/obj/item/cloaking_device))
-				var/obj/item/cloaking_device/S = A
-				if (S.active)
-					shielded = 2
-					break
-
-	// TODO: move to cloaker activation / deactivation
-	if (shielded == 2)
-		APPLY_ATOM_PROPERTY(src, PROP_MOB_INVISIBILITY, "cloak", INVIS_CLOAK)
-	else
-		REMOVE_ATOM_PROPERTY(src, PROP_MOB_INVISIBILITY, "cloak")
 
 	if (shielded)
 		UpdateOverlays(shield_image, "shield")
@@ -1226,13 +1215,6 @@ var/list/update_body_limbs = list("r_arm" = "stump_arm_right", "l_arm" = "stump_
 				juggle_image.icon_state = "juggle"
 				juggle_image.pixel_y = body_offset
 				src.body_standing.overlays += juggle_image
-
-#if ASS_JAM
-	src.maptext_y = 32
-	src.maptext_width = 64
-	src.maptext_x = -16
-	health_update_queue |= src
-#endif
 
 	if (src.bioHolder)
 		src.bioHolder.OnMobDraw()

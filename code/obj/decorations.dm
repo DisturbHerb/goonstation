@@ -175,7 +175,7 @@
 				qdel(src)
 			else
 				src.take_damage(45)
-	attack_hand(mob/user as mob)
+	attack_hand(mob/user)
 		if (!user) return
 		if (destroyed) return ..()
 
@@ -255,7 +255,7 @@
 					I.alpha = 255
 			H.health_mon?.alpha = 255
 
-	attackby(var/obj/item/W as obj, mob/user as mob)
+	attackby(var/obj/item/W, mob/user)
 		user.lastattacked = src
 		hit_twitch(src)
 		attack_particle(user,src)
@@ -324,7 +324,7 @@
 			if (M.mind && M.mind.assigned_role == "Captain")
 				boutput(M, "<span class='alert'>You suddenly feel hollow. Something very dear to you has been lost.</span>")
 
-	attackby(obj/item/W as obj, mob/user as mob)
+	attackby(obj/item/W, mob/user)
 		if (!W) return
 		if (!user) return
 		if (inafterlife(user))
@@ -381,7 +381,7 @@
 				boutput(M, "<span class='alert'>You suddenly feel hollow. Something very dear to you has been lost.</span>")
 		return
 
-	attackby(obj/item/W as obj, mob/user as mob)
+	attackby(obj/item/W, mob/user)
 		if (!W) return
 		if (!user) return
 		if (inafterlife(user))
@@ -416,6 +416,7 @@
 	icon_state = "ppot0"
 	anchored = 1
 	density = 0
+	deconstruct_flags = DECON_SCREWDRIVER
 
 	New()
 		..()
@@ -472,7 +473,7 @@
 			else
 				if(prob(50))
 					qdel(src)
-	attack_hand(mob/user as mob)
+	attack_hand(mob/user)
 		src.toggle()
 		src.toggle_group()
 
@@ -576,7 +577,7 @@
 		for (var/obj/window_blinds/blind in myBlinds)
 			blind.toggle(src.on)
 
-	attack_hand(mob/user as mob)
+	attack_hand(mob/user)
 		src.toggle()
 
 	attack_ai(mob/user as mob)
@@ -647,7 +648,7 @@
 		light.set_height(2.4)
 		light.attach(src)
 
-	attack_hand(mob/user as mob)
+	attack_hand(mob/user)
 		src.toggle_on()
 
 	proc/toggle_on()
@@ -919,7 +920,7 @@ obj/decoration/ceilingfan
 			src.icon_state = src.icon_off
 			light.disable()
 
-	attackby(obj/item/W as obj, mob/user as mob)
+	attackby(obj/item/W, mob/user)
 		if (!src.lit)
 			if (isweldingtool(W) && W:try_weld(user,0,-1,0,0))
 				boutput(user, "<span class='alert'><b>[user]</b> casually lights [src] with [W], what a badass.</span>")
@@ -951,7 +952,7 @@ obj/decoration/ceilingfan
 				src.lit = 1
 				UpdateIcon ()
 
-	attack_hand(mob/user as mob)
+	attack_hand(mob/user)
 		if (src.lit)
 			var/fluff = pick("snuff", "blow")
 			src.lit = 0
@@ -1198,7 +1199,7 @@ obj/decoration/gibberBroken
 	stamina_crit_chance = 0
 	throwforce = 0
 
-	attack_hand(mob/user as mob)
+	attack_hand(mob/user)
 		if ((user.r_hand == src || user.l_hand == src) && src.contents && length(src.contents))
 			user.visible_message("The cell on this is corroded. Good luck getting this thing to fire ever again!")
 			src.add_fingerprint(user)
@@ -1211,7 +1212,6 @@ obj/decoration/gibberBroken
 	desc = "You've never heard of this pistol before... who made it?"
 	icon_state = "e_laser_pistol"
 
-//stolen code for anchorable and movable target sheets. cannot get projectile tracking on them to work right now so. oh well. help appreciated!
 /obj/item/caution/target_sheet
 	desc = "A paper silhouette target sheet with a cardboard backing."
 	name = "paper target"
@@ -1235,6 +1235,7 @@ obj/decoration/gibberBroken
 
 	New()
 		..()
+		src.AddComponent(/datum/component/bullet_holes, 20, 0)
 		BLOCK_SETUP(BLOCK_SOFT)
 
 	attackby(obj/item/W, mob/user, params)
@@ -1242,25 +1243,6 @@ obj/decoration/gibberBroken
 			actions.start(new /datum/action/bar/icon/anchor_or_unanchor(src, W, duration=2 SECONDS), user)
 			return
 		. = ..()
-
-	get_desc()
-		if (islist(src.proj_impacts) && length(src.proj_impacts))
-			var/shots_taken = 0
-			for (var/i in src.proj_impacts)
-				shots_taken ++
-			. += "<br>[src] has [shots_taken] hole[s_es(shots_taken)] in it."
-
-	proc/update_projectile_image(var/update_time)
-		if (src.proj_impacts.len > 10)
-			return
-		if (src.last_proj_update_time && (src.last_proj_update_time + 1) < ticker.round_elapsed_ticks)
-			return
-		if (!src.proj_image)
-			src.proj_image = image('icons/obj/projectiles.dmi', "bhole-small")
-		src.proj_image.overlays = null
-		for (var/image/i in src.proj_impacts)
-			src.proj_image.overlays += i
-		src.UpdateOverlays(src.proj_image, "projectiles")
 
 //Walp Decor
 
@@ -1302,7 +1284,7 @@ obj/decoration/gibberBroken
 			src.icon_state = src.icon_off
 			light.disable()
 
-	attackby(obj/item/W as obj, mob/user as mob)
+	attackby(obj/item/W, mob/user)
 		if (!src.lit)
 			if (isweldingtool(W) && W:try_weld(user,0,-1,0,0))
 				boutput(user, "<span class='alert'><b>[user]</b> casually lights [src] with [W], what a badass.</span>")
@@ -1334,7 +1316,7 @@ obj/decoration/gibberBroken
 				src.lit = 1
 				UpdateIcon ()
 
-	attack_hand(mob/user as mob)
+	attack_hand(mob/user)
 		if (src.lit)
 			var/fluff = pick("snuff", "blow")
 			src.lit = 0
@@ -1342,7 +1324,7 @@ obj/decoration/gibberBroken
 			user.visible_message("<b>[user]</b> [fluff]s out the [src].",\
 			"You [fluff] out the [src].")
 
-	attackby(obj/item/W as obj, mob/user as mob)
+	attackby(obj/item/W, mob/user)
 		if (iswrenchingtool(W) && src.deconstructable)
 			actions.start(new /datum/action/bar/icon/furniture_deconstruct(src, W, 30), user)
 			return
