@@ -515,6 +515,7 @@ var/global/list/vpn_ip_checks = list() //assoc list of ip = true or ip = false. 
 		src.verbs += /client/proc/cmd_rp_rules
 		if (istype(src.mob, /mob/new_player))
 			src.cmd_rp_rules()
+			src.cmd_herby() // it's a bodge but it works
 #endif
 		//Cloud data
 #ifdef LIVE_SERVER
@@ -1061,6 +1062,28 @@ var/global/curr_day = null
 		</li>
 	</ul>"}, "window=rprules;title=RP+Rules" )
 #endif
+
+// we're herby, baby
+/client/proc/cmd_herby()
+	set name = "HerbStation Info"
+	set category = "Commands"
+
+	src.Browse( {"<center><h2>HerbStation Info</h2></center><hr>
+	HerbStation is a Goonstation fork with a few neat things I've tacked on because... I dunno, maybe they just wouldn't fit on the main branch. Below are the major changes from Goon. Also, normal Goon rules apply, be nice please!<hr>
+	<ul style='list-style-type:disc'>
+		<li><b>Additions</b>
+			<ul style='list-style-type:circle'>
+				<li>New map: NSS Kawasaki (TBD?)</li>
+				<li>Security is now Blue.</li>
+			</ul>
+		</li>
+		<li><b>Removals</b>
+			<ul style='list-style-type:circle'>
+				<li>The ability to piss and fart. You knew this was coming.</li>
+				<li>The 1/100 chance of *sigh being replaced with *singh.</li>
+			</ul>
+		</li>
+	</ul>"}, "window=herby;title=HerbStation+Info" )
 
 /client/verb/changeServer(var/server as text)
 	set name = "Change Server"
