@@ -1,0 +1,4374 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"ab" = (
+/turf/unsimulated/wall/setpieces/leadwall,
+/area/space)
+"ac" = (
+/turf/simulated/wall/auto/supernorn/wood{
+	icon_state = "13"
+	},
+/area/space)
+"ae" = (
+/turf/unsimulated/wall/setpieces/hospital/window{
+	dir = 4
+	},
+/area/space)
+"ar" = (
+/turf/simulated/wall/auto/reinforced/supernorn/orange{
+	icon_state = "norn-O-7"
+	},
+/area/space)
+"as" = (
+/turf/simulated/wall/auto/jen/dark1{
+	icon_state = "14"
+	},
+/area/space)
+"at" = (
+/turf/simulated/wall/auto/reinforced/jen/blue{
+	icon_state = "R10"
+	},
+/area/space)
+"au" = (
+/turf/simulated/wall/auto/jen/dark3{
+	icon_state = "8"
+	},
+/area/space)
+"aA" = (
+/turf/simulated/wall/auto/jen/blue{
+	icon_state = "14"
+	},
+/area/space)
+"aJ" = (
+/obj/window/auto{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "11"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"aN" = (
+/turf/simulated/wall/auto/jen/yellow{
+	icon_state = "7"
+	},
+/area/space)
+"aO" = (
+/turf/simulated/wall/auto/jen/brown{
+	icon_state = "9"
+	},
+/area/space)
+"aW" = (
+/turf/simulated/wall/auto/reinforced/jen/dark4{
+	icon_state = "R15"
+	},
+/area/space)
+"aY" = (
+/turf/simulated/wall/auto/reinforced/jen/dark4{
+	icon_state = "R3"
+	},
+/area/space)
+"bb" = (
+/obj/window/auto/reinforced{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "R1"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"bd" = (
+/turf/simulated/wall/auto/reinforced/jen{
+	icon_state = "R2"
+	},
+/area/space)
+"bi" = (
+/turf/simulated/wall/auto/jen{
+	icon_state = "5"
+	},
+/area/space)
+"bm" = (
+/turf/simulated/wall/auto/reinforced/jen/dark4{
+	icon_state = "R10"
+	},
+/area/space)
+"bt" = (
+/turf/simulated/wall/auto/reinforced/jen/purple{
+	icon_state = "R11"
+	},
+/area/space)
+"bx" = (
+/turf/simulated/wall/auto/reinforced/supernorn/yellow{
+	icon_state = "norn-Y-3"
+	},
+/area/space)
+"bH" = (
+/turf/unsimulated/wall/setpieces/leadwall{
+	dir = 8;
+	icon_state = "leadcap"
+	},
+/area/space)
+"bJ" = (
+/turf/simulated/wall/auto/reinforced/jen/green{
+	icon_state = "R5"
+	},
+/area/space)
+"bK" = (
+/turf/simulated/wall/auto/jen/blue{
+	icon_state = "2"
+	},
+/area/space)
+"bX" = (
+/turf/simulated/wall/auto/jen/dark4{
+	icon_state = "8"
+	},
+/area/space)
+"cd" = (
+/obj/window/auto{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "8"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"cg" = (
+/turf/unsimulated/wall/setpieces/leadwall{
+	dir = 10
+	},
+/area/space)
+"ck" = (
+/turf/simulated/wall/auto/jen/red{
+	icon_state = "7"
+	},
+/area/space)
+"cm" = (
+/turf/simulated/wall/auto/jen/brown{
+	icon_state = "1"
+	},
+/area/space)
+"cn" = (
+/obj/window/auto{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "6"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"cq" = (
+/turf/simulated/wall/auto/jen/dark4{
+	icon_state = "5"
+	},
+/area/space)
+"cv" = (
+/turf/unsimulated/wall/setpieces/hospital,
+/area/space)
+"cw" = (
+/turf/simulated/wall/auto/reinforced/jen/purple{
+	icon_state = "R13"
+	},
+/area/space)
+"cC" = (
+/turf/simulated/wall/auto/jen/purple{
+	icon_state = "13"
+	},
+/area/space)
+"cD" = (
+/turf/simulated/wall/auto/reinforced/jen/purple{
+	icon_state = "R8"
+	},
+/area/space)
+"cH" = (
+/turf/simulated/wall/auto/shuttle{
+	icon_state = "12"
+	},
+/area/space)
+"cK" = (
+/turf/simulated/wall/auto/reinforced/jen/red{
+	icon_state = "R9"
+	},
+/area/space)
+"cL" = (
+/turf/simulated/wall/auto/jen/red{
+	icon_state = "10"
+	},
+/area/space)
+"cM" = (
+/turf/simulated/wall/auto/jen/blue{
+	icon_state = "7"
+	},
+/area/space)
+"cN" = (
+/turf/simulated/wall/auto/reinforced/jen/yellow{
+	icon_state = "R14"
+	},
+/area/space)
+"cU" = (
+/turf/simulated/wall/auto/reinforced/jen/cyan{
+	icon_state = "R1"
+	},
+/area/space)
+"cX" = (
+/turf/simulated/wall/auto/reinforced/supernorn/blackred{
+	icon_state = "norn-BR-7"
+	},
+/area/space)
+"cY" = (
+/turf/unsimulated/wall/setpieces/leadwall/gray{
+	dir = 4;
+	icon_state = "leadcap_gray"
+	},
+/area/space)
+"da" = (
+/turf/simulated/wall/auto/jen/purple{
+	icon_state = "10"
+	},
+/area/space)
+"di" = (
+/turf/simulated/wall/auto/jen/dark2{
+	icon_state = "14"
+	},
+/area/space)
+"dm" = (
+/turf/simulated/wall/auto/jen/purple{
+	icon_state = "2"
+	},
+/area/space)
+"dn" = (
+/turf/simulated/wall/auto/reinforced/jen/dark4{
+	icon_state = "R2"
+	},
+/area/space)
+"ds" = (
+/turf/simulated/wall/auto/reinforced/jen/yellow{
+	icon_state = "R2"
+	},
+/area/space)
+"dz" = (
+/turf/simulated/wall/auto/jen/green{
+	icon_state = "4"
+	},
+/area/space)
+"dA" = (
+/turf/simulated/wall/auto/reinforced/jen/yellow{
+	icon_state = "R3"
+	},
+/area/space)
+"dC" = (
+/turf/simulated/wall/auto/jen/orange{
+	icon_state = "9"
+	},
+/area/space)
+"dJ" = (
+/turf/simulated/wall/auto/jen/cyan{
+	icon_state = "14"
+	},
+/area/space)
+"dN" = (
+/turf/unsimulated/wall/setpieces/hospital{
+	dir = 10
+	},
+/area/space)
+"dV" = (
+/turf/simulated/wall/auto/reinforced/jen{
+	icon_state = "R6"
+	},
+/area/space)
+"ec" = (
+/turf/simulated/wall/auto/reinforced/jen/dark2{
+	icon_state = "R13"
+	},
+/area/space)
+"ef" = (
+/turf/unsimulated/wall/setpieces/leadwall/white/lunar{
+	icon_state = "leadcap_white"
+	},
+/area/space)
+"ek" = (
+/turf/unsimulated/wall/setpieces/leadwindow,
+/area/space)
+"ep" = (
+/turf/simulated/wall/auto/reinforced/jen/dark4{
+	icon_state = "R11"
+	},
+/area/space)
+"et" = (
+/obj/window/auto{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "10"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"eu" = (
+/turf/simulated/wall/auto/reinforced/supernorn/orange{
+	icon_state = "norn-O-9"
+	},
+/area/space)
+"eG" = (
+/turf/simulated/wall/auto/jen/green{
+	icon_state = "10"
+	},
+/area/space)
+"eK" = (
+/turf/simulated/wall/auto/reinforced/jen{
+	icon_state = "R12"
+	},
+/area/space)
+"eP" = (
+/turf/simulated/wall/auto/reinforced/jen/red{
+	icon_state = "R4"
+	},
+/area/space)
+"eR" = (
+/turf/simulated/wall/auto/reinforced/supernorn{
+	icon_state = "norn-R-2"
+	},
+/area/space)
+"eX" = (
+/turf/simulated/wall/auto/jen/yellow{
+	icon_state = "0"
+	},
+/area/space)
+"fd" = (
+/turf/simulated/wall/auto/jen/dark1{
+	icon_state = "10"
+	},
+/area/space)
+"fg" = (
+/obj/window/auto/reinforced{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "R11"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"fv" = (
+/turf/simulated/wall/auto/supernorn/wood{
+	icon_state = "1"
+	},
+/area/space)
+"fB" = (
+/turf/simulated/wall/auto/jen/green{
+	icon_state = "15"
+	},
+/area/space)
+"fD" = (
+/turf/simulated/wall/auto/reinforced/jen/orange{
+	icon_state = "R0"
+	},
+/area/space)
+"fQ" = (
+/turf/simulated/wall/auto/supernorn{
+	icon_state = "norn-4"
+	},
+/area/space)
+"fW" = (
+/turf/simulated/wall/auto/reinforced/supernorn/blackred{
+	icon_state = "norn-BR-12"
+	},
+/area/space)
+"gb" = (
+/obj/window/auto{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "2"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"gd" = (
+/turf/unsimulated/wall/setpieces/leadwall/gray{
+	dir = 8;
+	icon_state = "leadcap_gray"
+	},
+/area/space)
+"gh" = (
+/turf/simulated/wall/auto/reinforced/supernorn/blackred{
+	icon_state = "norn-BR-11"
+	},
+/area/space)
+"gj" = (
+/obj/window/auto/reinforced{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "R12"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"gl" = (
+/turf/simulated/wall/auto/feather,
+/area/space)
+"gm" = (
+/turf/simulated/wall/auto/reinforced/jen/brown{
+	icon_state = "R11"
+	},
+/area/space)
+"gn" = (
+/turf/simulated/wall/auto/reinforced/jen/cyan{
+	icon_state = "R3"
+	},
+/area/space)
+"gs" = (
+/turf/simulated/wall/auto/reinforced/jen/brown{
+	icon_state = "R8"
+	},
+/area/space)
+"gw" = (
+/turf/simulated/wall/auto/reinforced/supernorn/blackred{
+	icon_state = "norn-BR-9"
+	},
+/area/space)
+"gx" = (
+/turf/simulated/wall/auto/reinforced/supernorn/yellow{
+	icon_state = "norn-Y-6"
+	},
+/area/space)
+"gz" = (
+/turf/simulated/wall/auto/reinforced/jen/cyan{
+	icon_state = "R10"
+	},
+/area/space)
+"gF" = (
+/turf/simulated/wall/auto/reinforced/jen/dark3{
+	icon_state = "R9"
+	},
+/area/space)
+"gK" = (
+/turf/simulated/wall/auto/jen/brown{
+	icon_state = "4"
+	},
+/area/space)
+"gM" = (
+/turf/unsimulated/wall/setpieces/leadwall/gray{
+	icon_state = "leadcap_gray"
+	},
+/area/space)
+"gN" = (
+/turf/simulated/wall/auto/reinforced/gannets{
+	icon_state = "R2"
+	},
+/area/space)
+"gW" = (
+/turf/simulated/wall/auto/jen/dark2{
+	icon_state = "0"
+	},
+/area/space)
+"gZ" = (
+/turf/simulated/wall/auto/jen/orange{
+	icon_state = "2"
+	},
+/area/space)
+"ha" = (
+/turf/simulated/wall/auto/reinforced/supernorn{
+	icon_state = "norn-R-0"
+	},
+/area/space)
+"he" = (
+/turf/simulated/wall/auto/jen/blue{
+	icon_state = "0"
+	},
+/area/space)
+"hj" = (
+/turf/simulated/wall/auto/shuttle{
+	icon_state = "10"
+	},
+/area/space)
+"ho" = (
+/turf/simulated/wall/auto/reinforced/gannets{
+	icon_state = "R4"
+	},
+/area/space)
+"hp" = (
+/obj/window/auto{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "4"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"hv" = (
+/turf/simulated/wall/auto/jen/cyan{
+	icon_state = "10"
+	},
+/area/space)
+"hw" = (
+/turf/unsimulated/wall/setpieces/leadwall/white/lunar{
+	dir = 6
+	},
+/area/space)
+"hC" = (
+/turf/simulated/wall/auto/reinforced/jen/dark2{
+	icon_state = "R15"
+	},
+/area/space)
+"hF" = (
+/turf/simulated/wall/auto/jen/blue{
+	icon_state = "3"
+	},
+/area/space)
+"hH" = (
+/turf/simulated/wall/auto/reinforced/jen/dark4{
+	icon_state = "R14"
+	},
+/area/space)
+"hJ" = (
+/turf/simulated/wall/auto/reinforced/jen/orange{
+	icon_state = "R6"
+	},
+/area/space)
+"hK" = (
+/turf/simulated/wall/auto/reinforced/jen/dark4{
+	icon_state = "R5"
+	},
+/area/space)
+"hM" = (
+/turf/simulated/wall/auto/reinforced/jen/cyan{
+	icon_state = "R4"
+	},
+/area/space)
+"hO" = (
+/turf/simulated/wall/auto/shuttle{
+	icon_state = "8"
+	},
+/area/space)
+"id" = (
+/turf/unsimulated/wall/setpieces/leadwall{
+	dir = 5
+	},
+/area/space)
+"ie" = (
+/turf/simulated/wall/auto/jen/dark1{
+	icon_state = "13"
+	},
+/area/space)
+"il" = (
+/turf/simulated/wall/auto/feather{
+	icon_state = "10"
+	},
+/area/space)
+"im" = (
+/turf/simulated/wall/auto/reinforced/jen/dark1{
+	icon_state = "R6"
+	},
+/area/space)
+"iq" = (
+/turf/simulated/wall/auto/jen/brown{
+	icon_state = "15"
+	},
+/area/space)
+"ir" = (
+/turf/simulated/wall/auto/reinforced/jen/purple{
+	icon_state = "R3"
+	},
+/area/space)
+"is" = (
+/turf/simulated/wall/auto/reinforced/jen/brown{
+	icon_state = "R3"
+	},
+/area/space)
+"it" = (
+/turf/simulated/wall/auto/reinforced/jen/green{
+	icon_state = "R0"
+	},
+/area/space)
+"ix" = (
+/turf/simulated/wall/auto/reinforced/supernorn/yellow{
+	icon_state = "norn-Y-7"
+	},
+/area/space)
+"iA" = (
+/turf/simulated/wall/auto/reinforced/jen/red{
+	icon_state = "R7"
+	},
+/area/space)
+"iB" = (
+/turf/simulated/wall/auto/reinforced/jen/green{
+	icon_state = "R14"
+	},
+/area/space)
+"iJ" = (
+/turf/simulated/wall/auto/reinforced/jen{
+	icon_state = "R0"
+	},
+/area/space)
+"iT" = (
+/turf/unsimulated/wall/setpieces/leadwindow{
+	icon_state = "leadwindow_2"
+	},
+/area/space)
+"iU" = (
+/turf/simulated/wall/auto/reinforced/jen/purple{
+	icon_state = "R7"
+	},
+/area/space)
+"iW" = (
+/turf/simulated/wall/auto/jen/dark1{
+	icon_state = "0"
+	},
+/area/space)
+"iZ" = (
+/turf/simulated/wall/auto/gannets{
+	icon_state = "14"
+	},
+/area/space)
+"je" = (
+/turf/simulated/wall/auto/reinforced/supernorn/yellow{
+	icon_state = "norn-Y-8"
+	},
+/area/space)
+"jg" = (
+/turf/simulated/wall/auto/jen{
+	icon_state = "12"
+	},
+/area/space)
+"ji" = (
+/turf/simulated/wall/auto/reinforced/jen/orange{
+	icon_state = "R9"
+	},
+/area/space)
+"jl" = (
+/turf/simulated/wall/auto/jen/orange{
+	icon_state = "5"
+	},
+/area/space)
+"js" = (
+/turf/simulated/wall/auto/jen/dark3{
+	icon_state = "12"
+	},
+/area/space)
+"jw" = (
+/turf/simulated/wall/auto/jen/dark3{
+	icon_state = "15"
+	},
+/area/space)
+"jE" = (
+/turf/simulated/wall/auto/jen/dark1{
+	icon_state = "8"
+	},
+/area/space)
+"jM" = (
+/turf/simulated/wall/auto/jen/dark1{
+	icon_state = "3"
+	},
+/area/space)
+"jO" = (
+/turf/simulated/wall/auto/reinforced/jen/brown{
+	icon_state = "R2"
+	},
+/area/space)
+"jS" = (
+/turf/simulated/wall/auto/jen/dark2{
+	icon_state = "5"
+	},
+/area/space)
+"jV" = (
+/turf/simulated/wall/auto/reinforced/jen/dark3{
+	icon_state = "R7"
+	},
+/area/space)
+"jX" = (
+/turf/simulated/wall/auto/reinforced/jen/brown{
+	icon_state = "R0"
+	},
+/area/space)
+"jZ" = (
+/turf/unsimulated/wall/setpieces/leadwall/white/lunar{
+	dir = 4;
+	icon_state = "leadcap_white"
+	},
+/area/space)
+"ka" = (
+/turf/simulated/wall/auto/reinforced/jen/dark3{
+	icon_state = "R4"
+	},
+/area/space)
+"kb" = (
+/turf/simulated/wall/auto/reinforced/jen/blue{
+	icon_state = "R11"
+	},
+/area/space)
+"kk" = (
+/turf/simulated/wall/auto/reinforced/jen/green{
+	icon_state = "R9"
+	},
+/area/space)
+"kr" = (
+/turf/simulated/wall/auto/supernorn{
+	icon_state = "norn-2"
+	},
+/area/space)
+"kv" = (
+/turf/unsimulated/wall/setpieces/hospital{
+	dir = 5
+	},
+/area/space)
+"kz" = (
+/turf/simulated/wall/auto/jen/dark4{
+	icon_state = "0"
+	},
+/area/space)
+"kA" = (
+/turf/simulated/wall/auto/jen/orange{
+	icon_state = "14"
+	},
+/area/space)
+"kF" = (
+/turf/simulated/wall/auto/jen/dark2{
+	icon_state = "15"
+	},
+/area/space)
+"kI" = (
+/turf/simulated/wall/auto/reinforced/jen/purple{
+	icon_state = "R14"
+	},
+/area/space)
+"kP" = (
+/turf/simulated/wall/auto/supernorn/wood{
+	icon_state = "6"
+	},
+/area/space)
+"kQ" = (
+/turf/simulated/wall/auto/reinforced/jen/dark3{
+	icon_state = "R0"
+	},
+/area/space)
+"kV" = (
+/turf/simulated/wall/auto/jen/dark4{
+	icon_state = "11"
+	},
+/area/space)
+"kX" = (
+/turf/simulated/wall/auto/reinforced/jen/dark3{
+	icon_state = "R6"
+	},
+/area/space)
+"le" = (
+/obj/window/auto/reinforced{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "R8"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"lf" = (
+/turf/simulated/wall/auto/shuttle{
+	icon_state = "6"
+	},
+/area/space)
+"li" = (
+/turf/unsimulated/wall/setpieces/leadwindow/white{
+	icon_state = "leadwindow_white_2"
+	},
+/area/space)
+"lj" = (
+/turf/simulated/wall/auto/reinforced/jen/cyan{
+	icon_state = "R2"
+	},
+/area/space)
+"ln" = (
+/turf/simulated/wall/auto/jen/red{
+	icon_state = "15"
+	},
+/area/space)
+"lp" = (
+/turf/simulated/wall/auto/reinforced/jen/green{
+	icon_state = "R4"
+	},
+/area/space)
+"lr" = (
+/turf/unsimulated/wall/setpieces/leadwall/gray{
+	dir = 4;
+	icon_state = "leadjunction_gray"
+	},
+/area/space)
+"ls" = (
+/turf/simulated/wall/auto/reinforced/jen/dark3{
+	icon_state = "R11"
+	},
+/area/space)
+"lu" = (
+/turf/unsimulated/wall/setpieces/leadwall{
+	dir = 8;
+	icon_state = "leadjunction"
+	},
+/area/space)
+"lv" = (
+/turf/simulated/wall/auto/reinforced/jen/blue{
+	icon_state = "R2"
+	},
+/area/space)
+"lw" = (
+/turf/simulated/wall/auto/shuttle{
+	icon_state = "9"
+	},
+/area/space)
+"lA" = (
+/turf/simulated/wall/auto/reinforced/jen/cyan{
+	icon_state = "R15"
+	},
+/area/space)
+"lD" = (
+/turf/simulated/wall/auto/supernorn{
+	icon_state = "norn-8"
+	},
+/area/space)
+"lG" = (
+/turf/simulated/wall/auto/jen/dark2{
+	icon_state = "6"
+	},
+/area/space)
+"lK" = (
+/turf/simulated/wall/auto/reinforced/gannets,
+/area/space)
+"lL" = (
+/turf/simulated/wall/auto/reinforced/jen/dark1{
+	icon_state = "R15"
+	},
+/area/space)
+"lP" = (
+/obj/window/auto/reinforced{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "R15"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"lT" = (
+/turf/simulated/wall/auto/reinforced/supernorn/yellow{
+	icon_state = "norn-Y-13"
+	},
+/area/space)
+"lV" = (
+/turf/simulated/wall/auto/supernorn/wood{
+	icon_state = "7"
+	},
+/area/space)
+"mb" = (
+/turf/simulated/wall/auto/jen/dark4{
+	icon_state = "1"
+	},
+/area/space)
+"mh" = (
+/turf/unsimulated/wall/setpieces/leadwall/white/lunar{
+	dir = 1;
+	icon_state = "leadcap_white"
+	},
+/area/space)
+"mk" = (
+/turf/simulated/wall/auto/reinforced/jen/brown{
+	icon_state = "R5"
+	},
+/area/space)
+"ml" = (
+/turf/simulated/wall/auto/jen/dark4{
+	icon_state = "2"
+	},
+/area/space)
+"mo" = (
+/turf/simulated/wall/auto/reinforced/jen/yellow{
+	icon_state = "R11"
+	},
+/area/space)
+"mp" = (
+/turf/simulated/wall/auto/feather{
+	icon_state = "6"
+	},
+/area/space)
+"mr" = (
+/turf/simulated/wall/auto/jen/blue{
+	icon_state = "8"
+	},
+/area/space)
+"mx" = (
+/turf/simulated/wall/auto/reinforced/jen/cyan{
+	icon_state = "R12"
+	},
+/area/space)
+"mA" = (
+/turf/simulated/wall/auto/jen{
+	icon_state = "2"
+	},
+/area/space)
+"mD" = (
+/turf/simulated/wall/auto/reinforced/supernorn/blackred{
+	icon_state = "norn-BR-2"
+	},
+/area/space)
+"mG" = (
+/turf/simulated/wall/auto/reinforced/jen/dark2{
+	icon_state = "R5"
+	},
+/area/space)
+"mK" = (
+/turf/simulated/wall/auto/jen{
+	icon_state = "13"
+	},
+/area/space)
+"mP" = (
+/turf/simulated/wall/auto/reinforced/jen/orange{
+	icon_state = "R11"
+	},
+/area/space)
+"mV" = (
+/turf/simulated/wall/auto/supernorn/wood{
+	icon_state = "10"
+	},
+/area/space)
+"mW" = (
+/turf/unsimulated/wall/setpieces/leadwall{
+	dir = 6
+	},
+/area/space)
+"mZ" = (
+/turf/simulated/wall/auto/jen/red{
+	icon_state = "6"
+	},
+/area/space)
+"nd" = (
+/turf/simulated/wall/auto/reinforced/jen/purple{
+	icon_state = "R15"
+	},
+/area/space)
+"nj" = (
+/turf/simulated/wall/auto/reinforced/gannets{
+	icon_state = "R6"
+	},
+/area/space)
+"nm" = (
+/obj/window/auto/reinforced{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "R10"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"nu" = (
+/turf/unsimulated/wall/setpieces/leadwindow{
+	dir = 4;
+	icon_state = "leadwindow_2"
+	},
+/area/space)
+"nB" = (
+/turf/simulated/wall/auto/jen/red{
+	icon_state = "8"
+	},
+/area/space)
+"nC" = (
+/turf/simulated/wall/auto/supernorn{
+	icon_state = "norn-14"
+	},
+/area/space)
+"nE" = (
+/turf/simulated/wall/auto/reinforced/supernorn/blackred{
+	icon_state = "norn-BR-0"
+	},
+/area/space)
+"nG" = (
+/turf/simulated/wall/auto/jen/blue{
+	icon_state = "9"
+	},
+/area/space)
+"nN" = (
+/turf/simulated/wall/auto/reinforced/jen/brown{
+	icon_state = "R9"
+	},
+/area/space)
+"nO" = (
+/turf/simulated/wall/auto/reinforced/jen/red{
+	icon_state = "R14"
+	},
+/area/space)
+"nP" = (
+/turf/simulated/wall/auto/reinforced/supernorn/yellow{
+	icon_state = "norn-Y-9"
+	},
+/area/space)
+"nR" = (
+/turf/simulated/wall/auto/jen/green{
+	icon_state = "11"
+	},
+/area/space)
+"nY" = (
+/turf/simulated/wall/auto/jen{
+	icon_state = "3"
+	},
+/area/space)
+"ob" = (
+/turf/simulated/wall/auto/reinforced/supernorn{
+	icon_state = "norn-R-12"
+	},
+/area/space)
+"oe" = (
+/turf/simulated/wall/auto/supernorn{
+	icon_state = "norn-6"
+	},
+/area/space)
+"of" = (
+/turf/unsimulated/wall/setpieces/hospital{
+	dir = 9
+	},
+/area/space)
+"oi" = (
+/obj/window/auto/reinforced{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "R3"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"om" = (
+/turf/simulated/wall/auto/jen/blue{
+	icon_state = "5"
+	},
+/area/space)
+"oo" = (
+/turf/simulated/wall/auto/jen{
+	icon_state = "6"
+	},
+/area/space)
+"or" = (
+/turf/simulated/wall/auto/reinforced/jen/purple{
+	icon_state = "R0"
+	},
+/area/space)
+"os" = (
+/turf/simulated/wall/auto/shuttle{
+	icon_state = "3"
+	},
+/area/space)
+"ov" = (
+/turf/simulated/wall/auto/jen/dark2{
+	icon_state = "8"
+	},
+/area/space)
+"oD" = (
+/turf/unsimulated/wall/setpieces/leadwall{
+	dir = 9
+	},
+/area/space)
+"oE" = (
+/turf/simulated/wall/auto/reinforced/jen/red{
+	icon_state = "R15"
+	},
+/area/space)
+"oN" = (
+/turf/simulated/wall/auto/reinforced/jen/dark4{
+	icon_state = "R7"
+	},
+/area/space)
+"pl" = (
+/turf/simulated/wall/auto/reinforced/jen/brown{
+	icon_state = "R12"
+	},
+/area/space)
+"pm" = (
+/turf/simulated/wall/auto/reinforced/jen/dark1{
+	icon_state = "R3"
+	},
+/area/space)
+"pn" = (
+/turf/simulated/wall/auto/jen/cyan{
+	icon_state = "1"
+	},
+/area/space)
+"po" = (
+/turf/simulated/wall/auto/shuttle{
+	icon_state = "11"
+	},
+/area/space)
+"pp" = (
+/turf/simulated/wall/auto/reinforced/jen/blue{
+	icon_state = "R13"
+	},
+/area/space)
+"pv" = (
+/turf/simulated/wall/auto/jen/blue{
+	icon_state = "1"
+	},
+/area/space)
+"pB" = (
+/turf/simulated/wall/auto/reinforced/jen/dark2{
+	icon_state = "R10"
+	},
+/area/space)
+"pC" = (
+/turf/simulated/wall/auto/reinforced/jen/dark2{
+	icon_state = "R9"
+	},
+/area/space)
+"pH" = (
+/turf/simulated/wall/auto/supernorn{
+	icon_state = "norn-10"
+	},
+/area/space)
+"pQ" = (
+/turf/simulated/wall/auto/jen/red{
+	icon_state = "11"
+	},
+/area/space)
+"qc" = (
+/turf/simulated/wall/auto/jen/dark2{
+	icon_state = "12"
+	},
+/area/space)
+"qd" = (
+/turf/simulated/wall/auto/reinforced/jen{
+	icon_state = "R8"
+	},
+/area/space)
+"qe" = (
+/turf/unsimulated/wall/setpieces/leadwall/white/lunar{
+	dir = 4;
+	icon_state = "leadjunction_white"
+	},
+/area/space)
+"qq" = (
+/turf/simulated/wall/auto/reinforced/jen/dark2{
+	icon_state = "R6"
+	},
+/area/space)
+"qr" = (
+/turf/unsimulated/wall/setpieces/hospital/window,
+/area/space)
+"qA" = (
+/turf/simulated/wall/auto/jen/brown{
+	icon_state = "6"
+	},
+/area/space)
+"qF" = (
+/turf/simulated/wall/auto/reinforced/jen/dark1{
+	icon_state = "R5"
+	},
+/area/space)
+"qH" = (
+/turf/unsimulated/wall/setpieces/leadwindow/gray{
+	dir = 4
+	},
+/area/space)
+"qI" = (
+/turf/simulated/wall/auto/reinforced/jen/purple{
+	icon_state = "R10"
+	},
+/area/space)
+"qL" = (
+/turf/simulated/wall/auto/jen/brown{
+	icon_state = "3"
+	},
+/area/space)
+"qT" = (
+/turf/simulated/wall/auto/jen/red{
+	icon_state = "4"
+	},
+/area/space)
+"qU" = (
+/turf/simulated/wall/auto/jen/green{
+	icon_state = "5"
+	},
+/area/space)
+"qW" = (
+/obj/window/auto{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "5"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"rb" = (
+/turf/simulated/wall/auto/reinforced/supernorn{
+	icon_state = "norn-R-10"
+	},
+/area/space)
+"re" = (
+/turf/simulated/wall/auto/jen/orange{
+	icon_state = "4"
+	},
+/area/space)
+"rC" = (
+/turf/simulated/wall/auto/reinforced/jen/red{
+	icon_state = "R1"
+	},
+/area/space)
+"rE" = (
+/turf/simulated/wall/auto/jen/orange{
+	icon_state = "0"
+	},
+/area/space)
+"rF" = (
+/turf/simulated/wall/auto/reinforced/supernorn/orange{
+	icon_state = "norn-O-2"
+	},
+/area/space)
+"rH" = (
+/turf/simulated/wall/auto/reinforced/gannets{
+	icon_state = "R15"
+	},
+/area/space)
+"rK" = (
+/turf/simulated/wall/auto/supernorn{
+	icon_state = "norn-1"
+	},
+/area/space)
+"rN" = (
+/turf/unsimulated/wall/setpieces/leadwindow/gray,
+/area/space)
+"rO" = (
+/turf/simulated/wall/auto/reinforced/jen/blue{
+	icon_state = "R5"
+	},
+/area/space)
+"rW" = (
+/turf/simulated/wall/auto/jen{
+	icon_state = "9"
+	},
+/area/space)
+"sb" = (
+/turf/simulated/wall/auto/gannets{
+	icon_state = "12"
+	},
+/area/space)
+"sd" = (
+/turf/simulated/wall/auto/jen/green{
+	icon_state = "3"
+	},
+/area/space)
+"sg" = (
+/turf/simulated/wall/auto/reinforced/jen/orange{
+	icon_state = "R7"
+	},
+/area/space)
+"sv" = (
+/turf/simulated/wall/auto/reinforced/jen{
+	icon_state = "R13"
+	},
+/area/space)
+"sJ" = (
+/turf/simulated/wall/auto/reinforced/jen/purple{
+	icon_state = "R9"
+	},
+/area/space)
+"sN" = (
+/turf/simulated/wall/auto/jen/purple{
+	icon_state = "15"
+	},
+/area/space)
+"sS" = (
+/turf/unsimulated/wall/setpieces/leadwall/gray{
+	dir = 1;
+	icon_state = "leadcap_gray"
+	},
+/area/space)
+"sV" = (
+/turf/simulated/floor/airless/orange,
+/area/space)
+"sW" = (
+/turf/simulated/wall/auto/reinforced/jen/dark1{
+	icon_state = "R0"
+	},
+/area/space)
+"sZ" = (
+/turf/simulated/wall/auto/reinforced/jen{
+	icon_state = "R1"
+	},
+/area/space)
+"th" = (
+/turf/simulated/wall/auto/jen/cyan{
+	icon_state = "11"
+	},
+/area/space)
+"tk" = (
+/turf/simulated/wall/auto/jen{
+	icon_state = "1"
+	},
+/area/space)
+"tl" = (
+/turf/simulated/wall/auto/reinforced/supernorn/yellow{
+	icon_state = "norn-Y-14"
+	},
+/area/space)
+"to" = (
+/turf/simulated/wall/auto/reinforced/supernorn{
+	icon_state = "norn-R-3"
+	},
+/area/space)
+"tr" = (
+/turf/simulated/wall/auto/jen/orange{
+	icon_state = "7"
+	},
+/area/space)
+"tu" = (
+/obj/item/paper{
+	name = "EXAMPLE ONLY. DO NOT USE LIVE."
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"tz" = (
+/turf/simulated/wall/auto/reinforced/jen/dark2{
+	icon_state = "R7"
+	},
+/area/space)
+"tJ" = (
+/turf/simulated/wall/auto/reinforced/jen/yellow{
+	icon_state = "R8"
+	},
+/area/space)
+"tK" = (
+/turf/simulated/wall/auto/reinforced/jen/green{
+	icon_state = "R15"
+	},
+/area/space)
+"tO" = (
+/turf/simulated/wall/auto/reinforced/jen/cyan{
+	icon_state = "R0"
+	},
+/area/space)
+"tS" = (
+/turf/simulated/wall/auto/jen/red{
+	icon_state = "13"
+	},
+/area/space)
+"tY" = (
+/turf/simulated/wall/auto/jen{
+	icon_state = "11"
+	},
+/area/space)
+"tZ" = (
+/turf/simulated/wall/auto/reinforced/supernorn/blackred{
+	icon_state = "norn-BR-15"
+	},
+/area/space)
+"uc" = (
+/turf/simulated/wall/auto/reinforced/jen/green{
+	icon_state = "R11"
+	},
+/area/space)
+"ue" = (
+/turf/simulated/wall/auto/feather{
+	icon_state = "14"
+	},
+/area/space)
+"ul" = (
+/turf/unsimulated/wall/setpieces/leadwall{
+	dir = 1;
+	icon_state = "leadcap"
+	},
+/area/space)
+"uA" = (
+/turf/simulated/wall/auto/jen/red{
+	icon_state = "0"
+	},
+/area/space)
+"uO" = (
+/turf/simulated/wall/auto/reinforced/jen/orange{
+	icon_state = "R4"
+	},
+/area/space)
+"uP" = (
+/turf/simulated/wall/auto/jen/red{
+	icon_state = "9"
+	},
+/area/space)
+"uQ" = (
+/turf/simulated/wall/auto/reinforced/jen/purple{
+	icon_state = "R2"
+	},
+/area/space)
+"uR" = (
+/turf/unsimulated/wall/setpieces/leadwall/white/lunar{
+	icon_state = "leadjunction_white_4way"
+	},
+/area/space)
+"uX" = (
+/turf/simulated/wall/auto/jen/dark4{
+	icon_state = "12"
+	},
+/area/space)
+"vd" = (
+/turf/simulated/wall/auto/reinforced/supernorn{
+	icon_state = "norn-R-8"
+	},
+/area/space)
+"vi" = (
+/turf/simulated/wall/auto/reinforced/jen/yellow{
+	icon_state = "R10"
+	},
+/area/space)
+"vu" = (
+/turf/simulated/wall/auto/reinforced/jen/green{
+	icon_state = "R12"
+	},
+/area/space)
+"vz" = (
+/turf/simulated/wall/auto/jen/dark3{
+	icon_state = "5"
+	},
+/area/space)
+"vB" = (
+/turf/simulated/wall/auto/reinforced/jen/brown{
+	icon_state = "R7"
+	},
+/area/space)
+"vJ" = (
+/turf/unsimulated/wall/setpieces/hospital{
+	dir = 8;
+	icon_state = "panelwall_junction"
+	},
+/area/space)
+"vM" = (
+/turf/simulated/wall/auto/jen/yellow{
+	icon_state = "2"
+	},
+/area/space)
+"vP" = (
+/turf/simulated/wall/auto/reinforced/jen/cyan{
+	icon_state = "R7"
+	},
+/area/space)
+"vT" = (
+/obj/window/auto/reinforced{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "R2"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"wc" = (
+/turf/simulated/wall/auto/reinforced/jen/dark4{
+	icon_state = "R0"
+	},
+/area/space)
+"wd" = (
+/turf/simulated/wall/auto/reinforced/supernorn/orange{
+	icon_state = "norn-O-13"
+	},
+/area/space)
+"wf" = (
+/turf/simulated/wall/auto/reinforced/jen/dark4{
+	icon_state = "R6"
+	},
+/area/space)
+"wg" = (
+/turf/simulated/wall/auto/jen/dark4{
+	icon_state = "4"
+	},
+/area/space)
+"wi" = (
+/turf/simulated/wall/auto/jen/dark4{
+	icon_state = "6"
+	},
+/area/space)
+"wj" = (
+/turf/simulated/wall/auto/jen/dark2{
+	icon_state = "7"
+	},
+/area/space)
+"wm" = (
+/turf/simulated/wall/auto/reinforced/supernorn{
+	icon_state = "norn-R-15"
+	},
+/area/space)
+"wt" = (
+/turf/simulated/wall/auto/reinforced/jen/blue{
+	icon_state = "R4"
+	},
+/area/space)
+"wu" = (
+/turf/simulated/wall/auto/reinforced/jen/dark4{
+	icon_state = "R13"
+	},
+/area/space)
+"wz" = (
+/turf/simulated/wall/auto/feather{
+	icon_state = "8"
+	},
+/area/space)
+"wA" = (
+/turf/simulated/wall/auto/supernorn/wood{
+	icon_state = "11"
+	},
+/area/space)
+"wF" = (
+/turf/simulated/wall/auto/reinforced/jen/red{
+	icon_state = "R11"
+	},
+/area/space)
+"wJ" = (
+/turf/simulated/wall/auto/reinforced/gannets{
+	icon_state = "R14"
+	},
+/area/space)
+"wM" = (
+/turf/simulated/wall/auto/jen/brown{
+	icon_state = "11"
+	},
+/area/space)
+"wT" = (
+/turf/simulated/wall/auto/reinforced/supernorn{
+	icon_state = "norn-R-6"
+	},
+/area/space)
+"wU" = (
+/turf/simulated/wall/auto/reinforced/jen/cyan{
+	icon_state = "R9"
+	},
+/area/space)
+"wY" = (
+/turf/simulated/wall/auto/reinforced/jen/blue{
+	icon_state = "R7"
+	},
+/area/space)
+"xa" = (
+/turf/simulated/wall/auto/reinforced/jen/orange{
+	icon_state = "R1"
+	},
+/area/space)
+"xd" = (
+/turf/simulated/wall/auto/jen/cyan{
+	icon_state = "12"
+	},
+/area/space)
+"xf" = (
+/turf/simulated/wall/auto/reinforced/jen/dark2{
+	icon_state = "R0"
+	},
+/area/space)
+"xg" = (
+/turf/simulated/wall/auto/reinforced/jen/brown{
+	icon_state = "R4"
+	},
+/area/space)
+"xi" = (
+/turf/simulated/wall/auto/reinforced/jen/dark3{
+	icon_state = "R3"
+	},
+/area/space)
+"xj" = (
+/turf/simulated/wall/auto/reinforced/gannets{
+	icon_state = "R9"
+	},
+/area/space)
+"xl" = (
+/obj/indestructible/shuttle_corner{
+	dir = 0
+	},
+/turf/simulated/floor/airless/orangeblack,
+/area/space)
+"xp" = (
+/turf/simulated/wall/auto/reinforced/gannets{
+	icon_state = "R12"
+	},
+/area/space)
+"xt" = (
+/turf/simulated/wall/auto/reinforced/jen{
+	icon_state = "R15"
+	},
+/area/space)
+"xF" = (
+/turf/unsimulated/wall/setpieces/leadwall/white/lunar{
+	dir = 4
+	},
+/area/space)
+"xG" = (
+/turf/unsimulated/wall/setpieces/leadwall/gray{
+	icon_state = "leadjunction_gray"
+	},
+/area/space)
+"xN" = (
+/turf/simulated/wall/auto/reinforced/jen/red{
+	icon_state = "R6"
+	},
+/area/space)
+"xQ" = (
+/turf/simulated/wall/auto/jen/orange{
+	icon_state = "3"
+	},
+/area/space)
+"xT" = (
+/turf/simulated/wall/auto/shuttle{
+	icon_state = "1"
+	},
+/area/space)
+"xV" = (
+/turf/simulated/wall/auto/reinforced/jen/dark2{
+	icon_state = "R2"
+	},
+/area/space)
+"yc" = (
+/turf/simulated/wall/auto/supernorn{
+	icon_state = "norn-7"
+	},
+/area/space)
+"yd" = (
+/turf/simulated/wall/auto/jen/cyan{
+	icon_state = "3"
+	},
+/area/space)
+"yg" = (
+/turf/simulated/wall/auto/jen/dark2{
+	icon_state = "13"
+	},
+/area/space)
+"yk" = (
+/turf/simulated/wall/auto/reinforced/jen/dark1{
+	icon_state = "R12"
+	},
+/area/space)
+"yl" = (
+/turf/unsimulated/wall/setpieces/leadwall/white/lunar{
+	dir = 8;
+	icon_state = "leadcap_white"
+	},
+/area/space)
+"ym" = (
+/turf/simulated/wall/auto/reinforced/supernorn/orange{
+	icon_state = "norn-O-11"
+	},
+/area/space)
+"yp" = (
+/turf/simulated/wall/auto/jen/dark4{
+	icon_state = "9"
+	},
+/area/space)
+"ys" = (
+/turf/simulated/wall/auto/reinforced/jen/dark4{
+	icon_state = "R4"
+	},
+/area/space)
+"yu" = (
+/turf/simulated/wall/auto/reinforced/jen/red{
+	icon_state = "R10"
+	},
+/area/space)
+"yC" = (
+/turf/simulated/wall/auto/jen/dark3{
+	icon_state = "7"
+	},
+/area/space)
+"yG" = (
+/turf/simulated/wall/auto/reinforced/jen/dark3{
+	icon_state = "R5"
+	},
+/area/space)
+"yS" = (
+/turf/simulated/wall/auto/jen/yellow{
+	icon_state = "8"
+	},
+/area/space)
+"zh" = (
+/turf/simulated/wall/auto/shuttle{
+	icon_state = "13"
+	},
+/area/space)
+"zk" = (
+/turf/unsimulated/wall/setpieces/leadwall/white/lunar{
+	dir = 10
+	},
+/area/space)
+"zs" = (
+/turf/simulated/wall/auto/gannets{
+	icon_state = "7"
+	},
+/area/space)
+"zu" = (
+/turf/simulated/wall/auto/jen/cyan{
+	icon_state = "0"
+	},
+/area/space)
+"zD" = (
+/turf/simulated/wall/auto/reinforced/supernorn{
+	icon_state = "norn-R-13"
+	},
+/area/space)
+"zE" = (
+/turf/simulated/wall/auto/jen/cyan{
+	icon_state = "5"
+	},
+/area/space)
+"zF" = (
+/turf/simulated/wall/auto/reinforced/jen/dark1{
+	icon_state = "R8"
+	},
+/area/space)
+"zJ" = (
+/turf/simulated/wall/auto/shuttle{
+	icon_state = "14"
+	},
+/area/space)
+"zK" = (
+/turf/simulated/wall/auto/reinforced/supernorn/blackred{
+	icon_state = "norn-BR-1"
+	},
+/area/space)
+"zN" = (
+/turf/unsimulated/wall/setpieces/leadwall/white/lunar{
+	icon_state = "leadjunction_white"
+	},
+/area/space)
+"zR" = (
+/obj/window/auto/reinforced{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "R6"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"zZ" = (
+/obj/window/auto/reinforced{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "R4"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"Ad" = (
+/turf/simulated/wall/auto/reinforced/gannets{
+	icon_state = "R11"
+	},
+/area/space)
+"Af" = (
+/turf/simulated/wall/auto/supernorn/wood{
+	icon_state = "9"
+	},
+/area/space)
+"Ai" = (
+/turf/unsimulated/wall/setpieces/hospital{
+	dir = 4;
+	icon_state = "panelwall_cap"
+	},
+/area/space)
+"Al" = (
+/turf/simulated/wall/auto/jen/blue{
+	icon_state = "13"
+	},
+/area/space)
+"Am" = (
+/turf/unsimulated/wall/setpieces/leadwall/gray{
+	icon_state = "leadjunction_gray_4way"
+	},
+/area/space)
+"Ao" = (
+/turf/simulated/wall/auto/reinforced/jen/cyan{
+	icon_state = "R5"
+	},
+/area/space)
+"Ap" = (
+/turf/simulated/wall/auto/jen/purple{
+	icon_state = "6"
+	},
+/area/space)
+"Aq" = (
+/turf/simulated/wall/auto/jen/cyan{
+	icon_state = "15"
+	},
+/area/space)
+"Aw" = (
+/turf/simulated/wall/auto/jen/red{
+	icon_state = "5"
+	},
+/area/space)
+"Ay" = (
+/turf/simulated/wall/auto/jen/green{
+	icon_state = "13"
+	},
+/area/space)
+"Az" = (
+/turf/simulated/wall/auto/jen/cyan{
+	icon_state = "4"
+	},
+/area/space)
+"AE" = (
+/turf/simulated/wall/auto/reinforced/jen/purple{
+	icon_state = "R6"
+	},
+/area/space)
+"AF" = (
+/turf/simulated/wall/auto/reinforced/gannets{
+	icon_state = "R3"
+	},
+/area/space)
+"AG" = (
+/turf/simulated/wall/auto/shuttle,
+/area/space)
+"AH" = (
+/turf/simulated/wall/auto/jen/dark2{
+	icon_state = "11"
+	},
+/area/space)
+"AJ" = (
+/turf/simulated/wall/auto/reinforced/jen/red{
+	icon_state = "R12"
+	},
+/area/space)
+"AK" = (
+/turf/simulated/wall/auto/gannets{
+	icon_state = "15"
+	},
+/area/space)
+"AL" = (
+/turf/simulated/wall/auto/jen/red{
+	icon_state = "1"
+	},
+/area/space)
+"AM" = (
+/turf/simulated/wall/auto/jen{
+	icon_state = "0"
+	},
+/area/space)
+"AQ" = (
+/turf/simulated/wall/auto/feather{
+	icon_state = "4"
+	},
+/area/space)
+"AR" = (
+/turf/simulated/wall/auto/jen{
+	icon_state = "14"
+	},
+/area/space)
+"AT" = (
+/turf/simulated/wall/auto/reinforced/jen/blue{
+	icon_state = "R12"
+	},
+/area/space)
+"AU" = (
+/turf/simulated/wall/auto/reinforced/jen/red{
+	icon_state = "R13"
+	},
+/area/space)
+"AV" = (
+/turf/simulated/wall/auto/jen/yellow{
+	icon_state = "4"
+	},
+/area/space)
+"AW" = (
+/turf/simulated/wall/auto/jen/dark4{
+	icon_state = "3"
+	},
+/area/space)
+"AX" = (
+/turf/simulated/wall/auto/reinforced/jen/dark3{
+	icon_state = "R15"
+	},
+/area/space)
+"AY" = (
+/obj/decal/poster/wallsign/stencil/right/r{
+	pixel_x = -7;
+	pixel_y = 22
+	},
+/obj/decal/poster/wallsign/stencil/right/e{
+	pixel_x = 3;
+	pixel_y = 22
+	},
+/obj/decal/poster/wallsign/stencil/right/a{
+	pixel_x = 13;
+	pixel_y = 22
+	},
+/obj/decal/poster/wallsign/stencil/right/d{
+	pixel_x = 22;
+	pixel_y = 22
+	},
+/obj/item/paper{
+	info = "Wall Pallete for using while pixel-shifting stuff onto the wall, so they actually fit the right place. -f191#5414";
+	name = "READ THE INFO VAR-Walls";
+	pixel_y = -4
+	},
+/turf/simulated/martian/floor,
+/area/space)
+"AZ" = (
+/turf/unsimulated/wall/setpieces/leadwall/gray{
+	dir = 5
+	},
+/area/space)
+"Bb" = (
+/turf/simulated/wall/auto/reinforced/jen/dark1{
+	icon_state = "R10"
+	},
+/area/space)
+"Bg" = (
+/turf/simulated/wall/auto/jen/cyan{
+	icon_state = "13"
+	},
+/area/space)
+"Bt" = (
+/obj/window/auto/reinforced{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "R5"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"Bu" = (
+/turf/unsimulated/wall/setpieces/leadwall/white/lunar,
+/area/space)
+"Bz" = (
+/turf/unsimulated/wall/setpieces/leadwall{
+	dir = 4;
+	icon_state = "leadcap"
+	},
+/area/space)
+"BH" = (
+/turf/simulated/wall/auto/jen/green{
+	icon_state = "8"
+	},
+/area/space)
+"BI" = (
+/turf/simulated/wall/auto/reinforced/jen/yellow{
+	icon_state = "R0"
+	},
+/area/space)
+"BM" = (
+/turf/simulated/wall/auto/reinforced/jen/blue{
+	icon_state = "R1"
+	},
+/area/space)
+"BN" = (
+/turf/simulated/wall/auto/reinforced/gannets{
+	icon_state = "R13"
+	},
+/area/space)
+"BO" = (
+/turf/simulated/wall/auto/jen/cyan{
+	icon_state = "7"
+	},
+/area/space)
+"BQ" = (
+/turf/simulated/wall/auto/jen/dark1{
+	icon_state = "5"
+	},
+/area/space)
+"BR" = (
+/turf/simulated/wall/auto/reinforced/jen/yellow{
+	icon_state = "R6"
+	},
+/area/space)
+"BU" = (
+/turf/simulated/wall/auto/jen/purple{
+	icon_state = "0"
+	},
+/area/space)
+"BX" = (
+/turf/simulated/wall/auto/jen/dark2{
+	icon_state = "3"
+	},
+/area/space)
+"Cb" = (
+/turf/simulated/wall/auto/jen/dark4{
+	icon_state = "10"
+	},
+/area/space)
+"Cc" = (
+/turf/simulated/wall/auto/reinforced/jen/dark3{
+	icon_state = "R13"
+	},
+/area/space)
+"Cj" = (
+/turf/unsimulated/wall/setpieces/leadwindow{
+	dir = 4
+	},
+/area/space)
+"Ck" = (
+/turf/simulated/wall/auto/jen/green{
+	icon_state = "14"
+	},
+/area/space)
+"Cv" = (
+/turf/simulated/wall/auto/reinforced/jen{
+	icon_state = "R5"
+	},
+/area/space)
+"Cx" = (
+/turf/simulated/wall/auto/supernorn/wood{
+	icon_state = "15"
+	},
+/area/space)
+"Cy" = (
+/turf/unsimulated/wall/setpieces/hospital{
+	dir = 4
+	},
+/area/space)
+"Cz" = (
+/turf/simulated/wall/auto/feather{
+	icon_state = "7"
+	},
+/area/space)
+"CB" = (
+/turf/simulated/wall/auto/supernorn{
+	icon_state = "norn-9"
+	},
+/area/space)
+"CD" = (
+/turf/simulated/wall/auto/jen/purple{
+	icon_state = "9"
+	},
+/area/space)
+"CE" = (
+/turf/simulated/wall/auto/reinforced/jen/red{
+	icon_state = "R5"
+	},
+/area/space)
+"CL" = (
+/turf/unsimulated/wall/setpieces/leadwall/white/lunar{
+	dir = 9
+	},
+/area/space)
+"Da" = (
+/turf/simulated/wall/auto/reinforced/supernorn/yellow{
+	icon_state = "norn-Y-4"
+	},
+/area/space)
+"Df" = (
+/turf/simulated/wall/auto/jen/purple{
+	icon_state = "14"
+	},
+/area/space)
+"Do" = (
+/turf/simulated/wall/auto/reinforced/jen/orange{
+	icon_state = "R5"
+	},
+/area/space)
+"Dq" = (
+/turf/simulated/wall/auto/jen/cyan{
+	icon_state = "6"
+	},
+/area/space)
+"Dw" = (
+/turf/simulated/wall/auto/reinforced/jen/dark3{
+	icon_state = "R12"
+	},
+/area/space)
+"DB" = (
+/turf/simulated/wall/auto/jen/dark3{
+	icon_state = "11"
+	},
+/area/space)
+"DD" = (
+/turf/simulated/wall/auto/reinforced/jen/brown{
+	icon_state = "R13"
+	},
+/area/space)
+"DH" = (
+/turf/simulated/wall/auto/reinforced/jen/dark2{
+	icon_state = "R14"
+	},
+/area/space)
+"DJ" = (
+/turf/simulated/wall/auto/gannets{
+	icon_state = "9"
+	},
+/area/space)
+"Eb" = (
+/turf/simulated/wall/auto/reinforced/supernorn{
+	icon_state = "norn-R-5"
+	},
+/area/space)
+"Ee" = (
+/turf/simulated/wall/auto/jen/red{
+	icon_state = "14"
+	},
+/area/space)
+"Eo" = (
+/turf/unsimulated/wall/setpieces/leadwall/white/lunar{
+	dir = 5
+	},
+/area/space)
+"Eq" = (
+/turf/simulated/wall/auto/jen/yellow{
+	icon_state = "1"
+	},
+/area/space)
+"Ew" = (
+/turf/simulated/wall/auto/reinforced/jen/red{
+	icon_state = "R8"
+	},
+/area/space)
+"EL" = (
+/turf/simulated/wall/auto/reinforced/supernorn/orange{
+	icon_state = "norn-O-12"
+	},
+/area/space)
+"EN" = (
+/turf/simulated/wall/auto/shuttle{
+	icon_state = "4"
+	},
+/area/space)
+"EQ" = (
+/turf/simulated/floor,
+/area/space)
+"ES" = (
+/turf/simulated/wall/auto/reinforced/jen{
+	icon_state = "R3"
+	},
+/area/space)
+"EX" = (
+/turf/simulated/wall/auto/jen/yellow{
+	icon_state = "11"
+	},
+/area/space)
+"EY" = (
+/turf/simulated/wall/auto/jen/dark1{
+	icon_state = "2"
+	},
+/area/space)
+"Fc" = (
+/turf/simulated/wall/auto/reinforced/jen/dark3{
+	icon_state = "R2"
+	},
+/area/space)
+"Fd" = (
+/turf/simulated/wall/auto/jen/dark1{
+	icon_state = "1"
+	},
+/area/space)
+"Fe" = (
+/turf/simulated/wall/auto/jen/purple{
+	icon_state = "8"
+	},
+/area/space)
+"Ff" = (
+/turf/unsimulated/wall/setpieces/leadwall/gray{
+	dir = 1;
+	icon_state = "leadjunction_gray"
+	},
+/area/space)
+"Fh" = (
+/turf/simulated/wall/auto/reinforced/jen/purple{
+	icon_state = "R4"
+	},
+/area/space)
+"Fk" = (
+/turf/simulated/wall/auto/reinforced/supernorn/blackred{
+	icon_state = "norn-BR-13"
+	},
+/area/space)
+"Fm" = (
+/turf/unsimulated/wall/setpieces/leadwindow/white{
+	dir = 4;
+	icon_state = "leadwindow_white_2"
+	},
+/area/space)
+"Fo" = (
+/turf/simulated/wall/auto/reinforced/supernorn/yellow{
+	icon_state = "norn-Y-10"
+	},
+/area/space)
+"Fr" = (
+/turf/simulated/wall/auto/supernorn/wood{
+	icon_state = "0"
+	},
+/area/space)
+"Fs" = (
+/turf/simulated/wall/auto/jen/dark2{
+	icon_state = "9"
+	},
+/area/space)
+"Ft" = (
+/turf/simulated/wall/auto/reinforced/jen/purple{
+	icon_state = "R12"
+	},
+/area/space)
+"Fx" = (
+/turf/simulated/wall/auto/reinforced/jen/dark2{
+	icon_state = "R11"
+	},
+/area/space)
+"FA" = (
+/turf/simulated/wall/auto/reinforced/jen/green{
+	icon_state = "R1"
+	},
+/area/space)
+"FB" = (
+/turf/unsimulated/wall/setpieces/leadwall{
+	icon_state = "leadjunction_4way"
+	},
+/area/space)
+"FC" = (
+/turf/simulated/wall/auto/reinforced/jen/dark2{
+	icon_state = "R8"
+	},
+/area/space)
+"FF" = (
+/turf/simulated/wall/auto/jen/dark4{
+	icon_state = "14"
+	},
+/area/space)
+"FO" = (
+/turf/simulated/wall/auto/jen/orange{
+	icon_state = "11"
+	},
+/area/space)
+"FS" = (
+/turf/simulated/wall/auto/reinforced/jen{
+	icon_state = "R7"
+	},
+/area/space)
+"FT" = (
+/turf/simulated/wall/auto/jen/dark2{
+	icon_state = "10"
+	},
+/area/space)
+"FV" = (
+/turf/simulated/wall/auto/reinforced/gannets{
+	icon_state = "R5"
+	},
+/area/space)
+"FX" = (
+/turf/simulated/wall/auto/reinforced/supernorn/orange{
+	icon_state = "norn-O-15"
+	},
+/area/space)
+"Gh" = (
+/turf/unsimulated/wall/setpieces/leadwall/gray,
+/area/space)
+"Gl" = (
+/turf/simulated/wall/auto/jen/purple{
+	icon_state = "4"
+	},
+/area/space)
+"Gn" = (
+/turf/simulated/wall/auto/supernorn/wood{
+	icon_state = "8"
+	},
+/area/space)
+"Gq" = (
+/turf/simulated/wall/auto/jen/dark4{
+	icon_state = "7"
+	},
+/area/space)
+"Gr" = (
+/turf/simulated/wall/auto/jen/green{
+	icon_state = "7"
+	},
+/area/space)
+"GB" = (
+/turf/simulated/wall/auto/reinforced/jen/dark3{
+	icon_state = "R1"
+	},
+/area/space)
+"GF" = (
+/turf/simulated/wall/auto/jen/yellow{
+	icon_state = "5"
+	},
+/area/space)
+"GG" = (
+/turf/simulated/wall/auto/jen{
+	icon_state = "8"
+	},
+/area/space)
+"GH" = (
+/turf/simulated/wall/auto/jen/orange{
+	icon_state = "12"
+	},
+/area/space)
+"GJ" = (
+/turf/simulated/wall/auto/gannets{
+	icon_state = "8"
+	},
+/area/space)
+"GM" = (
+/turf/simulated/wall/auto/reinforced/jen/cyan{
+	icon_state = "R11"
+	},
+/area/space)
+"GR" = (
+/turf/simulated/wall/auto/jen/orange{
+	icon_state = "6"
+	},
+/area/space)
+"GT" = (
+/turf/simulated/wall/auto/reinforced/jen/brown{
+	icon_state = "R15"
+	},
+/area/space)
+"GW" = (
+/turf/simulated/wall/auto/supernorn/wood{
+	icon_state = "4"
+	},
+/area/space)
+"Hk" = (
+/turf/simulated/wall/auto/reinforced/gannets{
+	icon_state = "R10"
+	},
+/area/space)
+"Ho" = (
+/turf/unsimulated/wall/setpieces/leadwall{
+	dir = 1;
+	icon_state = "leadjunction"
+	},
+/area/space)
+"Hq" = (
+/turf/simulated/wall/auto/reinforced/gannets{
+	icon_state = "R8"
+	},
+/area/space)
+"Hv" = (
+/turf/simulated/wall/auto/reinforced/jen/dark1{
+	icon_state = "R7"
+	},
+/area/space)
+"Hw" = (
+/turf/simulated/wall/auto/jen/purple{
+	icon_state = "11"
+	},
+/area/space)
+"HA" = (
+/turf/simulated/wall/auto/reinforced/jen/green{
+	icon_state = "R3"
+	},
+/area/space)
+"HH" = (
+/turf/simulated/wall/auto/jen/dark2{
+	icon_state = "2"
+	},
+/area/space)
+"HU" = (
+/turf/simulated/wall/auto/jen/green{
+	icon_state = "9"
+	},
+/area/space)
+"HZ" = (
+/turf/simulated/wall/auto/feather{
+	icon_state = "1"
+	},
+/area/space)
+"Id" = (
+/turf/simulated/wall/auto/reinforced/jen/dark3{
+	icon_state = "R10"
+	},
+/area/space)
+"Ie" = (
+/turf/simulated/wall/auto/shuttle{
+	icon_state = "2"
+	},
+/area/space)
+"Ii" = (
+/turf/simulated/wall/auto/reinforced/jen/orange{
+	icon_state = "R13"
+	},
+/area/space)
+"Ij" = (
+/turf/simulated/wall/auto/reinforced/supernorn{
+	icon_state = "norn-R-9"
+	},
+/area/space)
+"Il" = (
+/turf/simulated/wall/auto/jen/orange{
+	icon_state = "8"
+	},
+/area/space)
+"Ip" = (
+/turf/unsimulated/wall/setpieces/leadwall{
+	dir = 4;
+	icon_state = "leadjunction"
+	},
+/area/space)
+"Is" = (
+/turf/simulated/wall/auto/reinforced/jen/orange{
+	icon_state = "R15"
+	},
+/area/space)
+"Iv" = (
+/turf/simulated/wall/auto/gannets{
+	icon_state = "3"
+	},
+/area/space)
+"IB" = (
+/turf/simulated/wall/auto/reinforced/jen/orange{
+	icon_state = "R3"
+	},
+/area/space)
+"IF" = (
+/turf/simulated/wall/auto/reinforced/supernorn/blackred{
+	icon_state = "norn-BR-5"
+	},
+/area/space)
+"IG" = (
+/turf/simulated/wall/auto/reinforced/jen/cyan{
+	icon_state = "R6"
+	},
+/area/space)
+"IJ" = (
+/turf/simulated/wall/auto/reinforced/jen/green{
+	icon_state = "R6"
+	},
+/area/space)
+"IM" = (
+/obj/window/auto/reinforced{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "R13"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"IR" = (
+/turf/simulated/wall/auto/reinforced/jen/dark1{
+	icon_state = "R4"
+	},
+/area/space)
+"IV" = (
+/turf/simulated/wall/auto/jen/blue{
+	icon_state = "15"
+	},
+/area/space)
+"IY" = (
+/turf/simulated/wall/auto/reinforced/supernorn/yellow{
+	icon_state = "norn-Y-11"
+	},
+/area/space)
+"Ja" = (
+/turf/simulated/wall/auto/reinforced/jen{
+	icon_state = "R10"
+	},
+/area/space)
+"Jb" = (
+/turf/unsimulated/wall/setpieces/hospital{
+	dir = 1;
+	icon_state = "panelwall_cap"
+	},
+/area/space)
+"Jc" = (
+/turf/simulated/wall/auto/supernorn{
+	icon_state = "norn-5"
+	},
+/area/space)
+"Jh" = (
+/turf/simulated/wall/auto/jen/dark3{
+	icon_state = "1"
+	},
+/area/space)
+"Jl" = (
+/turf/simulated/wall/auto/reinforced/jen/red{
+	icon_state = "R2"
+	},
+/area/space)
+"Jp" = (
+/turf/simulated/wall/auto/jen/purple{
+	icon_state = "12"
+	},
+/area/space)
+"Jz" = (
+/turf/simulated/wall/auto/feather{
+	icon_state = "2"
+	},
+/area/space)
+"JH" = (
+/turf/unsimulated/wall/setpieces/hospital{
+	dir = 8;
+	icon_state = "panelwall_cap"
+	},
+/area/space)
+"JL" = (
+/turf/unsimulated/wall/setpieces/leadwindow/gray{
+	icon_state = "leadwindow_gray_2"
+	},
+/area/space)
+"JW" = (
+/turf/simulated/wall/auto/jen/dark3{
+	icon_state = "9"
+	},
+/area/space)
+"Kd" = (
+/turf/simulated/wall/auto/reinforced/jen/dark1{
+	icon_state = "R13"
+	},
+/area/space)
+"Kf" = (
+/turf/simulated/wall/auto/reinforced/jen/yellow{
+	icon_state = "R9"
+	},
+/area/space)
+"Ki" = (
+/turf/simulated/wall/auto/jen/purple{
+	icon_state = "5"
+	},
+/area/space)
+"Ko" = (
+/turf/simulated/wall/auto/jen/dark1{
+	icon_state = "11"
+	},
+/area/space)
+"Kv" = (
+/turf/simulated/wall/auto/reinforced/supernorn/blackred{
+	icon_state = "norn-BR-8"
+	},
+/area/space)
+"KB" = (
+/turf/simulated/wall/auto/reinforced/jen/green{
+	icon_state = "R7"
+	},
+/area/space)
+"KD" = (
+/obj/window/auto{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "14"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"KG" = (
+/turf/simulated/wall/auto/reinforced/supernorn/orange{
+	icon_state = "norn-O-6"
+	},
+/area/space)
+"KH" = (
+/turf/simulated/wall/auto/reinforced/jen/dark2{
+	icon_state = "R12"
+	},
+/area/space)
+"KI" = (
+/turf/simulated/wall/auto/feather{
+	icon_state = "9"
+	},
+/area/space)
+"KK" = (
+/turf/simulated/wall/auto/jen/red{
+	icon_state = "2"
+	},
+/area/space)
+"KM" = (
+/obj/indestructible/shuttle_corner{
+	dir = 4
+	},
+/turf/simulated/floor/airless/orangeblack,
+/area/space)
+"KY" = (
+/turf/simulated/wall/auto/reinforced/supernorn/yellow{
+	icon_state = "norn-Y-2"
+	},
+/area/space)
+"KZ" = (
+/turf/simulated/wall/auto/feather{
+	icon_state = "11"
+	},
+/area/space)
+"La" = (
+/turf/simulated/wall/auto/reinforced/supernorn/blackred{
+	icon_state = "norn-BR-6"
+	},
+/area/space)
+"Lb" = (
+/turf/simulated/wall/auto/reinforced/supernorn{
+	icon_state = "norn-R-1"
+	},
+/area/space)
+"Ld" = (
+/turf/simulated/wall/auto/reinforced/jen{
+	icon_state = "R9"
+	},
+/area/space)
+"Lf" = (
+/turf/simulated/wall/auto/jen/dark1{
+	icon_state = "7"
+	},
+/area/space)
+"Lj" = (
+/turf/simulated/wall/auto/jen/dark1{
+	icon_state = "4"
+	},
+/area/space)
+"Lo" = (
+/turf/simulated/wall/auto/reinforced/supernorn/orange{
+	icon_state = "norn-O-1"
+	},
+/area/space)
+"Ls" = (
+/turf/simulated/wall/auto/reinforced/jen/orange{
+	icon_state = "R12"
+	},
+/area/space)
+"Lt" = (
+/turf/simulated/wall/auto/reinforced/jen/green{
+	icon_state = "R13"
+	},
+/area/space)
+"Lx" = (
+/turf/simulated/wall/auto/reinforced/supernorn/orange{
+	icon_state = "norn-O-8"
+	},
+/area/space)
+"LF" = (
+/turf/simulated/wall/auto/reinforced/jen{
+	icon_state = "R11"
+	},
+/area/space)
+"LL" = (
+/turf/simulated/wall/auto/gannets{
+	icon_state = "11"
+	},
+/area/space)
+"LM" = (
+/obj/window/auto/reinforced{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "R14"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"LO" = (
+/obj/window/auto{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "13"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"LT" = (
+/turf/simulated/wall/auto/reinforced/jen/blue{
+	icon_state = "R15"
+	},
+/area/space)
+"LV" = (
+/turf/simulated/wall/auto/jen/green{
+	icon_state = "2"
+	},
+/area/space)
+"Mj" = (
+/turf/unsimulated/wall/setpieces/hospital{
+	dir = 4;
+	icon_state = "panelwall_junction"
+	},
+/area/space)
+"Mq" = (
+/obj/window/auto/reinforced{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "R7"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"Mr" = (
+/obj/window/auto{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "15"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"Mv" = (
+/turf/unsimulated/wall/setpieces/leadwall/gray{
+	dir = 4
+	},
+/area/space)
+"MA" = (
+/turf/unsimulated/wall/setpieces/hospital{
+	dir = 6
+	},
+/area/space)
+"ME" = (
+/turf/simulated/wall/auto/reinforced/jen/dark1{
+	icon_state = "R1"
+	},
+/area/space)
+"MG" = (
+/turf/simulated/wall/auto/jen/yellow{
+	icon_state = "6"
+	},
+/area/space)
+"MJ" = (
+/turf/simulated/wall/auto/supernorn/wood{
+	icon_state = "12"
+	},
+/area/space)
+"MT" = (
+/turf/simulated/wall/auto/jen/brown{
+	icon_state = "8"
+	},
+/area/space)
+"MU" = (
+/turf/unsimulated/wall/setpieces/leadwall/white/lunar{
+	dir = 8;
+	icon_state = "leadjunction_white"
+	},
+/area/space)
+"MV" = (
+/obj/window/auto{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "1"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"MY" = (
+/obj/window/auto/reinforced{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "R9"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"Nc" = (
+/turf/simulated/wall/auto/jen/dark3{
+	icon_state = "3"
+	},
+/area/space)
+"Nh" = (
+/turf/simulated/wall/auto/reinforced/jen/brown{
+	icon_state = "R14"
+	},
+/area/space)
+"Nn" = (
+/turf/simulated/wall/auto/reinforced/jen/brown{
+	icon_state = "R1"
+	},
+/area/space)
+"Np" = (
+/turf/simulated/wall/auto/reinforced/jen{
+	icon_state = "R4"
+	},
+/area/space)
+"Nx" = (
+/turf/simulated/wall/auto/jen/red{
+	icon_state = "3"
+	},
+/area/space)
+"NC" = (
+/turf/simulated/wall/auto/reinforced/jen/red{
+	icon_state = "R3"
+	},
+/area/space)
+"NF" = (
+/obj/window/auto{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "7"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"NL" = (
+/turf/unsimulated/wall/setpieces/leadwindow/white,
+/area/space)
+"NN" = (
+/turf/simulated/wall/auto/jen{
+	icon_state = "10"
+	},
+/area/space)
+"Ob" = (
+/turf/simulated/wall/auto/jen/yellow{
+	icon_state = "14"
+	},
+/area/space)
+"Oj" = (
+/turf/simulated/wall/auto/jen{
+	icon_state = "15"
+	},
+/area/space)
+"Oo" = (
+/turf/simulated/wall/auto/jen/dark1{
+	icon_state = "12"
+	},
+/area/space)
+"Op" = (
+/turf/simulated/wall/auto/reinforced/jen/blue{
+	icon_state = "R0"
+	},
+/area/space)
+"Os" = (
+/turf/simulated/wall/auto/supernorn/wood{
+	icon_state = "5"
+	},
+/area/space)
+"Ou" = (
+/turf/simulated/wall/auto/jen/brown{
+	icon_state = "10"
+	},
+/area/space)
+"OC" = (
+/turf/simulated/wall/auto/reinforced/supernorn/blackred{
+	icon_state = "norn-BR-4"
+	},
+/area/space)
+"OE" = (
+/turf/simulated/wall/auto/jen/dark4{
+	icon_state = "13"
+	},
+/area/space)
+"OG" = (
+/turf/simulated/wall/auto/reinforced/supernorn/orange{
+	icon_state = "norn-O-5"
+	},
+/area/space)
+"OL" = (
+/turf/simulated/wall/auto/reinforced/jen/dark4{
+	icon_state = "R12"
+	},
+/area/space)
+"ON" = (
+/turf/simulated/wall/auto/jen/dark4{
+	icon_state = "15"
+	},
+/area/space)
+"OS" = (
+/turf/simulated/wall/auto/jen{
+	icon_state = "4"
+	},
+/area/space)
+"OX" = (
+/turf/simulated/wall/auto/feather{
+	icon_state = "3"
+	},
+/area/space)
+"Pe" = (
+/turf/simulated/wall/auto/supernorn/wood{
+	icon_state = "14"
+	},
+/area/space)
+"Pk" = (
+/turf/simulated/wall/auto/gannets{
+	icon_state = "6"
+	},
+/area/space)
+"Pm" = (
+/turf/simulated/wall/auto/jen/green{
+	icon_state = "6"
+	},
+/area/space)
+"Ps" = (
+/turf/simulated/wall/auto/jen/brown{
+	icon_state = "13"
+	},
+/area/space)
+"Pu" = (
+/turf/simulated/wall/auto/jen/purple{
+	icon_state = "3"
+	},
+/area/space)
+"Pv" = (
+/turf/simulated/wall/auto/jen/dark3{
+	icon_state = "14"
+	},
+/area/space)
+"Py" = (
+/turf/simulated/wall/auto/jen/green{
+	icon_state = "0"
+	},
+/area/space)
+"Pz" = (
+/turf/simulated/wall/auto/reinforced/supernorn/blackred{
+	icon_state = "norn-BR-14"
+	},
+/area/space)
+"PE" = (
+/turf/simulated/wall/auto/jen/brown{
+	icon_state = "14"
+	},
+/area/space)
+"PJ" = (
+/obj/wingrille_spawn/auto,
+/turf/simulated/floor/plating,
+/area/space)
+"PN" = (
+/turf/simulated/wall/auto/reinforced/jen/dark4{
+	icon_state = "R9"
+	},
+/area/space)
+"PQ" = (
+/turf/simulated/wall/auto/jen/orange{
+	icon_state = "13"
+	},
+/area/space)
+"PU" = (
+/turf/simulated/wall/auto/feather{
+	icon_state = "15"
+	},
+/area/space)
+"PX" = (
+/turf/simulated/wall/auto/gannets{
+	icon_state = "5"
+	},
+/area/space)
+"PY" = (
+/turf/simulated/wall/auto/jen/yellow{
+	icon_state = "3"
+	},
+/area/space)
+"Qa" = (
+/turf/simulated/wall/auto/jen/brown{
+	icon_state = "7"
+	},
+/area/space)
+"Qd" = (
+/turf/unsimulated/wall/setpieces/leadwindow/gray{
+	dir = 4;
+	icon_state = "leadwindow_gray_2"
+	},
+/area/space)
+"Ql" = (
+/turf/simulated/wall/auto/jen/yellow{
+	icon_state = "10"
+	},
+/area/space)
+"Qm" = (
+/turf/simulated/wall/auto/feather{
+	icon_state = "13"
+	},
+/area/space)
+"Qr" = (
+/turf/simulated/wall/auto/reinforced/jen/blue{
+	icon_state = "R9"
+	},
+/area/space)
+"Qw" = (
+/turf/simulated/wall/auto/reinforced/jen/yellow{
+	icon_state = "R7"
+	},
+/area/space)
+"Qx" = (
+/turf/simulated/wall/auto/reinforced/jen/purple{
+	icon_state = "R5"
+	},
+/area/space)
+"QF" = (
+/turf/simulated/wall/auto/reinforced/jen{
+	icon_state = "R14"
+	},
+/area/space)
+"QK" = (
+/turf/unsimulated/wall/setpieces/hospital{
+	icon_state = "panelwall_junction"
+	},
+/area/space)
+"QN" = (
+/turf/simulated/wall/auto/jen{
+	icon_state = "7"
+	},
+/area/space)
+"QX" = (
+/turf/simulated/wall/auto/jen/green{
+	icon_state = "1"
+	},
+/area/space)
+"Rb" = (
+/turf/simulated/wall/auto/reinforced/jen/brown{
+	icon_state = "R10"
+	},
+/area/space)
+"Rc" = (
+/turf/simulated/wall/auto/reinforced/jen/cyan{
+	icon_state = "R13"
+	},
+/area/space)
+"Rg" = (
+/turf/simulated/wall/auto/reinforced/jen/orange{
+	icon_state = "R2"
+	},
+/area/space)
+"Rh" = (
+/turf/simulated/wall/auto/jen/yellow{
+	icon_state = "13"
+	},
+/area/space)
+"Ri" = (
+/turf/simulated/wall/auto/jen/yellow{
+	icon_state = "9"
+	},
+/area/space)
+"Rk" = (
+/obj/window/auto{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "9"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"Rl" = (
+/turf/simulated/wall/auto/jen/dark1{
+	icon_state = "6"
+	},
+/area/space)
+"Ro" = (
+/turf/simulated/wall/auto/jen/dark1{
+	icon_state = "15"
+	},
+/area/space)
+"Rp" = (
+/turf/simulated/wall/auto/reinforced/jen/dark3{
+	icon_state = "R14"
+	},
+/area/space)
+"Rr" = (
+/turf/simulated/wall/auto/reinforced/jen/brown{
+	icon_state = "R6"
+	},
+/area/space)
+"Rw" = (
+/turf/simulated/wall/auto/reinforced/supernorn/yellow{
+	icon_state = "norn-Y-15"
+	},
+/area/space)
+"Rz" = (
+/turf/simulated/wall/auto/jen/purple{
+	icon_state = "7"
+	},
+/area/space)
+"RB" = (
+/turf/simulated/wall/auto/jen/dark3{
+	icon_state = "0"
+	},
+/area/space)
+"RC" = (
+/turf/simulated/wall/auto/jen/dark2{
+	icon_state = "1"
+	},
+/area/space)
+"RD" = (
+/turf/simulated/wall/auto/jen/dark3{
+	icon_state = "13"
+	},
+/area/space)
+"RJ" = (
+/turf/simulated/wall/auto/reinforced/jen/yellow{
+	icon_state = "R12"
+	},
+/area/space)
+"RP" = (
+/turf/unsimulated/wall/setpieces/leadwall/gray{
+	dir = 6
+	},
+/area/space)
+"RS" = (
+/turf/simulated/wall/auto/shuttle{
+	icon_state = "7"
+	},
+/area/space)
+"RT" = (
+/turf/simulated/wall/auto/reinforced/jen/dark4{
+	icon_state = "R8"
+	},
+/area/space)
+"RU" = (
+/turf/simulated/wall/auto/reinforced/supernorn/yellow{
+	icon_state = "norn-Y-12"
+	},
+/area/space)
+"RY" = (
+/turf/simulated/wall/auto/supernorn{
+	icon_state = "norn-3"
+	},
+/area/space)
+"Sf" = (
+/turf/simulated/wall/auto/reinforced/jen/orange{
+	icon_state = "R10"
+	},
+/area/space)
+"Si" = (
+/turf/simulated/wall/auto/reinforced/gannets{
+	icon_state = "R7"
+	},
+/area/space)
+"Sm" = (
+/turf/simulated/wall/auto/jen/orange{
+	icon_state = "10"
+	},
+/area/space)
+"Sq" = (
+/turf/simulated/wall/auto/reinforced/jen/dark4{
+	icon_state = "R1"
+	},
+/area/space)
+"Sy" = (
+/turf/simulated/wall/auto/jen/dark3{
+	icon_state = "4"
+	},
+/area/space)
+"SF" = (
+/turf/simulated/wall/auto/jen/dark3{
+	icon_state = "10"
+	},
+/area/space)
+"SG" = (
+/turf/simulated/wall/auto/shuttle{
+	icon_state = "15"
+	},
+/area/space)
+"SH" = (
+/turf/simulated/wall/auto/reinforced/supernorn/blackred{
+	icon_state = "norn-BR-10"
+	},
+/area/space)
+"SN" = (
+/turf/simulated/wall/auto/jen/dark1{
+	icon_state = "9"
+	},
+/area/space)
+"SX" = (
+/turf/simulated/wall/auto/reinforced/jen/yellow{
+	icon_state = "R13"
+	},
+/area/space)
+"Tb" = (
+/turf/unsimulated/wall/setpieces/leadwall/gray{
+	dir = 10
+	},
+/area/space)
+"Tc" = (
+/turf/unsimulated/wall/setpieces/hospital{
+	icon_state = "panelwall_cap"
+	},
+/area/space)
+"Tf" = (
+/turf/simulated/wall/auto/jen/red{
+	icon_state = "12"
+	},
+/area/space)
+"Tg" = (
+/turf/simulated/wall/auto/reinforced/supernorn/yellow{
+	icon_state = "norn-Y-5"
+	},
+/area/space)
+"Tj" = (
+/turf/simulated/wall/auto/jen/cyan{
+	icon_state = "9"
+	},
+/area/space)
+"Tm" = (
+/turf/simulated/wall/auto/reinforced/jen/green{
+	icon_state = "R10"
+	},
+/area/space)
+"To" = (
+/turf/simulated/wall/auto/reinforced/jen/dark1{
+	icon_state = "R2"
+	},
+/area/space)
+"Ts" = (
+/turf/simulated/wall/auto/reinforced/jen/yellow{
+	icon_state = "R4"
+	},
+/area/space)
+"Tt" = (
+/turf/simulated/wall/auto/jen/yellow{
+	icon_state = "12"
+	},
+/area/space)
+"TC" = (
+/turf/simulated/wall/auto/reinforced/supernorn{
+	icon_state = "norn-R-11"
+	},
+/area/space)
+"TI" = (
+/turf/simulated/wall/auto/reinforced/supernorn/yellow{
+	icon_state = "norn-Y-1"
+	},
+/area/space)
+"TL" = (
+/turf/simulated/wall/auto/jen/purple{
+	icon_state = "1"
+	},
+/area/space)
+"TR" = (
+/turf/simulated/wall/auto/reinforced/jen/yellow{
+	icon_state = "R1"
+	},
+/area/space)
+"TS" = (
+/turf/simulated/wall/auto/reinforced/jen/dark3{
+	icon_state = "R8"
+	},
+/area/space)
+"TV" = (
+/turf/simulated/wall/auto/jen/orange{
+	icon_state = "1"
+	},
+/area/space)
+"TX" = (
+/turf/unsimulated/wall/setpieces/leadwall{
+	dir = 8
+	},
+/area/space)
+"TY" = (
+/turf/unsimulated/wall/setpieces/leadwall{
+	icon_state = "leadcap"
+	},
+/area/space)
+"TZ" = (
+/turf/simulated/wall/auto/reinforced/jen/green{
+	icon_state = "R8"
+	},
+/area/space)
+"Uj" = (
+/turf/simulated/wall/auto/jen/blue{
+	icon_state = "11"
+	},
+/area/space)
+"Um" = (
+/turf/simulated/wall/auto/jen/dark3{
+	icon_state = "6"
+	},
+/area/space)
+"Uo" = (
+/obj/window/auto{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "3"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"Up" = (
+/turf/simulated/wall/auto/reinforced/jen/dark2{
+	icon_state = "R1"
+	},
+/area/space)
+"Ut" = (
+/turf/simulated/wall/auto/supernorn/wood{
+	icon_state = "2"
+	},
+/area/space)
+"Uu" = (
+/turf/simulated/wall/auto/reinforced/jen/blue{
+	icon_state = "R3"
+	},
+/area/space)
+"Ux" = (
+/turf/simulated/wall/auto/jen/blue{
+	icon_state = "6"
+	},
+/area/space)
+"UA" = (
+/turf/simulated/wall/auto/reinforced/jen/orange{
+	icon_state = "R14"
+	},
+/area/space)
+"UK" = (
+/turf/simulated/wall/auto/reinforced/supernorn/orange{
+	icon_state = "norn-O-10"
+	},
+/area/space)
+"UO" = (
+/turf/simulated/wall/auto/supernorn{
+	icon_state = "norn-0"
+	},
+/area/space)
+"UW" = (
+/turf/simulated/wall/auto/feather{
+	icon_state = "12"
+	},
+/area/space)
+"Va" = (
+/turf/unsimulated/wall/setpieces/leadwall{
+	icon_state = "leadjunction"
+	},
+/area/space)
+"Vk" = (
+/turf/simulated/wall/auto/reinforced/jen/blue{
+	icon_state = "R6"
+	},
+/area/space)
+"Vl" = (
+/turf/simulated/wall/auto/supernorn{
+	icon_state = "norn-11"
+	},
+/area/space)
+"Vm" = (
+/turf/simulated/wall/auto/supernorn{
+	icon_state = "norn-15"
+	},
+/area/space)
+"Vs" = (
+/turf/simulated/wall/auto/supernorn{
+	icon_state = "norn-12"
+	},
+/area/space)
+"VI" = (
+/turf/simulated/wall/auto/reinforced/jen/yellow{
+	icon_state = "R15"
+	},
+/area/space)
+"VL" = (
+/turf/simulated/wall/auto/gannets{
+	icon_state = "2"
+	},
+/area/space)
+"VQ" = (
+/turf/simulated/wall/auto/reinforced/supernorn/blackred{
+	icon_state = "norn-BR-3"
+	},
+/area/space)
+"VT" = (
+/turf/simulated/wall/auto/reinforced/jen/orange{
+	icon_state = "R8"
+	},
+/area/space)
+"Wa" = (
+/turf/simulated/wall/auto/reinforced/supernorn/orange{
+	icon_state = "norn-O-4"
+	},
+/area/space)
+"Wb" = (
+/turf/simulated/wall/auto/gannets{
+	icon_state = "1"
+	},
+/area/space)
+"Wc" = (
+/turf/simulated/wall/auto/reinforced/supernorn{
+	icon_state = "norn-R-14"
+	},
+/area/space)
+"Wk" = (
+/turf/simulated/wall/auto/reinforced/jen/red{
+	icon_state = "R0"
+	},
+/area/space)
+"Wn" = (
+/turf/simulated/wall/auto/reinforced/supernorn/orange{
+	icon_state = "norn-O-0"
+	},
+/area/space)
+"Wo" = (
+/turf/simulated/wall/auto/jen/brown{
+	icon_state = "0"
+	},
+/area/space)
+"Wq" = (
+/turf/simulated/wall/auto/reinforced/jen/yellow{
+	icon_state = "R5"
+	},
+/area/space)
+"Ww" = (
+/turf/simulated/wall/auto/reinforced/jen/green{
+	icon_state = "R2"
+	},
+/area/space)
+"Wx" = (
+/turf/simulated/wall/auto/jen/brown{
+	icon_state = "12"
+	},
+/area/space)
+"Wy" = (
+/turf/simulated/wall/auto/jen/green{
+	icon_state = "12"
+	},
+/area/space)
+"Wz" = (
+/turf/simulated/wall/auto/reinforced/jen/dark1{
+	icon_state = "R14"
+	},
+/area/space)
+"WD" = (
+/turf/simulated/wall/auto/reinforced/jen/dark2{
+	icon_state = "R3"
+	},
+/area/space)
+"WH" = (
+/turf/simulated/wall/auto/reinforced/jen/blue{
+	icon_state = "R8"
+	},
+/area/space)
+"WK" = (
+/obj/window/auto{
+	alpha = 180;
+	color = "#a3dcff";
+	icon_state = "12"
+	},
+/turf/simulated/floor/plating,
+/area/space)
+"WP" = (
+/turf/simulated/wall/auto/supernorn{
+	icon_state = "norn-13"
+	},
+/area/space)
+"WW" = (
+/turf/simulated/wall/auto/reinforced/jen/dark1{
+	icon_state = "R9"
+	},
+/area/space)
+"Xd" = (
+/turf/simulated/wall/auto/reinforced/jen/blue{
+	icon_state = "R14"
+	},
+/area/space)
+"Xf" = (
+/turf/simulated/wall/auto/reinforced/supernorn/orange{
+	icon_state = "norn-O-3"
+	},
+/area/space)
+"Xj" = (
+/turf/unsimulated/wall/setpieces/leadwall/gray{
+	dir = 8;
+	icon_state = "leadjunction_gray"
+	},
+/area/space)
+"Xl" = (
+/turf/simulated/wall/auto/reinforced/gannets{
+	icon_state = "R1"
+	},
+/area/space)
+"Xo" = (
+/turf/simulated/wall/auto/gannets{
+	icon_state = "10"
+	},
+/area/space)
+"Xp" = (
+/turf/simulated/wall/auto/reinforced/jen/dark1{
+	icon_state = "R11"
+	},
+/area/space)
+"Xq" = (
+/turf/simulated/wall/auto/jen/brown{
+	icon_state = "2"
+	},
+/area/space)
+"Xv" = (
+/turf/simulated/wall/auto/reinforced/jen/cyan{
+	icon_state = "R8"
+	},
+/area/space)
+"XA" = (
+/turf/simulated/wall/auto/jen/cyan{
+	icon_state = "2"
+	},
+/area/space)
+"XM" = (
+/turf/simulated/wall/auto/reinforced/supernorn{
+	icon_state = "norn-R-4"
+	},
+/area/space)
+"XO" = (
+/turf/simulated/wall/auto/shuttle{
+	icon_state = "5"
+	},
+/area/space)
+"Yh" = (
+/turf/simulated/wall/auto/reinforced/jen/cyan{
+	icon_state = "R14"
+	},
+/area/space)
+"Yi" = (
+/turf/unsimulated/wall/setpieces/leadwall/gray{
+	dir = 9
+	},
+/area/space)
+"Yo" = (
+/turf/simulated/wall/auto/reinforced/jen/purple{
+	icon_state = "R1"
+	},
+/area/space)
+"Ys" = (
+/turf/simulated/wall/auto/gannets{
+	icon_state = "4"
+	},
+/area/space)
+"Yv" = (
+/turf/simulated/wall/auto/jen/orange{
+	icon_state = "15"
+	},
+/area/space)
+"YC" = (
+/turf/simulated/wall/auto/reinforced/supernorn/orange{
+	icon_state = "norn-O-14"
+	},
+/area/space)
+"YF" = (
+/turf/simulated/wall/auto/supernorn/wood{
+	icon_state = "3"
+	},
+/area/space)
+"YQ" = (
+/obj/indestructible/shuttle_corner{
+	dir = 1
+	},
+/turf/simulated/floor/airless/orangeblack,
+/area/space)
+"YW" = (
+/obj/decal/poster/wallsign/stencil/left/m{
+	pixel_x = 4;
+	pixel_y = 22
+	},
+/obj/decal/poster/wallsign/stencil/right/e{
+	pixel_x = 16;
+	pixel_y = 22
+	},
+/obj/decal/poster/wallsign/warning2{
+	pixel_y = -3
+	},
+/turf/simulated/martian/floor,
+/area/space)
+"YX" = (
+/turf/simulated/wall/auto/jen/yellow{
+	icon_state = "15"
+	},
+/area/space)
+"YY" = (
+/turf/simulated/wall/auto/jen/dark3{
+	icon_state = "2"
+	},
+/area/space)
+"Za" = (
+/turf/simulated/wall/auto/jen/blue{
+	icon_state = "10"
+	},
+/area/space)
+"Zb" = (
+/turf/simulated/wall/auto/gannets{
+	icon_state = "13"
+	},
+/area/space)
+"Ze" = (
+/turf/simulated/wall/auto/jen/blue{
+	icon_state = "12"
+	},
+/area/space)
+"Zr" = (
+/turf/simulated/wall/auto/gannets,
+/area/space)
+"Zt" = (
+/turf/simulated/wall/auto/feather{
+	icon_state = "5"
+	},
+/area/space)
+"Zw" = (
+/turf/unsimulated/wall/setpieces/leadwindow/white{
+	dir = 4
+	},
+/area/space)
+"Zy" = (
+/obj/indestructible/shuttle_corner{
+	dir = 8
+	},
+/turf/simulated/floor/airless/orangeblack,
+/area/space)
+"ZD" = (
+/turf/unsimulated/wall/setpieces/leadwall/white/lunar{
+	dir = 1;
+	icon_state = "leadjunction_white"
+	},
+/area/space)
+"ZJ" = (
+/turf/simulated/wall/auto/reinforced/supernorn/yellow{
+	icon_state = "norn-Y-0"
+	},
+/area/space)
+"ZK" = (
+/turf/simulated/wall/auto/jen/brown{
+	icon_state = "5"
+	},
+/area/space)
+"ZS" = (
+/turf/simulated/wall/auto/reinforced/supernorn{
+	icon_state = "norn-R-7"
+	},
+/area/space)
+
+(1,1,1) = {"
+Fm
+li
+Zw
+NL
+AM
+mA
+nY
+tk
+iJ
+bd
+ES
+sZ
+BU
+dm
+Pu
+TL
+or
+uQ
+ir
+Yo
+UO
+kr
+RY
+rK
+"}
+(2,1,1) = {"
+mh
+Bu
+ef
+yl
+oo
+QN
+bi
+OS
+dV
+FS
+Cv
+Np
+Ap
+Rz
+Ki
+Gl
+AE
+iU
+Qx
+Fh
+oe
+yc
+Jc
+fQ
+"}
+(3,1,1) = {"
+CL
+qe
+zk
+xF
+AR
+Oj
+mK
+jg
+QF
+xt
+sv
+eK
+Df
+sN
+cC
+Jp
+kI
+nd
+cw
+Ft
+nC
+Vm
+WP
+Vs
+"}
+(4,1,1) = {"
+zN
+uR
+ZD
+jZ
+NN
+tY
+rW
+GG
+Ja
+LF
+Ld
+qd
+da
+Hw
+CD
+Fe
+qI
+bt
+sJ
+cD
+pH
+Vl
+CB
+lD
+"}
+(5,1,1) = {"
+Eo
+MU
+hw
+sV
+iW
+EY
+jM
+Fd
+sW
+To
+pm
+ME
+zu
+XA
+yd
+pn
+tO
+lj
+gn
+cU
+Fr
+Ut
+YF
+fv
+"}
+(6,1,1) = {"
+Qd
+JL
+qH
+rN
+Rl
+Lf
+BQ
+Lj
+im
+Hv
+qF
+IR
+Dq
+BO
+zE
+Az
+IG
+vP
+Ao
+hM
+kP
+lV
+Os
+GW
+"}
+(7,1,1) = {"
+sS
+Gh
+gM
+gd
+as
+Ro
+ie
+Oo
+Wz
+lL
+Kd
+yk
+dJ
+Aq
+Bg
+xd
+Yh
+lA
+Rc
+mx
+Pe
+Cx
+ac
+MJ
+"}
+(8,1,1) = {"
+Yi
+lr
+Tb
+Mv
+fd
+Ko
+SN
+jE
+Bb
+Xp
+WW
+zF
+hv
+th
+Tj
+Tj
+gz
+GM
+wU
+Xv
+mV
+wA
+Af
+Gn
+"}
+(9,1,1) = {"
+xG
+Am
+Ff
+cY
+gW
+HH
+BX
+RC
+xf
+xV
+WD
+Up
+he
+bK
+hF
+pv
+Op
+lv
+Uu
+BM
+Zr
+VL
+Iv
+Wb
+"}
+(10,1,1) = {"
+AZ
+Xj
+RP
+sV
+lG
+wj
+jS
+qc
+qq
+tz
+mG
+KH
+Ux
+cM
+om
+om
+Vk
+wY
+rO
+wt
+Pk
+zs
+PX
+Ys
+"}
+(11,1,1) = {"
+nu
+iT
+Cj
+ek
+di
+kF
+yg
+yg
+DH
+hC
+ec
+KH
+aA
+IV
+Al
+Ze
+Xd
+LT
+pp
+AT
+iZ
+AK
+Zb
+sb
+"}
+(12,1,1) = {"
+ul
+ab
+TY
+bH
+FT
+AH
+Fs
+ov
+pB
+Fx
+pC
+FC
+Za
+Uj
+nG
+mr
+at
+kb
+Qr
+WH
+Xo
+LL
+DJ
+GJ
+"}
+(13,1,1) = {"
+oD
+Ip
+cg
+TX
+RB
+YY
+Nc
+Jh
+kQ
+Fc
+xi
+GB
+Py
+LV
+sd
+QX
+it
+Ww
+HA
+FA
+lK
+gN
+AF
+Xl
+"}
+(14,1,1) = {"
+Va
+FB
+Ho
+Bz
+Um
+yC
+vz
+Sy
+kX
+jV
+yG
+ka
+Pm
+Gr
+qU
+dz
+IJ
+KB
+bJ
+lp
+nj
+Si
+FV
+ho
+"}
+(15,1,1) = {"
+id
+lu
+mW
+sV
+Pv
+jw
+RD
+js
+Rp
+AX
+Cc
+Dw
+Ck
+fB
+Ay
+Wy
+iB
+tK
+Lt
+vu
+wJ
+rH
+BN
+xp
+"}
+(16,1,1) = {"
+ae
+qr
+sV
+sV
+SF
+DB
+JW
+au
+Id
+ls
+gF
+TS
+eG
+nR
+HU
+BH
+Tm
+uc
+kk
+TZ
+Hk
+Ad
+xj
+Hq
+"}
+(17,1,1) = {"
+Jb
+cv
+Tc
+JH
+kz
+ml
+AW
+mb
+wc
+dn
+aY
+Sq
+eX
+vM
+PY
+Eq
+BI
+ds
+dA
+TR
+ha
+eR
+to
+Lb
+"}
+(18,1,1) = {"
+of
+Mj
+dN
+Cy
+wi
+Gq
+cq
+wg
+wf
+oN
+hK
+ys
+MG
+aN
+GF
+AV
+BR
+Qw
+Wq
+Ts
+wT
+ZS
+Eb
+XM
+"}
+(19,1,1) = {"
+QK
+sV
+Cy
+Ai
+FF
+ON
+OE
+uX
+hH
+aW
+wu
+OL
+Ob
+YX
+Rh
+Tt
+cN
+VI
+SX
+RJ
+Wc
+wm
+zD
+ob
+"}
+(20,1,1) = {"
+kv
+vJ
+MA
+sV
+Cb
+kV
+yp
+bX
+bm
+ep
+PN
+RT
+Ql
+EX
+Ri
+yS
+vi
+mo
+Kf
+tJ
+rb
+TC
+Ij
+vd
+"}
+(21,1,1) = {"
+sV
+sV
+sV
+sV
+sV
+sV
+sV
+sV
+sV
+sV
+sV
+sV
+uA
+KK
+Nx
+AL
+Wk
+Jl
+NC
+rC
+nE
+mD
+VQ
+zK
+"}
+(22,1,1) = {"
+EQ
+EQ
+EQ
+EQ
+EQ
+AY
+YW
+EQ
+EQ
+EQ
+EQ
+sV
+mZ
+ck
+Aw
+qT
+xN
+iA
+CE
+eP
+La
+cX
+IF
+OC
+"}
+(23,1,1) = {"
+sV
+sV
+sV
+sV
+sV
+sV
+sV
+sV
+sV
+sV
+EQ
+sV
+Ee
+ln
+tS
+Tf
+nO
+oE
+AU
+AJ
+Pz
+tZ
+Fk
+fW
+"}
+(24,1,1) = {"
+gl
+Jz
+OX
+HZ
+sV
+AG
+Ie
+os
+xT
+sV
+EQ
+sV
+cL
+pQ
+uP
+nB
+yu
+wF
+cK
+Ew
+SH
+gh
+gw
+Kv
+"}
+(25,1,1) = {"
+mp
+Cz
+Zt
+AQ
+sV
+lf
+RS
+XO
+EN
+xl
+KM
+sV
+rE
+gZ
+xQ
+TV
+fD
+Rg
+IB
+xa
+Wn
+rF
+Xf
+Lo
+"}
+(26,1,1) = {"
+ue
+PU
+Qm
+UW
+sV
+zJ
+SG
+zh
+cH
+YQ
+Zy
+sV
+GR
+tr
+jl
+re
+hJ
+sg
+Do
+uO
+KG
+ar
+OG
+Wa
+"}
+(27,1,1) = {"
+il
+KZ
+KI
+wz
+sV
+hj
+po
+lw
+hO
+sV
+EQ
+sV
+kA
+Yv
+PQ
+GH
+UA
+Is
+Ii
+Ls
+YC
+FX
+wd
+EL
+"}
+(28,1,1) = {"
+sV
+sV
+sV
+sV
+sV
+sV
+sV
+sV
+sV
+sV
+EQ
+sV
+Sm
+FO
+dC
+Il
+Sf
+mP
+ji
+VT
+UK
+ym
+eu
+Lx
+"}
+(29,1,1) = {"
+tu
+gb
+Uo
+MV
+PJ
+vT
+oi
+bb
+sV
+EQ
+EQ
+sV
+Wo
+Xq
+qL
+cm
+jX
+is
+jO
+Nn
+ZJ
+KY
+bx
+TI
+"}
+(30,1,1) = {"
+cn
+NF
+qW
+hp
+zR
+Mq
+Bt
+zZ
+sV
+EQ
+EQ
+sV
+qA
+Qa
+ZK
+gK
+Rr
+vB
+mk
+xg
+gx
+ix
+Tg
+Da
+"}
+(31,1,1) = {"
+KD
+Mr
+LO
+WK
+LM
+lP
+IM
+gj
+sV
+EQ
+EQ
+sV
+PE
+iq
+Ps
+Wx
+Nh
+GT
+DD
+pl
+tl
+Rw
+lT
+RU
+"}
+(32,1,1) = {"
+et
+aJ
+Rk
+cd
+nm
+fg
+MY
+le
+sV
+EQ
+EQ
+sV
+Ou
+wM
+aO
+MT
+Rb
+gm
+nN
+gs
+Fo
+IY
+nP
+je
+"}

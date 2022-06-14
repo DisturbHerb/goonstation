@@ -1,0 +1,1174 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"ao" = (
+/obj/grille/catwalk,
+/obj/cable/blue{
+	icon_state = "1-2"
+	},
+/turf/simulated/floor/airless/plating/catwalk,
+/area/space)
+"aB" = (
+/obj/grille/catwalk{
+	dir = 8
+	},
+/obj/cable/yellow,
+/obj/cable/yellow{
+	icon_state = "0-2"
+	},
+/obj/cable/yellow{
+	icon_state = "0-4"
+	},
+/obj/cable/yellow{
+	icon_state = "0-8"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 4
+	},
+/area/space)
+"bG" = (
+/obj/grille/catwalk{
+	dir = 10
+	},
+/obj/cable/blue{
+	icon_state = "0-8"
+	},
+/obj/cable/blue{
+	icon_state = "0-4"
+	},
+/obj/cable/blue{
+	icon_state = "0-2"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 1;
+	icon_state = "catwalk_cross"
+	},
+/area/space)
+"cN" = (
+/obj/grille/catwalk{
+	dir = 8
+	},
+/obj/cable/yellow{
+	icon_state = "0-2"
+	},
+/obj/cable/yellow,
+/obj/cable/yellow{
+	icon_state = "0-4"
+	},
+/obj/cable/yellow{
+	icon_state = "0-8"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 4
+	},
+/area/space)
+"dj" = (
+/obj/grille/catwalk{
+	dir = 1
+	},
+/obj/cable/white{
+	icon_state = "0-8"
+	},
+/obj/cable/white{
+	icon_state = "0-4"
+	},
+/obj/cable/white{
+	icon_state = "0-2"
+	},
+/obj/cable/white,
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 1
+	},
+/area/space)
+"dr" = (
+/obj/cable{
+	icon_state = "0-2"
+	},
+/turf/simulated/floor/airless/solar,
+/area/space)
+"ek" = (
+/obj/cable/blue{
+	icon_state = "0-4"
+	},
+/turf/simulated/floor/airless/solar,
+/area/space)
+"fU" = (
+/turf/simulated/floor/airless/red,
+/area/space)
+"gp" = (
+/obj/grille/catwalk{
+	dir = 10
+	},
+/obj/cable/yellow{
+	icon_state = "0-8"
+	},
+/obj/cable/yellow{
+	icon_state = "0-4"
+	},
+/obj/cable/yellow{
+	icon_state = "0-2"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 1;
+	icon_state = "catwalk_cross"
+	},
+/area/space)
+"gu" = (
+/obj/grille/catwalk{
+	dir = 9
+	},
+/obj/cable{
+	icon_state = "0-2"
+	},
+/obj/cable,
+/obj/cable{
+	icon_state = "0-4"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 8;
+	icon_state = "catwalk_cross"
+	},
+/area/space)
+"hi" = (
+/obj/grille/catwalk{
+	dir = 6
+	},
+/obj/cable/blue{
+	icon_state = "0-4"
+	},
+/obj/cable/blue{
+	icon_state = "0-8"
+	},
+/obj/cable/blue,
+/turf/simulated/floor/airless/plating/catwalk{
+	icon_state = "catwalk_cross"
+	},
+/area/space)
+"hs" = (
+/obj/grille/catwalk{
+	dir = 4
+	},
+/obj/cable/white{
+	icon_state = "4-8"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 4
+	},
+/area/space)
+"jO" = (
+/obj/cable,
+/turf/simulated/floor/airless/solar,
+/area/space)
+"kS" = (
+/obj/grille/catwalk{
+	dir = 5
+	},
+/obj/cable/yellow{
+	icon_state = "0-2"
+	},
+/obj/cable/yellow,
+/obj/cable/yellow{
+	icon_state = "0-8"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 4;
+	icon_state = "catwalk_cross"
+	},
+/area/space)
+"kU" = (
+/obj/grille/catwalk{
+	dir = 6
+	},
+/obj/cable{
+	icon_state = "0-4"
+	},
+/obj/cable{
+	icon_state = "0-8"
+	},
+/obj/cable,
+/turf/simulated/floor/airless/plating/catwalk{
+	icon_state = "catwalk_cross"
+	},
+/area/space)
+"lq" = (
+/obj/grille/catwalk{
+	dir = 8
+	},
+/obj/cable/blue,
+/obj/cable/blue{
+	icon_state = "0-2"
+	},
+/obj/cable/blue{
+	icon_state = "0-4"
+	},
+/obj/cable/blue{
+	icon_state = "0-8"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 4
+	},
+/area/space)
+"mo" = (
+/obj/grille/catwalk{
+	dir = 5
+	},
+/obj/cable/blue{
+	icon_state = "0-2"
+	},
+/obj/cable/blue,
+/obj/cable/blue{
+	icon_state = "0-8"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 4;
+	icon_state = "catwalk_cross"
+	},
+/area/space)
+"nt" = (
+/obj/cable/yellow{
+	icon_state = "0-2"
+	},
+/turf/simulated/floor/airless/solar,
+/area/space)
+"ot" = (
+/obj/grille/catwalk,
+/obj/cable/white{
+	icon_state = "1-2"
+	},
+/turf/simulated/floor/airless/plating/catwalk,
+/area/space)
+"oV" = (
+/turf/simulated/floor/airless/orange,
+/area/space)
+"qb" = (
+/obj/cable/yellow,
+/turf/simulated/floor/airless/solar,
+/area/space)
+"qX" = (
+/obj/grille/catwalk{
+	dir = 1
+	},
+/obj/cable/blue{
+	icon_state = "0-8"
+	},
+/obj/cable/blue{
+	icon_state = "0-4"
+	},
+/obj/cable/blue{
+	icon_state = "0-2"
+	},
+/obj/cable/blue,
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 1
+	},
+/area/space)
+"rL" = (
+/obj/cable/blue{
+	icon_state = "0-2"
+	},
+/turf/simulated/floor/airless/solar,
+/area/space)
+"ut" = (
+/obj/grille/catwalk{
+	dir = 6
+	},
+/obj/cable/yellow{
+	icon_state = "0-4"
+	},
+/obj/cable/yellow{
+	icon_state = "0-8"
+	},
+/obj/cable/yellow,
+/turf/simulated/floor/airless/plating/catwalk{
+	icon_state = "catwalk_cross"
+	},
+/area/space)
+"wX" = (
+/obj/grille/catwalk{
+	dir = 1
+	},
+/obj/cable/blue{
+	icon_state = "0-8"
+	},
+/obj/cable/blue{
+	icon_state = "0-4"
+	},
+/obj/cable/blue,
+/obj/cable/blue{
+	icon_state = "0-2"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 1
+	},
+/area/space)
+"xq" = (
+/obj/grille/catwalk{
+	dir = 5
+	},
+/obj/cable{
+	icon_state = "0-2"
+	},
+/obj/cable,
+/obj/cable{
+	icon_state = "0-8"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 4;
+	icon_state = "catwalk_cross"
+	},
+/area/space)
+"yj" = (
+/obj/cable/blue{
+	icon_state = "0-8"
+	},
+/turf/simulated/floor/airless/solar,
+/area/space)
+"zJ" = (
+/obj/decal/poster/wallsign/stencil/left/m{
+	pixel_x = 4;
+	pixel_y = 22
+	},
+/obj/decal/poster/wallsign/stencil/right/e{
+	pixel_x = 16;
+	pixel_y = 22
+	},
+/obj/decal/poster/wallsign/warning2{
+	pixel_y = -3
+	},
+/turf/simulated/martian/floor,
+/area/space)
+"zN" = (
+/turf/simulated/floor/airless/blue,
+/area/space)
+"Al" = (
+/obj/cable/white{
+	icon_state = "0-8"
+	},
+/turf/simulated/floor/airless/solar,
+/area/space)
+"AU" = (
+/obj/grille/catwalk{
+	dir = 6
+	},
+/obj/cable/white{
+	icon_state = "0-4"
+	},
+/obj/cable/white{
+	icon_state = "0-8"
+	},
+/obj/cable/white,
+/turf/simulated/floor/airless/plating/catwalk{
+	icon_state = "catwalk_cross"
+	},
+/area/space)
+"Bf" = (
+/obj/grille/catwalk{
+	dir = 9
+	},
+/obj/cable/blue{
+	icon_state = "0-2"
+	},
+/obj/cable/blue,
+/obj/cable/blue{
+	icon_state = "0-4"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 8;
+	icon_state = "catwalk_cross"
+	},
+/area/space)
+"BD" = (
+/obj/grille/catwalk{
+	dir = 10
+	},
+/obj/cable/white{
+	icon_state = "0-8"
+	},
+/obj/cable/white{
+	icon_state = "0-4"
+	},
+/obj/cable/white{
+	icon_state = "0-2"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 1;
+	icon_state = "catwalk_cross"
+	},
+/area/space)
+"DC" = (
+/obj/machinery/computer/solar_control,
+/turf/simulated/floor,
+/area/space)
+"DD" = (
+/obj/cable{
+	icon_state = "1-2"
+	},
+/obj/grille/catwalk,
+/turf/simulated/floor/airless/plating/catwalk,
+/area/space)
+"Gb" = (
+/turf/simulated/floor/airless/white,
+/area/space)
+"Gx" = (
+/obj/cable/white{
+	icon_state = "0-4"
+	},
+/turf/simulated/floor/airless/solar,
+/area/space)
+"GN" = (
+/obj/grille/catwalk{
+	dir = 1
+	},
+/obj/cable{
+	icon_state = "0-8"
+	},
+/obj/cable{
+	icon_state = "0-4"
+	},
+/obj/cable{
+	icon_state = "0-2"
+	},
+/obj/cable,
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 1
+	},
+/area/space)
+"GQ" = (
+/obj/grille/catwalk{
+	dir = 9
+	},
+/obj/cable/white{
+	icon_state = "0-2"
+	},
+/obj/cable/white,
+/obj/cable/white{
+	icon_state = "0-4"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 8;
+	icon_state = "catwalk_cross"
+	},
+/area/space)
+"HK" = (
+/obj/cable/white,
+/turf/simulated/floor/airless/solar,
+/area/space)
+"Iq" = (
+/obj/grille/catwalk,
+/obj/cable/yellow{
+	icon_state = "1-2"
+	},
+/turf/simulated/floor/airless/plating/catwalk,
+/area/space)
+"Jp" = (
+/obj/cable/blue,
+/turf/simulated/floor/airless/solar,
+/area/space)
+"Jq" = (
+/obj/cable{
+	icon_state = "0-8"
+	},
+/turf/simulated/floor/airless/solar,
+/area/space)
+"JF" = (
+/obj/grille/catwalk{
+	dir = 5
+	},
+/obj/cable/white{
+	icon_state = "0-2"
+	},
+/obj/cable/white,
+/obj/cable/white{
+	icon_state = "0-8"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 4;
+	icon_state = "catwalk_cross"
+	},
+/area/space)
+"JH" = (
+/obj/grille/catwalk{
+	dir = 8
+	},
+/obj/cable/white{
+	icon_state = "0-2"
+	},
+/obj/cable/white,
+/obj/cable/white{
+	icon_state = "0-4"
+	},
+/obj/cable/white{
+	icon_state = "0-8"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 4
+	},
+/area/space)
+"KY" = (
+/obj/cable/yellow{
+	icon_state = "0-4"
+	},
+/turf/simulated/floor/airless/solar,
+/area/space)
+"Li" = (
+/obj/machinery/power/tracker,
+/turf/simulated/floor,
+/area/space)
+"Ll" = (
+/obj/cable{
+	icon_state = "0-4"
+	},
+/turf/simulated/floor/airless/solar,
+/area/space)
+"LJ" = (
+/obj/cable{
+	icon_state = "4-8"
+	},
+/obj/grille/catwalk{
+	dir = 4
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 4
+	},
+/area/space)
+"LQ" = (
+/obj/grille/catwalk{
+	dir = 10
+	},
+/obj/cable{
+	icon_state = "0-8"
+	},
+/obj/cable{
+	icon_state = "0-4"
+	},
+/obj/cable{
+	icon_state = "0-2"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 1;
+	icon_state = "catwalk_cross"
+	},
+/area/space)
+"Mg" = (
+/obj/grille/catwalk{
+	dir = 8
+	},
+/obj/cable{
+	icon_state = "0-2"
+	},
+/obj/cable,
+/obj/cable{
+	icon_state = "0-4"
+	},
+/obj/cable{
+	icon_state = "0-8"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 4
+	},
+/area/space)
+"Mh" = (
+/obj/cable/white{
+	icon_state = "0-2"
+	},
+/turf/simulated/floor/airless/solar,
+/area/space)
+"Mu" = (
+/obj/grille/catwalk{
+	dir = 4
+	},
+/obj/cable/blue{
+	icon_state = "4-8"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 4
+	},
+/area/space)
+"Nl" = (
+/obj/grille/catwalk{
+	dir = 9
+	},
+/obj/cable/yellow{
+	icon_state = "0-2"
+	},
+/obj/cable/yellow,
+/obj/cable/yellow{
+	icon_state = "0-4"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 8;
+	icon_state = "catwalk_cross"
+	},
+/area/space)
+"Np" = (
+/obj/grille/catwalk{
+	dir = 4
+	},
+/obj/cable/yellow{
+	icon_state = "4-8"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 4
+	},
+/area/space)
+"ND" = (
+/obj/grille/catwalk{
+	dir = 8
+	},
+/obj/cable,
+/obj/cable{
+	icon_state = "0-2"
+	},
+/obj/cable{
+	icon_state = "0-4"
+	},
+/obj/cable{
+	icon_state = "0-8"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 4
+	},
+/area/space)
+"Oe" = (
+/obj/grille/catwalk{
+	dir = 8
+	},
+/obj/cable/blue{
+	icon_state = "0-2"
+	},
+/obj/cable/blue,
+/obj/cable/blue{
+	icon_state = "0-4"
+	},
+/obj/cable/blue{
+	icon_state = "0-8"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 4
+	},
+/area/space)
+"Pa" = (
+/obj/machinery/power/solar,
+/turf/simulated/floor,
+/area/space)
+"SG" = (
+/obj/decal/poster/wallsign/stencil/right/r{
+	pixel_x = -7;
+	pixel_y = 22
+	},
+/obj/decal/poster/wallsign/stencil/right/e{
+	pixel_x = 3;
+	pixel_y = 22
+	},
+/obj/decal/poster/wallsign/stencil/right/a{
+	pixel_x = 13;
+	pixel_y = 22
+	},
+/obj/decal/poster/wallsign/stencil/right/d{
+	pixel_x = 22;
+	pixel_y = 22
+	},
+/obj/item/paper{
+	info = "Copy-pastable solar array wiring palette. -f191#5414;
+	name = "READ THE INFO VAR-SolarsA";
+	pixel_y = -4
+	},
+/turf/simulated/martian/floor,
+/area/space)
+"Tc" = (
+/obj/grille/catwalk{
+	dir = 1
+	},
+/obj/cable{
+	icon_state = "0-8"
+	},
+/obj/cable{
+	icon_state = "0-4"
+	},
+/obj/cable,
+/obj/cable{
+	icon_state = "0-2"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 1
+	},
+/area/space)
+"Tx" = (
+/obj/grille/catwalk{
+	dir = 8
+	},
+/obj/cable/white,
+/obj/cable/white{
+	icon_state = "0-2"
+	},
+/obj/cable/white{
+	icon_state = "0-4"
+	},
+/obj/cable/white{
+	icon_state = "0-8"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 4
+	},
+/area/space)
+"Ui" = (
+/obj/grille/catwalk{
+	dir = 1
+	},
+/obj/cable/yellow{
+	icon_state = "0-8"
+	},
+/obj/cable/yellow{
+	icon_state = "0-4"
+	},
+/obj/cable/yellow,
+/obj/cable/yellow{
+	icon_state = "0-2"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 1
+	},
+/area/space)
+"Vl" = (
+/obj/grille/catwalk{
+	dir = 1
+	},
+/obj/cable/yellow{
+	icon_state = "0-8"
+	},
+/obj/cable/yellow{
+	icon_state = "0-4"
+	},
+/obj/cable/yellow{
+	icon_state = "0-2"
+	},
+/obj/cable/yellow,
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 1
+	},
+/area/space)
+"VL" = (
+/obj/cable/yellow{
+	icon_state = "0-8"
+	},
+/turf/simulated/floor/airless/solar,
+/area/space)
+"YZ" = (
+/obj/grille/catwalk{
+	dir = 1
+	},
+/obj/cable/white{
+	icon_state = "0-8"
+	},
+/obj/cable/white{
+	icon_state = "0-4"
+	},
+/obj/cable/white,
+/obj/cable/white{
+	icon_state = "0-2"
+	},
+/turf/simulated/floor/airless/plating/catwalk{
+	dir = 1
+	},
+/area/space)
+"ZZ" = (
+/turf/simulated/floor,
+/area/space)
+
+(1,1,1) = {"
+Gb
+Mh
+GQ
+HK
+Gb
+Mh
+Tx
+HK
+Gb
+ZZ
+fU
+dr
+gu
+jO
+fU
+dr
+ND
+jO
+fU
+"}
+(2,1,1) = {"
+Gb
+Mh
+JH
+HK
+Gb
+Mh
+Tx
+HK
+Gb
+ZZ
+fU
+dr
+Mg
+jO
+fU
+dr
+ND
+jO
+fU
+"}
+(3,1,1) = {"
+Gb
+Mh
+JH
+HK
+Gb
+Mh
+Tx
+HK
+Gb
+ZZ
+fU
+dr
+Mg
+jO
+fU
+dr
+ND
+jO
+fU
+"}
+(4,1,1) = {"
+Gb
+Mh
+JH
+HK
+Gb
+Mh
+Tx
+HK
+Gb
+ZZ
+fU
+dr
+Mg
+jO
+fU
+dr
+ND
+jO
+fU
+"}
+(5,1,1) = {"
+Gb
+Mh
+JH
+HK
+Gb
+Mh
+JF
+HK
+Gb
+ZZ
+fU
+dr
+Mg
+jO
+fU
+dr
+xq
+jO
+fU
+"}
+(6,1,1) = {"
+Gb
+Gb
+Gb
+Gb
+hs
+ot
+Gb
+Gb
+Gb
+ZZ
+fU
+fU
+fU
+fU
+LJ
+DD
+fU
+fU
+fU
+"}
+(7,1,1) = {"
+Gx
+Gx
+Gx
+Gx
+Gb
+Gx
+Gx
+Gx
+Gx
+ZZ
+Ll
+Ll
+Ll
+Ll
+fU
+Ll
+Ll
+Ll
+Ll
+"}
+(8,1,1) = {"
+BD
+YZ
+YZ
+YZ
+Gb
+dj
+dj
+dj
+AU
+ZZ
+LQ
+Tc
+Tc
+Tc
+fU
+GN
+GN
+GN
+kU
+"}
+(9,1,1) = {"
+Al
+Al
+Al
+Al
+Gb
+Al
+Al
+Al
+Al
+ZZ
+Jq
+Jq
+Jq
+Jq
+fU
+Jq
+Jq
+Jq
+Jq
+"}
+(10,1,1) = {"
+ZZ
+ZZ
+SG
+zJ
+ZZ
+ZZ
+ZZ
+ZZ
+Li
+Pa
+DC
+ZZ
+ZZ
+ZZ
+ZZ
+ZZ
+ZZ
+ZZ
+ZZ
+"}
+(11,1,1) = {"
+zN
+rL
+Bf
+Jp
+zN
+rL
+lq
+Jp
+zN
+ZZ
+oV
+nt
+Nl
+qb
+oV
+nt
+aB
+qb
+oV
+"}
+(12,1,1) = {"
+zN
+rL
+Oe
+Jp
+zN
+rL
+lq
+Jp
+zN
+ZZ
+oV
+nt
+cN
+qb
+oV
+nt
+aB
+qb
+oV
+"}
+(13,1,1) = {"
+zN
+rL
+Oe
+Jp
+zN
+rL
+lq
+Jp
+zN
+ZZ
+oV
+nt
+cN
+qb
+oV
+nt
+aB
+qb
+oV
+"}
+(14,1,1) = {"
+zN
+rL
+Oe
+Jp
+zN
+rL
+lq
+Jp
+zN
+ZZ
+oV
+nt
+cN
+qb
+oV
+nt
+aB
+qb
+oV
+"}
+(15,1,1) = {"
+zN
+rL
+Oe
+Jp
+zN
+rL
+mo
+Jp
+zN
+ZZ
+oV
+nt
+cN
+qb
+oV
+nt
+kS
+qb
+oV
+"}
+(16,1,1) = {"
+zN
+zN
+zN
+zN
+Mu
+ao
+zN
+zN
+zN
+ZZ
+oV
+oV
+oV
+oV
+Np
+Iq
+oV
+oV
+oV
+"}
+(17,1,1) = {"
+ek
+ek
+ek
+ek
+zN
+ek
+ek
+ek
+ek
+ZZ
+KY
+KY
+KY
+KY
+oV
+KY
+KY
+KY
+KY
+"}
+(18,1,1) = {"
+bG
+wX
+wX
+wX
+zN
+qX
+qX
+qX
+hi
+ZZ
+gp
+Ui
+Ui
+Ui
+oV
+Vl
+Vl
+Vl
+ut
+"}
+(19,1,1) = {"
+yj
+yj
+yj
+yj
+zN
+yj
+yj
+yj
+yj
+ZZ
+VL
+VL
+VL
+VL
+oV
+VL
+VL
+VL
+VL
+"}

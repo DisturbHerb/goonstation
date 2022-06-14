@@ -1,105 +1,220 @@
-"a" = (/turf/unsimulated/floor/black,/area/space)
-"R" = (/turf/unsimulated/floor/orange,/area/space)
+"aD" = (/obj/submachine/chem_extractor,/turf/unsimulated/floor/purple,/area/station/medical/medbay/pharmacy)
+"aF" = (/obj/stool/chair/office,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"aG" = (/obj/storage/crate/robotparts,/turf/unsimulated/floor/grey,/area/station/medical/robotics)
+"aM" = (/obj/machinery/optable{name = "Autopsy Table"},/turf/unsimulated/floor/red,/area/station/medical/medbay/surgery)
+"bc" = (/obj/machinery/chem_dispenser,/turf/unsimulated/floor/purple,/area/station/medical/medbay/pharmacy)
+"bv" = (/obj/decal/poster/wallsign/fire,/turf/unsimulated/floor/black,/area/space)
+"bJ" = (/obj/table/auto,/obj/item/reagent_containers/hypospray{pixel_y = 4; pixel_x = -7},/obj/item/reagent_containers/hypospray{pixel_y = 4; pixel_x = -9},/obj/item/reagent_containers/hypospray{pixel_y = 4; pixel_x = -11},/obj/item/robodefibrillator{pixel_x = 4; pixel_y = 1},/obj/item/robodefibrillator{pixel_x = 4; pixel_y = 5},/turf/unsimulated/floor/red/checker,/area/station/medical/medbay/surgery/storage)
+"co" = (/obj/table/reinforced/chemistry/auto,/obj/item/device/reagentscanner{pixel_x = 5},/obj/item/reagent_containers/dropper/mechanical{pixel_x = -4; pixel_y = 4},/obj/item/clothing/glasses/spectro{pixel_x = 4; pixel_y = 10},/obj/item/reagent_containers/dropper/mechanical{pixel_x = -7; pixel_y = 4},/obj/item/reagent_containers/dropper/mechanical{pixel_x = -10; pixel_y = 4},/turf/unsimulated/floor/purple,/area/station/medical/medbay/pharmacy)
+"cG" = (/obj/table/auto,/obj/item/clothing/under/suit{name = "Mortician Suit"; pixel_x = -5; pixel_y = 6},/obj/item/reagent_containers/glass/bottle/formaldehyde{pixel_x = 9; pixel_y = 6},/obj/item/reagent_containers/syringe{pixel_x = 9; pixel_y = 0},/obj/item/clothing/gloves/latex/random{pixel_x = -6; pixel_y = -2},/obj/item/clothing/mask/surgical{pixel_x = -5; pixel_y = 3},/turf/unsimulated/floor/sanitary,/area/station/medical/morgue)
+"cM" = (/turf/unsimulated/wall/auto/supernorn,/area/station/medical/medbay/pharmacy)
+"dd" = (/obj/machinery/atmospherics/pipe/simple/insulated/cold/southwest,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"dt" = (/obj/machinery/computer3/generic/secure_data,/turf/unsimulated/floor/red,/area/space)
+"dX" = (/obj/machinery/atmospherics/unary/cryo_cell/east,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"en" = (/obj/table/auto,/obj/item/surgical_spoon{pixel_y = 9},/obj/item/hemostat,/obj/item/staple_gun,/turf/unsimulated/floor/red,/area/station/medical/medbay/surgery)
+"eP" = (/obj/table/auto,/obj/machinery/coffeemaker/botany,/turf/unsimulated/floor/orange,/area/space)
+"fe" = (/obj/machinery/sleeper{dir = 8},/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"fz" = (/obj/machinery/vending/security,/turf/unsimulated/floor/red,/area/space)
+"fG" = (/obj/machinery/vending/medical,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"gv" = (/obj/machinery/vending/monkey/genetics,/turf/unsimulated/floor/green,/area/station/medical/research)
+"gR" = (/obj/table/reinforced/chemistry/auto,/obj/machinery/chem_heater{pixel_y = 4},/turf/unsimulated/floor/purple,/area/station/medical/medbay/pharmacy)
+"gV" = (/obj/table/reinforced/chemistry/auto,/obj/machinery/glass_recycler/chemistry,/turf/unsimulated/floor/purple,/area/station/medical/medbay/pharmacy)
+"gW" = (/obj/table/reinforced/chemistry/auto,/obj/item/paper/book/from_file/pharmacopia,/obj/item/hand_labeler,/turf/unsimulated/floor/purple,/area/station/medical/medbay/pharmacy)
+"hF" = (/obj/storage/secure/closet/fridge/blood,/turf/unsimulated/floor/red,/area/station/medical/medbay/surgery)
+"hH" = (/obj/decal/poster/wallsign/botany_sign,/turf/unsimulated/floor/black,/area/space)
+"io" = (/obj/machinery/atmospherics/pipe/simple/insulated/cold/horizontal,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"iF" = (/obj/drink_rack/mug{pixel_y = 32},/obj/table/auto,/obj/machinery/coffeemaker/medbay,/turf/unsimulated/floor/orange,/area/space)
+"iI" = (/obj/stool/chair/office/green,/turf/unsimulated/floor/green,/area/station/medical/medbay/cloner)
+"iS" = (/turf/unsimulated/floor/green,/area/station/medical/research)
+"iX" = (/turf/unsimulated/wall/auto/supernorn,/area/station/medical/medbay)
+"ja" = (/obj/machinery/traymachine/morgue{dir = 2},/turf/unsimulated/floor/sanitary,/area/station/medical/morgue)
+"jk" = (/obj/stool/bed/moveable,/obj/item/clothing/suit/bedsheet,/obj/item_dispenser/prescription_glasses,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"jC" = (/obj/table/auto,/obj/machinery/coffeemaker/research,/turf/unsimulated/floor/orange,/area/space)
+"jI" = (/obj/machinery/networked/printer{name = "Printer - AI"; pixel_y = 5; print_id = "AI"},/obj/table/auto,/obj/machinery/power/data_terminal,/turf/unsimulated/floor/black,/area/space)
+"jV" = (/obj/item/clothing/suit/bedsheet/blue,/obj/stool/bed/moveable,/turf/simulated/floor/red/checker,/area/station/medical/medbay/treatment2)
+"jX" = (/obj/machinery/computer3/generic/med_data,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"kp" = (/obj/storage/secure/closet/medical/medkit,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"kE" = (/turf/unsimulated/floor/green,/area/station/medical/medbay/cloner)
+"kU" = (/obj/machinery/atmospherics/pipe/simple/insulated/cold/vertical,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"kV" = (/obj/stool/chair/comfy,/turf/unsimulated/floor/darkblue,/area/station/medical/medbay/psychiatrist)
+"la" = (/obj/decal/poster/wallsign/security,/turf/unsimulated/floor/black,/area/space)
+"ly" = (/obj/decal/poster/wallsign/escape_sign,/turf/unsimulated/floor/black,/area/space)
+"md" = (/turf/unsimulated/wall/auto/supernorn,/area/station/medical/medbay/surgery/storage)
+"mj" = (/obj/table/wood/auto/desk{pixel_y = -2},/turf/unsimulated/floor/darkblue,/area/station/medical/medbay/psychiatrist)
+"mW" = (/obj/machinery/atmospherics/unary/cryo_cell/west,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"nb" = (/obj/decal/poster/wallsign/medbay_sign,/turf/unsimulated/floor/black,/area/space)
+"ns" = (/obj/item/storage/firstaid/oxygen{pixel_y = -4},/obj/item/storage/firstaid/toxin,/obj/item/storage/firstaid/fire{pixel_y = -4},/obj/item/storage/firstaid/regular,/obj/item/bandage,/obj/item/bandage,/obj/item/bandage,/obj/item/robodefibrillator,/obj/item/body_bag,/obj/item/body_bag,/obj/item/body_bag,/obj/storage/cart/medcart,/turf/unsimulated/floor/red/checker,/area/station/medical/medbay/surgery/storage)
+"nw" = (/obj/machinery/atmospherics/unary/cold_sink/freezer/cryo/west,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"nI" = (/obj/machinery/atmospherics/unary/cold_sink/freezer/cryo/south,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"od" = (/obj/machinery/atmospherics/pipe/simple/insulated/cold/northwest,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"oe" = (/obj/table/reinforced/auto,/obj/item/sheet/steel/fullstack,/obj/item/storage/box/cablesbox,/turf/unsimulated/floor/grey,/area/station/medical/robotics)
+"og" = (/obj/machinery/networked/printer{name = "Printer - Bridge"; pixel_y = 5; print_id = "Bridge"},/obj/table/auto,/obj/machinery/power/data_terminal,/turf/unsimulated/floor/black,/area/space)
+"oR" = (/obj/surgery_tray,/obj/item/scalpel,/obj/item/circular_saw{pixel_y = 6},/obj/item/suture{pixel_y = 6},/obj/item/scissors/surgical_scissors{pixel_y = 5},/turf/unsimulated/floor/grey,/area/station/medical/robotics)
+"pu" = (/obj/cabinet/medical,/turf/unsimulated/floor/red/checker,/area/station/medical/medbay/surgery/storage)
+"pL" = (/obj/decal/poster/wallsign/engine_sign,/turf/unsimulated/floor/black,/area/space)
+"pP" = (/turf/unsimulated/floor/red,/area/space)
+"qb" = (/obj/cabinet/psychiatry,/turf/unsimulated/floor/darkblue,/area/station/medical/medbay/psychiatrist)
+"qc" = (/obj/decal/poster/wallsign/fuq3,/turf/unsimulated/floor/black,/area/space)
+"qP" = (/obj/critter/opossum/morty,/turf/unsimulated/floor/sanitary,/area/station/medical/morgue)
+"qV" = (/obj/machinery/vending/port_a_nanomed,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"rK" = (/obj/decal/poster/wallsign/medbay,/turf/unsimulated/floor/black,/area/space)
+"rR" = (/obj/machinery/sleeper/port_a_medbay,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"sb" = (/obj/machinery/networked/printer{name = "Printer - Robotics"; pixel_y = 5; print_id = "Robotics"},/obj/table/auto,/obj/machinery/power/data_terminal,/turf/unsimulated/floor/black,/area/space)
+"sx" = (/mob/living/silicon/hivebot/eyebot,/obj/decal/tile_edge/stripe{dir = 6; icon_state = "bot2"},/turf/unsimulated/floor/grey,/area/station/medical/robotics)
+"sJ" = (/obj/table/auto,/obj/bedsheetbin,/turf/unsimulated/floor/green,/area/station/medical/research)
+"sS" = (/obj/decal/poster/wallsign/engineering,/turf/unsimulated/floor/black,/area/space)
+"sU" = (/obj/decal/poster/wallsign/read_me,/turf/unsimulated/floor/black,/area/space)
+"sX" = (/obj/iv_stand,/obj/item/reagent_containers/iv_drip/saline,/turf/unsimulated/floor/red,/area/station/medical/medbay/surgery)
+"tc" = (/obj/machinery/vending/medical_public,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"tf" = (/obj/machinery/vending/standard,/turf/unsimulated/floor/grey,/area/station/medical/robotics)
+"ti" = (/obj/storage/secure/closet/medical/medkit,/turf/unsimulated/floor/red/checker,/area/station/medical/medbay/surgery/storage)
+"to" = (/obj/stool/chair/office/purple,/turf/unsimulated/floor/purple,/area/station/medical/medbay/pharmacy)
+"uf" = (/obj/decal/poster/wallsign/research_sign,/turf/unsimulated/floor/black,/area/space)
+"up" = (/obj/storage/secure/closet/medical/anesthetic,/turf/unsimulated/floor/red,/area/station/medical/medbay/surgery)
+"us" = (/obj/table/auto,/obj/item/scalpel,/obj/item/circular_saw{pixel_y = 6},/obj/item/suture{pixel_y = 6},/obj/item/scissors/surgical_scissors{pixel_y = 5},/turf/unsimulated/floor/sanitary,/area/station/medical/morgue)
+"vv" = (/obj/machinery/clone_scanner,/turf/unsimulated/floor/green,/area/station/medical/medbay/cloner)
+"vC" = (/obj/machinery/networked/printer{name = "Printer - CE"; pixel_y = 5; print_id = "CE"},/obj/table/auto,/obj/machinery/power/data_terminal,/turf/unsimulated/floor/black,/area/space)
+"vX" = (/obj/reagent_dispensers/fueltank,/turf/unsimulated/floor/grey,/area/station/medical/robotics)
+"wk" = (/obj/table/auto,/obj/machinery/coffeemaker,/turf/unsimulated/floor/orange,/area/space)
+"wQ" = (/obj/machinery/networked/printer{name = "Printer - MD"; pixel_y = 5; print_id = "MD"},/obj/table/auto,/obj/machinery/power/data_terminal,/turf/unsimulated/floor/black,/area/space)
+"wR" = (/obj/item_dispenser/medical_mask,/turf/unsimulated/floor/red,/area/station/medical/medbay/surgery)
+"xs" = (/obj/machinery/atmospherics/unary/cryo_cell/south,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"xJ" = (/obj/submachine/cargopad/pod_wars,/obj/machinery/portable_reclaimer,/turf/unsimulated/floor/grey,/area/station/medical/robotics)
+"xL" = (/obj/stool/chair/office/green,/turf/unsimulated/floor/green,/area/station/medical/research)
+"zl" = (/obj/decal/poster/wallsign/security_sign,/turf/unsimulated/floor/black,/area/space)
+"zo" = (/obj/table/auto,/obj/item/clothing/mask/surgical_shield{pixel_x = -5},/obj/item/clothing/mask/surgical_shield{pixel_y = 3; pixel_x = -5},/obj/item/clothing/mask/surgical_shield{pixel_x = -5; pixel_y = 6},/obj/item/spraybottle/cleaner{pixel_y = 0; pixel_x = 7},/turf/unsimulated/floor/red/checker,/area/station/medical/medbay/surgery/storage)
+"zM" = (/obj/item/storage/box/beakerbox{pixel_y = -2},/obj/table/reinforced/chemistry/auto,/obj/item/reagent_containers/dropper{pixel_y = 8},/obj/item/reagent_containers/dropper{pixel_y = 10},/obj/item/reagent_containers/dropper{pixel_y = 12},/turf/unsimulated/floor/purple,/area/station/medical/medbay/pharmacy)
+"zO" = (/obj/machinery/genetics_scanner,/turf/unsimulated/floor/green,/area/station/medical/research)
+"zV" = (/obj/machinery/computer/security,/turf/unsimulated/floor/red,/area/space)
+"Ad" = (/obj/rack,/obj/item/crowbar,/obj/item/clothing/suit/fire/heavy{pixel_x = -6},/obj/item/clothing/head/helmet/firefighter{pixel_y = 7; pixel_x = -3},/obj/item/tank/air{pixel_x = 1; pixel_y = -3},/obj/item/crowbar/red,/obj/item/clothing/mask/gas/emergency{pixel_y = 7; pixel_x = 5},/obj/item/chem_grenade/firefighting{pixel_y = -6; pixel_x = 6},/turf/unsimulated/floor/plating,/area/space)
+"Am" = (/obj/rack,/turf/unsimulated/floor/red/checker,/area/station/medical/medbay/surgery/storage)
+"AA" = (/obj/cabinet/medicalmenders,/turf/unsimulated/floor/red/checker,/area/station/medical/medbay/surgery/storage)
+"AB" = (/obj/decal/poster/wallsign/pool,/turf/unsimulated/floor/black,/area/space)
+"AC" = (/obj/machinery/networked/printer{name = "Printer - NetCafe"; pixel_y = 5; print_id = "NetCafe"},/obj/table/auto,/obj/machinery/power/data_terminal,/turf/unsimulated/floor/black,/area/space)
+"AE" = (/obj/machinery/computer/cloning,/turf/unsimulated/floor/green,/area/station/medical/medbay/cloner)
+"AH" = (/obj/table/reinforced/auto,/obj/machinery/cell_charger,/obj/item/cell/supercell/charged,/obj/item/cell/supercell/charged,/obj/item/cell/supercell/charged,/obj/item/cell/supercell/charged,/turf/unsimulated/floor/grey,/area/station/medical/robotics)
+"AI" = (/obj/machinery/manufacturer/robotics,/turf/unsimulated/floor/grey,/area/station/medical/robotics)
+"AK" = (/obj/machinery/atmospherics/pipe/manifold/south,/obj/machinery/meter,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"AV" = (/obj/stool/chair/office,/turf/unsimulated/floor/red,/area/station/medical/medbay/surgery)
+"BL" = (/obj/storage/secure/closet/medical/medicine,/turf/unsimulated/floor/red,/area/station/medical/medbay/surgery)
+"BW" = (/obj/storage/secure/closet/medical{name = "locker"},/turf/unsimulated/floor/green,/area/station/medical/medbay/cloner)
+"Cb" = (/obj/decal/poster/wallsign/garbagegarbssign,/turf/unsimulated/floor/black,/area/space)
+"CJ" = (/obj/decal/poster/wallsign/teleport_sign,/turf/unsimulated/floor/black,/area/space)
+"CT" = (/turf/unsimulated/floor/orange,/area/space)
+"Du" = (/obj/rack,/turf/unsimulated/floor/plating,/area/space)
+"DA" = (/obj/table/auto,/obj/item/reagent_containers/glass/beaker/large/antitox{pixel_x = -4; pixel_y = 5},/obj/item/reagent_containers/glass/beaker/large/epinephrine{pixel_x = 4; pixel_y = 5},/obj/item/reagent_containers/glass/beaker/large/burn{pixel_x = 4},/obj/item/reagent_containers/glass/beaker/large/brute{pixel_x = -4},/turf/unsimulated/floor/red/checker,/area/station/medical/medbay/surgery/storage)
+"DR" = (/obj/machinery/optable{name = "Autopsy Table"},/turf/unsimulated/floor/grey,/area/station/medical/robotics)
+"ER" = (/obj/cabinet/chemicals,/turf/unsimulated/floor/purple,/area/station/medical/medbay/pharmacy)
+"EY" = (/obj/machinery/optable{name = "Autopsy Table"},/turf/unsimulated/floor/sanitary,/area/station/medical/morgue)
+"Fr" = (/obj/storage/closet/biohazard,/obj/item/clothing/mask/gas,/obj/item/tank/air,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"Fz" = (/obj/table/auto,/obj/machinery/coffeemaker/security,/turf/unsimulated/floor/orange,/area/space)
+"FC" = (/obj/item/clothing/suit/cardboard_box/head_surgeon,/turf/unsimulated/floor/red,/area/station/medical/medbay/surgery)
+"FF" = (/obj/decal/poster/wallsign/no_smoking,/turf/unsimulated/floor/black,/area/space)
+"GQ" = (/obj/machinery/networked/printer{name = "Printer - Chapel"; pixel_y = 5; print_id = "Chapel"},/obj/table/auto,/obj/machinery/power/data_terminal,/turf/unsimulated/floor/black,/area/space)
+"HD" = (/obj/machinery/atmospherics/unary/cold_sink/freezer/cryo/east,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"Im" = (/obj/machinery/clonepod,/turf/unsimulated/floor/green,/area/station/medical/medbay/cloner)
+"Jh" = (/obj/storage/secure/closet/medical/uniforms,/turf/unsimulated/floor/red/checker,/area/station/medical/medbay/surgery/storage)
+"Jx" = (/obj/storage/secure/closet/security/equipment,/turf/unsimulated/floor/red,/area/space)
+"JV" = (/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"Kd" = (/obj/decal/poster/wallsign/customs_sign,/turf/unsimulated/floor/black,/area/space)
+"Kk" = (/obj/machinery/manufacturer/medical,/turf/unsimulated/floor/red/checker,/area/station/medical/medbay/surgery/storage)
+"KG" = (/obj/machinery/atmospherics/portables_connector/east,/obj/machinery/portable_atmospherics/canister/oxygen,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"KI" = (/obj/item_dispenser/latex_gloves,/turf/unsimulated/floor/purple,/area/station/medical/medbay/pharmacy)
+"KS" = (/obj/machinery/genetics_booth,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"Mo" = (/obj/machinery/atmospherics/unary/cold_sink/freezer/cryo/north,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"Ms" = (/turf/unsimulated/floor/darkblue,/area/station/medical/medbay/psychiatrist)
+"MZ" = (/obj/machinery/networked/printer{name = "Printer - Hydroponics"; pixel_y = 5; print_id = "Hydroponics"},/obj/table/auto,/obj/machinery/power/data_terminal,/turf/unsimulated/floor/black,/area/space)
+"Nr" = (/obj/table/reinforced/auto,/obj/item/storage/belt/utility,/obj/item/storage/toolbox/mechanical{pixel_y = 8},/obj/item/device/multitool{pixel_y = 3; pixel_x = -8},/turf/unsimulated/floor/grey,/area/station/medical/robotics)
+"NY" = (/obj/table/auto,/obj/item/storage/box/evidence{pixel_x = 7; pixel_y = 4},/obj/item/storage/box/evidence{pixel_y = 4},/obj/item/storage/box/evidence{pixel_y = 4; pixel_x = -7},/obj/item/storage/box/body_bag{pixel_y = -3},/obj/item/pen/marker/blue,/turf/unsimulated/floor/sanitary,/area/station/medical/morgue)
+"OI" = (/obj/stool/chair/comfy/blue,/turf/unsimulated/floor/darkblue,/area/station/medical/medbay/psychiatrist)
+"OJ" = (/turf/simulated/wall/auto/supernorn,/area/space)
+"OO" = (/obj/cabinet/taffy,/turf/unsimulated/floor/darkblue,/area/station/medical/medbay/psychiatrist)
+"OS" = (/obj/rack,/obj/item/clothing/suit/space/emerg,/obj/item/clothing/head/emerg{pixel_y = 8; pixel_x = -3},/obj/item/tank/air{pixel_x = 1; pixel_y = -3},/obj/item/crowbar/red,/obj/item/clothing/mask/gas/emergency{pixel_y = 7; pixel_x = 5},/turf/unsimulated/floor/plating,/area/space)
+"OT" = (/obj/storage/secure/closet/animal,/turf/unsimulated/floor/green,/area/station/medical/research)
+"Pi" = (/obj/machinery/networked/printer{name = "Printer - Quartermasters"; pixel_y = 5; print_id = "Quartermasters"},/obj/table/auto,/obj/machinery/power/data_terminal,/turf/unsimulated/floor/black,/area/space)
+"Pj" = (/obj/machinery/networked/printer{name = "Printer - Research"; pixel_y = 5; print_id = "Research"},/obj/table/auto,/obj/machinery/power/data_terminal,/turf/unsimulated/floor/black,/area/space)
+"PH" = (/obj/item_dispenser/latex_gloves,/obj/health_scanner/floor{dir = 1},/obj/health_scanner/wall{pixel_y = 8; pixel_x = -1},/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"PO" = (/obj/machinery/sleep_console{dir = 8},/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"Qs" = (/obj/item/reagent_containers/glass/beaker/cryoxadone{pixel_x = -4; pixel_y = 5},/obj/item/reagent_containers/glass/beaker/cryoxadone{pixel_x = 4; pixel_y = 5},/obj/item/wrench,/obj/item/paper/cryo,/obj/table/reinforced/auto,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"QO" = (/obj/item/storage/wall/medical_wear,/obj/storage/closet/medicalclothes,/turf/unsimulated/floor/red/checker,/area/station/medical/medbay/surgery/storage)
+"RU" = (/obj/decal/poster/wallsign/psa_bucket,/turf/unsimulated/floor/black,/area/space)
+"Sg" = (/obj/machinery/computer/genetics,/turf/unsimulated/floor/green,/area/station/medical/research)
+"Sj" = (/obj/machinery/atmospherics/unary/cryo_cell/north,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"SF" = (/obj/table/auto,/obj/item/storage/box/stma_kit{pixel_y = 4; pixel_x = -7},/obj/item/storage/box/lglo_kit/random{pixel_y = 4; pixel_x = 8},/turf/unsimulated/floor/red/checker,/area/station/medical/medbay/surgery/storage)
+"SK" = (/obj/machinery/atmospherics/pipe/simple/insulated/cold/southeast,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"SV" = (/turf/unsimulated/floor/purple,/area/station/medical/medbay/pharmacy)
+"Tc" = (/turf/unsimulated/wall/auto/supernorn,/area/station/medical/medbay/surgery)
+"Ti" = (/obj/stool/chair/office/blue,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"Tn" = (/obj/stool/chair/comfy/wheelchair,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"TE" = (/obj/machinery/atmospherics/pipe/simple/insulated/cold/northeast,/turf/unsimulated/floor/blue,/area/station/medical/medbay)
+"TH" = (/obj/submachine/weapon_vendor/security,/turf/unsimulated/floor/red,/area/space)
+"Uu" = (/obj/machinery/computer/robot_module_rewriter,/turf/unsimulated/floor/grey,/area/station/medical/robotics)
+"UC" = (/obj/surgery_tray,/obj/item/scalpel,/obj/item/circular_saw{pixel_y = 6},/obj/item/suture{pixel_y = 6},/obj/item/scissors/surgical_scissors{pixel_y = 5},/turf/unsimulated/floor/red,/area/station/medical/medbay/surgery)
+"UE" = (/obj/machinery/defib_mount,/obj/table/reinforced/auto,/turf/unsimulated/floor/grey,/area/station/medical/robotics)
+"Vq" = (/obj/machinery/networked/printer{name = "Printer - Medbay Staff Lounge"; pixel_y = 5; print_id = "Medbay Staff Lounge"},/obj/table/auto,/obj/machinery/power/data_terminal,/turf/unsimulated/floor/black,/area/space)
+"Vu" = (/obj/decal/poster/wallsign/space,/turf/unsimulated/floor/black,/area/space)
+"VN" = (/obj/machinery/vending/medical,/turf/unsimulated/floor/red/checker,/area/station/medical/medbay/surgery/storage)
+"WI" = (/obj/machinery/networked/printer{name = "Printer - Security"; pixel_y = 5; print_id = "Security"},/obj/table/auto,/obj/machinery/power/data_terminal,/turf/unsimulated/floor/black,/area/space)
+"Xe" = (/obj/machinery/clonegrinder,/turf/unsimulated/floor/green,/area/station/medical/medbay/cloner)
+"XT" = (/obj/table/auto,/obj/machinery/defib_mount,/turf/unsimulated/floor/red,/area/station/medical/medbay/surgery)
+"YC" = (/obj/decal/poster/wallsign/poster_ptoe,/turf/unsimulated/floor/black,/area/space)
+"YF" = (/obj/machinery/networked/printer{name = "Printer - Engineering"; pixel_y = 5; print_id = "Engineering"},/obj/table/auto,/obj/machinery/power/data_terminal,/turf/unsimulated/floor/black,/area/space)
+"YY" = (/obj/stool/bed/moveable,/obj/item/clothing/suit/bedsheet/blue,/turf/simulated/floor/red/checker,/area/station/medical/medbay/treatment1)
+"Zh" = (/obj/machinery/recharge_station,/turf/unsimulated/floor/grey,/area/station/medical/robotics)
+"Zv" = (/turf/unsimulated/floor/black,/area/space)
+"Zw" = (/obj/machinery/networked/printer{name = "Printer - Escape Checkpoint"; pixel_y = 5; print_id = "EscapeCheckpoint"},/obj/table/auto,/obj/machinery/power/data_terminal,/turf/unsimulated/floor/black,/area/space)
+"ZG" = (/obj/machinery/chem_master,/turf/unsimulated/floor/purple,/area/station/medical/medbay/pharmacy)
+"ZR" = (/obj/rack,/obj/item/clothing/suit/bio_suit/paramedic,/obj/item/storage/belt/medical,/obj/item/clothing/glasses/healthgoggles,/obj/item/crowbar,/turf/unsimulated/floor/red/checker,/area/station/medical/medbay/surgery/storage)
 
 (1,1,1) = {"
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
-RaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRa
-aRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaRaR
+fGqVrRdXxsHDnISKddJVCTCTCTCTCTCTCTCTCTCTdtzVfzTHJxpPpPpPpPZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+tcfePOSjmWMonwkUTEddCTCTCTCTCTCTCTCTCTCTpPpPpPpPpPpPpPpPpPZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+jXKSaFTiiXiXKGAKioodCTCTCTCTCTCTCTCTCTCTpPpPpPpPpPpPpPpPpPZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+QsTnkpFrjkPHJVJVJVJVCTCTCTCTCTCTCTCTCTCTpPpPpPpPpPpPpPpPpPZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+SgzOgvOTAEvvImXeBWiICTCTCTCTCTCTCTCTCTCTpPpPpPpPpPpPpPpPpPZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+xLsJiSiSkEkEkEkEkEkECTCTCTCTCTCTCTCTCTCTZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+jaEYqPaMFCBLuphFTcYYCTCTCTCTCTCTCTCTCTCTZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+cGusNYUCenXTsXAVwRjVCTCTCTCTCTCTCTCTCTCTZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+DRtfZhsxxJAIUubcgVcoCTCTCTCTCTCTCTCTCTCTZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+oRUENrAHoeaGvXgWzMgRCTCTCTCTCTCTCTCTCTCTZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+VNAApumdAmqbOOZGaDcMCTCTCTCTCTCTCTCTCTCTZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+KktiJhQOnsOIkVERtoKICTCTCTCTCTCTCTCTCTCTZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+DAbJSFzoZRmjMsSVSVSVCTCTCTCTCTCTCTCTCTCTZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+jIZwPiZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ogMZPjZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+vCwQsbZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+GQVqWIZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+YFACZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+ZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+OSAdDuZvFFhHZvKdlyABqcZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+wkePOJZvrKnbZvufCJABCbZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
+jCFziFZvlazlsSpLsURUbvVuYCZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZvZv
 "}
