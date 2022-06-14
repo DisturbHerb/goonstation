@@ -1094,6 +1094,9 @@ proc/empty_mouse_params()//TODO MOVE THIS!!!
 	zoomy
 
 		Life(datum/controller/process/mobs/parent)
+			if (..(parent))
+				return 1
+
 			if(!src.stat)
 				walk_rand(src)
 
