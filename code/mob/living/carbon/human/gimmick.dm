@@ -1054,6 +1054,7 @@ proc/empty_mouse_params()//TODO MOVE THIS!!!
 		src.equip_new_if_possible(/obj/item/storage/backpack , slot_back)
 		src.equip_new_if_possible(/obj/item/clothing/gloves/ring/gold , slot_gloves)
 		src.equip_new_if_possible(/obj/item/clothing/under/gimmick/wedding_dress, slot_w_uniform)
+		// would it not be funny if she had a fluffles
 
 		src.ai = new /datum/aiHolder/human/yank(src)
 		src.ai.enabled = 0

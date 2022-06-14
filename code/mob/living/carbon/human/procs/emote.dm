@@ -96,6 +96,7 @@
 
 			if ("fart")
 				message = "<B>[src]</B> cannot fart. This is just like in Greg Olson's 1894."
+				maptext_out = "<I>feels like part of [his_or_her(src)] soul has been ripped from [his_or_her(src)] chest.</I>"
 
 // 				var/oxyplasmafart = 0
 // 				if (src.emote_check(voluntary) && farting_allowed && (!src.reagents || !src.reagents.has_reagent("anti_fart")))
@@ -1891,6 +1892,7 @@
 
 			if ("pee", "piss", "urinate")
 				message = "<B>[src]</B> tried to piss in HerbStation, and all [he_or_she(src)] got was a lousy joke."
+				maptext_out = "<I>sobs profusely.</I>"
 
 				// if (src.emote_check(voluntary))
 				// 	var/bladder = sims?.getValue("Bladder")

@@ -1484,55 +1484,55 @@ TYPEINFO(/datum/mutantrace)
 				if (mob.emote_check(voluntary, 50))
 					. = "<B>[mob]</B> screams!"
 					playsound(mob, src.sound_monkeyscream, 80, 0, 0, mob.get_age_pitch(), channel=VOLUME_CHANNEL_EMOTE)
-			if ("fart")
-				if(farting_allowed && (!mob.reagents || !mob.reagents.has_reagent("anti_fart")))
-					if (!mob.emote_check(voluntary, 10))
-						return
-					var/fart_on_other = 0
-					for(var/mob/living/M in mob.loc)
-						if(M == src.mob || !M.lying)
-							continue
-						. = "<span class='alert'><B>[mob]</B> farts in [M]'s face!</span>"
-						fart_on_other = 1
-						break
-					if(!fart_on_other)
-						switch(rand(1, 27))
-							if(1) . = "<B>[mob]</B> farts. It smells like... bananas. Huh."
-							if(2) . = "<B>[mob]</B> goes apeshit! Or at least smells like it."
-							if(3) . = "<B>[mob]</B> releases an unbelievably foul fart."
-							if(4) . = "<B>[mob]</B> chimpers out of its ass."
-							if(5) . = "<B>[mob]</B> farts and looks incredibly amused about it."
-							if(6) . = "<B>[mob]</B> unleashes the king kong of farts!"
-							if(7) . = "<B>[mob]</B> farts and does a silly little dance."
-							if(8) . = "<B>[mob]</B> farts gloriously."
-							if(9) . = "<B>[mob]</B> plays the song of its people. With farts."
-							if(10) . = "<B>[mob]</B> screeches loudly and wildly flails its arms in a poor attempt to conceal a fart."
-							if(11) . = "<B>[mob]</B> clenches and bares its teeth, but only manages a sad squeaky little fart."
-							if(12) . = "<B>[mob]</B> unleashes a chain of farts by beating its chest."
-							if(13) . = "<B>[mob]</B> farts so hard a bunch of fur flies off its ass."
-							if(14) . = "<B>[mob]</B> does an impression of a baboon by farting until its ass turns red."
-							if(15) . = "<B>[mob]</B> farts out a choking, hideous stench!"
-							if(16) . = "<B>[mob]</B> reflects on its captive life aboard a space station, before farting and bursting into hysterial laughter."
-							if(17) . = "<B>[mob]</B> farts megalomaniacally."
-							if(18) . = "<B>[mob]</B> rips a floor-rattling fart. Damn."
-							if(19) . = "<B>[mob]</B> farts. What a damn dirty ape!"
-							if(20) . = "<B>[mob]</B> farts. It smells like a nuclear engine. Not that you know what that smells like."
-							if(21) . = "<B>[mob]</B> performs a complex monkey divining ritual. By farting."
-							if(22) . = "<B>[mob]</B> farts out the smell of the jungle. The jungle smells gross as hell apparently."
-							if(23) . = "<B>[mob]</B> farts up a methane monsoon!"
-							if(24) . = "<B>[mob]</B> unleashes an utterly rancid stink from its ass."
-							if(25) . = "<B>[mob]</B> makes a big goofy grin and farts loudly."
-							if(26) . = "<B>[mob]</B> hovers off the ground for a moment using a powerful fart."
-							if(27) . = "<B>[mob]</B> plays drums on its ass while farting."
-					playsound(mob.loc, "sound/voice/farts/poo2.ogg", 80, 0, 0, mob.get_age_pitch(), channel=VOLUME_CHANNEL_EMOTE)
+	// 		if ("fart")
+	// 			if(farting_allowed && (!mob.reagents || !mob.reagents.has_reagent("anti_fart")))
+	// 				if (!mob.emote_check(voluntary, 10))
+	// 					return
+	// 				var/fart_on_other = 0
+	// 				for(var/mob/living/M in mob.loc)
+	// 					if(M == src.mob || !M.lying)
+	// 						continue
+	// 					. = "<span class='alert'><B>[mob]</B> farts in [M]'s face!</span>"
+	// 					fart_on_other = 1
+	// 					break
+	// 				if(!fart_on_other)
+	// 					switch(rand(1, 27))
+	// 						if(1) . = "<B>[mob]</B> farts. It smells like... bananas. Huh."
+	// 						if(2) . = "<B>[mob]</B> goes apeshit! Or at least smells like it."
+	// 						if(3) . = "<B>[mob]</B> releases an unbelievably foul fart."
+	// 						if(4) . = "<B>[mob]</B> chimpers out of its ass."
+	// 						if(5) . = "<B>[mob]</B> farts and looks incredibly amused about it."
+	// 						if(6) . = "<B>[mob]</B> unleashes the king kong of farts!"
+	// 						if(7) . = "<B>[mob]</B> farts and does a silly little dance."
+	// 						if(8) . = "<B>[mob]</B> farts gloriously."
+	// 						if(9) . = "<B>[mob]</B> plays the song of its people. With farts."
+	// 						if(10) . = "<B>[mob]</B> screeches loudly and wildly flails its arms in a poor attempt to conceal a fart."
+	// 						if(11) . = "<B>[mob]</B> clenches and bares its teeth, but only manages a sad squeaky little fart."
+	// 						if(12) . = "<B>[mob]</B> unleashes a chain of farts by beating its chest."
+	// 						if(13) . = "<B>[mob]</B> farts so hard a bunch of fur flies off its ass."
+	// 						if(14) . = "<B>[mob]</B> does an impression of a baboon by farting until its ass turns red."
+	// 						if(15) . = "<B>[mob]</B> farts out a choking, hideous stench!"
+	// 						if(16) . = "<B>[mob]</B> reflects on its captive life aboard a space station, before farting and bursting into hysterial laughter."
+	// 						if(17) . = "<B>[mob]</B> farts megalomaniacally."
+	// 						if(18) . = "<B>[mob]</B> rips a floor-rattling fart. Damn."
+	// 						if(19) . = "<B>[mob]</B> farts. What a damn dirty ape!"
+	// 						if(20) . = "<B>[mob]</B> farts. It smells like a nuclear engine. Not that you know what that smells like."
+	// 						if(21) . = "<B>[mob]</B> performs a complex monkey divining ritual. By farting."
+	// 						if(22) . = "<B>[mob]</B> farts out the smell of the jungle. The jungle smells gross as hell apparently."
+	// 						if(23) . = "<B>[mob]</B> farts up a methane monsoon!"
+	// 						if(24) . = "<B>[mob]</B> unleashes an utterly rancid stink from its ass."
+	// 						if(25) . = "<B>[mob]</B> makes a big goofy grin and farts loudly."
+	// 						if(26) . = "<B>[mob]</B> hovers off the ground for a moment using a powerful fart."
+	// 						if(27) . = "<B>[mob]</B> plays drums on its ass while farting."
+	// 				playsound(mob.loc, "sound/voice/farts/poo2.ogg", 80, 0, 0, mob.get_age_pitch(), channel=VOLUME_CHANNEL_EMOTE)
 
-					mob.remove_stamina(STAMINA_DEFAULT_FART_COST)
-					mob.stamina_stun()
-	#ifdef DATALOGGER
-					game_stats.Increment("farts")
-	#endif
-					mob.expel_fart_gas(0)
-					mob.add_karma(0.5)
+	// 				mob.remove_stamina(STAMINA_DEFAULT_FART_COST)
+	// 				mob.stamina_stun()
+	// #ifdef DATALOGGER
+	// 				game_stats.Increment("farts")
+	// #endif
+	// 				mob.expel_fart_gas(0)
+	// 				mob.add_karma(0.5)
 
 
 /datum/mutantrace/monkey/seamonkey
