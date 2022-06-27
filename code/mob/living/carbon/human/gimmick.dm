@@ -1022,7 +1022,7 @@ proc/empty_mouse_params()//TODO MOVE THIS!!!
 // yaya
 
 /mob/living/carbon/human/jennifer/proc/yayaMode(var/fast)
-	var/emotePicker = rand(0,2)
+	var/emotePicker = rand(0,4)
 	if(fast)
 		switch(emotePicker)
 			if(0)
@@ -1031,6 +1031,10 @@ proc/empty_mouse_params()//TODO MOVE THIS!!!
 				SPAWN(0) src.emote("scream")
 			if(2)
 				SPAWN(0) src.say("Yaya!!")
+			if(3)
+				SPAWN(0) src.say("What!!")
+			if(4)
+				SPAWN(0) src.say("Huh??")
 	else
 		switch(emotePicker)
 			if(0)
@@ -1042,6 +1046,10 @@ proc/empty_mouse_params()//TODO MOVE THIS!!!
 				walk(src, 0)
 			if(2)
 				SPAWN(0) src.say("Yaya!!")
+			if(3)
+				SPAWN(0) src.say("What!!")
+			if(4)
+				SPAWN(0) src.say("Huh??")
 
 /mob/living/carbon/human/jennifer
 	is_npc = 1
@@ -1100,5 +1108,4 @@ proc/empty_mouse_params()//TODO MOVE THIS!!!
 			if(!src.stat)
 				walk_rand(src)
 
-			if(prob(50))
-				yayaMode(TRUE)
+			yayaMode(TRUE)
