@@ -1069,7 +1069,7 @@ var/global/curr_day = null
 	set category = "Commands"
 
 	src.Browse( {"<center><h2>HerbStation Info</h2></center><hr>
-	HerbStation is a Goonstation fork with a few neat things I've tacked on because... I dunno, maybe they just wouldn't fit on the main branch. Below are the major changes from Goon. Also, normal Goon rules apply, be nice please!<hr>
+	HerbStation is a Goonstation fork with a few neat things I've tacked on because... I dunno, maybe they just wouldn't fit on the main branch. Below are the major changes from Goon. Normal Goon rules apply, be nice please!<hr>
 	<ul style='list-style-type:disc'>
 		<li><b>Additions</b>
 			<ul style='list-style-type:circle'>
