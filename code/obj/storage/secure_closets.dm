@@ -335,7 +335,7 @@
 	req_access = list(access_securitylockers)
 	icon_state = "sec"
 	icon_closed = "sec"
-	icon_opened = "secure_red-open"
+	icon_opened = "secure_blue-open"
 	_max_health = LOCKER_HEALTH_STRONG
 	_health = LOCKER_HEALTH_STRONG
 	bolted = TRUE

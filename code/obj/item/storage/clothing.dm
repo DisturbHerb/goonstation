@@ -130,7 +130,7 @@
 
 /obj/item/storage/box/clothing/security
 	name = "\improper Security Officer's equipment"
-	spawn_contents = list(/obj/item/clothing/under/rank/security,\
+	spawn_contents = list(/obj/item/clothing/under/rank/security/blueniform,\
 	/obj/item/clothing/shoes/swat,\
 	/obj/item/device/radio/headset/security,\
 	/obj/item/device/pda2/security)

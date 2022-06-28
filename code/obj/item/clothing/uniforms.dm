@@ -409,11 +409,29 @@
 	icon_state = "security"
 	item_state = "security"
 
+	blueniform
+		name = "senior officer dress uniform"
+		desc = "A cheap dress shirt and tie with slacks. Dork squad."
+		icon_state = "secdress-khaki"
+		item_state = "secdress-khaki"
+
+		New()
+			..()
+			if (prob(50))
+				icon_state = "secdress-black"
+				item_state = "secdress-black"
+
 	assistant
 		name = "security assistant uniform"
 		desc = "Wait, is that velcro?"
 		icon_state = "security-assistant"
 		item_state = "security-assistant"
+
+		bluessistant
+			name = "junior officer jumper"
+			desc = "Itchy!"
+			icon_state = "secass-jumper"
+			item_state = "secass-jumper"
 
 	april_fools
 		icon_state = "security-alt"

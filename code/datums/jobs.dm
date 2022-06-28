@@ -473,7 +473,7 @@ ABSTRACT_TYPE(/datum/job/security)
 	receives_badge = 1
 	slot_back = list(/obj/item/storage/backpack/security)
 	slot_belt = list(/obj/item/device/pda2/security)
-	slot_jump = list(/obj/item/clothing/under/rank/security)
+	slot_jump = list(/obj/item/clothing/under/rank/security/blueniform)
 	slot_suit = list(/obj/item/clothing/suit/armor/vest)
 	slot_head = list(/obj/item/clothing/head/helmet/hardhat/security)
 	slot_foot = list(/obj/item/clothing/shoes/swat)
@@ -481,7 +481,8 @@ ABSTRACT_TYPE(/datum/job/security)
 	slot_eyes = list(/obj/item/clothing/glasses/sunglasses/sechud)
 	slot_poc1 = list(/obj/item/storage/security_pouch) //replaces sec starter kit
 	slot_poc2 = list(/obj/item/requisition_token/security)
-	rounds_needed_to_play = 30 //higher barrier of entry than before but now with a trainee job to get into the rythym of things to compensate
+	//rounds_needed_to_play = 30 //higher barrier of entry than before but now with a trainee job to get into the rythym of things to compensate
+	// no this is herb station you don't need that here i hope - herp
 
 	New()
 		..()
@@ -500,11 +501,10 @@ ABSTRACT_TYPE(/datum/job/security)
 		cant_spawn_as_con = 1
 		wages = PAY_UNTRAINED
 		slot_back = list(/obj/item/storage/backpack/security)
-		slot_jump = list(/obj/item/clothing/under/rank/security/assistant)
+		slot_jump = list(/obj/item/clothing/under/rank/security/assistant/bluessistant)
 		slot_suit = list()
 		slot_glov = list(/obj/item/clothing/gloves/fingerless)
-		slot_head = list(/obj/item/clothing/head/red)
-		slot_foot = list(/obj/item/clothing/shoes/brown)
+		slot_foot = list(/obj/item/clothing/shoes/black)
 		slot_poc1 = list(/obj/item/storage/security_pouch/assistant)
 		slot_poc2 = list(/obj/item/requisition_token/security/assistant)
 		items_in_backpack = list(/obj/item/paper/book/from_file/space_law)
