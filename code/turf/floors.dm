@@ -431,6 +431,12 @@
 /turf/simulated/floor/darkblue/checker/other
 	icon_state = "blue-dblue2"
 
+/turf/simulated/floor/darkblue/side
+	icon_state = "dblue"
+
+/turf/simulated/floor/darkblue/corner
+	icon_state = "dbluecorner"
+
 /////////////////////////////////////////
 
 /turf/simulated/floor/bluegreen

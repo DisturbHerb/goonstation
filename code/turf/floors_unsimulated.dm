@@ -283,6 +283,12 @@
 /turf/unsimulated/floor/darkblue/checker/other
 	icon_state = "blue-dblue2"
 
+/turf/unsimulated/floor/darkblue/side
+	icon_state = "dblue"
+
+/turf/unsimulated/floor/darkblue/corner
+	icon_state = "dbluecorner"
+
 /////////////////////////////////////////
 
 /turf/unsimulated/floor/darkpurple

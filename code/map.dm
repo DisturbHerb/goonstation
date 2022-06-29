@@ -948,6 +948,12 @@ var/global/list/mapNames = list(
 		"the chapel" = list(/area/station/security/secwing),
 		"the south crew quarters" = list(/area/station/crew_quarters/quarters_south))
 
+/datum/map_settings/kawasaki
+	name = "KAWASAKI"
+	display_name = "NSS Kawasaki"
+	style = "ship"
+	goonhub_map = "https://crouton.net/"
+
 /datum/map_settings/pod_wars
 	name = "POD_WARS"
 	default_gamemode = "pod_wars"

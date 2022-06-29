@@ -245,6 +245,12 @@
 /turf/simulated/floor/airless/darkblue/checker/other
 	icon_state = "blue-dblue2"
 
+/turf/simulated/floor/airless/darkblue/side
+	icon_state = "dblue"
+
+/turf/simulated/floor/airless/darkblue/corner
+	icon_state = "dbluecorner"
+
 /////////////////////////////////////////
 
 /turf/simulated/floor/airless/bluegreen
