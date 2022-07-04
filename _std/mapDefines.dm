@@ -1,5 +1,7 @@
 #if defined(MAP_OVERRIDE_CONSTRUCTION)
 
+#elif defined(MAP_OVERRIDE_KAWASAKI)
+
 
 #elif defined(MAP_OVERRIDE_DESTINY)
 

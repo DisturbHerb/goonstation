@@ -94,6 +94,9 @@
 #elif defined(MAP_OVERRIDE_CONSTRUCTION)
 #include "construction.dm"
 
+#elif defined(MAP_OVERRIDE_KAWASAKI)
+#include "kawasaki.dm"
+
 #elif defined(MAP_OVERRIDE_DESTINY)
 #include "destiny.dm"
 

@@ -93,6 +93,7 @@ o+`        `-` ``..-:yooos-..----------..`
 
 //////////// MAP OVERRIDES
 
+//#define MAP_OVERRIDE_KAWASAKI
 //#define MAP_OVERRIDE_CONSTRUCTION		// Construction mode
 //#define MAP_OVERRIDE_DESTINY			// Destiny/RP
 //#define MAP_OVERRIDE_CLARION			// Destiny/Alt RP
