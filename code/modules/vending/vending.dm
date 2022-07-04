@@ -769,7 +769,7 @@
 	return
 
 /obj/machinery/vending/proc/postvend_effect()
-	playsound(src.loc, 'sound/machines/vending_dispense.ogg', 40, 0.5, 0.1)
+	playsound(src.loc, 'sound/machines/vending_dispense.ogg', 40, 0, 0.1)
 	return
 
 /obj/machinery/vending/power_change()
@@ -1131,12 +1131,12 @@
 		product_list += new/datum/data/vending_product(/obj/item/cigpacket/propuffs, 10, cost=PAY_TRADESMAN/5)
 		product_list += new/datum/data/vending_product(/obj/item/cigpacket/cigarillo, 10, cost=PAY_TRADESMAN/5)
 		product_list += new/datum/data/vending_product(/obj/item/cigarbox, 1, cost=PAY_TRADESMAN)
-		product_list += new/datum/data/vending_product(/obj/item/reagent_containers/patch/nicotine, 10, cost=PAY_TRADESMAN/10)
 		product_list += new/datum/data/vending_product(/obj/item/matchbook, 10, cost=PAY_UNTRAINED/20)
 		product_list += new/datum/data/vending_product(/obj/item/device/light/zippo, 5, cost=PAY_TRADESMAN/10)
 		product_list += new/datum/data/vending_product(/obj/item/decoration/ashtray, 5, cost=PAY_TRADESMAN/10)
 		product_list += new/datum/data/vending_product(/obj/item/reagent_containers/vape, 10, cost=PAY_TRADESMAN/2)
 		product_list += new/datum/data/vending_product(/obj/item/reagent_containers/ecig_refill_cartridge, 20, cost=PAY_TRADESMAN/5)
+		product_list += new/datum/data/vending_product(/obj/item/item_box/medical_patches/nicotine, 5, cost=PAY_TRADESMAN/5)
 
 		product_list += new/datum/data/vending_product(/obj/item/device/igniter, rand(1, 6), hidden=1, cost=PAY_UNTRAINED/5)
 		product_list += new/datum/data/vending_product(/obj/item/cigpacket/random, rand(0, 1), hidden=1, cost=420)
@@ -1155,8 +1155,6 @@
 	light_r =1
 	light_g = 0.88
 	light_b = 0.88
-
-
 
 	create_products()
 		..()
@@ -1197,6 +1195,10 @@
 		product_list += new/datum/data/vending_product(/obj/item/reagent_containers/patch/LSD, rand(1, 6), hidden=1)
 		product_list += new/datum/data/vending_product(/obj/item/reagent_containers/vape/medical, 1, hidden=1, cost=400)
 		product_list += new/datum/data/vending_product(/obj/item/reagent_containers/bath_bomb, rand(7, 13), hidden=1, cost=100)
+
+	postvend_effect()
+		playsound(src.loc, 'sound/machines/vending_dispense_small.ogg', 40, 0, 0.1)
+		return
 
 /obj/machinery/vending/medical_public
 	name = "Public MiniMed"
@@ -1248,6 +1250,10 @@
 		else
 			slogan_list += "ERROR: OUT OF COFFEE!"
 
+	postvend_effect()
+		playsound(src.loc, 'sound/machines/vending_dispense_small.ogg', 40, 0, 0.1)
+		return
+
 /obj/machinery/vending/security
 	name = "SecTech"
 	desc = "An ID-selective dispenser for security equipment."
@@ -1271,7 +1277,6 @@
 		product_list += new/datum/data/vending_product(/obj/item/device/pda2/security, 2)
 		product_list += new/datum/data/vending_product(/obj/item/sec_tape/vended, 3)
 		product_list += new/datum/data/vending_product(/obj/item/ammo/bullets/a38/stun, 2)
-		product_list += new/datum/data/vending_product(/obj/item/ammo/bullets/nine_mm_NATO, 2)
 		product_list += new/datum/data/vending_product(/obj/item/implantcase/counterrev, 3)
 		product_list += new/datum/data/vending_product(/obj/item/implanter, 1)
 #ifdef RP_MODE
