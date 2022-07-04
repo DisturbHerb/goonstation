@@ -502,7 +502,6 @@ ABSTRACT_TYPE(/datum/job/security)
 		wages = PAY_UNTRAINED
 		slot_back = list(/obj/item/storage/backpack/security)
 		slot_jump = list(/obj/item/clothing/under/rank/security/assistant/bluessistant)
-		slot_suit = list()
 		slot_glov = list(/obj/item/clothing/gloves/fingerless)
 		slot_foot = list(/obj/item/clothing/shoes/black)
 		slot_poc1 = list(/obj/item/storage/security_pouch/assistant)
