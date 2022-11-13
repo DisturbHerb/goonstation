@@ -2999,6 +2999,29 @@ ABSTRACT_TYPE(/obj/machinery/vending/cola)
 
 		holding.air_contents.copy_from(gas_prototype)
 
+	ui_interact(mob/user, datum/tgui/ui)
+		ui = tgui_process.try_update_ui(user, src, ui)
+		if(!ui)
+			ui = new(user, src, "AirVendor")
+			ui.open()
+
+	ui_data(mob/user)
+		var/bankaccount = FindBankAccountByName(src.scan?.registered)
+  		. = list(
+			"bankMoney" = bankaccount ? bankaccount["current_money"] : 0,
+			"cash" = src.credit,
+			"acceptCard" = src.acceptcard,
+			"requiresMoney" = src.pay,
+			"cardname" = src.scan?.name,
+			"cost" = src.fill_cost(),
+			"holdingTank" = src.holding,
+			"holdingTankPressure" = MIXTURE_PRESSURE(holding.air_contents),
+		)
+
+	ui_act(action, params)
+		. = ..()
+		if (.) return
+
 	attackby(obj/item/W, mob/user)
 		if (istype(W, /obj/item/tank))
 			if (!src.holding)
@@ -3014,71 +3037,71 @@ ABSTRACT_TYPE(/obj/machinery/vending/cola)
 		else
 			..()
 
-	attack_hand(mob/user)
-		if (status & (BROKEN|NOPOWER))
-			return
-		if (user.stat || user.restrained())
-			return
+	// attack_hand(mob/user)
+	// 	if (status & (BROKEN|NOPOWER))
+	// 		return
+	// 	if (user.stat || user.restrained())
+	// 		return
 
-		src.add_dialog(user)
-		var/list/html = list("")
-		html += "<TT><b>Welcome!</b><br>"
-		html += "<b>Current balance: <a href='byond://?src=\ref[src];return_credits=1'>[src.credit] credits</a></b><br>"
-		if (src.scan)
-			var/datum/db_record/account = null
-			account = FindBankAccountByName(src.scan.registered)
-			html += "<b>Current ID:</b> <a href='?src=\ref[src];logout=1'>[src.scan]</a><br />"
-			html += "<b>Credits on Account: [account["current_money"]] Credits</b> <br>"
-		else
-			html += "<b>Current ID:</b> None<br>"
-		if(src.holding)
-			html += "<font color = 'blue'>Current tank:</font> <a href='?src=\ref[src];eject=1'>[holding]</a><br />"
-			html += "<font color = 'red'>Pressure:</font> [MIXTURE_PRESSURE(holding.air_contents)] kPa<br />"
-		else
-			html += "<font color = 'blue'>Current tank:</font> none<br />"
+	// 	src.add_dialog(user)
+	// 	var/list/html = list("")
+	// 	html += "<TT><b>Welcome!</b><br>"
+	// 	html += "<b>Current balance: <a href='byond://?src=\ref[src];return_credits=1'>[src.credit] credits</a></b><br>"
+	// 	if (src.scan)
+	// 		var/datum/db_record/account = null
+	// 		account = FindBankAccountByName(src.scan.registered)
+	// 		html += "<b>Current ID:</b> <a href='?src=\ref[src];logout=1'>[src.scan]</a><br />"
+	// 		html += "<b>Credits on Account: [account["current_money"]] Credits</b> <br>"
+	// 	else
+	// 		html += "<b>Current ID:</b> None<br>"
+	// 	if(src.holding)
+	// 		html += "<font color = 'blue'>Current tank:</font> <a href='?src=\ref[src];eject=1'>[holding]</a><br />"
+	// 		html += "<font color = 'red'>Pressure:</font> [MIXTURE_PRESSURE(holding.air_contents)] kPa<br />"
+	// 	else
+	// 		html += "<font color = 'blue'>Current tank:</font> none<br />"
 
-		html += "<font color = 'green'>Desired pressure:</font> <a href='?src=\ref[src];changepressure=1'>[src.target_pressure] kPa</a><br/>"
-		html += (holding) ? "<a href='?src=\ref[src];fill=1'>Fill ([src.fill_cost()] credits)</a>" : "<font color = 'red'>Fill (unavailable)</red>"
+	// 	html += "<font color = 'green'>Desired pressure:</font> <a href='?src=\ref[src];changepressure=1'>[src.target_pressure] kPa</a><br/>"
+	// 	html += (holding) ? "<a href='?src=\ref[src];fill=1'>Fill ([src.fill_cost()] credits)</a>" : "<font color = 'red'>Fill (unavailable)</red>"
 
-		user.Browse(html.Join(), "window=o2_vending")
-		onclose(user, "vending")
+	// 	user.Browse(html.Join(), "window=o2_vending")
+	// 	onclose(user, "vending")
 
-	Topic(href, href_list)
-		..()
+	// Topic(href, href_list)
+	// 	..()
 
-		if(href_list["eject"])
-			if(holding)
-				usr.put_in_hand_or_eject(holding)
-				holding = null
-				UpdateOverlays(null, "o2_vend_tank_overlay")
-				src.updateUsrDialog()
+	// 	if(href_list["eject"])
+	// 		if(holding)
+	// 			usr.put_in_hand_or_eject(holding)
+	// 			holding = null
+	// 			UpdateOverlays(null, "o2_vend_tank_overlay")
+	// 			src.updateUsrDialog()
 
-		if(href_list["changepressure"])
-			var/change = input(usr,"Target Pressure (10.1325-1013.25):","Enter target pressure",target_pressure) as num
-			if(isnum_safe(change))
-				target_pressure = clamp(change, 10.1325, 1013.25)
-				src.updateUsrDialog()
+	// 	if(href_list["changepressure"])
+	// 		var/change = input(usr,"Target Pressure (10.1325-1013.25):","Enter target pressure",target_pressure) as num
+	// 		if(isnum_safe(change))
+	// 			target_pressure = clamp(change, 10.1325, 1013.25)
+	// 			src.updateUsrDialog()
 
-		if(href_list["fill"])
-			if (holding)
-				var/cost = fill_cost()
-				if(credit >= cost)
-					src.credit -= cost
-					src.fill()
-					boutput(usr, "<span class='notice'>You fill up the [src.holding].</span>")
-					src.updateUsrDialog()
-					return
-				else if(scan)
-					var/datum/db_record/account = FindBankAccountByName(src.scan.registered)
-					if (account && account["current_money"] >= cost)
-						account["current_money"] -= cost
-						src.fill()
-						boutput(usr, "<span class='notice'>You fill up the [src.holding].</span>")
-						src.updateUsrDialog()
-						return
-				boutput(usr, "<span class='alert'>Insufficient funds.</span>")
-			else
-				boutput(usr, "<span class='alert'>There is no tank to fill up!</span>")
+	// 	if(href_list["fill"])
+	// 		if (holding)
+	// 			var/cost = fill_cost()
+	// 			if(credit >= cost)
+	// 				src.credit -= cost
+	// 				src.fill()
+	// 				boutput(usr, "<span class='notice'>You fill up the [src.holding].</span>")
+	// 				src.updateUsrDialog()
+	// 				return
+	// 			else if(scan)
+	// 				var/datum/db_record/account = FindBankAccountByName(src.scan.registered)
+	// 				if (account && account["current_money"] >= cost)
+	// 					account["current_money"] -= cost
+	// 					src.fill()
+	// 					boutput(usr, "<span class='notice'>You fill up the [src.holding].</span>")
+	// 					src.updateUsrDialog()
+	// 					return
+	// 			boutput(usr, "<span class='alert'>Insufficient funds.</span>")
+	// 		else
+	// 			boutput(usr, "<span class='alert'>There is no tank to fill up!</span>")
 
 ABSTRACT_TYPE(/obj/machinery/vending/jobclothing)
 
