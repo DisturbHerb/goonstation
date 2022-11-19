@@ -1070,12 +1070,6 @@
 	name = "Convention Hall";
 	do_not_irradiate = 1
 	})
-"fw" = (
-/obj/lattice{
-	icon_state = "lattice-dir"
-	},
-/turf/space,
-/area/space)
 "fz" = (
 /obj/storage/closet,
 /obj/item/tank/oxygen,
@@ -2175,6 +2169,13 @@
 /obj/machinery/light/small/floor/netural,
 /turf/simulated/floor/specialroom/cafeteria,
 /area/station/crew_quarters/kitchen)
+"mm" = (
+/obj/lattice,
+/obj/warp_beacon/mainpod1{
+	name = "main hangar beacon"
+	},
+/turf/space,
+/area/space)
 "mn" = (
 /obj/wingrille_spawn/auto/reinforced,
 /obj/cable{
@@ -2259,6 +2260,11 @@
 /area/station/hallway/secondary/entry)
 "mO" = (
 /obj/machinery/door/airlock/pyro/glass{
+	dir = 4
+	},
+/obj/machinery/door/poddoor/pyro/shutters{
+	name = "Boxing Arena Access Control Shutters";
+	id = "boxing";
 	dir = 4
 	},
 /turf/simulated/floor/wood/two,
@@ -2557,13 +2563,6 @@
 	},
 /turf/simulated/floor/black,
 /area/station/crew_quarters/cafeteria)
-"on" = (
-/obj/lattice{
-	icon_state = "lattice-dir"
-	},
-/obj/machinery/light/runway_light/delay2,
-/turf/space,
-/area/space)
 "oq" = (
 /obj/sea_plant/anemone,
 /turf/simulated/floor/sand,
@@ -3655,14 +3654,6 @@
 	dir = 8
 	},
 /area/listeningpost)
-"ue" = (
-/obj/lattice{
-	dir = 1;
-	icon_state = "lattice-dir-b"
-	},
-/obj/machinery/light/runway_light/delay2,
-/turf/space,
-/area/space)
 "uh" = (
 /turf/simulated/floor/grey/side,
 /area/listeningpost)
@@ -3961,6 +3952,13 @@
 	},
 /turf/simulated/floor/specialroom/arcade,
 /area/station/janitor/office)
+"vE" = (
+/obj/lattice{
+	icon_state = "lattice-dir"
+	},
+/obj/machinery/light/runway_light/delay2,
+/turf/space,
+/area/space)
 "vF" = (
 /obj/machinery/door/airlock/pyro/glass,
 /obj/cable{
@@ -4852,6 +4850,17 @@
 	},
 /turf/simulated/floor/wood,
 /area/station/crew_quarters/cafeteria)
+"Ai" = (
+/obj/machinery/door_control{
+	pixel_y = -24;
+	id = "arena";
+	name = "Convention Hall Door Control"
+	},
+/turf/unsimulated/floor/wood,
+/area/station/engine/singcore{
+	name = "Convention Hall";
+	do_not_irradiate = 1
+	})
 "Ak" = (
 /obj/stool/chair/comfy/shuttle/red{
 	dir = 4
@@ -5128,6 +5137,14 @@
 /area/station/hangar/main{
 	name = "Parking Lot"
 	})
+"BW" = (
+/obj/lattice{
+	dir = 1;
+	icon_state = "lattice-dir-b"
+	},
+/obj/machinery/light/runway_light/delay2,
+/turf/space,
+/area/space)
 "BZ" = (
 /turf/unsimulated/floor/stairs/wide{
 	dir = 1
@@ -5227,6 +5244,14 @@
 /area/station/hangar/main{
 	name = "Parking Lot"
 	})
+"CP" = (
+/obj/lattice{
+	dir = 5;
+	icon_state = "lattice-dir"
+	},
+/obj/machinery/light/runway_light/delay2,
+/turf/space,
+/area/space)
 "CQ" = (
 /obj/decal/tile_edge/line/black{
 	dir = 4;
@@ -5258,6 +5283,19 @@
 /turf/simulated/floor/caution/south,
 /area/station/hangar/main{
 	name = "Parking Lot"
+	})
+"Dg" = (
+/obj/stool/chair{
+	dir = 1
+	},
+/obj/machinery/door_control{
+	pixel_y = -24;
+	id = "boxing";
+	name = "Boxing Arena Door Control"
+	},
+/turf/simulated/floor/wood/seven,
+/area/station/crew_quarters/fitness{
+	name = "Chess Ring"
 	})
 "Dh" = (
 /obj/grille/steel,
@@ -5473,13 +5511,6 @@
 	},
 /turf/simulated/floor/stairs/wide/middle,
 /area/station/hallway/secondary/entry)
-"EG" = (
-/obj/lattice,
-/obj/warp_beacon/mainpod1{
-	name = "main hangar beacon"
-	},
-/turf/space,
-/area/space)
 "EH" = (
 /obj/window/auto/reinforced/indestructible,
 /obj/grille/steel,
@@ -5518,14 +5549,6 @@
 /obj/machinery/light,
 /turf/simulated/floor/wood,
 /area/station/crew_quarters/cafeteria)
-"EO" = (
-/obj/lattice{
-	dir = 5;
-	icon_state = "lattice-dir"
-	},
-/obj/machinery/light/runway_light/delay2,
-/turf/space,
-/area/space)
 "EP" = (
 /obj/machinery/vending/medical_public,
 /turf/simulated/floor/black,
@@ -5906,17 +5929,6 @@
 	},
 /turf/simulated/floor/terrazzo,
 /area/station/hallway/primary/west)
-"GG" = (
-/obj/machinery/door_control{
-	pixel_y = -24;
-	id = "arena";
-	name = "Convention Hall Door Control"
-	},
-/turf/unsimulated/floor/wood,
-/area/station/engine/singcore{
-	name = "Convention Hall";
-	do_not_irradiate = 1
-	})
 "GI" = (
 /obj/disposalpipe/segment/horizontal,
 /turf/simulated/floor/terrazzo/black,
@@ -6005,6 +6017,14 @@
 /obj/item/bandage,
 /turf/simulated/floor/carpet/red,
 /area/listeningpost)
+"Ho" = (
+/obj/lattice{
+	dir = 9;
+	icon_state = "lattice-dir"
+	},
+/obj/machinery/light/runway_light/delay2,
+/turf/space,
+/area/space)
 "Hq" = (
 /obj/cable{
 	icon_state = "4-8"
@@ -6144,6 +6164,16 @@
 	dir = 8
 	},
 /area/listeningpost)
+"Iq" = (
+/obj/machinery/door/airlock/pyro/glass{
+	dir = 4
+	},
+/obj/access_spawn/captain,
+/turf/unsimulated/floor/wood,
+/area/station/engine/singcore{
+	name = "Convention Hall";
+	do_not_irradiate = 1
+	})
 "It" = (
 /obj/machinery/light{
 	dir = 4;
@@ -6166,16 +6196,6 @@
 /obj/item/device/radio/beacon,
 /turf/simulated/floor/plating/random,
 /area/station/maintenance/disposal)
-"IF" = (
-/obj/machinery/door/airlock/pyro/glass{
-	dir = 4
-	},
-/obj/access_spawn/captain,
-/turf/unsimulated/floor/wood,
-/area/station/engine/singcore{
-	name = "Convention Hall";
-	do_not_irradiate = 1
-	})
 "IJ" = (
 /obj/item/storage/wall/clothingrack/clothes4,
 /turf/simulated/floor/black,
@@ -7385,6 +7405,10 @@
 	})
 "Qe" = (
 /obj/machinery/door/airlock/pyro/external,
+/obj/machinery/door/poddoor/pyro/shutters{
+	name = "Boxing Arena Access Control Shutters";
+	id = "boxing"
+	},
 /turf/simulated/floor/black,
 /area/station/crew_quarters/fitness{
 	name = "Chess Ring"
@@ -8203,6 +8227,11 @@
 /obj/cable{
 	icon_state = "4-8"
 	},
+/obj/machinery/door/poddoor/pyro/shutters{
+	name = "Boxing Arena Access Control Shutters";
+	id = "boxing";
+	dir = 4
+	},
 /turf/simulated/floor/wood/two,
 /area/station/crew_quarters/fitness{
 	name = "Chess Ring"
@@ -8645,14 +8674,6 @@
 	dir = 4
 	},
 /area/listeningpost)
-"Xc" = (
-/obj/lattice{
-	dir = 9;
-	icon_state = "lattice-dir"
-	},
-/obj/machinery/light/runway_light/delay2,
-/turf/space,
-/area/space)
 "Xg" = (
 /turf/simulated/floor/redblack{
 	dir = 8
@@ -8919,6 +8940,12 @@
 /obj/disposalpipe/segment/horizontal,
 /turf/simulated/floor/black/side,
 /area/station/hallway/primary/north)
+"Yq" = (
+/obj/lattice{
+	icon_state = "lattice-dir"
+	},
+/turf/space,
+/area/space)
 "Ys" = (
 /obj/wingrille_spawn/auto/reinforced,
 /turf/simulated/floor/plating,
@@ -42551,7 +42578,7 @@ Kt
 ox
 Xp
 ox
-VE
+Dg
 hT
 fS
 hT
@@ -44379,7 +44406,7 @@ jP
 jP
 jP
 jP
-Xc
+Ho
 jP
 jP
 jP
@@ -44677,12 +44704,12 @@ bL
 bL
 bL
 Ib
-fw
-fw
-fw
-on
-EG
-ue
+Yq
+Yq
+Yq
+vE
+mm
+BW
 jP
 jP
 jP
@@ -44983,7 +45010,7 @@ jP
 jP
 jP
 jP
-EO
+CP
 jP
 jP
 jP
@@ -63078,8 +63105,8 @@ nA
 nA
 qa
 fu
-IF
-IF
+Iq
+Iq
 fu
 qa
 qa
@@ -64293,7 +64320,7 @@ tr
 tr
 tr
 tr
-GG
+Ai
 qX
 zd
 Ju
