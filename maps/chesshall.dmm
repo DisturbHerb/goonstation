@@ -1629,6 +1629,16 @@
 	},
 /turf/simulated/floor/sanitary,
 /area/station/crew_quarters/toilets)
+"iB" = (
+/obj/machinery/door/airlock/pyro/glass{
+	dir = 4
+	},
+/obj/access_spawn/captain,
+/turf/unsimulated/floor/wood,
+/area/station/engine/singcore{
+	name = "Convention Hall";
+	do_not_irradiate = 1
+	})
 "iC" = (
 /obj/decal/tile_edge/line/black{
 	dir = 6;
@@ -2169,6 +2179,17 @@
 /obj/machinery/light/small/floor/netural,
 /turf/simulated/floor/specialroom/cafeteria,
 /area/station/crew_quarters/kitchen)
+"mm" = (
+/obj/machinery/door_control{
+	pixel_y = -24;
+	id = "arena";
+	name = "Convention Hall Door Control"
+	},
+/turf/unsimulated/floor/wood,
+/area/station/engine/singcore{
+	name = "Convention Hall";
+	do_not_irradiate = 1
+	})
 "mn" = (
 /obj/wingrille_spawn/auto/reinforced,
 /obj/cable{
@@ -4289,7 +4310,12 @@
 /turf/simulated/floor/sanitary,
 /area/station/crew_quarters/toilets)
 "xh" = (
+/obj/access_spawn/captain,
 /obj/machinery/door/airlock/pyro/maintenance,
+/obj/machinery/door/poddoor/pyro/shutters{
+	id = "arena";
+	name = "Convention Hall Access Control Shutters"
+	},
 /turf/unsimulated/floor/wood,
 /area/station/maintenance/solar/east)
 "xl" = (
@@ -5040,6 +5066,10 @@
 /turf/simulated/floor/wood/two,
 /area/station/crew_quarters/cafeteria)
 "Bv" = (
+/obj/machinery/door/poddoor/pyro/shutters{
+	id = "arena";
+	name = "Convention Hall Access Control Shutters"
+	},
 /obj/machinery/door/airlock/pyro/glass,
 /turf/simulated/floor,
 /area/station/engine/singcore{
@@ -5158,8 +5188,14 @@
 /turf/simulated/floor/plating/random,
 /area/station/maintenance/disposal)
 "Cu" = (
+/obj/access_spawn/captain,
 /obj/machinery/door/airlock/pyro{
-	name = "Toilets"
+	name = "Toilets";
+	req_access_txt = null
+	},
+/obj/machinery/door/poddoor/pyro/shutters{
+	id = "arena";
+	name = "Convention Hall Access Control Shutters"
 	},
 /turf/unsimulated/floor/wood,
 /area/station/crew_quarters/toilets)
@@ -62998,8 +63034,8 @@ nA
 nA
 qa
 fu
-wg
-wg
+iB
+iB
 fu
 qa
 qa
@@ -64213,7 +64249,7 @@ tr
 tr
 tr
 tr
-tr
+mm
 qX
 zd
 Ju
