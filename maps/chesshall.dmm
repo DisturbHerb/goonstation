@@ -361,6 +361,9 @@
 /obj/item/gameclock{
 	name = "Board 4 game clock"
 	},
+/obj/item/paper/chesspamphlet{
+	pixel_y = 16
+	},
 /turf/unsimulated/floor/wood/seven,
 /area/station/engine/singcore{
 	name = "Convention Hall";
@@ -1502,6 +1505,9 @@
 /obj/item/gameclock{
 	name = "Board 9 game clock"
 	},
+/obj/item/paper/chesspamphlet{
+	pixel_y = 16
+	},
 /turf/unsimulated/floor/wood/seven,
 /area/station/engine/singcore{
 	name = "Convention Hall";
@@ -2143,6 +2149,9 @@
 /obj/item/gameclock{
 	name = "Board 14 game clock"
 	},
+/obj/item/paper/chesspamphlet{
+	pixel_y = 16
+	},
 /turf/unsimulated/floor/wood/seven,
 /area/station/engine/singcore{
 	name = "Convention Hall";
@@ -2630,6 +2639,9 @@
 /obj/item/gameclock{
 	name = "Board 17 game clock"
 	},
+/obj/item/paper/chesspamphlet{
+	pixel_y = 16
+	},
 /turf/unsimulated/floor/wood/seven,
 /area/station/engine/singcore{
 	name = "Convention Hall";
@@ -2862,6 +2874,9 @@
 /obj/item/gameclock{
 	name = "Board 18 game clock"
 	},
+/obj/item/paper/chesspamphlet{
+	pixel_y = 16
+	},
 /turf/unsimulated/floor/wood/seven,
 /area/station/engine/singcore{
 	name = "Convention Hall";
@@ -3024,6 +3039,9 @@
 /obj/table/folding,
 /obj/item/gameclock{
 	name = "Board 5 game clock"
+	},
+/obj/item/paper/chesspamphlet{
+	pixel_y = 16
 	},
 /turf/unsimulated/floor/wood/seven,
 /area/station/engine/singcore{
@@ -4533,6 +4551,9 @@
 /obj/item/gameclock{
 	name = "Board 10 game clock"
 	},
+/obj/item/paper/chesspamphlet{
+	pixel_y = 16
+	},
 /turf/unsimulated/floor/wood/seven,
 /area/station/engine/singcore{
 	name = "Convention Hall";
@@ -4666,6 +4687,9 @@
 /obj/table/folding,
 /obj/item/gameclock{
 	name = "Board 13 game clock"
+	},
+/obj/item/paper/chesspamphlet{
+	pixel_y = 16
 	},
 /turf/unsimulated/floor/wood/seven,
 /area/station/engine/singcore{
@@ -5385,6 +5409,9 @@
 /obj/item/gameclock{
 	name = "Board 11 game clock"
 	},
+/obj/item/paper/chesspamphlet{
+	pixel_y = 16
+	},
 /turf/unsimulated/floor/wood/seven,
 /area/station/engine/singcore{
 	name = "Convention Hall";
@@ -5634,6 +5661,9 @@
 /obj/table/folding,
 /obj/item/gameclock{
 	name = "Board 1 game clock"
+	},
+/obj/item/paper/chesspamphlet{
+	pixel_y = 16
 	},
 /turf/unsimulated/floor/wood/seven,
 /area/station/engine/singcore{
@@ -6310,6 +6340,9 @@
 /obj/item/gameclock{
 	name = "Board 16 game clock"
 	},
+/obj/item/paper/chesspamphlet{
+	pixel_y = 16
+	},
 /turf/unsimulated/floor/wood/seven,
 /area/station/engine/singcore{
 	name = "Convention Hall";
@@ -6603,6 +6636,9 @@
 /obj/table/folding,
 /obj/item/gameclock{
 	name = "Board 8 game clock"
+	},
+/obj/item/paper/chesspamphlet{
+	pixel_y = 16
 	},
 /turf/unsimulated/floor/wood/seven,
 /area/station/engine/singcore{
@@ -7699,6 +7735,9 @@
 /obj/item/gameclock{
 	name = "Board 6 game clock"
 	},
+/obj/item/paper/chesspamphlet{
+	pixel_y = 16
+	},
 /turf/unsimulated/floor/wood/seven,
 /area/station/engine/singcore{
 	name = "Convention Hall";
@@ -7968,6 +8007,9 @@
 /obj/item/gameclock{
 	name = "Board 2 game clock"
 	},
+/obj/item/paper/chesspamphlet{
+	pixel_y = 16
+	},
 /turf/unsimulated/floor/wood/seven,
 /area/station/engine/singcore{
 	name = "Convention Hall";
@@ -8121,6 +8163,9 @@
 /obj/table/folding,
 /obj/item/gameclock{
 	name = "Board 7 game clock"
+	},
+/obj/item/paper/chesspamphlet{
+	pixel_y = 16
 	},
 /turf/unsimulated/floor/wood/seven,
 /area/station/engine/singcore{
@@ -8325,6 +8370,9 @@
 /obj/table/folding,
 /obj/item/gameclock{
 	name = "Board 3 game clock"
+	},
+/obj/item/paper/chesspamphlet{
+	pixel_y = 16
 	},
 /turf/unsimulated/floor/wood/seven,
 /area/station/engine/singcore{
@@ -8544,6 +8592,9 @@
 /obj/item/gameclock{
 	name = "Board 12 game clock"
 	},
+/obj/item/paper/chesspamphlet{
+	pixel_y = 16
+	},
 /turf/unsimulated/floor/wood/seven,
 /area/station/engine/singcore{
 	name = "Convention Hall";
@@ -8615,6 +8666,9 @@
 /obj/table/folding,
 /obj/item/gameclock{
 	name = "Board 15 game clock"
+	},
+/obj/item/paper/chesspamphlet{
+	pixel_y = 16
 	},
 /turf/unsimulated/floor/wood/seven,
 /area/station/engine/singcore{
