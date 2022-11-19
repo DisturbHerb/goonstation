@@ -205,7 +205,7 @@
 			src.deselectPawn(ckey)
 			return
 
-		var/map_text = ""
+		// var/map_text = ""
 		var/moverName = pawn["selected"]["name"]
 		var/prevPosString = src.posToNotationString(new_x, new_y)
 		var/newPosString = src.posToNotationString(_x, _y)
@@ -222,19 +222,19 @@
 		if (occupied)
 			// Check if the pawn is moving to a tile that is occupied by an enemy
 			if (pawn != occupied)
-				map_text = "[moverName] moves [prevPosString] to [newPosString] and captures [occupied["code"]]!"
+				// map_text = "[moverName] moves [prevPosString] to [newPosString] and captures [occupied["code"]]!"
 				playsound(src.loc, src.sounds["capture"], 30, 1)
 				src.removePieceAt(_x, _y)
 			else
 				// If the piece is moving to a tile that is occupied by itself
 				return
 		else
-			map_text = "[moverName] moves [prevPosString] to [newPosString]!"
+			// map_text = "[moverName] moves [prevPosString] to [newPosString]!"
 
 
-		var/map_text_final = make_chat_maptext(src, map_text, "color: #A8E9F0;", alpha = 150, time = 8)
-		for (var/mob/O in hearers(src))
-			O.show_message(assoc_maptext = map_text_final)
+		// var/map_text_final = make_chat_maptext(src, map_text, "color: #A8E9F0;", alpha = 150, time = 8)
+		// for (var/mob/O in hearers(src))
+		// 	O.show_message(assoc_maptext = map_text_final)
 
 		playsound(src.loc, src.sounds["move"], 30, 1)
 
