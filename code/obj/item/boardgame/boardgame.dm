@@ -15,6 +15,7 @@
 		"newgame" = 'sound/effects/sine_boop.ogg',
 	)
 
+	var/talking = FALSE // Whether or not the board broadcasts moves using maptext
 	var/game = "chess"
 	var/pattern = "checkerboard"
 
@@ -231,10 +232,10 @@
 		else
 			map_text = "[moverName] moves [prevPosString] to [newPosString]!"
 
-
-		// var/map_text_final = make_chat_maptext(src, map_text, "color: #A8E9F0;", alpha = 150, time = 8)
-		// for (var/mob/O in hearers(src))
-		// 	O.show_message(assoc_maptext = map_text_final)
+		if (src.talking)
+			var/map_text_final = make_chat_maptext(src, map_text, "color: #A8E9F0;", alpha = 150, time = 8)
+			for (var/mob/O in hearers(src))
+				O.show_message(assoc_maptext = map_text_final)
 
 		playsound(src.loc, src.sounds["move"], 30, 1)
 
@@ -333,7 +334,7 @@
 		src.cb.DrawBox(src.cb_clr_bot, 1, 1, width, src.cb_mrg_bot)
 
 		// Draw the board
-		var/quarter_pad = src.cb_pad / 4 // Like a quarter pounder, but with padding
+		//var/quarter_pad = src.cb_pad / 4 // Like a quarter pounder, but with padding
 		for(var/x in 1 to board_width)
 			for(var/y in 1 to board_height)
 				src.drawTile(x, y)

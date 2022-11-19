@@ -4730,7 +4730,6 @@
 /area/station/maintenance/disposal)
 "zB" = (
 /obj/table/folding,
-/obj/item/boardgame/chess,
 /obj/machinery/camera{
 	c_tag = "Chessring";
 	dir = 9;
@@ -4738,6 +4737,10 @@
 	name = "The Chessring";
 	network = "Zeta";
 	tag = ""
+	},
+/obj/item/boardgame/chess{
+	talking = 1;
+	desc = "It's a board for playing chess and checkers! It talks!"
 	},
 /obj/landmark/boxing_ring,
 /turf/simulated/floor/specialroom/gym,
