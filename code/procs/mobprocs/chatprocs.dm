@@ -437,7 +437,10 @@
 	var/first_quote = " \""
 	var/second_quote = "\""
 
-
+	var/list/list/custom_speech_verb = check_for_custom_speech_verb(text)
+	if(custom_speech_verb)
+		speechverb = custom_speech_verb[1]["speech_verb"]
+		text = custom_speech_verb[1]["text"]
 
 	if(!speechverb)
 		speechverb = speechverb_say
@@ -541,6 +544,7 @@
 		return speechverb
 
 	text = say_emphasis(text)
+	speechverb = say_emphasis (speechverb)
 
 	if(class)
 		class = " class='game [class]'"
@@ -572,6 +576,19 @@
 	var/static/regex/remove_emphasis_characters = regex(@"(?<!\\)[\+_|]", "g") // Gets the preceding character to the last emphasis character.
 	input = remove_emphasis_characters.Replace_char(input, "")
 	return input
+
+/mob/proc/check_for_custom_speech_verb(input)
+	var/custom_say_pos = findtext(input, "*")
+	if(!custom_say_pos)
+		return null
+	var/speech_verb
+	if (emote_check()) // I'd wager there are few cirumstances where you can't emote but can talk but whatever - DisturbHerb
+		speech_verb = lowertext(copytext_char(input, 1, custom_say_pos))
+	var/output
+	output = copytext(input, custom_say_pos + 1)
+	if (!output)
+		output = "an interesting thing to say"
+	return list(list("speech_verb" = speech_verb, "text" = output))
 
 //no, voluntary is not a boolean. screm
 /mob/proc/emote(act, voluntary = 0, atom/target)

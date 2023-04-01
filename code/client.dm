@@ -1007,6 +1007,7 @@ var/global/curr_day = null
 
 	message += "You can add emphasis to your text by surrounding words or sentences in certain characters.\n\n"
 	message += "+bold+, _underline_, and |italics| are supported.\n\n"
+	message += "You can made custom saymods by doing <i>say 'screams*HELP IM DYING!'</i>. This works over the radio, and can be used to emote over the radio.\n\n"
 	message += "Custom emotes that start with an apostrophe (') will delete the space between it and your name."
 
 	boutput(usr, "<span class='notice'>[message]</span>")
