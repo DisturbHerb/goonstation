@@ -1,6 +1,7 @@
 TYPEINFO(/obj/item/gun/energy)
 	mats = 32
 
+ABSTRACT_TYPE(/obj/item/gun/energy)
 /obj/item/gun/energy
 	name = "energy weapon"
 	icon = 'icons/obj/items/gun.dmi'
