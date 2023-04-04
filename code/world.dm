@@ -544,6 +544,8 @@ var/f_color_selector_handler/F_Color_Selector
 	build_camera_network()
 	build_manufacturer_icons()
 	clothingbooth_setup()
+	energy_weapons_setup()
+	kinetic_weapons_setup()
 	initialize_biomes()
 
 	Z_LOG_DEBUG("World/Init", "Loading fishing spots...")

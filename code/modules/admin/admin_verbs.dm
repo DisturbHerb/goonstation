@@ -244,6 +244,7 @@ var/list/admin_verbs = list(
 		///proc/possess,
 		/proc/possessmob,
 		/proc/releasemob,
+		/client/proc/populate_with_angry_fuckers,
 		/client/proc/critter_creator_debug,
 		/client/proc/cmd_cat_county,
 		/client/proc/fake_pda_message_to_all,
