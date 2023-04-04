@@ -28,7 +28,6 @@ var/static/list/shitty_civ_weapons = list(
 	/obj/item/kitchen/utensil/fork,
 	/obj/item/kitchen/utensil/knife,
 	/obj/item/kitchen/utensil/knife/pizza_cutter,
-	/obj/item/kitchen/utensil/spoon,
 	/obj/item/mop,
 	/obj/item/plate,
 	/obj/item/plate/tray,
