@@ -1,6 +1,5 @@
 #define CARGO_WEAPONS "Cargo"
 #define CIVILIAN_WEAPONS "Civilian"
-// #define COMMAND_WEAPONS "Command"
 #define ENGINEERING_WEAPONS "Engineering"
 #define MEDICAL_WEAPONS "Medical"
 #define RESEARCH_WEAPONS "Research"
@@ -163,7 +162,6 @@ var/static/list/valid_throwable_list = list(
 
 #undef CARGO_WEAPONS
 #undef CIVILIAN_WEAPONS
-// #undef COMMAND_WEAPONS
 #undef ENGINEERING_WEAPONS
 #undef MEDICAL_WEAPONS
 #undef RESEARCH_WEAPONS
