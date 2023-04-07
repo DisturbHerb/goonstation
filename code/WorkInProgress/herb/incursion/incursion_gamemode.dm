@@ -109,6 +109,21 @@
 		for(var/i = 1 to 5)
 			new /obj/item/breaching_charge/thermite(T)
 
+	for(var/datum/job/J in job_controls.staple_jobs + job_controls.special_jobs)
+		J.limit = 0
+
+	for(var/obj/machinery/power/apc/current_apc in by_type[/obj/machinery/power/apc])
+		if(istype(get_area(current_apc), /area/station))
+			// current_apc.equipment = 0
+			current_apc.lighting = 0
+			current_apc.UpdateIcon()
+			current_apc.update()
+
+	for(var/obj/machinery/door/airlock/the_airlock in by_type[/obj/machinery/door/airlock])
+		if((istype(the_airlock, /obj/machinery/door/airlock/external) || istype(the_airlock, /obj/machinery/door/airlock/pyro/external)) && istype(get_area(the_airlock), /area/station))
+			the_airlock.locked = 1
+			the_airlock.UpdateIcon()
+
 	SPAWN(rand(waittime_l, waittime_h))
 		send_intercept()
 

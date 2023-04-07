@@ -36,6 +36,7 @@
 		H.equip_if_possible(new /obj/item/clothing/mask/gas/swat/syndicate(H), H.slot_wear_mask)
 		H.equip_if_possible(new /obj/item/clothing/glasses/sunglasses(H), H.slot_glasses)
 		H.equip_if_possible(new /obj/item/tank/emergency_oxygen/extended(H), H.slot_l_store)
+		H.equip_if_possible(new /obj/item/device/light/flashlight(H), H.slot_r_store)
 
 		if(src.id == ROLE_INCURSION_COMMANDER)
 			H.equip_if_possible(new /obj/item/clothing/head/helmet/space/syndicate/commissar_cap(H), H.slot_head)
