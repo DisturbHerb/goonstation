@@ -32,6 +32,7 @@ var/static/list/mutantrace_choices = list(
 
 	New()
 		. = ..()
+		START_TRACKING_CAT(TR_CAT_NTEMPLOYEES)
 		SPAWN(1 SECOND)
 			if(rand() <= src.mutantrace_chance)
 				var/datum/mutantrace/the_mutantrace = pick(mutantrace_choices)
@@ -64,6 +65,10 @@ var/static/list/mutantrace_choices = list(
 			if(!ON_COOLDOWN(src, "cry_attacked", 5 SECONDS))
 				SPAWN(rand(10,30))
 					src.cry_attacked(M)
+
+	death()
+		..()
+		STOP_TRACKING_CAT(TR_CAT_NTEMPLOYEES)
 
 // Overriding default AI things, since I want these guys to be more merciless in combat.
 /mob/living/carbon/human/npc/NTemployee/ai_do_hand_stuff()

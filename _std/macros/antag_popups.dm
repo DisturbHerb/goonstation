@@ -183,6 +183,12 @@
 				window_title = "You've been freed from your brainwashing!"
 				filename = "html/traitorTips/revRemoved.html"
 
+			// incursion't
+			if (ROLE_INCURSION)
+				return
+			if (ROLE_INCURSION_COMMANDER)
+				return
+
 			// spy/conspiracy
 			if ("spy")
 				window_title = "How to Spy 101"

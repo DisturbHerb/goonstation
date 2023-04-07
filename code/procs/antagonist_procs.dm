@@ -80,6 +80,7 @@ var/list/roles_to_prefs = list(
 	ROLE_TRAITOR = "be_traitor",
 	ROLE_SPY_THIEF = "be_spy",
 	ROLE_NUKEOP = "be_syndicate",
+	ROLE_INCURSION = "be_incursion",
 	ROLE_VAMPIRE = "be_vampire",
 	ROLE_GANG_LEADER = "be_gangleader",
 	ROLE_WIZARD = "be_wizard",

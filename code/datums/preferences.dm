@@ -29,6 +29,8 @@ datum/preferences
 	var/be_traitor = 0
 	var/be_syndicate = 0
 	var/be_syndicate_commander = 0
+	var/be_incursion = 0
+	var/be_incursion_commander = 0
 	var/be_spy = 0
 	var/be_gangleader = 0
 	var/be_revhead = 0
@@ -1409,6 +1411,8 @@ datum/preferences
 			src.be_traitor = FALSE
 			src.be_syndicate = FALSE
 			src.be_syndicate_commander = FALSE
+			src.be_incursion = FALSE
+			src.be_incursion_commander = FALSE
 			src.be_spy = FALSE
 			src.be_gangleader = FALSE
 			src.be_revhead = FALSE
@@ -1428,6 +1432,8 @@ datum/preferences
 			<a href="byond://?src=\ref[src];preferences=1;b_traitor=1" class="[src.be_traitor ? "yup" : "nope"]">[crap_checkbox(src.be_traitor)] Traitor</a>
 			<a href="byond://?src=\ref[src];preferences=1;b_syndicate=1" class="[src.be_syndicate ? "yup" : "nope"]">[crap_checkbox(src.be_syndicate)] Nuclear Operative</a>
 			<a href="byond://?src=\ref[src];preferences=1;b_syndicate_commander=1" class="[src.be_syndicate_commander ? "yup" : "nope"]">[crap_checkbox(src.be_syndicate_commander)] Nuclear Operative Commander</a>
+			<a href="byond://?src=\ref[src];preferences=1;b_incursion=1" class="[src.be_incursion ? "yup" : "nope"]">[crap_checkbox(src.be_incursion)] Incursion Operative</a>
+			<a href="byond://?src=\ref[src];preferences=1;b_incursion_commander=1" class="[src.be_incursion_commander ? "yup" : "nope"]">[crap_checkbox(src.be_incursion_commander)] Incursion Operative Commander</a>
 			<a href="byond://?src=\ref[src];preferences=1;b_spy=1" class="[src.be_spy ? "yup" : "nope"]">[crap_checkbox(src.be_spy)] Spy/Thief</a>
 			<a href="byond://?src=\ref[src];preferences=1;b_gangleader=1" class="[src.be_gangleader ? "yup" : "nope"]">[crap_checkbox(src.be_gangleader)] Gang Leader</a>
 			<a href="byond://?src=\ref[src];preferences=1;b_revhead=1" class="[src.be_revhead ? "yup" : "nope"]">[crap_checkbox(src.be_revhead)] Revolution Leader</a>
@@ -1641,6 +1647,17 @@ datum/preferences
 		if (link_tags["b_syndicate_commander"])
 			src.be_syndicate_commander = !( src.be_syndicate_commander )
 			src.be_syndicate |= src.be_syndicate_commander
+			src.SetChoices(user)
+			return
+
+		if (link_tags["b_incursion"])
+			src.be_incursion = !( src.be_incursion )
+			src.SetChoices(user)
+			return
+
+		if (link_tags["b_incursion_commander"])
+			src.be_incursion_commander = !( src.be_incursion_commander )
+			src.be_incursion |= src.be_incursion_commander
 			src.SetChoices(user)
 			return
 

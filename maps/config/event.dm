@@ -1,6 +1,8 @@
 #ifdef SECRETS_ENABLED
 INCLUDE_MAP("../../+secret/maps/midsummer.dmm")
 #else
-INCLUDE_MAP("../z4_blank.dmm")
+// REPLACE WITH EVENT VERSIONS SOON
+INCLUDE_MAP("../kondaru.dmm")
+INCLUDE_MAP("../herb/pee2.dmm")
 #endif
 #define MAP_MODE "standard"

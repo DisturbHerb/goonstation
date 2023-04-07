@@ -666,6 +666,17 @@ proc/create_fluff(datum/mind/target)
 				return 1
 		return 0
 
+/datum/objective/specialist/incursion
+	explanation_text = "Eliminate all NanoTrasen employees."
+	medal_name = "Manhattan Project"
+
+	check_completion()
+		if (ticker?.mode && istype(ticker.mode, /datum/game_mode/incursion))
+			var/datum/game_mode/incursion/I = ticker.mode
+			if (I && istype(I) && (I.finished == -1))
+				return 1
+		return 0
+
 /datum/objective/specialist/conspiracy
 	explanation_text = "Identify and eliminate any competing syndicate operatives on the station. Be careful not to be too obvious yourself, or they'll come after you!"
 

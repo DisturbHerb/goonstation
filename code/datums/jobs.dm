@@ -2257,8 +2257,16 @@ ABSTRACT_TYPE(/datum/job/special/halloween/critter)
 		if (!M?.mind)
 			return
 
-		if (src.leader)
-			M.mind.add_antagonist(ROLE_NUKEOP_COMMANDER, do_objectives = FALSE, source = ANTAGONIST_SOURCE_ADMIN)
+		if (ticker?.mode && istype(ticker.mode, /datum/game_mode/nuclear))
+			if (src.leader)
+				M.mind.add_antagonist(ROLE_NUKEOP_COMMANDER, do_objectives = FALSE, source = ANTAGONIST_SOURCE_ADMIN)
+			else
+				M.mind.add_antagonist(ROLE_NUKEOP, do_objectives = FALSE, source = ANTAGONIST_SOURCE_ADMIN)
+		else if (ticker?.mode && istype(ticker.mode, /datum/game_mode/incursion))
+			if (src.leader)
+				M.mind.add_antagonist(ROLE_INCURSION_COMMANDER, do_objectives = FALSE, source = ANTAGONIST_SOURCE_ADMIN)
+			else
+				M.mind.add_antagonist(ROLE_INCURSION, do_objectives = FALSE, source = ANTAGONIST_SOURCE_ADMIN)
 		else
 			M.mind.add_antagonist(ROLE_NUKEOP, do_objectives = FALSE, source = ANTAGONIST_SOURCE_ADMIN)
 

@@ -2250,6 +2250,8 @@ var/global/noir = 0
 							traitor_types += ROLE_GANG_LEADER
 						if(ticker.mode && istype(ticker.mode, /datum/game_mode/nuclear) && ishuman(M))
 							traitor_types += ROLE_NUKEOP
+						if(ticker.mode && istype(ticker.mode, /datum/game_mode/incursion) && ishuman(M))
+							traitor_types += ROLE_INCURSION
 						var/selection = input(usr, "Select traitor type.", "Traitorize", ROLE_TRAITOR) as null|anything in traitor_types
 						switch(selection)
 							if(ROLE_TRAITOR)
@@ -2262,6 +2264,11 @@ var/global/noir = 0
 									evilize(M, ROLE_NUKEOP_COMMANDER, do_objectives = FALSE)
 								else
 									evilize(M, ROLE_NUKEOP, do_objectives = FALSE)
+							if(ROLE_INCURSION)
+								if (tgui_alert(usr,"Commander?","Hierarchy",list("Yes", "No")) == "Yes")
+									evilize(M, ROLE_INCURSION_COMMANDER, do_objectives = FALSE)
+								else
+									evilize(M, ROLE_INCURSION, do_objectives = FALSE)
 							else
 								evilize(M, selection)
 			//they're a ghost/hivebotthing/etc
@@ -4809,6 +4816,12 @@ var/global/noir = 0
 			if(ROLE_NUKEOP_COMMANDER)
 				M.show_text("<h1><font color=red><B>You have been chosen as a Nuclear Operative Commander! And you have accepted! Because you would be silly not to!</B></font></h1>", "red")
 				M.mind.add_antagonist(ROLE_NUKEOP_COMMANDER, do_objectives = FALSE, source = ANTAGONIST_SOURCE_ADMIN)
+			if(ROLE_INCURSION)
+				M.show_text("<h1><font color=red><B>You have been chosen as an Incursion Operative! And you have accepted! Because you would be silly not to!</B></font></h1>", "red")
+				M.mind.add_antagonist(ROLE_INCURSION, do_objectives = FALSE, source = ANTAGONIST_SOURCE_ADMIN)
+			if(ROLE_INCURSION_COMMANDER)
+				M.show_text("<h1><font color=red><B>You have been chosen as an Incursion Operative Commander! And you have accepted! Because you would be silly not to!</B></font></h1>", "red")
+				M.mind.add_antagonist(ROLE_INCURSION_COMMANDER, do_objectives = FALSE, source = ANTAGONIST_SOURCE_ADMIN)
 
 	else
 		M.show_text("<h2><font color=red><B>You have become evil and are now an antagonist!</B></font></h2>", "red")

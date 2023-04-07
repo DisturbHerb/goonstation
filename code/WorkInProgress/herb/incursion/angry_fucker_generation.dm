@@ -9,8 +9,15 @@
 		angry_fucker_setup(weapon_weight, job_weapon_weight)
 		var/ratio = "[weapon_weight]:[job_weapon_weight]"
 		usr.show_text("Oh god. It's happening.", "blue")
-		message_admins("([usr]) has populated the station with angry motherfuckers, at a [ratio] ratio of weapons to shit!")
-		logTheThing(LOG_ADMIN, usr, "has populated the station with angry motherfuckers, at a [ratio] ratio of weapons to shit!")
+		message_admins("([usr.ckey]) has populated the station with angry motherfuckers, at a [ratio] ratio of weapons to shit!")
+		logTheThing(LOG_ADMIN, usr.ckey, "has populated the station with angry motherfuckers, at a [ratio] ratio of weapons to shit!")
+
+		// Incursion gamemode-specific stuff.
+		if(istype(ticker?.mode, /datum/game_mode/incursion))
+			var/datum/game_mode/incursion/incursion = ticker.mode
+			incursion.can_finish = TRUE
+			message_admins("([usr.ckey]) has started the Syndicate Incursion! The round will end once one side is eliminated!")
+
 	else
 		usr.show_text("Good choice.", "red")
 

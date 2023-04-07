@@ -47,7 +47,8 @@ datum/special_respawn
 					if(player && !player:client)
 						qdel(player)
 
-		new /obj/storage/closet/syndicate/nuclear(pick_landmark(LANDMARK_NUCLEAR_CLOSET))
+		if(ticker?.mode && istype(ticker.mode, /datum/game_mode/nuclear))
+			new /obj/storage/closet/syndicate/nuclear(pick_landmark(LANDMARK_NUCLEAR_CLOSET))
 		for(var/turf/T in landmarks[LANDMARK_SYNDICATE_GEAR_CLOSET])
 			new /obj/storage/closet/syndicate/personal(T)
 		for(var/turf/T in landmarks[LANDMARK_SYNDICATE_BOMB])

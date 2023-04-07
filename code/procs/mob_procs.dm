@@ -754,6 +754,7 @@
 	var/list/can_see = list()
 	var/see_traitors = 0
 	var/see_nukeops = 0
+	var/see_incursion = 0
 	var/see_pirates = 0
 	var/see_wizards = 0
 	var/see_revs = 0
@@ -789,12 +790,15 @@
 			if (src.mind.special_role == ROLE_SYNDICATE_ROBOT || (S.syndicate && !S.dependent)) // No AI shells.
 				see_traitors = 1
 				see_nukeops = 1
+				see_incursion = 1
 				see_revs = 1
 		gang_to_see = src.get_gang()
 		if (istraitor(src) && traitorsseeeachother)
 			see_traitors = TRUE
 		else if (isnukeop(src) || isnukeopgunbot(src))
 			see_nukeops = 1
+		else if (isincursion(src))
+			see_incursion = 1
 		else if (ispirate(src))
 			see_pirates = 1
 		else if (iswizard(src))
@@ -823,7 +827,7 @@
 	if (remove)
 		return
 
-	if (!see_traitors && !see_nukeops && !see_pirates && !see_wizards && !see_revs && !see_heads && !see_xmas && !see_zombies && !see_salvager && !see_special && !see_everything && !gang_to_see && PWT_to_see == null && !V && !VT)
+	if (!see_traitors && !see_nukeops && !see_incursion && !see_pirates && !see_wizards && !see_revs && !see_heads && !see_xmas && !see_zombies && !see_salvager && !see_special && !see_everything && !gang_to_see && PWT_to_see == null && !V && !VT)
 		src.last_overlay_refresh = world.time
 		return
 
@@ -875,6 +879,14 @@
 						can_see.Add(I)
 				if (ROLE_NUKEOP)
 					if (see_everything || see_nukeops)
+						var/I = image(antag_syndicate, loc = M.current)
+						can_see.Add(I)
+				if (ROLE_INCURSION_COMMANDER)
+					if (see_everything || see_incursion)
+						var/I = image(antag_syndicate_comm, loc = M.current)
+						can_see.Add(I)
+				if (ROLE_INCURSION)
+					if (see_everything || see_incursion)
 						var/I = image(antag_syndicate, loc = M.current)
 						can_see.Add(I)
 				if (ROLE_GANG_LEADER)
