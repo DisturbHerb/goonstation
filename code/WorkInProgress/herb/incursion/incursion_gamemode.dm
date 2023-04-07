@@ -9,6 +9,7 @@
 	var/can_finish = FALSE // The game isn't over yet!
 	var/finished = 0
 	var/agent_radiofreq = 0 //:h for syndies, randomized per round
+	var/list/fireteam_frequencies = list()
 	var/const/waittime_l = 600 //lower bound on time before intercept arrives (in tenths of seconds)
 	var/const/waittime_h = 1800 //upper bound on time before intercept arrives (in tenths of seconds)
 	var/datum/hud/incursion_employee_count/employee_count_hud = null // the body count maptext woo
@@ -60,7 +61,11 @@
 		syndicate.assigned_role = "MODE" //So they aren't chosen for other jobs.
 		possible_syndicates.Remove(syndicate)
 
-	agent_radiofreq = random_radio_frequency()
+	agent_radiofreq = random_agent_frequency()
+	src.fireteam_frequencies.Add(list("Alpha Fireteam" = random_fireteam_frequency()))
+	src.fireteam_frequencies.Add(list("Bravo Fireteam" = random_fireteam_frequency()))
+	src.fireteam_frequencies.Add(list("Charlie Fireteam" = random_fireteam_frequency()))
+	src.fireteam_frequencies.Add(list("Delta Fireteam" = random_fireteam_frequency()))
 
 	return 1
 
@@ -212,7 +217,8 @@
 
 /datum/game_mode/incursion/send_intercept()
 	..(ticker.minds)
-/datum/game_mode/incursion/proc/random_radio_frequency()
+
+/datum/game_mode/incursion/proc/random_agent_frequency()
 	. = 0
 	var/list/blacklisted = list(0, 1451, 1457) // The old blacklist was rather incomplete and thus ineffective (Convair880).
 	blacklisted.Add(R_FREQ_BLACKLIST)
@@ -221,6 +227,19 @@
 		. = rand(1352, 1439)
 
 	while (. in blacklisted)
+
+/datum/game_mode/incursion/proc/random_fireteam_frequency()
+	. = 0
+	var/list/blacklisted = list(0, 1451, 1457)
+	blacklisted.Add(R_FREQ_BLACKLIST)
+	for(var/i in src.fireteam_frequencies)
+		if(src.fireteam_frequencies[i])
+			blacklisted.Add(src.fireteam_frequencies[i])
+	do
+		. = rand(1352, 1439)
+
+	while (. in blacklisted)
+
 /datum/game_mode/incursion/process()
 	set background = 1
 

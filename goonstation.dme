@@ -2053,6 +2053,7 @@ var/datum/preMapLoad/preMapLoad = new
 #include "code\WorkInProgress\herb\incursion\incursion_obj.dm"
 #include "code\WorkInProgress\herb\incursion\incursion_ops.dm"
 #include "code\WorkInProgress\herb\incursion\weapon_whitelists.dm"
+#include "code\WorkInProgress\herb\incursion\what_the_hell.dm"
 #include "code\WorkInProgress\herb\incursion\worn_stuff_weights.dm"
 #include "code\WorkInProgress\optics\beamline.dm"
 #include "code\WorkInProgress\pali\blob_fabricator.dm"

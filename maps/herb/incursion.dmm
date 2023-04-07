@@ -37415,6 +37415,13 @@
 	},
 /turf/simulated/floor/caution/westeast,
 /area/station/quartermaster/cargobay)
+"elW" = (
+/obj/disposalpipe/segment/brig{
+	dir = 1
+	},
+/mob/living/carbon/human/jennifer/zoomy,
+/turf/simulated/floor/specialroom/bar,
+/area/station/crew_quarters/cafeteria)
 "emI" = (
 /turf/simulated/floor/grass/leafy,
 /area/station/ranch)
@@ -121080,7 +121087,7 @@ trB
 viV
 vYN
 viV
-viV
+elW
 viV
 viV
 vYN

@@ -157,11 +157,23 @@
 		else
 			. += "<br>Currently assigning personnel to \"[src.assignment]\"."
 
+	afterattack(atom/A, mob/user as mob)
+		if (ismob(A))
+			return
+		if (istype(A, /obj/item/device/radio))
+			if (src.removal_mode)
+				src.remove_fireteam_frequency(user, A)
+			else if (src.assignment)
+				src.set_fireteam_frequency(user, A, src.assignment)
+
 	attack_self(mob/user)
 		if(!user.literate)
 			boutput(user, "<span class='alert'>You don't know how to write.</span>")
 			return
 		var/fireteam = tgui_input_list(user, "Select a fireteam.", "Fireteam Selection", (src.fireteam_prefixes + FT_REMOVAL), start_with_search = FALSE)
+		if (!fireteam)
+			boutput(user, "<span class='alert'>Fireteam selection unchanged.</span>")
+			return
 		if (fireteam == FT_REMOVAL)
 			src.removal_mode = TRUE
 			src.assignment = null
@@ -180,7 +192,7 @@
 
 	proc/add_to_fireteam(mob/target, mob/user)
 		if(!src.assignment)
-			boutput(user, "<span class='alert'>Uh oh! Looks like this [src] is broken somehow.</span>")
+			boutput(user, "<span class='alert'>Uh oh! There should be an assignment right now!</span>")
 
 		target.real_name = fireteam_clearer.Replace_char(target.real_name, "")
 		target.real_name = "[src.assignment] [target.real_name]"
@@ -188,15 +200,64 @@
 		user.visible_message("<span class='notice'><b>[user]</b> assigns [target] to [src.assignment].</span>",\
 			"<span class='notice'>You add [target] to [src.assignment].</span>")
 		target.add_fingerprint(user)
+		var/target_radio = target.ears
+		if(target_radio && istype(target_radio, /obj/item/device/radio/headset/syndicate))
+			src.set_fireteam_frequency(user, target_radio, src.assignment)
+		else
+			boutput(user, "<span class='alert'>[target] does not have a radio to adjust.</span>")
 		playsound(src, 'sound/items/hand_label.ogg', 40, 1)
 
 	proc/remove_from_fireteam(mob/target, mob/user)
+		if(src.assignment)
+			boutput(user, "<span class='alert'>Uh oh! There shouldn't be an assignment right now!</span>")
+
 		target.real_name = fireteam_clearer.Replace_char(target.real_name, "")
 		target.UpdateName()
 		user.visible_message("<span class='notice'><b>[user]</b> removes [target] from all fireteams.</span>",\
 		"<span class='notice'>You remove [target] from all fireteams.</span>")
 		target.add_fingerprint(user)
+		var/target_radio = target.ears
+		if(target_radio && istype(target_radio, /obj/item/device/radio/headset/syndicate))
+			src.remove_fireteam_frequency(user, target_radio)
+		else
+			boutput(user, "<span class='alert'>[target] does not have a radio to adjust.</span>")
 		return
+
+	proc/set_fireteam_frequency(mob/user, obj/item/device/radio/targeted_radio, assignment)
+		if(!targeted_radio)
+			boutput(user, "<span class='alert'>Uh oh! No radio to set!</span>")
+			return
+		if(ticker?.mode && istype(ticker.mode, /datum/game_mode/incursion))
+			var/datum/game_mode/incursion/I = ticker.mode
+			var/fireteam_frequency = I.fireteam_frequencies[assignment]
+			if(fireteam_frequency)
+				targeted_radio.secure_frequencies = list("z" = R_FREQ_SYNDICATE, "g" = fireteam_frequency)
+				var/fireteam_class
+				switch(assignment)
+					if("Alpha Fireteam")
+						fireteam_class = RADIOCL_DETECTIVE
+					if("Bravo Fireteam")
+						fireteam_class = RADIOCL_ENGINEERING
+					if("Charlie Fireteam")
+						fireteam_class = RADIOCL_RESEARCH
+					if("Delta Fireteam")
+						fireteam_class = RADIOCL_COMMAND
+				if(fireteam_class)
+					targeted_radio.secure_classes = list("z" = RADIOCL_SYNDICATE, "g" = fireteam_class)
+				targeted_radio.set_secure_frequencies()
+				user.visible_message("<span class='notice'><b>[user]</b> adds [targeted_radio] to the [assignment] channel.</span>",\
+				"<span class='notice'>You add [targeted_radio] to the [assignment] channel.</span>")
+
+	proc/remove_fireteam_frequency(mob/user, obj/item/device/radio/targeted_radio)
+		if(!targeted_radio)
+			boutput(user, "<span class='alert'>Uh oh! No radio to set!</span>")
+			return
+		// Known bug: clearing out the radio frequency and attempting to use the :g prefix again will broadcast on frequency 0.0
+		targeted_radio.secure_frequencies = list("z" = R_FREQ_SYNDICATE)
+		targeted_radio.secure_classes = list("z" = RADIOCL_SYNDICATE)
+		targeted_radio.set_secure_frequencies()
+		user.visible_message("<span class='notice'><b>[user]</b> sets [targeted_radio] to the default settings.</span>",\
+		"<span class='notice'>You set [targeted_radio] to the default settings.</span>")
 
 #undef FT_REMOVAL
 
