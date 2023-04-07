@@ -227,6 +227,9 @@
 		if(!targeted_radio)
 			boutput(user, "<span class='alert'>Uh oh! No radio to set!</span>")
 			return
+		if(istype(targeted_radio, /obj/item/device/radio/headset/syndicate/leader))
+			boutput(user, "<span class='alert'>It's no use! This radio's too powerful!</span>")
+			return
 		if(ticker?.mode && istype(ticker.mode, /datum/game_mode/incursion))
 			var/datum/game_mode/incursion/I = ticker.mode
 			var/fireteam_frequency = I.fireteam_frequencies[assignment]
@@ -251,6 +254,9 @@
 	proc/remove_fireteam_frequency(mob/user, obj/item/device/radio/targeted_radio)
 		if(!targeted_radio)
 			boutput(user, "<span class='alert'>Uh oh! No radio to set!</span>")
+			return
+		if(istype(targeted_radio, /obj/item/device/radio/headset/syndicate/leader))
+			boutput(user, "<span class='alert'>It's no use! This radio's too powerful!</span>")
 			return
 		// Known bug: clearing out the radio frequency and attempting to use the :g prefix again will broadcast on frequency 0.0
 		targeted_radio.secure_frequencies = list("z" = R_FREQ_SYNDICATE)
