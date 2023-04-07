@@ -216,7 +216,7 @@
 
 	if(src.employee_count_hud)
 		src.nt_employee_count = length(by_cat[TR_CAT_NTEMPLOYEES])
-		if(src.nt_employee_count)
+		if(src.nt_employee_count < src.employee_count_threshold)
 			src.employee_count_hud.update_employee_count(src.nt_employee_count)
 		else
 			src.employee_count_hud = null

@@ -29,6 +29,7 @@ var/static/list/mutantrace_choices = list(
 	ai_aggressive = 1
 	ai_useitems = 0 // stop using grenades for fuck's sake
 	var/mutantrace_chance = 0.4
+	var/list/will_attack = list(ROLE_INCURSION, ROLE_INCURSION_COMMANDER, ROLE_NUKEOP, ROLE_NUKEOP_COMMANDER, ROLE_NUKEOP_GUNBOT)
 
 	New()
 		. = ..()
@@ -47,7 +48,6 @@ var/static/list/mutantrace_choices = list(
 		randomize_look(src, !gender, 1, 1, 1, 1, 1)
 		set_clothing_icon_dirty()
 		APPLY_ATOM_PROPERTY(src, PROP_MOB_THERMALVISION_MK2, "angry bois see all")
-		APPLY_ATOM_PROPERTY(src, PROP_MOB_REBREATHING, "the hell is breathing")
 
 	attack_hand(mob/M)
 		..()
@@ -69,6 +69,13 @@ var/static/list/mutantrace_choices = list(
 	death()
 		..()
 		STOP_TRACKING_CAT(TR_CAT_NTEMPLOYEES)
+
+// Please god only attack the specified antags.
+/mob/living/carbon/human/npc/NTemployee/ai_findtarget_new()
+	for(var/mob/living/M in viewers(7,src))
+		for(var/i in 1 to length(src.will_attack))
+			if(M.mind.special_role == src.will_attack[i])
+				..()
 
 // Overriding default AI things, since I want these guys to be more merciless in combat.
 /mob/living/carbon/human/npc/NTemployee/ai_do_hand_stuff()
@@ -182,16 +189,18 @@ var/static/list/mutantrace_choices = list(
 			var/buffer
 			switch(pick(1,2))
 				if(1)
-					buffer = (pick("Fuck you, [ai_target.name]!",\
-					"You're [prob(10) ? "fucking " : ""]dead, [ai_target.name]!",\
-					"I will kill you, [ai_target.name]!!",\
+					buffer = (pick("Fuck you!",\
+					"You're [prob(10) ? "fucking " : ""]dead, Syndie!",\
+					"I will kill you!!",\
 					"Asshole!",\
 					"[prob(10) ? "My name is [src.name]! You killed my father! Prepare" : "Time"] to die!",\
 					"Retribution!",\
 					"For Nanotrasen!",\
-					"Syndie [pick("shitbag", "asshole", "snake", "stinker")]!"))
+					"Syndie [pick("shitbag", "asshole", "snake", "stinker")]!",\
+					"Greytide worldwide, asshole!",\
+					"You picked the wrong house, fool!"))
 				if(2)
-					buffer = (pick("Eat lead, [ai_target.name]!", "Suck it down, [ai_target.name]!"))
+					buffer = (pick("Eat lead!", "Suck it down!"))
 			if(prob(30))
 				buffer = uppertext(buffer)
 			src.say(buffer)
@@ -206,6 +215,19 @@ var/static/list/mutantrace_choices = list(
 			if(the_gun.hammer_cocked == FALSE && the_gun.ammo)
 				the_gun.AttackSelf(src)
 
+	// if you've suddenly got no oxygen
+	if(src.oxyloss > 10 || src.losebreath >= 4)
+		var/obj/item/tank/tank_to_use
+		for(var/obj/item/stored_item in src.contents)
+			if(istype(stored_item, /obj/item/tank))
+				tank_to_use = stored_item
+		if(tank_to_use && !src.internal)
+			tank_to_use.toggle_valve()
+		if(tank_to_use && (src.oxyloss > 30 || src.losebreath >= 12)) // uh oh, my tank's probably empty
+			src.put_in_hand_or_drop(tank_to_use)
+			if(src.equipped() == tank_to_use)
+				src.drop_item_throw(tank_to_use)
+
 /mob/living/carbon/human/npc/NTemployee/proc/cry_attacked(mob/M)
 	if(!M)
 		return
@@ -214,8 +236,7 @@ var/static/list/mutantrace_choices = list(
 	src.target = M
 	src.ai_state = AI_ATTACKING
 	src.ai_threatened = world.timeofday
-	var/target_name = M.name
-	var/complaint = pick("[pick("OW", "AGH", "FUCK", "SHIT")]! [pick("SCREW [pick("OFF", "YOU")]", "FUCK [pick("OFF", "YOU")]", "DAMN YOU", "PISS OFF")] [target_name]!",\
+	var/complaint = pick("[pick("OW", "AGH", "FUCK", "SHIT")]! [pick("SCREW [pick("OFF", "YOU")]", "FUCK [pick("OFF", "YOU")]", "DAMN YOU", "PISS OFF")] SYNDIE!",\
 	"[pick("OW", "AGH", "FUCK", "SHIT", "SHIVER ME TIMBERS", "THAT FUCKING HURT", "ASSHOLE", "FUCKER", "GOD DAMN IT")]!",\
 	"[pick("[pick("GOD DAMN", "FUCKING", "MOTHERFUCKING")] SYNDICATE [pick("SNAKE", "SHITTER", "SHITHEAD", "ASSHOLE")]")]!")
 	complaint = uppertext(complaint)

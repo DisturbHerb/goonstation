@@ -1,12 +1,19 @@
+#define DEFAULT_WEAPON_WEIGHT 30
+#define DEFAULT_ARMOUR_WEIGHT 50
+#define DEFAULT_INTERNALS_WEIGHT 80
+#define MAX_WEIGHT 100
+
 // Admin verb to fire angry_fucker_setup().
 /client/proc/populate_with_angry_fuckers()
 	SET_ADMIN_CAT(ADMIN_CAT_FUN)
 	set name = "Populate With Angry Bois"
 
-	var/weapon_weight = tgui_input_number(usr, "Probability of rolling a real weapon?", "Real weapon", 0, 100, 0)
+	var/weapon_weight = tgui_input_number(usr, "Probability of rolling a real weapon?", "Real weapon", DEFAULT_WEAPON_WEIGHT, MAX_WEIGHT, 0)
 	var/job_weapon_weight = 100 - weapon_weight
+	var/armour_weight = tgui_input_number(usr, "Probability of rolling body armour?", "Body Armour", DEFAULT_ARMOUR_WEIGHT, MAX_WEIGHT, 0)
+	var/internals_weight = tgui_input_number(usr, "Probability of rolling internals?", "Internals", DEFAULT_INTERNALS_WEIGHT, MAX_WEIGHT, 0)
 	if(tgui_alert(usr, "Are you fucking sure about this? This will lag to fuck!", "BE CERTAIN.", list("YAYA", "NAH")) == "YAYA")
-		angry_fucker_setup(weapon_weight, job_weapon_weight)
+		angry_fucker_setup(weapon_weight, job_weapon_weight, armour_weight, internals_weight)
 		var/ratio = "[weapon_weight]:[job_weapon_weight]"
 		usr.show_text("Oh god. It's happening.", "blue")
 		message_admins("([usr.ckey]) has populated the station with angry motherfuckers, at a [ratio] ratio of weapons to shit!")
@@ -21,9 +28,14 @@
 	else
 		usr.show_text("Good choice.", "red")
 
+#undef DEFAULT_WEAPON_WEIGHT
+#undef DEFAULT_ARMOUR_WEIGHT
+#undef DEFAULT_INTERNALS_WEIGHT
+#undef MAX_WEIGHT
+
 /** Populates the station with "angry fuckers". Every angry fucker spawns with a weapon of some type, with a weighted pick of either actual guns or
 	"shitty" weapons which are then picked from their respective whitelists. */
-/proc/angry_fucker_setup(weapon_weight, job_weapon_weight)
+/proc/angry_fucker_setup(weapon_weight, job_weapon_weight, armour_weight, internals_weight)
 	for(var/job_name in job_start_locations)
 		// Don't spawn mobs with these jobs.
 		if(job_name == "AI" || job_name == "Cyborg" || job_name == "JoinLate")
@@ -32,9 +44,13 @@
 			var/mob/living/carbon/human/npc/NTemployee/H = new(T)
 			H.JobEquipSpawned(job_name)
 
-			// fuck you, no backpack
+			// fuck you, no backpack or storage
 			if(H.back && istype(H.back,/obj/item/storage/backpack))
 				qdel(H.back)
+			if(H.l_store)
+				qdel(H.l_store)
+			if(H.r_store)
+				qdel(H.r_store)
 
 			// fuck your hands
 			if(H.l_hand)
@@ -61,5 +77,19 @@
 			if(!weapon_of_choice)
 				weapon_of_choice = /obj/item/rubberduck
 			H.equip_new_if_possible(weapon_of_choice, pick(H.slot_l_hand, H.slot_r_hand))
+
+			if(prob(armour_weight))
+				if(!istype(H.wear_suit, /obj/item/clothing/suit/armor))
+					qdel(H.wear_suit)
+					var/armour_of_choice = weighted_pick(worn_suit_weights_list)
+					H.equip_new_if_possible(armour_of_choice, H.slot_wear_suit)
+
+			if(prob(internals_weight))
+				if(!istype(H.wear_mask, /obj/item/clothing/mask/gas))
+					qdel(H.wear_mask)
+					var/mask_of_choice = weighted_pick(internals_weights_list)
+					H.equip_new_if_possible(mask_of_choice, H.slot_wear_mask)
+				H.equip_new_if_possible(/obj/item/tank/emergency_oxygen, H.slot_l_store)
+
 			H.update_clothing()
 			H.update_inhands()
