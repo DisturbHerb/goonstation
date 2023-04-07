@@ -189,15 +189,15 @@ var/static/list/mutantrace_choices = list(
 			var/buffer
 			switch(pick(1,2))
 				if(1)
-					buffer = (pick("Fuck you!",\
-					"You're [prob(10) ? "fucking " : ""]dead, Syndie!",\
-					"I will kill you!!",\
+					buffer = (pick("+Fuck you!+",\
+					"You're [prob(10) ? "fucking " : ""]+dead,+ Syndie!",\
+					"I will |kill| you!!",\
 					"Asshole!",\
 					"[prob(10) ? "My name is [src.name]! You killed my father! Prepare" : "Time"] to die!",\
 					"Retribution!",\
 					"For Nanotrasen!",\
 					"Syndie [pick("shitbag", "asshole", "snake", "stinker")]!",\
-					"Greytide worldwide, asshole!",\
+					"Greytide worldwide, |asshole!|",\
 					"You picked the wrong house, fool!"))
 				if(2)
 					buffer = (pick("Eat lead!", "Suck it down!"))
@@ -236,9 +236,9 @@ var/static/list/mutantrace_choices = list(
 	src.target = M
 	src.ai_state = AI_ATTACKING
 	src.ai_threatened = world.timeofday
-	var/complaint = pick("[pick("OW", "AGH", "FUCK", "SHIT")]! [pick("SCREW [pick("OFF", "YOU")]", "FUCK [pick("OFF", "YOU")]", "DAMN YOU", "PISS OFF")] SYNDIE!",\
-	"[pick("OW", "AGH", "FUCK", "SHIT", "SHIVER ME TIMBERS", "THAT FUCKING HURT", "ASSHOLE", "FUCKER", "GOD DAMN IT")]!",\
-	"[pick("[pick("GOD DAMN", "FUCKING", "MOTHERFUCKING")] SYNDICATE [pick("SNAKE", "SHITTER", "SHITHEAD", "ASSHOLE")]")]!")
+	var/complaint = pick("+[pick("OW", "AGH", "FUCK", "SHIT")]!+ [pick("SCREW [pick("OFF", "YOU")]", "FUCK [pick("OFF", "YOU")]", "DAMN YOU", "PISS OFF")] SYNDIE!",\
+	"+[pick("OW", "AGH", "FUCK", "SHIT", "SHIVER ME TIMBERS", "THAT FUCKING HURT", "ASSHOLE", "FUCKER", "GOD DAMN IT")]!+",\
+	"[pick("[pick("GOD DAMN", "FUCKING", "MOTHERFUCKING")] SYNDICATE +[pick("SNAKE", "SHITTER", "SHITHEAD", "ASSHOLE")]")]!+")
 	complaint = uppertext(complaint)
 	var/max_excl = rand(-2,4)
 	for(var/i = 0, i < max_excl, i++)
