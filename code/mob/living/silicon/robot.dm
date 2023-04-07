@@ -424,17 +424,24 @@
 				else
 					alert("Unable to use this emote, must be either hearable or visible.")
 					return
-				message = "<B>[src]</B> [input]"
-				maptext_out = "<I>[input]</I>"
+				var/space = should_have_space_before_emote(html_decode(input)) ? " " : ""
+				var/name_before_emote = !space ? "[src]" : ""
+				message = "<B>[src]</B>[space][input]"
+				maptext_out = "<I>[name_before_emote][input]</I>"
 				custom = copytext(input, 1, 10)
 
 			if ("customv")
 				if (!param)
 					param = input("Choose an emote to display.")
 					if(!param) return
+				else //hack to fix double encoding of custom emotes when using hotkey, speech code is a knotted mess
+					param = html_decode(param)
+
 				param = html_encode(sanitize(param))
-				message = "<b>[src]</b> [param]"
-				maptext_out = "<I>[param]</I>"
+				var/space = should_have_space_before_emote(html_decode(param)) ? " " : ""
+				var/name_before_emote = !space ? "[src]" : ""
+				message = "<B>[src]</B>[space][param]"
+				maptext_out = "<I>[name_before_emote][param]</I>"
 				custom = copytext(param, 1, 10)
 				m_type = 1
 
@@ -442,18 +449,27 @@
 				if (!param)
 					param = input("Choose an emote to display.")
 					if(!param) return
-				param = html_encode(sanitize(param))
-				message = "<b>[src]</b> [param]"
-				maptext_out = "<I>[param]</I>"
+				else
+					param = html_decode(param)
+
+				var/space = should_have_space_before_emote(html_decode(param)) ? " " : ""
+				var/name_before_emote = !space ? "[src]" : ""
+				message = "<B>[src]</B>[space][param]"
+				maptext_out = "<I>[name_before_emote][param]</I>"
 				custom = copytext(param, 1, 10)
 				m_type = 2
 
 			if ("me")
 				if (!param)
 					return
+				else
+					param = html_decode(param)
+
 				param = html_encode(sanitize(param))
-				message = "<b>[src]</b> [param]"
-				maptext_out = "<I>[param]</I>"
+				var/space = should_have_space_before_emote(html_decode(param)) ? " " : ""
+				var/name_before_emote = !space ? "[src]" : ""
+				message = "<B>[src]</B>[space][param]"
+				maptext_out = "<I>[name_before_emote][param]</I>"
 				custom = copytext(param, 1, 10)
 				m_type = 1
 
@@ -1832,10 +1848,14 @@
 	say_quote(var/text)
 		if (src.glitchy_speak || (src.dependent && isAI(src.mainframe) && src.mainframe.glitchy_speak))
 			text = voidSpeak(text)
-		var/ending = copytext(text, length(text))
+
+		var/stripped_text = say_strip_emphasis(text)
+		var/ending = copytext(stripped_text, length(stripped_text))
 
 		if (singing)
 			return singify_text(text)
+
+		text = say_emphasis(text)
 
 		if (ending == "?") return "queries, \"[text]\"";
 		else if (ending == "!") return "declares, \"[text]\"";

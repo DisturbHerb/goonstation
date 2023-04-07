@@ -1000,6 +1000,18 @@ var/global/curr_day = null
 "}, "window=rprules;title=RP+Rules" )
 #endif
 
+/client/verb/speech_format_help()
+	set name = "Speech Format Help"
+	set category = "Commands"
+
+	var/message
+
+	message += "You can add emphasis to your text by surrounding words or sentences in certain characters.<br />"
+	message += "+bold+, _underline_, and |italics| are supported.<br />"
+	message += "Custom emotes that start with an apostrophe (') or comma (,) will delete the space between it and your name."
+
+	boutput(usr, "<span class='notice'>[message]</span>")
+
 /client/verb/changeServer(var/server as text)
 	set name = "Change Server"
 	set hidden = 1

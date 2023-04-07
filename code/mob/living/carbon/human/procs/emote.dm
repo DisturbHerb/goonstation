@@ -436,8 +436,10 @@
 						alert("Unable to use this emote, must be either audible or visible.")
 						return
 					phrase_log.log_phrase("emote", input)
-					message = "<B>[src]</B> [input]"
-					maptext_out = "<I>[regex({"(&#34;.*?&#34;)"}, "g").Replace(input, "</i>$1<i>")]</I>"
+					var/space = should_have_space_before_emote(html_decode(input)) ? " " : ""
+					var/name_before_emote = !space ? "[src]" : ""
+					message = "<B>[src]</B>[space][param]"
+					maptext_out = "<I>[name_before_emote][regex({"(&#34;.*?&#34;)"}, "g").Replace(input, "</i>$1<i>")]</I>"
 					custom = copytext(input, 1, 10)
 
 			if ("customv")
@@ -450,8 +452,10 @@
 
 				param = copytext(sanitize(html_encode(param)), 1, MAX_MESSAGE_LEN)
 				phrase_log.log_phrase("emote", param)
-				message = "<b>[src]</b> [param]"
-				maptext_out = "<I>[regex({"(&#34;.*?&#34;)"}, "g").Replace(param, "</i>$1<i>")]</I>"
+				var/space = should_have_space_before_emote(html_decode(param)) ? " " : ""
+				var/name_before_emote = !space ? "[src]" : ""
+				message = "<B>[src]</B>[space][param]"
+				maptext_out = "<I>[name_before_emote][regex({"(&#34;.*?&#34;)"}, "g").Replace(param, "</i>$1<i>")]</I>"
 				m_type = 1
 				custom = copytext(param, 1, 10)
 
@@ -460,10 +464,15 @@
 				if (!param)
 					param = input("Choose an emote to display.")
 					if(!param) return
+				else
+					param = html_decode(param)
+
 				param = copytext(sanitize(html_encode(param)), 1, MAX_MESSAGE_LEN)
 				phrase_log.log_phrase("emote", param)
-				message = "<b>[src]</b> [param]"
-				maptext_out = "<I>[regex({"(&#34;.*?&#34;)"}, "g").Replace(param, "</i>$1<i>")]</I>"
+				var/space = should_have_space_before_emote(html_decode(param)) ? " " : ""
+				var/name_before_emote = !space ? "[src]" : ""
+				message = "<B>[src]</B>[space][param]"
+				maptext_out = "<I>[name_before_emote][regex({"(&#34;.*?&#34;)"}, "g").Replace(param, "</i>$1<i>")]</I>"
 				m_type = 2
 				custom = copytext(param, 1, 10)
 
@@ -473,8 +482,10 @@
 					return
 				param = copytext(sanitize(param), 1, MAX_MESSAGE_LEN)
 				phrase_log.log_phrase("emote", param)
-				message = "<b>[src]</b> [param]"
-				maptext_out = "<I>[regex({"(&#34;.*?&#34;)"}, "g").Replace(param, "</i>$1<i>")]</I>"
+				var/space = should_have_space_before_emote(html_decode(message)) ? " " : ""
+				var/name_before_emote = !space ? "[src]" : ""
+				message = "<B>[src]</B>[space][param]"
+				maptext_out = "<I>[name_before_emote][regex({"(&#34;.*?&#34;)"}, "g").Replace(param, "</i>$1<i>")]</I>"
 				m_type = 1 // default to visible
 				custom = copytext(param, 1, 10)
 
@@ -2345,6 +2356,7 @@
 
 			if (message)
 				logTheThing(LOG_SAY, src, "EMOTE: [message]")
+
 				act = lowertext(act)
 				if (m_type & 1)
 					for (var/mob/O in viewers(src, null))

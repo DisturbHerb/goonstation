@@ -222,6 +222,8 @@
 	if(src?.client?.preferences.auto_capitalization)
 		message = capitalize(message)
 
+	message = say_emphasis(message)
+
 #ifdef DATALOGGER
 	game_stats.ScanText(message)
 #endif
@@ -427,12 +429,15 @@
 	return 0*/
 
 /mob/proc/say_quote(var/text, var/special = 0, var/speechverb = null)
-	var/ending = copytext(text, length(text))
+	var/stripped_text = say_strip_emphasis(text)
+	var/ending = copytext(stripped_text, length(stripped_text))
 	var/loudness = 0
 	var/font_accent = null
 	var/class = ""
 	var/first_quote = " \""
 	var/second_quote = "\""
+
+
 
 	if(!speechverb)
 		speechverb = speechverb_say
@@ -535,6 +540,8 @@
 	if (text == "" || !text)
 		return speechverb
 
+	text = say_emphasis(text)
+
 	if(class)
 		class = " class='game [class]'"
 	if (loudness > 0)
@@ -543,6 +550,40 @@
 		return "[speechverb],[first_quote][font_accent ? "<font face='[font_accent]'>" : null]<small [class? class : ""]>[text]</small>[font_accent ? "</font>" : null][second_quote]"
 	else
 		return "[speechverb],[first_quote][font_accent ? "<font face='[font_accent]'>" : null]<span [class? class : ""]>[text]</span>[font_accent ? "</font>" : null][second_quote]"
+
+// Say emphasis stuff
+/// Transforms the speech emphasis mods from [/atom/proc/say_emphasis] into the appropriate HTML tags. Includes escaping.
+#define ENCODE_HTML_EMPHASIS(input, char, html, varname) \
+	var/static/regex/##varname = regex("(?<!\\\\)[char](.+?)(?<!\\\\)[char]", "g");\
+	input = varname.Replace_char(input, "<[html]>$1</[html]>")
+
+// Italicised text looks bad in maptext without adding phantom trailing spaces. I'm sorry. - DisturbHerb
+#define SPACES "   " // Minimum number of trailing spaces after a portion of italicised html.
+
+// Forgive me for mixing atom and mob procs together, these need to be used in some objs - DisturbHerb
+/// Scans the input sentence for speech emphasis modifiers, notably |italics|, +bold+, and _underline_ -mothblocks
+/atom/proc/say_emphasis(input)
+	ENCODE_HTML_EMPHASIS(input, "\\|", "i", italics)
+	ENCODE_HTML_EMPHASIS(input, "\\+", "b", bold)
+	ENCODE_HTML_EMPHASIS(input, "_", "u", underline)
+
+	// Removes backslashes used to escape text modification.
+	var/static/regex/remove_escape_backlashes = regex(@"\\(_|\+|\|)", "g")
+	// Gets instances of whitespace after an italicised piece of text that contains less than 3 spaces total.
+	var/static/regex/add_spacing_after_italics = regex("((<\\/i>)(<\\/\\w>)*)(\\s{1,[length(SPACES)]})(?=\\S)", "g")
+
+	input = remove_escape_backlashes.Replace_char(input, "$1")
+	input = add_spacing_after_italics.Replace_char(input, "$1[SPACES]")
+	return input
+
+#undef ENCODE_HTML_EMPHASIS
+#undef SPACES
+
+/// Strips all emphasis characters from input.
+/atom/proc/say_strip_emphasis(input)
+	var/static/regex/remove_emphasis_characters = regex(@"(?<!\\)[\+_|]", "g") // Gets the preceding character to the last emphasis character.
+	input = remove_emphasis_characters.Replace_char(input, "")
+	return input
 
 //no, voluntary is not a boolean. screm
 /mob/proc/emote(act, voluntary = 0, atom/target)
@@ -569,6 +610,19 @@
 			return FALSE
 	else
 		return FALSE
+
+/**
+ Returns a boolean based on whether or not the string starts with a comma or an apostrophe,
+ to be used for emotes to decide whether or not to have a space between the name of the user
+ and the emote.
+
+ Requires the message to be HTML decoded beforehand. Not doing it here for performance reasons.
+
+ Returns TRUE if there should be a space, FALSE if there shouldn't.
+ */
+/mob/proc/should_have_space_before_emote(string)
+	var/static/regex/no_spacing_emote_characters = regex(@"(,|')")
+	return no_spacing_emote_characters.Find(string) ? FALSE : TRUE
 
 /mob/proc/listen_ooc()
 	set name = "(Un)Mute OOC"
@@ -698,6 +752,8 @@
 		return
 
 	logTheThing(LOG_DIARY, src, ": [msg]", "ooc")
+
+	msg = say_emphasis(msg)
 
 #ifdef DATALOGGER
 	game_stats.ScanText(msg)
