@@ -1180,6 +1180,11 @@
 /turf/unsimulated/floor/black,
 /area/syndicate_station/battlecruiser/altai/armoury)
 "sm" = (
+/obj/machinery/light{
+	dir = 1;
+	layer = 9.1;
+	pixel_y = 21
+	},
 /turf/unsimulated/floor/carpet/red/fancy/edge/north,
 /area/centcom/offices/genessee)
 "sq" = (
@@ -2336,6 +2341,10 @@
 /obj/item/clothing/mask/breath,
 /turf/unsimulated/floor/darkpurple,
 /area/syndicate_station/battlecruiser/altai)
+"GT" = (
+/obj/machinery/light,
+/turf/unsimulated/floor/carpet/red/fancy/edge,
+/area/centcom/offices/genessee)
 "GW" = (
 /obj/decal/tile_edge/stripe/extra_big{
 	icon_state = "delivery2"
@@ -21215,7 +21224,7 @@ jL
 RX
 zu
 yd
-JY
+GT
 rB
 gQ
 Oc
