@@ -4,13 +4,18 @@
 
 	#if defined(MAP_OVERRIDE_OSHAN)
 	var/image_url = "images/oshan_titlecard.png"
+	var/add_html = ""
+	#elif defined(MAP_OVERRIDE_EVENT)
+	var/image_url = "images/herb/incursion_titlecard.png"
+	var/add_html = {"<div class='area'><span class='ol vga vt'>Herbstation presents,<br><span style='color: #88f; font-style: italic;'> Incursion</span><br><br>Remember to <span style='color: lightcoral'>Roleplay</span>! </span> </div>"}
 	#elif defined(MAP_OVERRIDE_MANTA)
 	var/image_url = "images/manta_titlecard.png"
+	var/add_html = ""
 	#else
 	var/image_url = "images/main_titlecard.gif"
+	var/add_html = ""
 	#endif
 	var/is_game_mode = FALSE
-	var/add_html = ""
 	var/overlay_image_url = null
 
 	heisenbee
