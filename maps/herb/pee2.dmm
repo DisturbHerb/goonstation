@@ -1,4 +1,21 @@
 //MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"af" = (
+/obj/indestructible/shuttle_corner{
+	dir = 5;
+	icon_state = "wall3_trans"
+	},
+/turf/space,
+/area/space)
+"ah" = (
+/obj/machinery/light{
+	dir = 8;
+	layer = 9.1;
+	pixel_x = -10
+	},
+/turf/unsimulated/floor/redblack{
+	dir = 4
+	},
+/area/space)
 "aZ" = (
 /obj/machinery/door/airlock/pyro/command/syndicate{
 	dir = 4;
@@ -14,6 +31,14 @@
 	},
 /turf/unsimulated/floor/red,
 /area/syndicate_station/medbay)
+"bd" = (
+/obj/lattice{
+	dir = 5;
+	icon_state = "lattice-dir-b"
+	},
+/obj/machinery/light/runway_light/delay3,
+/turf/space,
+/area/space)
 "bp" = (
 /turf/unsimulated/floor/shuttlebay,
 /area/syndicate_station/battlecruiser/altai)
@@ -35,6 +60,11 @@
 	dir = 10
 	},
 /area/centcom/offices/sirconway)
+"bL" = (
+/obj/decoration/syndiepc/syndiepc5,
+/obj/map/light/dimred,
+/turf/unsimulated/floor/redblack/corner,
+/area/space)
 "bM" = (
 /obj/decoration/syndiepc/syndiepc8,
 /obj/map/light/dimred,
@@ -133,6 +163,17 @@
 /obj/item/scissors/surgical_scissors,
 /turf/unsimulated/floor/white,
 /area/syndicate_station/medbay)
+"dn" = (
+/obj/machinery/light{
+	dir = 4;
+	layer = 9.1;
+	pixel_x = 10
+	},
+/obj/item/storage/toilet/goldentoilet{
+	dir = 8
+	},
+/turf/unsimulated/floor/carpet/arcade,
+/area/centcom/offices/disturbherb)
 "dt" = (
 /obj/cable{
 	d1 = 2;
@@ -146,6 +187,15 @@
 	dir = 4
 	},
 /area/syndicate_station/battlecruiser/altai)
+"dO" = (
+/turf/unsimulated/wall{
+	desc = "It's sealed shut.";
+	dir = 4;
+	icon = 'icons/obj/doors/blastdoor.dmi';
+	icon_state = "bdoorright1";
+	name = "security door"
+	},
+/area/titlescreen)
 "dQ" = (
 /obj/lattice,
 /obj/cable{
@@ -172,9 +222,7 @@
 /area/syndicate_station/battlecruiser/altai)
 "dW" = (
 /turf/unsimulated/floor/redblack,
-/area/centcom/offices{
-	name = "Syndicate High Command"
-	})
+/area/titlescreen)
 "dZ" = (
 /obj/rack,
 /obj/item/tank/jetpack/syndicate,
@@ -215,9 +263,18 @@
 /turf/space,
 /area/space)
 "en" = (
-/obj/item/storage/toilet/goldentoilet,
-/turf/unsimulated/floor/carpet/arcade,
-/area/centcom/offices/disturbherb)
+/obj/table/wood/auto/desk,
+/obj/random_item_spawner/desk_stuff/g_clip_bin_pen/few,
+/obj/item/folder{
+	name = "intelligence report";
+	desc = "An information packet containing with decrypted communications from NanoTrasen. \[TOP SECRET\] is plastered on the front."
+	},
+/turf/unsimulated/floor/carpet/red/fancy,
+/area/centcom/offices/genessee)
+"eo" = (
+/obj/storage/closet/dresser,
+/turf/unsimulated/floor/carpet/red/fancy/edge/sw,
+/area/centcom/offices/genessee)
 "es" = (
 /obj/landmark/spawner{
 	name = "monkeyspawn_syndicate"
@@ -246,6 +303,15 @@
 	},
 /turf/unsimulated/floor/red,
 /area/syndicate_station/battlecruiser/altai)
+"fj" = (
+/obj/machinery/light,
+/turf/unsimulated/floor/red,
+/area/centcom/offices{
+	name = "Syndicate High Command"
+	})
+"fm" = (
+/turf/unsimulated/floor/carpet/red/fancy/edge/se,
+/area/space)
 "fp" = (
 /turf/unsimulated/floor/redblack{
 	dir = 4
@@ -258,6 +324,11 @@
 	},
 /obj/machinery/light/runway_light/delay2,
 /turf/space,
+/area/space)
+"fx" = (
+/turf/unsimulated/floor/redblack{
+	dir = 8
+	},
 /area/space)
 "fz" = (
 /obj/stool/chair/red{
@@ -286,6 +357,9 @@
 	icon_state = "cairngorm12"
 	},
 /area/syndicate_station/battlecruiser/altai)
+"fJ" = (
+/turf/unsimulated/floor/carpet/red/fancy/edge/sw,
+/area/space)
 "fK" = (
 /obj/reagent_dispensers/watertank/fountain,
 /turf/unsimulated/floor/carpet/arcade,
@@ -361,9 +435,7 @@
 /turf/unsimulated/floor/redblack{
 	dir = 1
 	},
-/area/centcom/offices{
-	name = "Syndicate High Command"
-	})
+/area/titlescreen)
 "fU" = (
 /obj/decal/tile_edge/stripe/big{
 	dir = 8
@@ -375,6 +447,15 @@
 /obj/machinery/light/small/floor,
 /turf/unsimulated/floor/plating/random,
 /area/syndicate_station/firing_range)
+"fY" = (
+/obj/lattice,
+/obj/machinery/communications_dish,
+/obj/cable{
+	d2 = 8;
+	icon_state = "0-8"
+	},
+/turf/space,
+/area/space)
 "fZ" = (
 /obj/cable{
 	d1 = 4;
@@ -393,11 +474,10 @@
 /turf/space,
 /area/space)
 "gj" = (
-/obj/stool/chair/office/red{
-	dir = 8
+/turf/unsimulated/floor/redblack{
+	dir = 9
 	},
-/turf/unsimulated/floor/carpet/arcade,
-/area/centcom/offices/disturbherb)
+/area/space)
 "gp" = (
 /turf/unsimulated/floor/carpet/red/standard/edge,
 /area/centcom/offices/sirconway)
@@ -413,6 +493,29 @@
 /obj/machinery/light,
 /turf/unsimulated/floor/redwhite,
 /area/syndicate_station/medbay)
+"gF" = (
+/obj/table/reinforced/bar/auto{
+	name = "table"
+	},
+/obj/item/decoration/ashtray{
+	pixel_x = 6;
+	pixel_y = 6
+	},
+/obj/item/device/light/zippo/syndicate{
+	pixel_y = 4;
+	pixel_x = -12
+	},
+/turf/unsimulated/floor/carpet/red/fancy,
+/area/space)
+"gK" = (
+/obj/lattice,
+/obj/cable{
+	d1 = 4;
+	d2 = 8;
+	icon_state = "4-8"
+	},
+/turf/space,
+/area/space)
 "gQ" = (
 /turf/cordon,
 /area/cordon)
@@ -467,6 +570,15 @@
 	dir = 8
 	},
 /area/syndicate_station/medbay)
+"ho" = (
+/turf/unsimulated/wall{
+	desc = "It's sealed shut.";
+	dir = 8;
+	icon = 'icons/obj/doors/blastdoor.dmi';
+	icon_state = "bdoorleft1";
+	name = "security door"
+	},
+/area/titlescreen)
 "hz" = (
 /obj/machinery/computer3/terminal{
 	dir = 8
@@ -529,12 +641,8 @@
 /turf/unsimulated/floor/shuttlebay,
 /area/syndicate_station/battlecruiser/altai)
 "hZ" = (
-/obj/decal/poster/wallsign/dead_exec_portrait,
-/obj/machinery/computer/security/console_upper{
-	dir = 8
-	},
-/turf/unsimulated/floor/carpet/red/fancy/edge/ne,
-/area/centcom/offices/genessee)
+/turf/unsimulated/floor/darkblue,
+/area/space)
 "im" = (
 /obj/lattice{
 	dir = 1;
@@ -542,6 +650,10 @@
 	},
 /obj/machinery/light/runway_light/delay4,
 /turf/space,
+/area/space)
+"iy" = (
+/obj/wingrille_spawn/auto/crystal,
+/turf/unsimulated/floor/plating/random,
 /area/space)
 "iz" = (
 /obj/machinery/door/airlock/pyro/command/syndicate{
@@ -583,6 +695,19 @@
 	dir = 10
 	},
 /area/syndicate_station/battlecruiser/altai/armoury)
+"ja" = (
+/obj/machinery/vending/cigarette{
+	pixel_y = 20;
+	pixel_x = 6
+	},
+/obj/machinery/vending/cola/red{
+	pixel_y = 19;
+	pixel_x = -14
+	},
+/turf/unsimulated/floor/red,
+/area/centcom/offices{
+	name = "Syndicate High Command"
+	})
 "jc" = (
 /obj/lattice{
 	dir = 5;
@@ -616,11 +741,15 @@
 /turf/unsimulated/floor/black,
 /area/syndicate_station/battlecruiser/altai)
 "jy" = (
-/turf/unsimulated/floor/carpet/red/fancy/edge/east,
+/obj/table/wood/round/auto,
+/turf/unsimulated/floor/carpet/red/fancy/edge,
 /area/centcom/offices/genessee)
 "jz" = (
-/turf/unsimulated/floor/redblack{
-	dir = 5
+/turf/unsimulated/wall{
+	desc = "It's sealed shut.";
+	icon = 'icons/obj/doors/blastdoor.dmi';
+	icon_state = "bdoorright1";
+	name = "security door"
 	},
 /area/centcom/offices{
 	name = "Syndicate High Command"
@@ -661,16 +790,11 @@
 /turf/unsimulated/floor/black,
 /area/syndicate_station/battlecruiser/altai)
 "jL" = (
-/obj/item/device/radio/intercom/fish,
-/obj/table/wood/round,
-/obj/captain_bottleship{
-	pixel_y = 7;
-	pixel_x = -3;
-	desc = "A model of the old USS Constitution, trapped in a glass tomb. A shame that the real thing sank in '32.";
-	name = "\improper ship in a bottle"
+/obj/stool/chair/office/syndie{
+	dir = 1
 	},
-/turf/unsimulated/floor/carpet/red/fancy/edge/north,
-/area/centcom/offices/genessee)
+/turf/unsimulated/floor/carpet/red/standard,
+/area/centcom/offices/sirconway)
 "jM" = (
 /obj/machinery/light{
 	dir = 1;
@@ -726,6 +850,13 @@
 	},
 /turf/unsimulated/floor/shuttlebay,
 /area/syndicate_station/battlecruiser/altai)
+"kn" = (
+/obj/table/reinforced/bar/auto{
+	name = "table"
+	},
+/obj/random_item_spawner/desk_stuff/g_clip_bin_fpen/one_or_zero,
+/turf/unsimulated/floor/carpet/red/fancy,
+/area/space)
 "kC" = (
 /obj/machinery/door/airlock/pyro/glass{
 	name = "combat information center"
@@ -733,8 +864,16 @@
 /turf/unsimulated/floor/darkblue,
 /area/syndicate_station/battlecruiser/altai)
 "kE" = (
-/turf/space,
-/area/cordon)
+/turf/unsimulated/wall{
+	desc = "It's sealed shut.";
+	dir = 8;
+	icon = 'icons/obj/doors/blastdoor.dmi';
+	icon_state = "bdoorleft1";
+	name = "security door"
+	},
+/area/centcom/offices{
+	name = "Syndicate High Command"
+	})
 "kG" = (
 /obj/cable{
 	d1 = 2;
@@ -802,6 +941,12 @@
 	},
 /turf/unsimulated/floor/black,
 /area/syndicate_station/battlecruiser/altai)
+"lL" = (
+/obj/machinery/door/airlock/pyro/command/syndicate{
+	dir = 4
+	},
+/turf/unsimulated/floor/black,
+/area/space)
 "lM" = (
 /obj/rack,
 /obj/item/tank/jetpack/syndicate,
@@ -849,20 +994,12 @@
 /turf/unsimulated/floor/shuttlebay,
 /area/syndicate_station/battlecruiser/altai)
 "lV" = (
-/obj/table/wood/auto/desk,
-/obj/item/decoration/ashtray{
-	pixel_y = 10;
-	pixel_x = 7
+/obj/stool/chair/office/red{
+	dir = 4
 	},
-/obj/machinery/phone/unlisted{
-	pixel_y = -5
-	},
-/obj/item/device/radio/intercom/syndicate{
-	dir = 4;
-	listening = 0
-	},
-/turf/unsimulated/floor/carpet/arcade,
-/area/centcom/offices/disturbherb)
+/obj/decal/poster/wallsign/dead_exec_portrait,
+/turf/unsimulated/floor/carpet/red/fancy/edge/north,
+/area/centcom/offices/genessee)
 "ma" = (
 /obj/lattice{
 	dir = 6;
@@ -896,6 +1033,15 @@
 /obj/machinery/light/lamp/black,
 /turf/unsimulated/floor/red,
 /area/syndicate_station/battlecruiser/altai)
+"mB" = (
+/turf/unsimulated/wall{
+	desc = "It's sealed shut.";
+	dir = 4;
+	icon = 'icons/obj/doors/blastdoor.dmi';
+	icon_state = "bdoorleft1";
+	name = "security door"
+	},
+/area/space)
 "mH" = (
 /turf/unsimulated/floor/carpet/red/fancy/edge/north,
 /area/syndicate_station/battlecruiser/altai)
@@ -920,6 +1066,11 @@
 	icon = 'icons/obj/singularity.dmi';
 	icon_state = "TheSingMain";
 	name = "cloaking field"
+	},
+/area/space)
+"np" = (
+/turf/unsimulated/floor/redblack/corner{
+	dir = 4
 	},
 /area/space)
 "nu" = (
@@ -952,10 +1103,18 @@
 /obj/landmark{
 	name = "new_player"
 	},
-/turf/unsimulated/wall/auto/adventure/shuttle/dark,
-/area/centcom/offices{
-	name = "Syndicate High Command"
-	})
+/obj/syndicateholoemitter,
+/obj/table/reinforced/bar/auto{
+	name = "table"
+	},
+/obj/abzuholo{
+	pixel_x = -29;
+	name = "planetary hologram";
+	desc = "A holograph of one of the core worlds. You swear you can see your house from up here.";
+	icon = 'icons/herb/96x96.dmi'
+	},
+/turf/unsimulated/floor/carpet/red/fancy,
+/area/space)
 "nX" = (
 /obj/cable{
 	d1 = 1;
@@ -987,9 +1146,7 @@
 /turf/unsimulated/floor/redblack{
 	dir = 9
 	},
-/area/centcom/offices{
-	name = "Syndicate High Command"
-	})
+/area/titlescreen)
 "ow" = (
 /obj/juggleplaque{
 	desc = "Syndicate Battlecruiser Cairngorm - Out of these mountains, Out of the defiant torment of Plutonic rock, Out of fire, terror, blackness and upheaval, Leap the clear burns, Living water.";
@@ -1003,12 +1160,28 @@
 	},
 /turf/unsimulated/floor/red,
 /area/syndicate_station/battlecruiser/altai)
+"oH" = (
+/obj/lattice{
+	dir = 10;
+	icon_state = "lattice-dir"
+	},
+/turf/space,
+/area/space)
 "oL" = (
 /obj/storage/crate/packing,
 /obj/item/paint_can/random,
 /obj/item/pen/crayon/random,
 /turf/unsimulated/floor/black/grime,
 /area/syndicate_station/battlecruiser/altai)
+"oO" = (
+/turf/unsimulated/wall{
+	desc = "It's sealed shut.";
+	dir = 8;
+	icon = 'icons/obj/doors/blastdoor.dmi';
+	icon_state = "bdoorright1";
+	name = "security door"
+	},
+/area/space)
 "oT" = (
 /obj/decal/tile_edge/stripe/big{
 	dir = 8
@@ -1019,12 +1192,28 @@
 /obj/machinery/light/small/floor,
 /turf/unsimulated/floor/plating/random,
 /area/syndicate_station/firing_range)
+"pa" = (
+/obj/lattice{
+	dir = 5;
+	icon_state = "lattice-dir"
+	},
+/obj/machinery/light/runway_light/delay4,
+/turf/space,
+/area/space)
 "pj" = (
 /obj/wingrille_spawn/auto/crystal,
 /obj/cable,
 /obj/machinery/power/terminal,
 /turf/unsimulated/floor/plating/random,
 /area/syndicate_station/battlecruiser/altai)
+"pn" = (
+/obj/machinery/light{
+	dir = 1;
+	layer = 9.1;
+	pixel_y = 21
+	},
+/turf/unsimulated/floor/red,
+/area/space)
 "pp" = (
 /obj/rack,
 /obj/item/tank/jetpack/syndicate,
@@ -1095,6 +1284,9 @@
 /obj/decal/stripe_caution,
 /turf/unsimulated/floor/darkpurple,
 /area/syndicate_station/battlecruiser/altai)
+"qz" = (
+/turf/unsimulated/floor/carpet/red/fancy/edge/south,
+/area/space)
 "qL" = (
 /obj/cable{
 	d1 = 2;
@@ -1156,6 +1348,12 @@
 /obj/machinery/r_door_control/podbay/syndicate/new_walls/west,
 /turf/unsimulated/floor/shuttlebay,
 /area/syndicate_station/battlecruiser/altai)
+"rN" = (
+/obj/stool/chair/office/syndie{
+	dir = 1
+	},
+/turf/unsimulated/floor/carpet/red/fancy/edge/south,
+/area/space)
 "sh" = (
 /obj/cable{
 	icon_state = "2-8"
@@ -1191,13 +1389,18 @@
 /turf/unsimulated/floor/black,
 /area/syndicate_station/battlecruiser/altai/armoury)
 "sm" = (
-/obj/machinery/light{
-	dir = 1;
-	layer = 9.1;
-	pixel_y = 21
+/obj/machinery/vending/coffee{
+	pixel_y = 20;
+	pixel_x = -6
 	},
-/turf/unsimulated/floor/carpet/red/fancy/edge/north,
-/area/centcom/offices/genessee)
+/obj/machinery/vending/snack{
+	pixel_y = 20;
+	pixel_x = 14
+	},
+/turf/unsimulated/floor/red,
+/area/centcom/offices{
+	name = "Syndicate High Command"
+	})
 "sq" = (
 /obj/machinery/light,
 /turf/unsimulated/floor/darkpurple,
@@ -1209,6 +1412,11 @@
 	},
 /turf/unsimulated/floor/carpet/red/fancy/edge/north,
 /area/syndicate_station/battlecruiser/altai)
+"sN" = (
+/turf/unsimulated/floor/redblack{
+	dir = 1
+	},
+/area/space)
 "sP" = (
 /obj/stool/bed,
 /obj/item/clothing/suit/bedsheet{
@@ -1262,8 +1470,11 @@
 /turf/unsimulated/floor/circuit/red,
 /area/syndicate_station/battlecruiser/altai)
 "to" = (
-/turf/unsimulated/floor/redblack/corner{
-	dir = 8
+/turf/unsimulated/wall{
+	desc = "It's sealed shut.";
+	icon = 'icons/obj/doors/blastdoor.dmi';
+	icon_state = "bdoormid1";
+	name = "security door"
 	},
 /area/centcom/offices{
 	name = "Syndicate High Command"
@@ -1296,14 +1507,16 @@
 /turf/unsimulated/floor/plating,
 /area/syndicate_station/battlecruiser/altai)
 "tP" = (
-/obj/item/device/radio/intercom/syndicate{
-	dir = 4;
-	listening = 0
+/turf/unsimulated/wall{
+	desc = "It's sealed shut.";
+	dir = 8;
+	icon = 'icons/obj/doors/blastdoor.dmi';
+	icon_state = "bdoorright1";
+	name = "security door"
 	},
-/turf/unsimulated/floor/carpet/red/standard/edge{
-	dir = 8
-	},
-/area/centcom/offices/sirconway)
+/area/centcom/offices{
+	name = "Syndicate High Command"
+	})
 "ud" = (
 /obj/machinery/door/airlock/pyro/classic,
 /turf/unsimulated/floor/black,
@@ -1335,6 +1548,11 @@
 /area/centcom/offices{
 	name = "Syndicate High Command"
 	})
+"uo" = (
+/obj/decoration/syndiepc/syndiepc16,
+/obj/map/light/dimred,
+/turf/unsimulated/floor/redblack,
+/area/space)
 "us" = (
 /obj/stool/chair/red{
 	dir = 1
@@ -1344,6 +1562,15 @@
 	},
 /turf/unsimulated/floor/carpet/red/fancy/edge/south,
 /area/syndicate_station/battlecruiser/altai)
+"ux" = (
+/obj/admin_plaque{
+	name = "Commandant's Office";
+	pixel_y = 32
+	},
+/turf/unsimulated/floor/red,
+/area/centcom/offices{
+	name = "Syndicate High Command"
+	})
 "uz" = (
 /turf/unsimulated/floor/darkpurple,
 /area/syndicate_station/battlecruiser/altai)
@@ -1361,35 +1588,18 @@
 /turf/unsimulated/floor/shuttlebay,
 /area/syndicate_station/battlecruiser/altai)
 "uK" = (
-/obj/machinery/vending/coffee{
-	pixel_y = 20;
-	pixel_x = -6
-	},
-/obj/machinery/vending/snack{
-	pixel_y = 20;
-	pixel_x = 14
-	},
-/turf/unsimulated/floor/redblack,
-/area/centcom/offices{
-	name = "Syndicate High Command"
-	})
+/turf/unsimulated/floor/carpet/red/fancy/edge/north,
+/area/centcom/offices/genessee)
 "uR" = (
 /obj/decoration/syndiepc/syndiepc10,
 /obj/map/light/dimred,
 /turf/unsimulated/floor/black,
 /area/syndicate_station/battlecruiser/altai)
 "uS" = (
-/obj/machinery/light{
-	dir = 4;
-	layer = 9.1;
-	pixel_x = 10
+/turf/unsimulated/floor/redblack{
+	dir = 10
 	},
-/obj/machinery/bathtub{
-	anchored = 1;
-	dir = 8
-	},
-/turf/unsimulated/floor/carpet/arcade,
-/area/centcom/offices/disturbherb)
+/area/titlescreen)
 "uT" = (
 /obj/decal/tile_edge/stripe{
 	dir = 6;
@@ -1402,25 +1612,31 @@
 	dir = 4
 	},
 /area/syndicate_station/battlecruiser/altai)
+"uY" = (
+/obj/machinery/door/airlock/pyro/command/syndicate{
+	dir = 4
+	},
+/turf/unsimulated/floor/black,
+/area/centcom/offices{
+	name = "Syndicate High Command"
+	})
 "vc" = (
 /obj/machinery/light,
 /turf/unsimulated/floor/redblack{
 	dir = 1
 	},
-/area/centcom/offices{
-	name = "Syndicate High Command"
-	})
+/area/space)
 "vf" = (
-/turf/unsimulated/wall{
-	desc = "It's sealed shut.";
-	dir = 1;
-	icon = 'icons/obj/doors/blastdoor.dmi';
-	icon_state = "bdoorright1";
-	name = "security door"
+/turf/unsimulated/floor/carpet/red/standard/edge{
+	dir = 8
 	},
-/area/centcom/offices{
-	name = "Syndicate High Command"
-	})
+/area/centcom/offices/sirconway)
+"vj" = (
+/obj/stool/chair/office/syndie{
+	dir = 8
+	},
+/turf/unsimulated/floor/carpet/arcade,
+/area/centcom/offices/disturbherb)
 "vk" = (
 /obj/rack,
 /obj/item/tank/jetpack/syndicate,
@@ -1500,6 +1716,9 @@
 	dir = 8
 	},
 /area/centcom/offices/sirconway)
+"vF" = (
+/turf/unsimulated/floor/carpet/red/fancy/edge/north,
+/area/space)
 "vI" = (
 /obj/machinery/light{
 	dir = 1;
@@ -1513,6 +1732,23 @@
 /obj/item/nukeop_minimap_controller,
 /turf/unsimulated/floor/carpet/red/decal/innercross,
 /area/syndicate_station/battlecruiser/altai)
+"wk" = (
+/obj/machinery/light{
+	dir = 1;
+	layer = 9.1;
+	pixel_y = 21
+	},
+/turf/unsimulated/floor/redblack{
+	dir = 8
+	},
+/area/space)
+"wv" = (
+/obj/indestructible/shuttle_corner{
+	dir = 6;
+	icon_state = "wall3_trans"
+	},
+/turf/space,
+/area/space)
 "wA" = (
 /obj/lattice{
 	icon_state = "lattice-dir"
@@ -1564,11 +1800,8 @@
 /turf/unsimulated/floor/carpet/red/fancy/edge/nw,
 /area/syndicate_station/battlecruiser/altai)
 "xg" = (
-/obj/stool/chair/office/red{
-	dir = 1
-	},
-/turf/unsimulated/floor/carpet/red/standard,
-/area/centcom/offices/sirconway)
+/turf/unsimulated/floor/red,
+/area/titlescreen)
 "xn" = (
 /obj/lattice{
 	dir = 1;
@@ -1619,6 +1852,11 @@
 /area/centcom/offices{
 	name = "Syndicate High Command"
 	})
+"ya" = (
+/turf/unsimulated/floor/redblack{
+	dir = 4
+	},
+/area/space)
 "yc" = (
 /obj/lattice{
 	dir = 1;
@@ -1628,9 +1866,7 @@
 /turf/space,
 /area/space)
 "yd" = (
-/obj/stool/chair/red{
-	dir = 1
-	},
+/obj/machinery/door/unpowered/wood/pyro,
 /turf/unsimulated/floor/carpet/red/fancy,
 /area/centcom/offices/genessee)
 "yf" = (
@@ -1656,13 +1892,12 @@
 /turf/unsimulated/floor/black,
 /area/syndicate_station/battlecruiser/altai)
 "yo" = (
-/obj/table/wood/auto/desk,
-/obj/machinery/phone/unlisted{
-	pixel_x = -6
-	},
-/obj/item/device/light/zippo/gold{
-	pixel_y = 4;
-	pixel_x = 9
+/obj/table/wood/round,
+/obj/captain_bottleship{
+	pixel_y = 7;
+	pixel_x = -3;
+	desc = "A model of the old USS Constitution, trapped in a glass tomb. A shame that the real thing sank in '32.";
+	name = "\improper ship in a bottle"
 	},
 /turf/unsimulated/floor/carpet/red/fancy/edge/west,
 /area/centcom/offices/genessee)
@@ -1705,6 +1940,11 @@
 	},
 /turf/space,
 /area/syndicate_station/battlecruiser/altai)
+"zj" = (
+/turf/unsimulated/floor/redblack{
+	dir = 6
+	},
+/area/space)
 "zk" = (
 /obj/shrub{
 	desc = "While it's wildly unlikely that this bush hails from Space Sweden, it nevertheless bears a faint scent of meatballs that can't be adequately explained.";
@@ -1723,11 +1963,21 @@
 	},
 /turf/space,
 /area/syndicate_station/battlecruiser/altai)
+"zs" = (
+/obj/stool/chair/office/syndie{
+	dir = 8
+	},
+/turf/unsimulated/floor/carpet/red/fancy/edge/east,
+/area/space)
 "zu" = (
-/obj/table/wood/auto/desk,
-/obj/random_item_spawner/desk_stuff/g_clip_bin_pen/few,
-/turf/unsimulated/floor/carpet/red/fancy,
-/area/centcom/offices/genessee)
+/turf/unsimulated/floor/black,
+/area/space)
+"zy" = (
+/obj/machinery/light,
+/turf/unsimulated/floor/redblack{
+	dir = 8
+	},
+/area/space)
 "zz" = (
 /obj/lattice{
 	dir = 6;
@@ -1844,6 +2094,12 @@
 /obj/decoration/syndiepc/syndiepc3,
 /turf/unsimulated/floor/black,
 /area/syndicate_station/battlecruiser/altai)
+"AC" = (
+/obj/table/reinforced/bar/auto{
+	name = "table"
+	},
+/turf/unsimulated/floor/carpet/red/fancy,
+/area/space)
 "AH" = (
 /obj/storage/crate{
 	name = "footlocker"
@@ -1862,6 +2118,12 @@
 	},
 /turf/unsimulated/floor/darkpurple,
 /area/syndicate_station/battlecruiser/altai)
+"AM" = (
+/obj/stool/chair/office/syndie{
+	dir = 4
+	},
+/turf/unsimulated/floor/carpet/red/fancy/edge/west,
+/area/space)
 "Bl" = (
 /obj/lattice{
 	dir = 1;
@@ -1889,9 +2151,7 @@
 /turf/unsimulated/floor/redblack/corner{
 	dir = 1
 	},
-/area/centcom/offices{
-	name = "Syndicate High Command"
-	})
+/area/space)
 "BL" = (
 /turf/unsimulated/floor/specialroom/cafeteria,
 /area/centcom/offices{
@@ -1906,10 +2166,10 @@
 /area/syndicate_station/battlecruiser/altai)
 "BW" = (
 /obj/admin_plaque{
-	pixel_x = 32;
-	name = "Flotilla Commander's Office"
+	name = "Flotilla Commander's Office";
+	pixel_y = -32
 	},
-/turf/unsimulated/floor/redblack,
+/turf/unsimulated/floor/red,
 /area/centcom/offices{
 	name = "Syndicate High Command"
 	})
@@ -1960,6 +2220,10 @@
 	},
 /turf/unsimulated/floor/darkpurple,
 /area/syndicate_station/battlecruiser/altai)
+"CB" = (
+/obj/decoration/syndiepc/syndiepc4,
+/turf/unsimulated/floor/redblack,
+/area/space)
 "CI" = (
 /obj/lattice{
 	dir = 1;
@@ -1981,14 +2245,8 @@
 /turf/unsimulated/floor/plating,
 /area/syndicate_station/battlecruiser/altai)
 "CQ" = (
-/obj/admin_plaque{
-	name = "Deputy Commandant's Office";
-	pixel_y = 32
-	},
-/turf/unsimulated/floor/redblack,
-/area/centcom/offices{
-	name = "Syndicate High Command"
-	})
+/turf/unsimulated/wall/auto/adventure/shuttle/dark,
+/area/titlescreen)
 "Dh" = (
 /turf/unsimulated/floor/carpet/red/standard,
 /area/centcom/offices/sirconway)
@@ -2014,12 +2272,25 @@
 /obj/machinery/light,
 /turf/unsimulated/floor/darkpurple,
 /area/syndicate_station/battlecruiser/altai)
+"Dt" = (
+/obj/machinery/computer3/generic/secure_data/console_lower{
+	dir = 8
+	},
+/obj/map/light/dimred,
+/turf/unsimulated/floor/redblack{
+	dir = 8
+	},
+/area/space)
 "Du" = (
 /obj/lattice{
 	dir = 1;
 	icon_state = "lattice-dir"
 	},
 /turf/space,
+/area/space)
+"DO" = (
+/obj/machinery/light,
+/turf/unsimulated/floor/red,
 /area/space)
 "DR" = (
 /obj/railing/orange/reinforced{
@@ -2036,6 +2307,10 @@
 	dir = 10
 	},
 /area/syndicate_station/battlecruiser/altai)
+"En" = (
+/obj/item/device/radio/intercom/fish,
+/turf/unsimulated/floor/carpet/red/fancy/edge/north,
+/area/centcom/offices/genessee)
 "Ep" = (
 /obj/stool/chair/red{
 	dir = 8
@@ -2188,6 +2463,22 @@
 	},
 /turf/unsimulated/floor/carpet/red/fancy/edge/east,
 /area/centcom/offices/genessee)
+"Fe" = (
+/turf/unsimulated/wall{
+	icon = 'icons/obj/singularity.dmi';
+	icon_state = "TheSingMain";
+	name = "cloaking field"
+	},
+/area/titlescreen)
+"Fp" = (
+/turf/unsimulated/wall{
+	desc = "It's sealed shut.";
+	dir = 8;
+	icon = 'icons/obj/doors/blastdoor.dmi';
+	icon_state = "bdoormid1";
+	name = "security door"
+	},
+/area/titlescreen)
 "Fs" = (
 /obj/lattice{
 	dir = 6;
@@ -2258,14 +2549,10 @@
 /turf/space,
 /area/syndicate_station/battlecruiser/altai)
 "FY" = (
-/obj/admin_plaque{
-	name = "Commandant's Office";
-	pixel_y = 32
+/turf/unsimulated/floor/redblack/corner{
+	dir = 8
 	},
-/turf/unsimulated/floor/redblack,
-/area/centcom/offices{
-	name = "Syndicate High Command"
-	})
+/area/space)
 "FZ" = (
 /obj/storage/crate/wooden,
 /obj/random_item_spawner/junk/some,
@@ -2384,6 +2671,9 @@
 /obj/table/syndicate/auto,
 /turf/unsimulated/floor/carpet/red/decal/outercross,
 /area/syndicate_station/battlecruiser/altai)
+"Hs" = (
+/turf/unsimulated/floor/redblack/corner,
+/area/space)
 "Ht" = (
 /obj/machinery/door/poddoor/blast{
 	dir = 4;
@@ -2440,6 +2730,10 @@
 	},
 /turf/unsimulated/floor/black,
 /area/syndicate_station/battlecruiser/altai)
+"HE" = (
+/obj/decoration/syndiepc/syndiepc9,
+/turf/unsimulated/floor/redblack,
+/area/space)
 "HR" = (
 /obj/storage/crate/packing,
 /obj/item/inner_tube/random,
@@ -2554,6 +2848,12 @@
 	dir = 10
 	},
 /area/syndicate_station/battlecruiser/altai)
+"IH" = (
+/obj/decoration/syndiepc/syndiepc17,
+/turf/unsimulated/floor/redblack{
+	dir = 4
+	},
+/area/space)
 "IL" = (
 /obj/wingrille_spawn/auto/crystal,
 /turf/unsimulated/floor/plating/random,
@@ -2667,6 +2967,9 @@
 /obj/item/reagent_containers/food/snacks/burrito,
 /turf/unsimulated/floor/black,
 /area/syndicate_station/battlecruiser/altai)
+"Jr" = (
+/turf/unsimulated/floor/carpet/red/fancy/edge/east,
+/area/space)
 "JN" = (
 /obj/machinery/computer3/generic/med_data{
 	dir = 4
@@ -2737,6 +3040,17 @@
 "Kz" = (
 /turf/unsimulated/floor/carpet/red/fancy/edge/sw,
 /area/syndicate_station/battlecruiser/altai)
+"KA" = (
+/obj/stool/chair/office/syndie,
+/turf/unsimulated/floor/carpet/red/fancy/edge/north,
+/area/space)
+"KF" = (
+/obj/decoration/syndiepc/syndiepc14,
+/obj/map/light/dimred,
+/turf/unsimulated/floor/redblack/corner{
+	dir = 4
+	},
+/area/space)
 "KM" = (
 /obj/lattice{
 	icon_state = "lattice-dir-b"
@@ -2744,6 +3058,15 @@
 /obj/machinery/light/runway_light/delay2,
 /turf/space,
 /area/space)
+"KS" = (
+/turf/unsimulated/wall{
+	desc = "It's sealed shut.";
+	dir = 4;
+	icon = 'icons/obj/doors/blastdoor.dmi';
+	icon_state = "bdoormid1";
+	name = "security door"
+	},
+/area/titlescreen)
 "KZ" = (
 /obj/machinery/photocopier,
 /turf/unsimulated/floor/carpet/red/standard/edge{
@@ -2757,8 +3080,30 @@
 /turf/unsimulated/floor/black,
 /area/syndicate_station/battlecruiser/altai)
 "Lm" = (
-/turf/unsimulated/floor/carpet/red/fancy/edge/sw,
-/area/centcom/offices/genessee)
+/obj/admin_plaque{
+	name = "Deputy Commandant's Office";
+	pixel_y = 32
+	},
+/turf/unsimulated/floor/red,
+/area/centcom/offices{
+	name = "Syndicate High Command"
+	})
+"Lq" = (
+/turf/unsimulated/floor/carpet/red/fancy/edge/west,
+/area/space)
+"Lv" = (
+/obj/machinery/computer/security/console_upper{
+	dir = 8
+	},
+/obj/machinery/light{
+	dir = 4;
+	layer = 9.1;
+	pixel_x = 10
+	},
+/turf/unsimulated/floor/redblack/corner{
+	dir = 4
+	},
+/area/space)
 "Lw" = (
 /obj/machinery/door/airlock/pyro/glass/windoor{
 	dir = 8;
@@ -2767,6 +3112,27 @@
 /obj/table/reinforced/industrial/auto,
 /turf/unsimulated/floor/red,
 /area/syndicate_station/battlecruiser/altai/armoury)
+"Lx" = (
+/obj/machinery/light{
+	dir = 1;
+	layer = 9.1;
+	pixel_y = 21
+	},
+/obj/table/wood/auto/desk,
+/obj/machinery/phone/unlisted{
+	pixel_x = 6
+	},
+/obj/item/device/light/zippo/gold{
+	pixel_y = 4;
+	pixel_x = -8
+	},
+/turf/unsimulated/floor/carpet/red/fancy/edge/north,
+/area/centcom/offices/genessee)
+"LE" = (
+/turf/unsimulated/floor/redblack{
+	dir = 5
+	},
+/area/space)
 "LG" = (
 /obj/lattice{
 	icon_state = "lattice-dir-b"
@@ -2790,6 +3156,13 @@
 /obj/machinery/power/data_terminal,
 /turf/unsimulated/floor/red,
 /area/syndicate_station/battlecruiser/altai)
+"LN" = (
+/obj/indestructible/shuttle_corner{
+	dir = 1;
+	icon_state = "wall3_trans"
+	},
+/turf/space,
+/area/space)
 "LO" = (
 /obj/cable{
 	d1 = 1;
@@ -2903,6 +3276,18 @@
 	icon_state = "red1"
 	},
 /area/syndicate_station/battlecruiser/altai)
+"Nt" = (
+/obj/lattice{
+	dir = 4;
+	icon_state = "lattice-dir"
+	},
+/obj/cable{
+	d1 = 4;
+	d2 = 8;
+	icon_state = "4-8"
+	},
+/turf/space,
+/area/space)
 "Nw" = (
 /obj/table/wood/auto/desk,
 /obj/random_item_spawner/desk_stuff/g_clip_bin_pen/few,
@@ -2991,16 +3376,8 @@
 	},
 /area/syndicate_station/battlecruiser/altai)
 "OL" = (
-/turf/unsimulated/wall{
-	desc = "It's sealed shut.";
-	dir = 1;
-	icon = 'icons/obj/doors/blastdoor.dmi';
-	icon_state = "bdoorleft1";
-	name = "security door"
-	},
-/area/centcom/offices{
-	name = "Syndicate High Command"
-	})
+/turf/unsimulated/wall/auto/adventure/shuttle/dark,
+/area/space)
 "Pa" = (
 /obj/shrub{
 	desc = "It's probably not suspicious that this plant is not only still alive, but thriving.";
@@ -3030,6 +3407,10 @@
 	dir = 4
 	},
 /area/centcom/offices/sirconway)
+"PI" = (
+/obj/storage/closet/dresser,
+/turf/unsimulated/floor/carpet/arcade,
+/area/centcom/offices/disturbherb)
 "PS" = (
 /obj/stool/bed,
 /obj/item/clothing/suit/bedsheet{
@@ -3045,6 +3426,24 @@
 /obj/machinery/bot/medbot/no_camera,
 /turf/unsimulated/floor/red,
 /area/syndicate_station/medbay)
+"Qe" = (
+/obj/indestructible/shuttle_corner{
+	dir = 9;
+	icon_state = "wall3_trans"
+	},
+/turf/space,
+/area/space)
+"Qh" = (
+/obj/table/wood/auto/desk,
+/obj/item/decoration/ashtray{
+	pixel_y = 10;
+	pixel_x = 7
+	},
+/obj/machinery/phone/unlisted{
+	pixel_y = -5
+	},
+/turf/unsimulated/floor/carpet/arcade,
+/area/centcom/offices/disturbherb)
 "Qt" = (
 /obj/decal/tile_edge/stripe/extra_big{
 	icon_state = "delivery2"
@@ -3053,6 +3452,9 @@
 /obj/structure/vehicleframe/puttframe,
 /turf/unsimulated/floor/shuttlebay,
 /area/syndicate_station/battlecruiser/altai)
+"QC" = (
+/turf/unsimulated/floor/carpet/red/fancy/edge/nw,
+/area/space)
 "QO" = (
 /turf/unsimulated/floor/carpet/red/fancy/edge/east,
 /area/syndicate_station/battlecruiser/altai)
@@ -3153,7 +3555,9 @@
 /turf/unsimulated/floor/carpet/red/decal/outercross,
 /area/syndicate_station/battlecruiser/altai)
 "RX" = (
-/obj/stool/chair/office/red,
+/obj/stool/chair/office/syndie{
+	dir = 4
+	},
 /turf/unsimulated/floor/carpet/red/fancy,
 /area/centcom/offices/genessee)
 "RY" = (
@@ -3178,6 +3582,14 @@
 /obj/decal/fakeobjects/shuttlethruster,
 /turf/space,
 /area/syndicate_station/battlecruiser/altai)
+"Sf" = (
+/obj/machinery/computer3/generic/communications/console_upper{
+	dir = 8
+	},
+/turf/unsimulated/floor/redblack{
+	dir = 8
+	},
+/area/space)
 "Sn" = (
 /turf/unsimulated/floor/stairs/dark{
 	dir = 6
@@ -3207,9 +3619,23 @@
 	icon_state = "cairngorm14"
 	},
 /area/syndicate_station/battlecruiser/altai)
+"SI" = (
+/obj/table/reinforced/bar/auto{
+	name = "table"
+	},
+/obj/item/cigarbox/gold{
+	pixel_y = 6
+	},
+/turf/unsimulated/floor/carpet/red/fancy,
+/area/space)
 "SU" = (
 /turf/space,
 /area/titlescreen)
+"SY" = (
+/turf/unsimulated/floor/black,
+/area/centcom/offices{
+	name = "Syndicate High Command"
+	})
 "Tc" = (
 /obj/storage/crate/packing,
 /obj/item/paint_can/random,
@@ -3305,18 +3731,24 @@
 /turf/unsimulated/floor/darkblue,
 /area/syndicate_station/battlecruiser/altai)
 "Ud" = (
-/obj/machinery/vending/cigarette{
-	pixel_y = 20;
-	pixel_x = 6
+/turf/unsimulated/floor/redblack{
+	dir = 8
 	},
-/obj/machinery/vending/cola/red{
-	pixel_y = 19;
-	pixel_x = -14
+/area/titlescreen)
+"Ue" = (
+/obj/stool/chair/office/red{
+	dir = 8
 	},
-/turf/unsimulated/floor/redblack,
-/area/centcom/offices{
-	name = "Syndicate High Command"
-	})
+/turf/unsimulated/floor/carpet/red/fancy,
+/area/centcom/offices/genessee)
+"Uf" = (
+/obj/lattice{
+	dir = 10;
+	icon_state = "lattice-dir-b"
+	},
+/obj/machinery/light/runway_light/delay3,
+/turf/space,
+/area/space)
 "Ul" = (
 /obj/table/auto,
 /obj/item/ammo/ammobox/shootingrange,
@@ -3516,10 +3948,6 @@
 /turf/unsimulated/floor/darkpurple,
 /area/syndicate_station/battlecruiser/altai)
 "Wx" = (
-/obj/item/device/radio/intercom/syndicate{
-	dir = 8;
-	listening = 0
-	},
 /turf/unsimulated/floor/stairs/dark/wide{
 	dir = 6
 	},
@@ -3574,12 +4002,19 @@
 "Xy" = (
 /turf/unsimulated/floor/black/grime,
 /area/syndicate_station/battlecruiser/altai)
-"XM" = (
-/obj/machinery/door/unpowered/wood/pyro{
-	dir = 4
+"XH" = (
+/turf/unsimulated/wall{
+	desc = "It's sealed shut.";
+	icon = 'icons/obj/doors/blastdoor.dmi';
+	icon_state = "bdoorleft1";
+	name = "security door"
 	},
-/turf/unsimulated/floor/carpet/red/fancy,
-/area/centcom/offices/genessee)
+/area/centcom/offices{
+	name = "Syndicate High Command"
+	})
+"XM" = (
+/turf/unsimulated/floor/red,
+/area/space)
 "XT" = (
 /obj/table/auto,
 /obj/item/storage/belt/medical,
@@ -3593,6 +4028,9 @@
 	dir = 8
 	},
 /area/syndicate_station/medbay)
+"XW" = (
+/turf/unsimulated/floor/carpet/red/fancy/edge/ne,
+/area/space)
 "Ya" = (
 /obj/wingrille_spawn/auto/crystal,
 /turf/unsimulated/floor/plating/random,
@@ -3611,6 +4049,11 @@
 	},
 /turf/unsimulated/floor/carpet/red/fancy/edge/sw,
 /area/syndicate_station/battlecruiser/altai)
+"Ym" = (
+/turf/unsimulated/floor/redblack{
+	dir = 10
+	},
+/area/space)
 "Ys" = (
 /obj/cable{
 	d1 = 4;
@@ -3619,6 +4062,20 @@
 	},
 /turf/unsimulated/floor/red,
 /area/syndicate_station/battlecruiser/altai)
+"YK" = (
+/obj/machinery/computer3/generic/med_data/console_lower{
+	dir = 8
+	},
+/obj/map/light/dimred,
+/obj/machinery/light{
+	dir = 4;
+	layer = 9.1;
+	pixel_x = 10
+	},
+/turf/unsimulated/floor/redblack/corner{
+	dir = 1
+	},
+/area/space)
 "YS" = (
 /obj/table/auto,
 /turf/unsimulated/floor/red/redblackchecker,
@@ -3631,6 +4088,18 @@
 /obj/machinery/light/runway_light/delay4,
 /turf/space,
 /area/space)
+"YX" = (
+/obj/machinery/door/airlock/pyro/command/syndicate{
+	dir = 1
+	},
+/turf/unsimulated/floor/black,
+/area/space)
+"YY" = (
+/obj/machinery/computer/security/console_upper{
+	dir = 8
+	},
+/turf/unsimulated/floor/carpet/red/fancy/edge/ne,
+/area/centcom/offices/genessee)
 "Zb" = (
 /obj/stool/bed,
 /obj/item/clothing/suit/bedsheet{
@@ -3662,6 +4131,15 @@
 /obj/item/scissors/surgical_scissors,
 /turf/unsimulated/floor/white,
 /area/syndicate_station/medbay)
+"Zp" = (
+/obj/decoration/syndiepc/syndiepc14,
+/obj/machinery/light{
+	dir = 1;
+	layer = 9.1;
+	pixel_y = 21
+	},
+/turf/unsimulated/floor/redblack,
+/area/space)
 "Zu" = (
 /turf/unsimulated/floor/carpet/red/fancy/edge/west,
 /area/centcom/offices/genessee)
@@ -81623,25 +82101,25 @@ Oc
 Oc
 Oc
 Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
 "}
 (259,1,1) = {"
 Oc
@@ -81925,25 +82403,25 @@ Oc
 Oc
 Oc
 Oc
+gQ
 Oc
+rB
+rB
+rB
+rB
+rB
+rB
+jz
+to
+XH
+rB
+OL
+OL
+OL
+OL
+OL
 Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
+gQ
 "}
 (260,1,1) = {"
 Oc
@@ -82227,25 +82705,25 @@ Oc
 Oc
 Oc
 Oc
+gQ
 Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
+rB
+jZ
+Nw
+Qh
+Pa
+rB
+xM
+SY
+xM
+rB
+hZ
+hZ
+hZ
+hZ
+OL
+OL
+gQ
 "}
 (261,1,1) = {"
 Oc
@@ -82529,25 +83007,25 @@ Oc
 Oc
 Oc
 Oc
+gQ
 Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
+rB
+RA
+vj
+kL
+kL
+Jl
+xM
+SY
+fj
+rB
+hZ
+hZ
+hZ
+hZ
+hZ
+OL
+gQ
 "}
 (262,1,1) = {"
 Oc
@@ -82831,25 +83309,25 @@ Oc
 Oc
 Oc
 Oc
+gQ
 Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
+rB
+sS
+kL
+kL
+kL
+rB
+ux
+SY
+xM
+tP
+hZ
+hZ
+hZ
+hZ
+hZ
+OL
+gQ
 "}
 (263,1,1) = {"
 Oc
@@ -83133,25 +83611,25 @@ Oc
 Oc
 Oc
 Oc
+gQ
 Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
+rB
+PI
+tj
+dn
+fK
+rB
+xM
+SY
+xM
+kE
+hZ
+hZ
+hZ
+hZ
+hZ
+OL
+gQ
 "}
 (264,1,1) = {"
 Oc
@@ -83435,25 +83913,25 @@ Oc
 Oc
 Oc
 Oc
+gQ
 Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
+rB
+rB
+rB
+rB
+rB
+rB
+ja
+SY
+xM
+rB
+hZ
+hZ
+hZ
+hZ
+hZ
+OL
+gQ
 "}
 (265,1,1) = {"
 Oc
@@ -83737,25 +84215,25 @@ Oc
 Oc
 Oc
 Oc
+gQ
 Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
+rB
+ZB
+BL
+un
+kk
+BL
+xM
+SY
+fj
+rB
+hZ
+hZ
+hZ
+hZ
+OL
+OL
+gQ
 "}
 (266,1,1) = {"
 Oc
@@ -84039,25 +84517,25 @@ Oc
 Oc
 Oc
 Oc
+gQ
 Oc
+rB
+QZ
+BL
+Dm
+Dm
+BL
+xM
+SY
+xM
+rB
+rB
+rB
+rB
+rB
+rB
 Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
+gQ
 "}
 (267,1,1) = {"
 Oc
@@ -84341,25 +84819,25 @@ Oc
 Oc
 Oc
 Oc
+gQ
 Oc
+rB
+oi
+BL
+BL
+BL
+BL
+xM
+SY
+xM
+rB
+Hk
+yo
+Zu
+eo
+rB
 Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
+gQ
 "}
 (268,1,1) = {"
 Oc
@@ -84643,25 +85121,25 @@ Oc
 Oc
 Oc
 Oc
+gQ
 Oc
+rB
+Ux
+Am
+Rw
+RY
+BL
+xM
+SY
+xM
+rB
+En
+RX
+xv
+GT
+rB
 Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
+gQ
 "}
 (269,1,1) = {"
 Oc
@@ -84945,25 +85423,25 @@ Oc
 Oc
 Oc
 Oc
+gQ
 Oc
+rB
+rB
+rB
+rB
+rB
+rB
+sm
+SY
+fj
+rB
+Lx
+en
+xv
+JY
+rB
 Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
+gQ
 "}
 (270,1,1) = {"
 Oc
@@ -85247,25 +85725,25 @@ Oc
 Oc
 Oc
 Oc
+gQ
 Oc
+rB
+KZ
+vf
+vE
+bB
+rB
+xM
+SY
+xM
+yd
+uK
+Ue
+xv
+jy
+rB
 Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
+gQ
 "}
 (271,1,1) = {"
 Oc
@@ -85549,25 +86027,25 @@ Oc
 Oc
 Oc
 Oc
+gQ
 Oc
+rB
+xo
+Dh
+Dh
+gp
+rB
+Lm
+SY
+BW
+rB
+uK
+xv
+xv
+jy
+rB
 Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
+gQ
 "}
 (272,1,1) = {"
 Oc
@@ -85851,25 +86329,25 @@ Oc
 Oc
 Oc
 Oc
+gQ
 Oc
+rB
+kM
+jL
+Dh
+gp
+Xs
+xM
+SY
+fj
+rB
+lV
+xv
+xv
+JY
+rB
 Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
+gQ
 "}
 (273,1,1) = {"
 Oc
@@ -86153,25 +86631,25 @@ Oc
 Oc
 Oc
 Oc
+gQ
 Oc
+rB
+FJ
+Uu
+Pn
+ml
+rB
+xM
+SY
+xM
+rB
+YY
+Tx
+EY
+zk
+rB
 Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
+gQ
 "}
 (274,1,1) = {"
 Oc
@@ -86455,25 +86933,25 @@ Oc
 Oc
 Oc
 Oc
+gQ
 Oc
+rB
+rB
+rB
+rB
+rB
+rB
+rB
+uY
+rB
+rB
+rB
+rB
+rB
+rB
+rB
 Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
+gQ
 "}
 (275,1,1) = {"
 Oc
@@ -86757,25 +87235,25 @@ Oc
 Oc
 Oc
 Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
-Oc
+gQ
+OL
+OL
+Hs
+ya
+ya
+ya
+OL
+ya
+ya
+ya
+OL
+ya
+ya
+ya
+FY
+OL
+OL
+gQ
 "}
 (276,1,1) = {"
 Oc
@@ -87059,25 +87537,25 @@ Oc
 Oc
 Oc
 Oc
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
+gQ
+mB
+ya
+zj
+XM
+XM
+XM
+YX
+XM
+XM
+XM
+YX
+XM
+XM
+XM
+LE
+ya
+oO
+gQ
 "}
 (277,1,1) = {"
 Oc
@@ -87361,25 +87839,25 @@ Oc
 Oc
 Oc
 Oc
-kE
-SU
-SU
-SU
-SU
-SU
-SU
-SU
-SU
-SU
-SU
-SU
-SU
-SU
-SU
-SU
-SU
-SU
-kE
+gQ
+KS
+xg
+ok
+Ud
+Ud
+Ud
+CQ
+Ud
+Ud
+Ud
+CQ
+Ud
+Ud
+Ud
+uS
+xg
+Fp
+gQ
 "}
 (278,1,1) = {"
 Oc
@@ -87663,25 +88141,25 @@ Oc
 Oc
 Oc
 Oc
-kE
-SU
-Oc
-Oc
-Oc
-rB
-rB
-rB
-rB
-rB
-rB
+gQ
+dO
+fx
+BJ
 OL
-vf
-rB
-Oc
-Oc
-Oc
-SU
-kE
+iy
+OL
+OL
+OL
+lL
+OL
+OL
+OL
+iy
+OL
+np
+fx
+ho
+gQ
 "}
 (279,1,1) = {"
 Oc
@@ -87965,25 +88443,25 @@ Oc
 Oc
 Oc
 Oc
-kE
-SU
+gQ
+CQ
+OL
+iy
+af
 Oc
+ZN
+OL
+pn
+zu
+DO
+OL
+oH
 Oc
-Oc
-rB
-jZ
-Nw
-lV
-Pa
-rB
-dW
-fM
-rB
-Oc
-Oc
-Oc
-SU
-kE
+LN
+iy
+OL
+CQ
+gQ
 "}
 (280,1,1) = {"
 Oc
@@ -88267,25 +88745,25 @@ Oc
 Oc
 Oc
 Oc
-kE
-SU
+gQ
+CQ
+oH
 Oc
 Oc
 Oc
-rB
-RA
-gj
-kL
-kL
-Jl
-dW
-vc
-rB
+ZN
+OL
+XM
+zu
+XM
+OL
+oH
 Oc
 Oc
 Oc
-SU
-kE
+ZN
+CQ
+gQ
 "}
 (281,1,1) = {"
 Oc
@@ -88569,25 +89047,25 @@ Oc
 Oc
 Oc
 Oc
-kE
-SU
+gQ
+CQ
+oH
 Oc
 Oc
 Oc
-rB
-sS
-kL
-kL
-kL
-rB
-FY
-fM
-rB
-rB
+ZN
+OL
+XM
+zu
+XM
+OL
+oH
 Oc
 Oc
-SU
-kE
+Oc
+ZN
+CQ
+gQ
 "}
 (282,1,1) = {"
 Oc
@@ -88871,25 +89349,25 @@ Oc
 Oc
 Oc
 Oc
-kE
-SU
+gQ
+CQ
+oH
 Oc
 Oc
 Oc
-rB
-en
-tj
-uS
-fK
-rB
-dW
-jz
-to
-rB
+ZN
+OL
+XM
+zu
+XM
+OL
+oH
 Oc
 Oc
-SU
-kE
+Oc
+ZN
+CQ
+gQ
 "}
 (283,1,1) = {"
 Oc
@@ -89173,25 +89651,25 @@ Oc
 Oc
 Oc
 Oc
-kE
-SU
+gQ
+CQ
+oH
 Oc
 Oc
 Oc
-rB
-rB
-rB
-rB
-rB
-rB
-Ud
-xM
-fM
-rB
+ZN
+OL
+wk
+zu
+zy
+OL
+oH
 Oc
 Oc
-SU
-kE
+Oc
+ZN
+CQ
+gQ
 "}
 (284,1,1) = {"
 Oc
@@ -89475,25 +89953,25 @@ Oc
 Oc
 Oc
 Oc
-kE
-SU
+gQ
+CQ
+oH
 Oc
 Oc
-Oc
-rB
-ZB
-BL
-un
-kk
-BL
-dW
-xM
-vc
-rB
+Qe
+iy
+OL
+OL
+lL
+OL
+OL
+iy
+wv
 Oc
 Oc
-SU
-kE
+ZN
+CQ
+gQ
 "}
 (285,1,1) = {"
 Oc
@@ -89777,25 +90255,25 @@ Oc
 Oc
 Oc
 Oc
-kE
-SU
+gQ
+CQ
+oH
 Oc
 Oc
-Oc
-rB
-QZ
-BL
-Dm
-Dm
-BL
-dW
-xM
-fM
-rB
+OL
+bL
+IH
+ah
+zu
+ah
+ya
+FY
+OL
 Oc
 Oc
-SU
-kE
+ZN
+CQ
+gQ
 "}
 (286,1,1) = {"
 Oc
@@ -90079,25 +90557,25 @@ Oc
 Oc
 Oc
 Oc
-kE
-SU
+gQ
+CQ
+oH
 Oc
 Oc
-Oc
-rB
-oi
-BL
-BL
-BL
-BL
-dW
-xM
-fM
-rB
+OL
+Zp
+QC
+AM
+Lq
+AM
+fJ
+vc
+OL
 Oc
 Oc
-SU
-kE
+ZN
+CQ
+gQ
 "}
 (287,1,1) = {"
 Oc
@@ -90381,25 +90859,25 @@ Oc
 Oc
 Oc
 Oc
-kE
-SU
+gQ
+CQ
+oH
 Oc
 Oc
-Oc
-rB
-Ux
-Am
-Rw
-RY
-BL
-dW
-xM
-fM
-rB
+OL
+HE
+KA
+kn
+AC
+kn
+rN
+sN
+OL
 Oc
 Oc
-SU
-kE
+ZN
+CQ
+gQ
 "}
 (288,1,1) = {"
 Oc
@@ -90683,25 +91161,25 @@ Oc
 Oc
 Oc
 Oc
-kE
-SU
+gQ
+CQ
+oH
 Oc
 Oc
-Oc
-rB
-rB
-rB
-rB
+OL
+uo
+vF
+AC
 nV
-rB
-uK
-xM
-vc
-rB
+SI
+qz
+sN
+OL
 Oc
 Oc
-SU
-kE
+ZN
+CQ
+gQ
 "}
 (289,1,1) = {"
 Oc
@@ -90985,25 +91463,25 @@ Oc
 Oc
 Oc
 Oc
-kE
-SU
+gQ
+CQ
+oH
 Oc
 Oc
-Oc
-rB
-KZ
-tP
-vE
-bB
-rB
-dW
-ok
-BJ
-rB
+OL
+CB
+KA
+AC
+kn
+gF
+rN
+sN
+OL
 Oc
 Oc
-SU
-kE
+ZN
+CQ
+gQ
 "}
 (290,1,1) = {"
 Oc
@@ -91287,25 +91765,25 @@ Oc
 Oc
 Oc
 Oc
-kE
-SU
-Oc
-Oc
-Oc
-rB
-xo
-Dh
-Dh
-gp
-rB
+gQ
 CQ
-fM
-rB
-rB
+oH
 Oc
 Oc
-SU
-kE
+OL
+Zp
+XW
+Jr
+zs
+Jr
+fm
+vc
+OL
+Oc
+Oc
+ZN
+CQ
+gQ
 "}
 (291,1,1) = {"
 Oc
@@ -91589,25 +92067,25 @@ Oc
 Oc
 Oc
 Oc
-kE
-SU
+gQ
+CQ
+oH
 Oc
 Oc
-Oc
-rB
-kM
-xg
-Dh
-gp
-Xs
-dW
-vc
-rB
-Oc
+OL
+KF
+Ym
+XM
+zu
+XM
+gj
+BJ
+OL
 Oc
 Oc
-SU
-kE
+ZN
+CQ
+gQ
 "}
 (292,1,1) = {"
 Oc
@@ -91891,25 +92369,25 @@ Oc
 Oc
 Oc
 Oc
-kE
-SU
+gQ
+CQ
+OL
 Oc
 Oc
-Oc
-rB
-FJ
-Uu
-Pn
-ml
-rB
-BW
-fM
-rB
-Oc
+LN
+OL
+Lv
+Dt
+zu
+Sf
+YK
+OL
+af
 Oc
 Oc
-SU
-kE
+OL
+CQ
+gQ
 "}
 (293,1,1) = {"
 Oc
@@ -92193,25 +92671,25 @@ Oc
 Oc
 Oc
 Oc
-kE
-SU
+gQ
+fM
+iy
 Oc
 Oc
 Oc
-rB
-rB
-rB
-rB
-rB
-rB
-rB
-XM
-rB
+LN
+OL
+iy
+iy
+iy
+OL
+af
 Oc
 Oc
 Oc
-SU
-kE
+iy
+dW
+gQ
 "}
 (294,1,1) = {"
 Oc
@@ -92495,25 +92973,25 @@ Oc
 Oc
 Oc
 Oc
-kE
-SU
+gQ
+fM
+iy
 Oc
 Oc
 Oc
 Oc
-Oc
-rB
-Hk
-Zu
-yo
-Zu
-Lm
-rB
+Uf
+Du
+gK
+Du
+bd
 Oc
 Oc
 Oc
-SU
-kE
+Oc
+iy
+dW
+gQ
 "}
 (295,1,1) = {"
 Oc
@@ -92797,25 +93275,25 @@ Oc
 Oc
 Oc
 Oc
-kE
-SU
+gQ
+fM
+iy
 Oc
 Oc
 Oc
 Oc
 Oc
-rB
-jL
-RX
-zu
-yd
-GT
-rB
+Oc
+Nt
 Oc
 Oc
 Oc
-SU
-kE
+Oc
+Oc
+Oc
+iy
+dW
+gQ
 "}
 (296,1,1) = {"
 Oc
@@ -93099,25 +93577,25 @@ Oc
 Oc
 Oc
 Oc
-kE
-SU
+gQ
+CQ
+af
 Oc
 Oc
 Oc
 Oc
 Oc
-rB
-sm
-xv
-xv
-xv
-JY
-rB
+LG
+fY
+xn
 Oc
 Oc
 Oc
-SU
-kE
+Oc
+Oc
+LN
+CQ
+gQ
 "}
 (297,1,1) = {"
 Oc
@@ -93401,25 +93879,25 @@ Oc
 Oc
 Oc
 Oc
-kE
+gQ
 SU
 Oc
 Oc
 Oc
 Oc
 Oc
-rB
-hZ
-Tx
-EY
-jy
-zk
-rB
+Oc
+Oc
+pa
+Oc
+Oc
+Oc
+Oc
 Oc
 Oc
 Oc
 SU
-kE
+gQ
 "}
 (298,1,1) = {"
 Oc
@@ -93703,25 +94181,25 @@ Oc
 Oc
 Oc
 Oc
-kE
-SU
-Oc
-Oc
-Oc
-Oc
-Oc
-rB
-rB
-rB
-rB
-rB
-rB
-rB
-Oc
-Oc
-Oc
-SU
-kE
+gQ
+Fe
+nn
+nn
+nn
+nn
+nn
+nn
+nn
+nn
+nn
+nn
+nn
+nn
+nn
+nn
+nn
+Fe
+gQ
 "}
 (299,1,1) = {"
 Oc
@@ -94005,7 +94483,7 @@ Oc
 Oc
 Oc
 Oc
-kE
+gQ
 SU
 SU
 SU
@@ -94023,7 +94501,7 @@ SU
 SU
 SU
 SU
-kE
+gQ
 "}
 (300,1,1) = {"
 Oc
@@ -94307,23 +94785,23 @@ Oc
 Oc
 Oc
 Oc
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
-kE
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
+gQ
 "}
