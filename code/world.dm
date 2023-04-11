@@ -369,7 +369,7 @@ var/f_color_selector_handler/F_Color_Selector
 	tick_lag = MIN_TICKLAG//0.4//0.25
 //	loop_checks = 0
 
-	if(world.load_intra_round_value("heisenbee_tier") >= 15 && prob(50) || prob(3))
+	if((world.load_intra_round_value("heisenbee_tier") >= 15 && prob(50) || prob(3)) && istype(ticker?.mode, /datum/game_mode/incursion))
 		lobby_titlecard = new /datum/titlecard/heisenbee()
 	else
 		lobby_titlecard = new /datum/titlecard()

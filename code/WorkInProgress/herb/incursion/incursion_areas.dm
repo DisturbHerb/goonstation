@@ -1,9 +1,18 @@
 /area/syndicate_station/battlecruiser/altai
 	name = "Syndicate Battlecruiser Altai"
 
-	armoury
-		name = "armoury"
-		icon_state = "orange"
+/area/syndicate_station/armoury
+	name = "armoury"
+	icon_state = "orange"
+
+/area/centcom/offices/high_command
+	name = "Syndicate High Command"
+
+	bridge
+		name = "High Command Bridge"
+
+	intel
+		name = "Intelligence Office"
 
 /area/centcom/offices/disturbherb
 	ckey = "disturbherb"

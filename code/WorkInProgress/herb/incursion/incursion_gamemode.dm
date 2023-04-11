@@ -62,10 +62,10 @@
 		possible_syndicates.Remove(syndicate)
 
 	agent_radiofreq = random_agent_frequency()
-	src.fireteam_frequencies.Add(list("Alpha Fireteam" = random_fireteam_frequency()))
-	src.fireteam_frequencies.Add(list("Bravo Fireteam" = random_fireteam_frequency()))
+	src.fireteam_frequencies.Add(list("Able Fireteam" = random_fireteam_frequency()))
+	src.fireteam_frequencies.Add(list("Baker Fireteam" = random_fireteam_frequency()))
 	src.fireteam_frequencies.Add(list("Charlie Fireteam" = random_fireteam_frequency()))
-	src.fireteam_frequencies.Add(list("Delta Fireteam" = random_fireteam_frequency()))
+	src.fireteam_frequencies.Add(list("Dog Fireteam" = random_fireteam_frequency()))
 
 	return 1
 
@@ -243,17 +243,19 @@
 /datum/game_mode/incursion/process()
 	set background = 1
 
-	if(!src.employee_count_hud && src.can_finish && src.nt_employee_count < src.employee_count_threshold)
-		src.employee_count_hud = new()
-		for (var/client/C in clients)
-			src.employee_count_hud.add_client(C)
+	if(!src.check_finished())
+		if(!src.employee_count_hud && src.can_finish && src.nt_employee_count < src.employee_count_threshold)
+			src.employee_count_hud = new()
+			for (var/client/C in clients)
+				src.employee_count_hud.add_client(C)
 
-	if(src.employee_count_hud)
-		src.nt_employee_count = length(by_cat[TR_CAT_NTEMPLOYEES])
-		if(src.nt_employee_count < src.employee_count_threshold)
-			src.employee_count_hud.update_employee_count(src.nt_employee_count)
-		else
-			src.employee_count_hud = null
+		if(src.employee_count_hud)
+			src.nt_employee_count = length(by_cat[TR_CAT_NTEMPLOYEES])
+			if(src.nt_employee_count < src.employee_count_threshold)
+				src.employee_count_hud.update_employee_count(src.nt_employee_count)
+	else
+		src.employee_count_hud = null
+		src.employee_count_hud.clients = null
 
 	..()
 	return

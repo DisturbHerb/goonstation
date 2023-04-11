@@ -6,7 +6,7 @@
 	var/image_url = "images/oshan_titlecard.png"
 	var/add_html = ""
 	#elif defined(MAP_OVERRIDE_EVENT)
-	var/image_url = "images/herb/incursion_titlecard.png"
+	var/image_url = "images/herb/incursion_titlecard.gif"
 	var/add_html = {"<div class='area'><span class='ol vga vt'>Herbstation presents,<br><span style='color: #88f; font-style: italic;'> Incursion</span><br><br>Remember to <span style='color: lightcoral'>Roleplay</span>! </span> </div>"}
 	#elif defined(MAP_OVERRIDE_MANTA)
 	var/image_url = "images/manta_titlecard.png"

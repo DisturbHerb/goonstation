@@ -3,29 +3,45 @@
 
 	New()
 		..()
-		ammo.amount_left = 0
-		UpdateIcon()
+		var/obj/item/gun/kinetic/assault_rifle/empty_gun = new(src.loc ? src.loc : get_turf(src))
+		empty_gun.pixel_x = src.pixel_x
+		empty_gun.pixel_y = src.pixel_y
+		empty_gun.ammo.amount_left = 0
+		empty_gun.UpdateIcon()
+		qdel(src)
 
 /obj/item/gun/kinetic/spes/engineer/empty
 
 	New()
 		..()
-		ammo.amount_left = 0
-		UpdateIcon()
+		var/obj/item/gun/kinetic/spes/engineer/empty_gun = new(src.loc ? src.loc : get_turf(src))
+		empty_gun.pixel_x = src.pixel_x
+		empty_gun.pixel_y = src.pixel_y
+		empty_gun.ammo.amount_left = 0
+		empty_gun.UpdateIcon()
+		qdel(src)
 
 /obj/item/gun/kinetic/light_machine_gun/empty
 
 	New()
 		..()
-		ammo.amount_left = 0
-		UpdateIcon()
+		var/obj/item/gun/kinetic/light_machine_gun/empty_gun = new(src.loc ? src.loc : get_turf(src))
+		empty_gun.pixel_x = src.pixel_x
+		empty_gun.pixel_y = src.pixel_y
+		empty_gun.ammo.amount_left = 0
+		empty_gun.UpdateIcon()
+		qdel(src)
 
 /obj/item/gun/kinetic/pistol/empty
 
 	New()
 		..()
-		ammo.amount_left = 0
-		UpdateIcon()
+		var/obj/item/gun/kinetic/pistol/empty_gun = new(src.loc ? src.loc : get_turf(src))
+		empty_gun.pixel_x = src.pixel_x
+		empty_gun.pixel_y = src.pixel_y
+		empty_gun.ammo.amount_left = 0
+		empty_gun.UpdateIcon()
+		qdel(src)
 
 /obj/item/storage/belt/gun/pistol/empty
 	spawn_contents = list(/obj/item/gun/kinetic/pistol/empty, /obj/item/ammo/bullets/bullet_9mm = 4)
@@ -41,6 +57,10 @@
 	/obj/item/chem_grenade/flashbang)
 
 // FLAVOUR
+/obj/item/clothing/under/suit/hos/syndicate
+	name = "\improper Syndicate formal dress suit"
+	desc = "A red suit and black necktie. This one seems oddly familiar."
+
 /obj/item/device/audio_log/incursion_briefing
 	name = "Mission Briefing"
 	desc = "The standard for covert mission briefing."
@@ -142,8 +162,8 @@
 	flags = FPRINT | TABLEPASS | SUPPRESSATTACK
 	c_flags = ONBELT
 
-	var/static/regex/fireteam_clearer = regex(@"(Alpha|Bravo|Charlie|Delta)\s(Fireteam)\s", "g")
-	var/list/fireteam_prefixes = list("Alpha Fireteam", "Bravo Fireteam", "Charlie Fireteam", "Delta Fireteam")
+	var/static/regex/fireteam_clearer = regex(@"(Able|Baker|Charlie|Dog)\s(Fireteam)\s", "g")
+	var/list/fireteam_prefixes = list("Able Fireteam", "Baker Fireteam", "Charlie Fireteam", "Dog Fireteam")
 	var/assignment = null
 	var/removal_mode = FALSE
 
@@ -237,13 +257,13 @@
 				targeted_radio.secure_frequencies = list("z" = R_FREQ_SYNDICATE, "g" = fireteam_frequency)
 				var/fireteam_class
 				switch(assignment)
-					if("Alpha Fireteam")
+					if("Able Fireteam")
 						fireteam_class = RADIOCL_DETECTIVE
-					if("Bravo Fireteam")
+					if("Baker Fireteam")
 						fireteam_class = RADIOCL_ENGINEERING
 					if("Charlie Fireteam")
 						fireteam_class = RADIOCL_RESEARCH
-					if("Delta Fireteam")
+					if("Dog Fireteam")
 						fireteam_class = RADIOCL_COMMAND
 				if(fireteam_class)
 					targeted_radio.secure_classes = list("z" = RADIOCL_SYNDICATE, "g" = fireteam_class)
@@ -266,6 +286,57 @@
 		"<span class='notice'>You set [targeted_radio] to the default settings.</span>")
 
 #undef FT_REMOVAL
+
+/obj/item/device/bodycam
+	name = "body camera"
+	desc = "A body-worn camera that sends a live feed to all camera-viewing devices in the ALTAI network."
+	icon = 'icons/herb/device.dmi'
+	icon_state = "bodycam"
+	rand_pos = FALSE
+	var/obj/machinery/camera/camera = null
+	var/camera_tag = "Body Cam"
+	var/camera_network = "ALTAI"
+	var/fireteam = null
+	var/band_colour = RADIOC_DETECTIVE
+	var/static/camera_counter = 0
+
+	New()
+		..()
+
+		// Is this a fireteam-level cam?
+		if (src.fireteam)
+			src.name = "[src.name] ([src.fireteam])"
+			src.desc += " This one belongs to [src.fireteam] fireteam."
+			src.camera_tag = "[src.fireteam] [src.camera_tag]"
+
+			// Apply bodycam coloured band.
+			var/image/band_image = image(src.icon, "bodycam-band")
+			band_image.color = src.band_colour
+			src.UpdateOverlays(band_image, "band")
+
+		// Creates the camera and adds it to the network.
+		if(src.camera_tag == initial(src.camera_tag))
+			src.camera_tag = "Built [src.camera_tag] [src.camera_counter]"
+			camera_counter++
+		src.camera = new /obj/machinery/camera (src)
+		src.camera.c_tag = src.camera_tag
+		src.camera.network = src.camera_network
+
+	able
+		fireteam = "Able"
+		band_colour = RADIOC_DETECTIVE
+
+	baker
+		fireteam = "Baker"
+		band_colour = RADIOC_ENGINEERING
+
+	charlie
+		fireteam = "Charlie"
+		band_colour = RADIOC_RESEARCH
+
+	dog
+		fireteam = "Dog"
+		band_colour = RADIOC_COMMAND
 
 /obj/item/paper/syndicateIOU
 	name = "'I OWE YOU"
