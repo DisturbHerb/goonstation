@@ -36831,6 +36831,9 @@
 /obj/cable{
 	icon_state = "2-8"
 	},
+/obj/critter/domestic_bee/fancy{
+	desc = "Genetically engineered for extreme size and indistinct segmentation and bred for docility, the greater domestic space-bee is increasingly popular among space traders and science-types. There's an odd bready smell emanating from it."
+	},
 /turf/simulated/floor/black,
 /area/station/science/testchamber)
 "dVg" = (
