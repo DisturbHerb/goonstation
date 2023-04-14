@@ -1,6 +1,6 @@
 // yaya
 
-/mob/living/carbon/human/jennifer/proc/yayaMode(var/fast)
+/mob/living/carbon/human/npc/NTemployee/jennifer/proc/yayaMode(var/fast)
 	var/emotePicker = rand(0,4)
 	if(fast)
 		switch(emotePicker)
@@ -30,9 +30,7 @@
 			if(4)
 				SPAWN(0) src.say("Huh??")
 
-/mob/living/carbon/human/jennifer
-	is_npc = 1
-	uses_mobai = 1
+/mob/living/carbon/human/npc/NTemployee/jennifer
 
 	New()
 		..()
@@ -47,6 +45,7 @@
 			fluffles.name_suffixes = list()
 		fluffles.name_suffix("(Mr. Fluffles!!! ♥♥)")
 		fluffles.UpdateName()
+		fluffles.cant_drop = TRUE
 
 		src.equip_if_possible(fluffles, src.slot_r_hand)
 

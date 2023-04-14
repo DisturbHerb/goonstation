@@ -2893,6 +2893,40 @@ var/global/mirrored_physical_zone_created = FALSE //enables secondary code branc
 		logTheThing(LOG_DIARY, usr, "has shipped [AM] to cargo.", "admin")
 		message_admins("[key_name(usr)] has shipped [AM] to cargo.")
 
+/client/proc/cmd_admin_get_missile(atom/movable/AM)
+	SET_ADMIN_CAT(ADMIN_CAT_UNUSED)
+	set name = "Get via Missile"
+	set popup_menu = 0
+	ADMIN_ONLY
+
+	if (AM.anchored)
+		boutput(src, "Target is anchored and you probably shouldn't be sending it!")
+		return
+
+	if (tgui_input_list(src.mob, "Are you sure you want to get [AM] via missile?", "Confirmation", list("Launch Missile", "Deny Launch")) == "Launch Missile")
+		var/turf/target_turf = get_turf(usr)
+		if (!target_turf)
+			boutput(src, "Invalid destination turf!")
+			return
+		var/missile_variant
+		if (tgui_input_list(src.mob, "Send Syndicate variant?", "Confirmation", list("Default missile", "Syndicate missile")) == "Syndicate missile")
+			missile_variant = "arrival_missile_synd"
+			command_alert("Prepare for impact at <b>X</b>: [target_turf.x], <b>Y</b>: [target_turf.y], <b>Z</b>: [target_turf.z].","Incoming Drop Pod", alert_origin = "Syndicate HighCom Alert")
+		command_alert("Prepare for impact at <b>X</b>: [target_turf.x], <b>Y</b>: [target_turf.y], <b>Z</b>: [target_turf.z].","Incoming Drop Pod")
+		playsound(target_turf, 'sound/machines/whistlebeep.ogg', 50, 1)
+		var/image/marker = image('icons/effects/64x64.dmi', target_turf, "impact_marker")
+		marker.pixel_x = -16
+		marker.pixel_y = -16
+		marker.plane = PLANE_OVERLAY_EFFECTS
+		marker.layer = NOLIGHT_EFFECTS_LAYER_BASE
+		marker.appearance_flags = RESET_ALPHA | RESET_COLOR | NO_CLIENT_COLOR | KEEP_APART | RESET_TRANSFORM | PIXEL_SCALE
+		marker.alpha = 100
+		usr.client.images += marker
+		SPAWN(3 SECONDS)
+			launch_with_missile(AM, target_turf, missile_sprite = missile_variant)
+			qdel(marker)
+			usr.client.images -= marker
+
 var/global/force_radio_maptext = FALSE
 /client/proc/toggle_radio_maptext()
 	SET_ADMIN_CAT(ADMIN_CAT_FUN)

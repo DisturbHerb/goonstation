@@ -10937,6 +10937,7 @@
 /obj/cable{
 	icon_state = "4-8"
 	},
+/mob/living/carbon/human/npc/NTemployee/jennifer/zoomy,
 /turf/simulated/floor/wood,
 /area/station/crew_quarters/info{
 	name = "Book Nook"
@@ -37240,13 +37241,6 @@
 	},
 /turf/simulated/floor/caution/westeast,
 /area/station/quartermaster/cargobay)
-"elW" = (
-/obj/disposalpipe/segment/brig{
-	dir = 1
-	},
-/mob/living/carbon/human/jennifer/zoomy,
-/turf/simulated/floor/specialroom/bar,
-/area/station/crew_quarters/cafeteria)
 "emI" = (
 /turf/simulated/floor/grass/leafy,
 /area/station/ranch)
@@ -45218,6 +45212,7 @@
 /obj/machinery/atmospherics/pipe/simple/overfloor{
 	dir = 4
 	},
+/obj/structure/woodwall,
 /turf/simulated/floor/engine/caution/westeast,
 /area/station/science/testchamber)
 "ljd" = (
@@ -120670,7 +120665,7 @@ trB
 viV
 vYN
 viV
-elW
+viV
 viV
 viV
 vYN

@@ -78,6 +78,7 @@
 			"Create Poster",\
 			"Copy Here",\
 			"Ship to Cargo",\
+			"Get via Missile",\
 			"Set Material",\
 			)
 			admin_interact_verbs["mob"] = list(\

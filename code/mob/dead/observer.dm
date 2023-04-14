@@ -698,7 +698,7 @@
 	set name = "Observe Object"
 	set category = "Ghost"
 
-	var/list/all_observables = machine_registry[MACHINES_BOTS] + by_cat[TR_CAT_GHOST_OBSERVABLES] + by_type[/mob/living/carbon/human/jennifer]
+	var/list/all_observables = machine_registry[MACHINES_BOTS] + by_cat[TR_CAT_GHOST_OBSERVABLES] + by_type[/mob/living/carbon/human/npc/NTemployee/jennifer]
 	var/list/observable_map = list() // List mapping label -> object (so we can include area in the label)
 
 	for (var/atom/A in all_observables)

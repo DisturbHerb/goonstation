@@ -28,6 +28,7 @@ var/static/list/mutantrace_choices = list(
 	name = "Employee"
 	ai_aggressive = 1
 	ai_useitems = 0 // stop using grenades for fuck's sake
+	var/is_jennifer = FALSE
 	var/mutantrace_chance = 0.4
 	var/list/will_attack = list(ROLE_INCURSION, ROLE_INCURSION_COMMANDER, ROLE_NUKEOP, ROLE_NUKEOP_COMMANDER, ROLE_NUKEOP_GUNBOT)
 
@@ -196,7 +197,7 @@ var/static/list/mutantrace_choices = list(
 	var/distance = GET_DIST(src,ai_target)
 	if(src.ai_state == AI_ATTACKING || iscarbon(src.ai_target))
 		//Talk shit!
-		if(prob(75) && distance > 1 && (world.timeofday - ai_attacked) > 100 && ai_validpath() && !A?.sanctuary)
+		if(prob(75) && distance > 1 && (world.timeofday - ai_attacked) > 100 && ai_validpath() && !A?.sanctuary && !src.is_jennifer)
 			var/buffer
 			switch(pick(1,2))
 				if(1)

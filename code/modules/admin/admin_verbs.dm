@@ -2265,6 +2265,8 @@ var/list/fun_images = list()
 			semi_deep_copy(A, src.loc)
 		if("Ship to Cargo")
 			C.cmd_admin_ship_movable_to_cargo(A)
+		if("Get via Missile")
+			C.cmd_admin_get_missile(A)
 
 		if("Player Options")
 			C.cmd_admin_playeropt(A)
