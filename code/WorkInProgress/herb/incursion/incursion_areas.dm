@@ -12,7 +12,7 @@
 		name = "High Command Bridge"
 
 	intel
-		name = "Intelligence Office"
+		name = "Operations Room"
 
 /area/centcom/offices/disturbherb
 	ckey = "disturbherb"

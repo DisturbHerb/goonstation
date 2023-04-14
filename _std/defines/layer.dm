@@ -35,6 +35,7 @@
 #define MOB_HAIR_LAYER2 	(MOB_OVERLAY_BASE-6)
 #define MOB_GLASSES_LAYER	(MOB_OVERLAY_BASE-7)  // For eyewear that should layer UNDER hair
 #define MOB_BACK_LAYER 		(MOB_OVERLAY_BASE-8)
+#define MOB_ACCESSORY_LAYER (MOB_OVERLAY_BASE-8.5)  // BODGE FOR NOW, THIS SHOULD NOT BE PERMANENT
 #define MOB_OVERSUIT_LAYER1 (MOB_OVERLAY_BASE-8.6)	// For mutant oversuit (de)tails when facing north
 #define MOB_OVERSUIT_LAYER2 (MOB_OVERLAY_BASE-8.7)	// If we have another one
 #define MOB_SHEATH_LAYER 	(MOB_OVERLAY_BASE-8.8)
