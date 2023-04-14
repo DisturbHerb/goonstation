@@ -19,6 +19,8 @@
 			if (!(src.owner in gamemode.syndicates))
 				gamemode.syndicates += src.owner
 
+		new_owner.current.antagonist_overlay_refresh(1, 0)
+
 		. = ..()
 
 	give_equipment()

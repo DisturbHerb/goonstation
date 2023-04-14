@@ -56,6 +56,23 @@
 	/obj/item/clothing/head/helmet/space/syndicate/specialist,
 	/obj/item/chem_grenade/flashbang)
 
+// ALTAI
+/obj/item/device/laser_designator/syndicate/altai
+	desc = "A handheld monocular device with a laser built into it, used for calling in fire support from the Altai."
+	ship_looking_for = "Altai"
+
+	New()
+		..()
+		desc = "A handheld monocular device with a laser built into it, used for calling in fire support from the Altai. It has [src.uses] charge left."
+
+	airstrike(atom/target, params, mob/user, reach)
+		..()
+		src.desc = "A handheld monocular device with a laser built into it, used for calling in fire support from the Altai. It has [src.uses] charge left."
+		return TRUE
+
+/obj/machinery/broadside_gun/artillery_cannon/syndicate/altai
+	firingfrom = "Altai"
+
 // FLAVOUR
 /obj/item/clothing/under/suit/hos/syndicate
 	name = "\improper Syndicate formal dress suit"
@@ -287,18 +304,28 @@
 
 #undef FT_REMOVAL
 
+#define CAMERA_ON 1
+#define CAMERA_OFF 0
 /obj/item/device/bodycam
 	name = "body camera"
 	desc = "A body-worn camera that sends a live feed to all camera-viewing devices in the ALTAI network."
 	icon = 'icons/herb/device.dmi'
 	icon_state = "bodycam"
+	wear_image_icon = 'icons/herb/mob/accessory.dmi'
+	item_state = "bodycam"
 	rand_pos = FALSE
+	c_flags = ONACCESSORY
+
 	var/obj/machinery/camera/camera = null
 	var/camera_tag = "Body Cam"
 	var/camera_network = "ALTAI"
+	var/camera_on = CAMERA_OFF
+	var/static/camera_counter = 0
+
 	var/fireteam = null
 	var/band_colour = RADIOC_DETECTIVE
-	var/static/camera_counter = 0
+
+	var/desc_sans_camera_status = ""
 
 	New()
 		..()
@@ -307,6 +334,7 @@
 		if (src.fireteam)
 			src.name = "[src.name] ([src.fireteam])"
 			src.desc += " This one belongs to [src.fireteam] fireteam."
+			src.desc_sans_camera_status = src.desc
 			src.camera_tag = "[src.fireteam] [src.camera_tag]"
 
 			// Apply bodycam coloured band.
@@ -321,6 +349,30 @@
 		src.camera = new /obj/machinery/camera (src)
 		src.camera.c_tag = src.camera_tag
 		src.camera.network = src.camera_network
+
+		// Turns the camera off.
+		src.turn_off()
+
+	attack_self(mob/user)
+		. = ..()
+		if (src.camera.camera_status)
+			src.turn_off(user)
+		else
+			src.turn_on(user)
+
+	proc/turn_off(mob/user)
+		src.camera.set_camera_status(CAMERA_OFF)
+		src.icon_state = "bodycam"
+		src.item_state = "bodycam"
+		src.desc = src.desc_sans_camera_status + " It's turned off."
+		boutput(user, "<span class='notice'>You turn off \the [src].</span>")
+
+	proc/turn_on(mob/user)
+		src.camera.set_camera_status(CAMERA_ON)
+		src.icon_state = "bodycam-on"
+		src.item_state = "bodycam-on"
+		src.desc = src.desc_sans_camera_status + " It's turned on and recording."
+		boutput(user, "<span class='notice'>You turn on \the [src] and the recording light starts to blink.</span>")
 
 	able
 		fireteam = "Able"
@@ -338,6 +390,9 @@
 		fireteam = "Dog"
 		band_colour = RADIOC_COMMAND
 
+#undef CAMERA_ON
+#undef CAMERA_OFF
+
 /obj/item/paper/syndicateIOU
 	name = "'I OWE YOU"
 	info = {"<span style="color:#FF00FF;font-family:Comic Sans MS"><h1>IOU: x1 pod interceptor wing<br>
@@ -346,3 +401,23 @@
 	New()
 		. = ..()
 		src.stamp(200, 20, rand(-5,5), "stamp-clown.png", "stamp-clown")
+
+/obj/item/paper/syndicate_intelligence_report
+	name = "Intelligence Findings Report - HighCom"
+	info = {"
+		#15 APR 2053
+		#FROM EXTERNAL INTELLIGENCE BRANCH
+		#ADDRESSED TO FRONTIER SECTOR HIGHCOM
+		#SUMMARY OF FINDINGS
+		---
+		Weather report: Significant burst of stellar radiation originating from star A. Search instrument readings hampered as a result. Further information on NT movements in Frontier star system as of 0500 13th APR is sparse.
+
+		Designated target NT13, Kondaru-type installation, lies in orbit around X-0.
+
+		NanoTrasen naval signals traffic originating around NT13 incrased in volume over the last 24 hours. Presumed occupants aware of impending Syndicate presence in area. Messages appear to have gotten out in spite of electronic interference by jamming efforts or the recent stellar weather event. Efforts are underway to decrypt, however recent changes to NT ciphers has caused delays.
+
+		Any offensive moves against the installation likely to pose extreme danger."}
+
+	New()
+		. = ..()
+		src.stamp(200, 20, rand(-5,5), "stamp-syndicate.png", "stamp-syndicate")

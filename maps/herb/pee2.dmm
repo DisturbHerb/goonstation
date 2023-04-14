@@ -1239,7 +1239,7 @@
 /area/centcom/offices/genessee)
 "ow" = (
 /obj/juggleplaque{
-	desc = "Syndicate Battlecruiser Cairngorm - Out of these mountains, Out of the defiant torment of Plutonic rock, Out of fire, terror, blackness and upheaval, Leap the clear burns, Living water.";
+	desc = "Syndicate Battlecruiser Altai - Blessed by the sky above, Possessed half the world, Engrained is His spirit, in the majestic and mighty world.";
 	name = "dedication plaque";
 	pixel_y = 32
 	},
@@ -1841,9 +1841,9 @@
 	pixel_y = 21
 	},
 /obj/table/reinforced/industrial/auto,
-/obj/item/device/laser_designator/syndicate{
-	pixel_y = 2;
-	pixel_x = 15
+/obj/item/device/laser_designator/syndicate/altai{
+	pixel_x = 15;
+	pixel_y = 2
 	},
 /turf/unsimulated/floor/redblack{
 	dir = 1
@@ -2003,8 +2003,8 @@
 	pixel_x = -14;
 	pixel_y = -10
 	},
-/obj/machinery/light,
 /obj/item/storage/belt/gun/pistol/empty,
+/obj/machinery/light,
 /turf/unsimulated/floor/redblack,
 /area/syndicate_station/armoury)
 "xn" = (
@@ -2056,10 +2056,6 @@
 /obj/table/reinforced/auto,
 /obj/machinery/computer3/generic/personal,
 /obj/map/light/dimred,
-/obj/machinery/light/incandescent/warm/very{
-	dir = 8;
-	pixel_x = -10
-	},
 /turf/unsimulated/floor/darkblue,
 /area/centcom/offices/high_command/intel)
 "ya" = (
@@ -2131,10 +2127,7 @@
 	pixel_x = 7;
 	pixel_y = 2
 	},
-/obj/machinery/light/incandescent/warm/very{
-	dir = 4;
-	pixel_x = 10
-	},
+/obj/map/light/dimred,
 /turf/unsimulated/floor/black,
 /area/centcom/offices/high_command/intel)
 "yy" = (
@@ -2572,7 +2565,9 @@
 	},
 /area/syndicate_station/battlecruiser/altai)
 "Em" = (
-/obj/machinery/light_switch/south,
+/obj/machinery/light_switch/south{
+	on = 0
+	},
 /turf/unsimulated/floor/darkblue,
 /area/centcom/offices/high_command/intel)
 "En" = (
@@ -3139,6 +3134,7 @@
 /turf/space,
 /area/syndicate_station/battlecruiser/altai)
 "Ig" = (
+/obj/machinery/broadside_gun/artillery_cannon/syndicate,
 /turf/unsimulated/floor/plating/random,
 /area/syndicate_station/battlecruiser/altai)
 "Ii" = (
@@ -3320,6 +3316,7 @@
 /obj/stool/chair/office/red{
 	dir = 8
 	},
+/obj/machinery/light/incandescent/warm/very,
 /turf/unsimulated/floor/black,
 /area/centcom/offices/high_command/intel)
 "JN" = (
@@ -3335,7 +3332,7 @@
 /turf/unsimulated/floor/red,
 /area/syndicate_station/battlecruiser/altai)
 "JV" = (
-/obj/machinery/broadside_gun/artillery_cannon/syndicate,
+/obj/machinery/broadside_gun/artillery_cannon/syndicate/altai,
 /turf/space,
 /area/space)
 "JY" = (
@@ -4025,6 +4022,10 @@
 	},
 /turf/unsimulated/floor/carpet/red/fancy/edge/west,
 /area/syndicate_station/battlecruiser/altai)
+"Tv" = (
+/obj/machinery/broadside_gun/artillery_cannon/syndicate,
+/turf/unsimulated/wall/auto/adventure/shuttle/dark,
+/area/syndicate_station/battlecruiser/altai)
 "Tx" = (
 /obj/landmark{
 	name = "highcom"
@@ -4070,8 +4071,8 @@
 	pixel_y = -10
 	},
 /obj/item/storage/belt/gun/pistol/empty,
-/turf/unsimulated/floor/redblack/corner{
-	dir = 4
+/turf/unsimulated/floor/redblack{
+	dir = 6
 	},
 /area/syndicate_station/armoury)
 "TS" = (
@@ -7931,7 +7932,7 @@ AJ
 Ja
 Ja
 zY
-jH
+Tv
 Xy
 MG
 jH
@@ -14879,7 +14880,7 @@ vk
 OF
 hF
 OF
-TN
+pp
 jH
 Du
 Du
@@ -15483,7 +15484,7 @@ OF
 OF
 OF
 OF
-TN
+pp
 jH
 Oc
 Oc
@@ -15785,7 +15786,7 @@ dZ
 dZ
 tP
 dZ
-dZ
+TN
 jH
 Oc
 Oc
