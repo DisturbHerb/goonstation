@@ -177,6 +177,14 @@ proc/is_music_playing()
 		message_admins("[data["key"]] loaded remote music: [data["title"]] ([data["duration"]] / [data["filesize"]])")
 	return 1
 
+/client/proc/play_remote_verb()
+	set name = "Play Remote Audio"
+	SET_ADMIN_CAT(ADMIN_CAT_FUN)
+	var/url = input(src, "Paste remote audio URL", "Remote Audio") as null|text
+	var/data = list(title="VerbAudio", file=url, filesize="n/a", duration="n/a", key=src.key)
+	if(!play_music_remote(data))
+		boutput(usr, "<span class='alert'>There was an issue playing your audio.</span>")
+
 /client/verb/change_volume(channel_name as anything in audio_channel_name_to_id)
 	var/channel_id = audio_channel_name_to_id[channel_name]
 	if(isnull(channel_id))

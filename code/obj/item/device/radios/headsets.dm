@@ -441,6 +441,9 @@
 			if (ticker?.mode && istype(ticker.mode, /datum/game_mode/nuclear))
 				var/datum/game_mode/nuclear/N = ticker.mode
 				the_frequency = N.agent_radiofreq
+			else if (ticker?.mode && istype(ticker.mode, /datum/game_mode/incursion))
+				var/datum/game_mode/incursion/I = ticker.mode
+				the_frequency = I.agent_radiofreq
 			src.frequency = the_frequency // let's see if this stops rounds from being ruined every fucking time
 
 	leader

@@ -29,6 +29,8 @@ ABSTRACT_TYPE(/datum/game_mode)
 	var/do_random_events = 1
 	var/escape_possible = 1		//for determining if players lose their held spacebux item on round end if they are able to "escape" in this mode.
 
+	var/fuck_you_please_end = FALSE
+
 /datum/game_mode/proc/announce()
 	boutput(world, "<B>[src] did not define announce()</B>")
 
@@ -63,6 +65,8 @@ ABSTRACT_TYPE(/datum/game_mode)
 
 /datum/game_mode/proc/check_finished()
 	if(emergency_shuttle.location == SHUTTLE_LOC_RETURNED)
+		return 1
+	if(fuck_you_please_end)
 		return 1
 	return 0
 

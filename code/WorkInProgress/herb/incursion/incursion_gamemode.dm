@@ -62,10 +62,10 @@
 		possible_syndicates.Remove(syndicate)
 
 	agent_radiofreq = random_agent_frequency()
-	src.fireteam_frequencies.Add(list("Able Fireteam" = random_fireteam_frequency()))
-	src.fireteam_frequencies.Add(list("Baker Fireteam" = random_fireteam_frequency()))
-	src.fireteam_frequencies.Add(list("Charlie Fireteam" = random_fireteam_frequency()))
-	src.fireteam_frequencies.Add(list("Dog Fireteam" = random_fireteam_frequency()))
+	var/list/fireteam_frequency_names = list("Able Fireteam", "Baker Fireteam", "Charlie Fireteam", "Dog Fireteam")
+	for(var/name in fireteam_frequency_names)
+		src.fireteam_frequencies.Add(list("[name]" = random_fireteam_frequency()))
+		headset_channel_lookup += list("[src.fireteam_frequencies[name]]" = name)
 
 	return 1
 
@@ -128,6 +128,22 @@
 		if((istype(the_airlock, /obj/machinery/door/airlock/external) || istype(the_airlock, /obj/machinery/door/airlock/pyro/external)) && istype(get_area(the_airlock), /area/station))
 			the_airlock.locked = 1
 			the_airlock.UpdateIcon()
+
+	// THIS MIGHT ACTUALLY BE REALLY BAD
+	var/list/turf/simulated/floor/station = list()
+	for(var/turf/simulated/floor/F in block(locate(1, 1, Z_LEVEL_STATION), locate(world.maxx, world.maxy, Z_LEVEL_STATION)))
+		station += F
+	for (var/turf/T in station)
+		if (prob(10))
+			new /obj/structure/woodwall(T)
+
+	for(var/obj/window/the_window in by_type[/obj/window])
+		if (istype(get_area(the_window), /area/station))
+			new /obj/structure/woodwall(get_turf(the_window))
+
+	for(var/obj/machinery/door/airlock/pyro/glass/windoor/the_windoor in by_type[/obj/machinery/door/airlock])
+		if(istype(get_area(the_windoor), /area/station))
+			new /obj/structure/woodwall(get_turf(the_windoor))
 
 	SPAWN(rand(waittime_l, waittime_h))
 		send_intercept()

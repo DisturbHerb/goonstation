@@ -68,6 +68,7 @@ ADMIN_INTERACT_PROCS(/obj/window, proc/smash)
 		if(src.z == Z_LEVEL_STATION && current_state <= GAME_STATE_PREGAME && !is_cardinal(src.dir))
 			xmasify()
 		#endif
+		START_TRACKING
 		..()
 
 	proc/xmasify()
@@ -102,6 +103,7 @@ ADMIN_INTERACT_PROCS(/obj/window, proc/smash)
 		connect_image = null
 		density = 0
 		update_nearby_tiles(need_rebuild=1)
+		STOP_TRACKING
 		. = ..()
 
 	Move()

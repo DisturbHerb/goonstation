@@ -7,8 +7,8 @@
 
 
 // Energy to kinetic weapons ratio.
-#define ENERGY_GUN_WEIGHT 5
-#define KINETIC_GUN_WEIGHT 3
+#define ENERGY_GUN_WEIGHT 4
+#define KINETIC_GUN_WEIGHT 4
 #define THROWABLE_WEIGHT 2
 
 var/static/list/jobs_and_departments = list(
@@ -51,13 +51,10 @@ var/static/list/shitty_cargo_weapons = list(
 )
 
 var/static/list/shitty_civ_weapons = list(
+	/obj/item/bat,
 	/obj/item/chair/folded,
 	/obj/item/extinguisher,
-	/obj/item/gun/kinetic/foamdartgun,
-	/obj/item/gun/kinetic/foamdartrevolver,
-	/obj/item/gun/kinetic/foamdartshotgun,
 	/obj/item/kitchen/rollingpin,
-	/obj/item/kitchen/utensil/fork,
 	/obj/item/kitchen/utensil/knife,
 	/obj/item/kitchen/utensil/knife/pizza_cutter,
 	/obj/item/mop,
@@ -78,7 +75,6 @@ var/static/list/shitty_eng_weapons = list(
 var/static/list/shitty_med_weapons = list(
 	/obj/item/scalpel,
 	/obj/item/circular_saw,
-	/obj/item/staple_gun,
 	/obj/item/scissors/surgical_scissors
 )
 
@@ -107,7 +103,7 @@ var/static/list/valid_energy_gun_list = list(
 	/obj/item/gun/energy/dazzler = 5,
 	/obj/item/gun/energy/phaser_gun = 30,
 	/obj/item/gun/energy/phaser_huge = 5,
-	/obj/item/gun/energy/phaser_small = 50,
+	/obj/item/gun/energy/phaser_small = 30,
 	/obj/item/gun/energy/laser_gun = 30,
 )
 

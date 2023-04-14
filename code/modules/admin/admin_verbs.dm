@@ -223,6 +223,7 @@ var/list/admin_verbs = list(
 		/datum/admins/proc/togglesuicide,
 		/datum/admins/proc/pixelexplosion,
 		/client/proc/open_dj_panel,
+		/client/proc/play_remote_verb,
 		/client/proc/cmd_admin_clownify,
 		/client/proc/toggle_toggles,
 		/client/proc/cmd_admin_plain_message_all,
@@ -387,6 +388,7 @@ var/list/admin_verbs = list(
 		/client/proc/dereplace_space,
 		/client/proc/ghostdroneAll,
 		/client/proc/showLoadingHint,
+		/client/proc/end_round,
 		/client/proc/showPregameHTML,
 		/client/proc/dbg_radio_controller,
 		/client/proc/test_mass_flock_convert,
@@ -2000,6 +2002,17 @@ var/list/fun_images = list()
 		C << browse(html, "window=pregameBrowser")
 		winshow(C, "pregameBrowser", 1)
 
+// Thanks, pillar.
+/client/proc/end_round()
+	SET_ADMIN_CAT(ADMIN_CAT_SERVER)
+	set name = "End the round"
+	set desc = "LOAF STATION EXCLUSIVE!" //hehe not anymore
+	ADMIN_ONLY
+	emergency_shuttle.location = SHUTTLE_LOC_RETURNED
+	if(ticker?.mode)
+		var/datum/game_mode/G = ticker.mode
+		G.fuck_you_please_end = TRUE
+
 /client/proc/showPregameHTML()
 	SET_ADMIN_CAT(ADMIN_CAT_SERVER)
 	set name = "Display Pregame HTML"
@@ -2025,6 +2038,9 @@ var/list/fun_images = list()
 				new /obj/titlecard(T)
 			return
 	var/newHTML = null
+	if(tgui_alert(usr, "Do you want to restore the original HTML?", "Pregame HTML", list("Yes", "No")) == "Yes")
+		lobby_titlecard.set_pregame_html()
+		return
 	if(alert("Do you want to upload an HTML file, or type it in?", "HTML Source", "Here", "Upload") == "Here")
 		newHTML = input("Gib HTML, then.", "FEED ME HTML", pregameHTML) as message
 	else

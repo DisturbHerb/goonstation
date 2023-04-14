@@ -185,9 +185,11 @@
 
 			// incursion't
 			if (ROLE_INCURSION)
-				return
+				window_title = "Incursion Operative Basics"
+				filename = "html/herb/incursionTips.html"
 			if (ROLE_INCURSION_COMMANDER)
-				return
+				window_title = "Incursion Commander Basics"
+				filename = "html/herb/incursioncommanderTips.html"
 
 			// spy/conspiracy
 			if ("spy")
@@ -349,6 +351,9 @@
 	* @param popup_name the name of the popup to match to the correct macro
 	* @param set_last_popup whether to modify the mob's last_antag_popup entry (used for the admin display)
 	*/
+
+	var/fireteam = "" // I'M SORRY
+
 	proc/show_antag_popup(var/popup_name, var/set_last_popup = TRUE)
 		if (set_last_popup)
 			src.last_antag_popup = popup_name

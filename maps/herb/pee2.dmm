@@ -192,14 +192,6 @@
 	name = "security door"
 	},
 /area/centcom/offices/high_command)
-"dO" = (
-/obj/item/device/radio/intercom/syndicate{
-	dir = 4
-	},
-/turf/unsimulated/floor/redblack{
-	dir = 4
-	},
-/area/centcom/offices/high_command/bridge)
 "dQ" = (
 /obj/lattice,
 /obj/cable{
@@ -638,6 +630,13 @@
 /obj/lattice,
 /turf/space,
 /area/space)
+"gW" = (
+/obj/storage/crate/classcrate{
+	name = "shock-proof crate";
+	desc = "A reinforced crate designed to survive atmospheric re-entry and ground impacts. Perfect for orbital drops!"
+	},
+/turf/unsimulated/floor/red,
+/area/syndicate_station/battlecruiser/altai)
 "gX" = (
 /obj/cable{
 	d2 = 8;
@@ -1094,21 +1093,6 @@
 /obj/machinery/light/lamp/black,
 /turf/unsimulated/floor/red,
 /area/syndicate_station/battlecruiser/altai)
-"mB" = (
-/obj/machinery/computer/security{
-	dir = 4;
-	network = "ALTAI";
-	name = "body camera monitor";
-	desc = "A computer that allows one to view a live feed from any body camera on the ALTAI network."
-	},
-/obj/item/device/radio/intercom/syndicate,
-/obj/map/light/dimred,
-/obj/machinery/light/incandescent/warm/very{
-	dir = 8;
-	pixel_x = -10
-	},
-/turf/unsimulated/floor/black,
-/area/centcom/offices/high_command/intel)
 "mH" = (
 /turf/unsimulated/floor/carpet/red/fancy/edge/north,
 /area/syndicate_station/battlecruiser/altai)
@@ -1543,9 +1527,6 @@
 /area/syndicate_station/battlecruiser/altai)
 "sv" = (
 /obj/table/reinforced/auto,
-/obj/item/device/radio/intercom/syndicate{
-	dir = 4
-	},
 /obj/machinery/phone/unlisted,
 /turf/unsimulated/floor/darkblue,
 /area/centcom/offices/high_command/intel)
@@ -1560,12 +1541,7 @@
 /obj/machinery/computer/security/console_upper{
 	dir = 8
 	},
-/obj/item/device/radio/intercom/syndicate,
 /obj/map/light/dimred,
-/obj/machinery/light/incandescent/warm/very{
-	dir = 4;
-	pixel_x = 10
-	},
 /turf/unsimulated/floor/darkblue,
 /area/centcom/offices/high_command/intel)
 "sP" = (
@@ -1615,6 +1591,7 @@
 	dir = 8;
 	pixel_x = 8
 	},
+/obj/machinery/nuclearbomb/event,
 /turf/unsimulated/floor/carpet/arcade,
 /area/centcom/offices/disturbherb)
 "tl" = (
@@ -1685,13 +1662,6 @@
 	dir = 4
 	},
 /area/syndicate_station/armoury)
-"tW" = (
-/obj/stool/chair/office/red{
-	dir = 8
-	},
-/obj/item/device/radio/intercom/syndicate,
-/turf/unsimulated/floor/darkblue,
-/area/centcom/offices/high_command/intel)
 "ud" = (
 /obj/machinery/door/airlock/pyro/classic,
 /turf/unsimulated/floor/black,
@@ -1799,6 +1769,7 @@
 	desc = "An information packet containing with decrypted communications from NanoTrasen. \[TOP SECRET\] is plastered on the front.";
 	pixel_y = 4
 	},
+/obj/item/paper/syndicate_intelligence_report,
 /turf/unsimulated/floor/black,
 /area/centcom/offices/high_command/intel)
 "uT" = (
@@ -2115,17 +2086,12 @@
 /area/centcom/offices/genessee)
 "yx" = (
 /obj/table/syndicate,
-/obj/item/device/radio/headset/syndicate/leader{
-	pixel_x = -3;
-	pixel_y = 2
+/obj/item/device/radio/headset/syndicate/leader/incursion,
+/obj/item/device/radio/headset/syndicate/leader/incursion{
+	pixel_x = 4
 	},
-/obj/item/device/radio/headset/syndicate/leader{
-	pixel_x = 2;
-	pixel_y = 2
-	},
-/obj/item/device/radio/headset/syndicate/leader{
-	pixel_x = 7;
-	pixel_y = 2
+/obj/item/device/radio/headset/syndicate/leader/incursion{
+	pixel_x = 8
 	},
 /obj/map/light/dimred,
 /turf/unsimulated/floor/black,
@@ -2564,12 +2530,6 @@
 	dir = 10
 	},
 /area/syndicate_station/battlecruiser/altai)
-"Em" = (
-/obj/machinery/light_switch/south{
-	on = 0
-	},
-/turf/unsimulated/floor/darkblue,
-/area/centcom/offices/high_command/intel)
 "En" = (
 /obj/item/device/radio/intercom/fish,
 /turf/unsimulated/floor/carpet/red/fancy/edge/north,
@@ -3134,7 +3094,6 @@
 /turf/space,
 /area/syndicate_station/battlecruiser/altai)
 "Ig" = (
-/obj/machinery/broadside_gun/artillery_cannon/syndicate,
 /turf/unsimulated/floor/plating/random,
 /area/syndicate_station/battlecruiser/altai)
 "Ii" = (
@@ -3316,7 +3275,6 @@
 /obj/stool/chair/office/red{
 	dir = 8
 	},
-/obj/machinery/light/incandescent/warm/very,
 /turf/unsimulated/floor/black,
 /area/centcom/offices/high_command/intel)
 "JN" = (
@@ -3468,7 +3426,6 @@
 /turf/unsimulated/floor/redblack,
 /area/centcom/offices/high_command)
 "LE" = (
-/obj/machinery/light,
 /turf/unsimulated/floor/redblack{
 	dir = 1
 	},
@@ -3879,7 +3836,6 @@
 /obj/stool/chair/office/red{
 	dir = 4
 	},
-/obj/item/device/radio/intercom/syndicate,
 /turf/unsimulated/floor/black,
 /area/centcom/offices/high_command/intel)
 "RA" = (
@@ -3935,6 +3891,20 @@
 /area/centcom/offices/high_command/bridge)
 "Sd" = (
 /obj/table/syndicate/auto,
+/obj/item/device/fireteam_designator/fireteam_a{
+	pixel_x = -6;
+	pixel_y = 10
+	},
+/obj/item/device/fireteam_designator/fireteam_b{
+	pixel_y = 10;
+	pixel_x = 6
+	},
+/obj/item/device/fireteam_designator/fireteam_c{
+	pixel_x = -6
+	},
+/obj/item/device/fireteam_designator/fireteam_d{
+	pixel_x = 6
+	},
 /turf/unsimulated/floor/carpet/red/decal/outercross,
 /area/syndicate_station/battlecruiser/altai)
 "Se" = (
@@ -3996,6 +3966,7 @@
 	desc = "A holograph of one of the core worlds. You swear you can see your house from up here.";
 	icon = 'icons/herb/96x96.dmi'
 	},
+/obj/map/light/cyan,
 /turf/unsimulated/floor/carpet/red/fancy,
 /area/centcom/offices/high_command/bridge)
 "Tc" = (
@@ -4021,10 +3992,6 @@
 	name = "Syndicate-Spawn"
 	},
 /turf/unsimulated/floor/carpet/red/fancy/edge/west,
-/area/syndicate_station/battlecruiser/altai)
-"Tv" = (
-/obj/machinery/broadside_gun/artillery_cannon/syndicate,
-/turf/unsimulated/wall/auto/adventure/shuttle/dark,
 /area/syndicate_station/battlecruiser/altai)
 "Tx" = (
 /obj/landmark{
@@ -4101,11 +4068,6 @@
 /area/syndicate_station/battlecruiser/altai)
 "Ud" = (
 /obj/decoration/syndiepc/syndiepc14,
-/obj/machinery/light{
-	dir = 1;
-	layer = 9.1;
-	pixel_y = 21
-	},
 /turf/unsimulated/floor/redblack,
 /area/centcom/offices/high_command/bridge)
 "Ue" = (
@@ -4231,7 +4193,7 @@
 /obj/item/storage/pouch/bullet_9mm/smg{
 	pixel_x = 9
 	},
-/obj/item/storage/medical_pouch{
+/obj/item/storage/medical_pouch/incursion{
 	pixel_x = 9;
 	pixel_y = -3
 	},
@@ -4262,7 +4224,7 @@
 /obj/item/storage/pouch/bullet_9mm/smg{
 	pixel_x = 9
 	},
-/obj/item/storage/medical_pouch{
+/obj/item/storage/medical_pouch/incursion{
 	pixel_x = 9;
 	pixel_y = -3
 	},
@@ -4271,8 +4233,7 @@
 	},
 /obj/item/gun/kinetic/smg/empty{
 	pixel_x = -8;
-	pixel_y = -10;
-	icon_old = 3
+	pixel_y = -10
 	},
 /obj/item/storage/belt/gun/pistol/empty,
 /turf/unsimulated/floor/redblack{
@@ -7932,7 +7893,7 @@ AJ
 Ja
 Ja
 zY
-Tv
+jH
 Xy
 MG
 jH
@@ -10651,7 +10612,7 @@ xA
 VP
 VZ
 Mx
-xC
+gW
 jH
 jH
 jH
@@ -18516,7 +18477,7 @@ Ts
 Tx
 EY
 Dt
-mB
+NH
 sv
 NH
 fM
@@ -18818,7 +18779,7 @@ EY
 fx
 EY
 Dt
-tW
+GT
 kn
 GT
 uS
@@ -19426,7 +19387,7 @@ BL
 kn
 BL
 kn
-Em
+BL
 Dt
 gQ
 "}
@@ -25460,7 +25421,7 @@ wv
 uY
 SI
 RY
-dO
+SI
 ja
 vc
 Sf

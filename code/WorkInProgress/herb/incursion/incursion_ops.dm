@@ -20,6 +20,7 @@
 				gamemode.syndicates += src.owner
 
 		new_owner.current.antagonist_overlay_refresh(1, 0)
+		get_image_group(CLIENT_IMAGE_GROUP_FIRETEAM).add_mob(new_owner.current) // fireteam overlay
 
 		. = ..()
 
@@ -43,10 +44,10 @@
 		if(src.id == ROLE_INCURSION_COMMANDER)
 			H.equip_if_possible(new /obj/item/clothing/head/helmet/space/syndicate/commissar_cap(H), H.slot_head)
 			H.equip_if_possible(new /obj/item/clothing/suit/space/syndicate/commissar_greatcoat(H), H.slot_wear_suit)
-			H.equip_if_possible(new /obj/item/device/radio/headset/syndicate/leader(H), H.slot_ears)
+			H.equip_if_possible(new /obj/item/device/radio/headset/syndicate/leader/incursion(H), H.slot_ears)
 			H.equip_if_possible(new /obj/item/swords_sheaths/nukeop(H), H.slot_belt)
-			H.equip_if_possible(new /obj/item/fireteam_designator(H), H.slot_l_hand)
 			H.equip_if_possible(new /obj/item/device/audio_log/incursion_briefing(H), H.slot_r_hand)
+			H.equip_if_possible(new /obj/item/device/crate_teleporter(H), H.slot_l_hand)
 		else
 			H.equip_if_possible(new /obj/item/device/radio/headset/syndicate(H), H.slot_ears)
 
@@ -99,9 +100,9 @@
 
 		// else
 			if (src.id == ROLE_INCURSION_COMMANDER)
-				src.owner.current.real_name = "Syndicate Commander [src.owner.current.real_name]"
+				src.owner.current.real_name = "Commander [src.owner.current.real_name]"
 			else
-				src.owner.current.real_name = "Syndicate Operative [src.owner.current.real_name]"
+				src.owner.current.real_name = "Operative [src.owner.current.real_name]"
 
 /datum/antagonist/incursion_operative/commander
 	id = ROLE_INCURSION_COMMANDER

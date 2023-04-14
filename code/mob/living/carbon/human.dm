@@ -21,6 +21,7 @@
 	var/image/health_mon = null
 	var/list/implant_icons = null
 	var/image/arrestIcon = null
+	var/image/fireteamIcon = null
 
 	var/pin = null
 	var/obj/item/clothing/suit/wear_suit = null
@@ -208,6 +209,9 @@
 
 	arrestIcon = image('icons/effects/sechud.dmi',src,null,EFFECTS_LAYER_UNDER_4)
 	get_image_group(CLIENT_IMAGE_GROUP_ARREST_ICONS).add_image(arrestIcon)
+
+	fireteamIcon = image('icons/herb/mob/antag_overlays.dmi',src,null,EFFECTS_LAYER_UNDER_4)
+	get_image_group(CLIENT_IMAGE_GROUP_FIRETEAM).add_image(fireteamIcon)
 
 	src.organHolder = new(src)
 
@@ -521,6 +525,10 @@
 		get_image_group(CLIENT_IMAGE_GROUP_ARREST_ICONS).remove_image(arrestIcon)
 		arrestIcon.dispose()
 		arrestIcon = null
+	if(fireteamIcon)
+		get_image_group(CLIENT_IMAGE_GROUP_FIRETEAM).remove_image(fireteamIcon)
+		fireteamIcon.dispose()
+		fireteamIcon = null
 
 	src.chest_item = null
 

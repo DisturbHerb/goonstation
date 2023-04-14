@@ -39,7 +39,7 @@ var/static/list/mutantrace_choices = list(
 				var/datum/mutantrace/the_mutantrace = pick(mutantrace_choices)
 				if(istype(the_mutantrace,/datum/mutantrace/cow))
 					qdel(src.shoes)
-				src.set_mutantrace()
+				src.set_mutantrace(the_mutantrace)
 
 	initializeBioholder(gender)
 		if(gender)
@@ -69,6 +69,17 @@ var/static/list/mutantrace_choices = list(
 	death()
 		..()
 		STOP_TRACKING_CAT(TR_CAT_NTEMPLOYEES)
+
+	abom
+		name = "OH FUCK OH GOD"
+		desc = "WHAT THE FUCK IS THAT THING"
+		icon = 'icons/mob/abomination.dmi'
+		icon_state = "abomination"
+
+		New()
+			..()
+			src.set_mutantrace(/datum/mutantrace/abomination/admin/weak)
+
 
 // Please god only attack the specified antags.
 /mob/living/carbon/human/npc/NTemployee/ai_findtarget_new()
