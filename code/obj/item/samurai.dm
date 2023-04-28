@@ -13,7 +13,7 @@
 	icon_state = "kabuto"
 	item_state = "kabuto"
 	hides_from_examine = C_EARS
-	// seal_hair = TRUE
+	seal_hair = TRUE
 	path_prot = FALSE
 
 	setupProperties()
@@ -50,18 +50,3 @@
 		setProperty("coldprot", 7)
 		setProperty("conductivity", 0.4)
 		setProperty("deflection", 40)
-
-// Underclothes
-
-/obj/item/clothing/under/gimmick/kobakama
-	name = "kosode and kobakama"
-	desc = "The <i>really</i> traditional garb of the samurai. You have no idea what this is doing on a space station."
-	icon_state = "kobakama_1"
-	item_state = "kobakama_1"
-
-// /obj/item/clothing/under/gimmick/kobakama/random
-// 	New()
-// 		var/n = rand(1,6)
-// 		icon_state = "kobakama_[n]"
-// 		item_state = "kobakama_[n]"
-// 		..()
