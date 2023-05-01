@@ -1,7 +1,7 @@
 /obj/decal/poster/wallsign/stencil_large
 	name = "large stencil"
 	desc = "Giant lettering, ooh."
-	icon = 'icons/herb/obj/decals/large_stencils.dmi'
+	icon = 'herb_module/icons/obj/decals/large_stencils.dmi'
 	icon_state = "a"
 	pixel_y = 7
 

@@ -19,7 +19,7 @@ TYPEINFO_NEW(/turf/simulated/wall/auto/herb)
 	))
 
 /turf/simulated/wall/auto/herb
-	icon = 'icons/herb/turf/wall.dmi'
+	icon = 'herb_module/icons/turf/wall.dmi'
 #ifdef IN_MAP_EDITOR
 	icon_state = "wall-0"
 #endif
@@ -53,7 +53,7 @@ TYPEINFO_NEW(/turf/simulated/wall/auto/reinforced/herb)
 	))
 
 /turf/simulated/wall/auto/reinforced/herb
-	icon = 'icons/herb/turf/rwall.dmi'
+	icon = 'herb_module/icons/turf/rwall.dmi'
 #ifdef IN_MAP_EDITOR
 	icon_state = "rwall-0"
 #endif

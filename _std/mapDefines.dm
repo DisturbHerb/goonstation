@@ -63,6 +63,11 @@
 #define RUNTIME_CHECKING 1
 #define CHECK_MORE_RUNTIMES 1
 #define PREFAB_CHECKING 1
+
+#elif defined (MAP_OVERRIDE_EVENT)
+
+#define TERRESTRIAL_MAP 1
+
 //Entry below is the "default" map
 #else
 

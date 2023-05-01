@@ -1,6 +1,6 @@
-/datum/map_settings/breaking_ground
+/datum/map_settings/event
 	name = "BREAKING_GROUND"
-	display_name = "Breaking Ground"
+	display_name = "Banshee Trough"
 	default_gamemode = "extended"
 	walls = /turf/simulated/wall/auto/herb
 	rwalls = /turf/simulated/wall/auto/reinforced/herb
