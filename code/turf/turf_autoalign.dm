@@ -366,6 +366,7 @@ TYPEINFO(/turf/simulated/wall/auto/reinforced/supernorn)
 TYPEINFO_NEW(/turf/simulated/wall/auto/reinforced/supernorn)
 	. = ..()
 	connects_to = typecacheof(list(
+		/turf/simulated/wall/auto/herb, /turf/simulated/wall/auto/reinforced/herb,
 		/turf/simulated/wall/auto/supernorn, /turf/simulated/wall/auto/reinforced/supernorn,
 		/turf/simulated/wall/auto/jen, /turf/simulated/wall/auto/reinforced/jen,
 		/turf/simulated/wall/false_wall, /turf/simulated/wall/auto/shuttle, /obj/machinery/door,
@@ -398,6 +399,7 @@ TYPEINFO(/turf/simulated/wall/auto/reinforced/supernorn/yellow)
 TYPEINFO_NEW(/turf/simulated/wall/auto/reinforced/supernorn/yellow)
 	. = ..()
 	connects_to = typecacheof(list(
+		/turf/simulated/wall/auto/herb, /turf/simulated/wall/auto/reinforced/herb,
 		/turf/simulated/wall/auto/supernorn, /turf/simulated/wall/auto/reinforced/supernorn,
 		/turf/simulated/wall/auto/jen, /turf/simulated/wall/auto/reinforced/jen,
 		/turf/simulated/wall/false_wall, /turf/simulated/wall/auto/shuttle,
