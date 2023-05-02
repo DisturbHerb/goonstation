@@ -2112,6 +2112,7 @@ var/datum/preMapLoad/preMapLoad = new
 #include "code\z_dmm_suite\reader.dm"
 #include "code\z_dmm_suite\writer.dm"
 #include "herb_module\code\mapconfig.dm"
+#include "herb_module\code\modules\worldgen\mapgen\SnowCraterGenerator.dm"
 #include "herb_module\code\obj\decal\poster.dm"
 #include "herb_module\code\turf\walls.dm"
 #include "interface\skin.dmf"
