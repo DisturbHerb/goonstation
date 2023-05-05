@@ -12972,7 +12972,7 @@
 	icon_state = "2-4"
 	},
 /obj/table/wood/auto,
-/obj/item/storage/bible,
+/obj/item/bible,
 /obj/item/reagent_containers/glass/bottle/holywater,
 /obj/machinery/light{
 	dir = 1;
@@ -15551,7 +15551,7 @@
 /obj/table/reinforced/bar/auto{
 	name = "Altar"
 	},
-/obj/item/storage/bible,
+/obj/item/bible,
 /turf/simulated/floor/carpet/blue/fancy/edge/ne,
 /area/station/chapel/sanctuary)
 "aOH" = (
@@ -32031,9 +32031,7 @@
 /turf/simulated/floor/caution/west,
 /area/station/hangar/arrivals)
 "bCh" = (
-/obj/machinery/disposal{
-	icon_state = "mailchute";
-	icon_style = "mail";
+/obj/machinery/disposal/botany{
 	name = "Produce Chute - Kitchen"
 	},
 /obj/machinery/camera{
@@ -58754,9 +58752,7 @@
 	},
 /area/ghostdrone_factory)
 "nAW" = (
-/obj/machinery/disposal{
-	icon_state = "mailchute";
-	icon_style = "mail";
+/obj/machinery/disposal/botany{
 	name = "Produce Chute - Kitchen"
 	},
 /obj/machinery/light{
