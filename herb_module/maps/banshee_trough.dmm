@@ -15232,6 +15232,14 @@
 	layer = 2.101
 	},
 /area/space)
+"wW" = (
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow/rough{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	layer = 2.102
+	},
+/area/shuttle/colonial_ship/planetfall)
 "wX" = (
 /turf/unsimulated/floor/auto/snow/rough{
 	temperature = 235;
@@ -25194,6 +25202,160 @@
 	layer = 2.101
 	},
 /area/space)
+"Na" = (
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow/rough{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	layer = 2.102
+	},
+/area/shuttle/colonial_ship/planetfall/med)
+"No" = (
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow/rough{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	icon_state = "snow_rough2";
+	layer = 2.102
+	},
+/area/shuttle/colonial_ship/planetfall)
+"NJ" = (
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow/rough{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	icon_state = "snow_rough2";
+	layer = 2.102
+	},
+/area/shuttle/colonial_ship/planetfall/sec)
+"NY" = (
+/obj/stone/snow/random{
+	dir = 6
+	},
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow/rough{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	layer = 2.102
+	},
+/area/shuttle/colonial_ship/planetfall)
+"Oe" = (
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow/rough{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	layer = 2.102
+	},
+/area/shuttle/colonial_ship/planetfall/dock)
+"Pc" = (
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow/rough{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	icon_state = "snow_rough2";
+	layer = 2.102
+	},
+/area/shuttle/colonial_ship/planetfall/bridge)
+"PO" = (
+/obj/stone/snow/random{
+	dir = 10
+	},
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow/rough{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	layer = 2.102
+	},
+/area/shuttle/colonial_ship/planetfall/dock)
+"QA" = (
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow/rough{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	icon_state = "snow_rough3";
+	layer = 2.102
+	},
+/area/shuttle/colonial_ship/planetfall/sec)
+"Sk" = (
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow/rough{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	icon_state = "snow_rough3";
+	layer = 2.102
+	},
+/area/shuttle/colonial_ship/planetfall/bridge)
+"Sl" = (
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow/rough{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	icon_state = "snow_rough2";
+	layer = 2.102
+	},
+/area/shuttle/colonial_ship/planetfall/maint)
+"TI" = (
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow/rough{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	layer = 2.102
+	},
+/area/shuttle/colonial_ship/planetfall/bridge)
+"Up" = (
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow/rough{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	icon_state = "snow_rough3";
+	layer = 2.102
+	},
+/area/shuttle/colonial_ship/planetfall)
+"Ur" = (
+/obj/stone/random{
+	dir = 1
+	},
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow/rough{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	layer = 2.102
+	},
+/area/shuttle/colonial_ship/planetfall/maint)
+"Uv" = (
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow/rough{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	layer = 2.102
+	},
+/area/shuttle/colonial_ship/planetfall/maint)
+"Vg" = (
+/obj/stone/random,
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow/rough{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	layer = 2.102
+	},
+/area/shuttle/colonial_ship/planetfall)
+"Zg" = (
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow/rough{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	icon_state = "snow_rough3";
+	layer = 2.102
+	},
+/area/shuttle/colonial_ship/planetfall/dock)
+"ZZ" = (
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow/rough{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	layer = 2.102
+	},
+/area/shuttle/colonial_ship/planetfall/sec)
 
 (1,1,1) = {"
 mQ
@@ -62172,9 +62334,9 @@ wd
 wd
 wd
 gZ
-wd
-wd
-wd
+TI
+TI
+TI
 wd
 wd
 wd
@@ -62473,11 +62635,11 @@ dH
 wd
 wd
 wd
-wd
-dH
-wd
-wd
-wd
+TI
+Pc
+TI
+TI
+TI
 wc
 wd
 wd
@@ -62774,13 +62936,13 @@ wd
 wd
 wd
 wd
-wd
-cb
-wd
-wd
-wd
-wd
-wd
+TI
+Sk
+TI
+TI
+TI
+TI
+TI
 wd
 wd
 wd
@@ -63076,13 +63238,13 @@ wd
 wd
 wd
 wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
+TI
+TI
+TI
+TI
+TI
+TI
+TI
 wd
 wd
 wc
@@ -63378,13 +63540,13 @@ wd
 wd
 wd
 wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
+TI
+TI
+TI
+TI
+TI
+TI
+TI
 wd
 wd
 wd
@@ -63679,15 +63841,15 @@ wd
 wd
 wd
 wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
+wW
+wW
+wW
+ZZ
+ZZ
+TI
+ZZ
+ZZ
+ZZ
 wd
 wd
 wd
@@ -63981,15 +64143,15 @@ wd
 wd
 wd
 wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
+wW
+wW
+wW
+ZZ
+ZZ
+ZZ
+ZZ
+ZZ
+ZZ
 wd
 wd
 wd
@@ -64283,15 +64445,15 @@ wd
 gZ
 cb
 wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
+wW
+wW
+wW
+ZZ
+ZZ
+ZZ
+ZZ
+ZZ
+ZZ
 wd
 wd
 wd
@@ -64585,15 +64747,15 @@ wd
 wd
 cb
 wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-dH
+wW
+wW
+wW
+ZZ
+ZZ
+ZZ
+ZZ
+ZZ
+NJ
 cb
 wd
 wd
@@ -64886,17 +65048,17 @@ cb
 wd
 wd
 wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-cb
-wd
-wd
+wW
+wW
+wW
+wW
+ZZ
+ZZ
+ZZ
+ZZ
+QA
+ZZ
+Na
 cb
 dH
 wd
@@ -65188,17 +65350,17 @@ wd
 dH
 wd
 wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
+wW
+wW
+wW
+wW
+wW
+wW
+Na
+Na
+Na
+Na
+Na
 wd
 wd
 wd
@@ -65490,17 +65652,17 @@ dH
 wd
 fP
 wd
-wd
-wd
-wd
-dH
-wd
-wd
-wd
-wd
-wd
-wd
-wd
+wW
+wW
+wW
+No
+wW
+wW
+Na
+Na
+Na
+Na
+Na
 wd
 wd
 wd
@@ -65792,17 +65954,17 @@ wd
 dH
 wd
 wd
-wd
-wd
-nE
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
+wW
+wW
+Vg
+wW
+wW
+wW
+Na
+Na
+Na
+Na
+Na
 wd
 wd
 wd
@@ -66094,17 +66256,17 @@ wd
 wd
 wd
 wd
-dH
-eV
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
+No
+NY
+wW
+wW
+wW
+wW
+Na
+Na
+Na
+Na
+Na
 wd
 wd
 wd
@@ -66396,17 +66558,17 @@ wd
 wd
 wd
 wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
+wW
+wW
+wW
+wW
+wW
+wW
+Na
+Na
+Na
+Na
+Na
 wd
 wd
 wd
@@ -66698,17 +66860,17 @@ wd
 cb
 wd
 jn
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
+wW
+wW
+wW
+wW
+wW
+wW
+Oe
+Oe
+Oe
+Oe
+Oe
 cb
 wd
 wd
@@ -67000,17 +67162,17 @@ wd
 wd
 wd
 wd
-cb
-cb
-wd
-wd
-wd
-dH
-wd
-wd
-wd
-wd
-wd
+Up
+Up
+wW
+wW
+wW
+No
+Oe
+Oe
+Oe
+Oe
+Oe
 wd
 wd
 wd
@@ -67302,17 +67464,17 @@ wd
 wd
 dH
 wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-fg
+wW
+wW
+wW
+wW
+wW
+wW
+Oe
+Oe
+Oe
+Oe
+PO
 wd
 wd
 wd
@@ -67604,17 +67766,17 @@ wd
 wd
 wd
 gZ
-wd
-cb
-wd
-wd
-cb
-wd
-wd
-wd
-wd
-wd
-wd
+wW
+Up
+wW
+wW
+Up
+wW
+Oe
+Oe
+Oe
+Oe
+Oe
 wd
 wd
 xQ
@@ -67906,17 +68068,17 @@ wd
 wd
 wd
 wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
+wW
+wW
+wW
+wW
+wW
+wW
+Oe
+Oe
+Oe
+Oe
+Oe
 wd
 qB
 xQ
@@ -68208,17 +68370,17 @@ wd
 wd
 wd
 wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
+wW
+wW
+wW
+wW
+wW
+wW
+Oe
+Oe
+Oe
+Oe
+Oe
 wd
 wd
 xQ
@@ -68510,17 +68672,17 @@ wd
 wd
 wd
 wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
+wW
+wW
+wW
+wW
+wW
+wW
+Oe
+Oe
+Oe
+Oe
+Oe
 wd
 wd
 xQ
@@ -68813,15 +68975,15 @@ wd
 wd
 wd
 wd
-wd
-wd
-wd
-wd
-wd
-cb
-wd
-wd
-wd
+Uv
+Uv
+Uv
+Uv
+Uv
+Zg
+Oe
+Oe
+Oe
 wd
 wd
 wd
@@ -69115,15 +69277,15 @@ cb
 wd
 wd
 wd
-wd
-wd
-wd
-dH
-wd
-wd
-yh
-wd
-wd
+Uv
+Uv
+Uv
+Sl
+Uv
+Uv
+Ur
+Uv
+Uv
 wd
 wd
 cb
@@ -69417,15 +69579,15 @@ wd
 wd
 wd
 wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
 wd
 wd
 wd
@@ -69719,15 +69881,15 @@ wd
 wd
 wd
 wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-dH
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Sl
 wd
 wd
 wd
@@ -70021,15 +70183,15 @@ wd
 wd
 wd
 wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
 wd
 cb
 wd
@@ -70324,13 +70486,13 @@ wd
 wd
 wd
 wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
 wd
 wd
 cb
@@ -70627,11 +70789,11 @@ wd
 wd
 wd
 wd
+Uv
+Uv
 wd
-wd
-wd
-wd
-wd
+Uv
+Uv
 wd
 wd
 wd

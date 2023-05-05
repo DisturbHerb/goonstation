@@ -5,7 +5,6 @@
 	icon_state = "wall-0"
 	anchored = ANCHORED
 	flags = FPRINT | USEDELAY | ON_BORDER
-	alpha = 160
 
 	reinforced
 		icon = 'herb_module/icons/obj/structures/rwall_window_frames.dmi'
@@ -15,3 +14,19 @@
 	shuttle
 		icon = 'herb_module/icons/obj/structures/shuttle_window_frames.dmi'
 		icon_state = "shuttle-0"
+
+/obj/window_frame_wingrille_spawner
+	name = "window frame wingrille spawner"
+	desc = "yeah dude"
+	icon = 'herb_module/icons/obj/structures/wall_window_frames.dmi'
+	icon_state = "wall-wingrille"
+
+	reinforced
+		name = "reinforced window frame wingrille spawner"
+		icon = 'herb_module/icons/obj/structures/rwall_window_frames.dmi'
+		icon_state = "rwall-wingrille"
+
+		shuttle
+			name = "shuttle window frame wingrille spawner"
+			icon = 'herb_module/icons/obj/structures/shuttle_window_frames.dmi'
+			icon_state = "shuttle-wingrille"

@@ -1,55 +1,77 @@
 //MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
-"aE" = (
-/turf/simulated/wall/auto/shuttle{
-	icon_state = 7;
-	opacity = 1
-	},
-/area/space)
 "aR" = (
 /obj/indestructible/shuttle_corner,
 /turf/simulated/floor/plating,
-/area/space)
+/area/shuttle/colonial_ship/transit/maint)
 "bM" = (
 /turf/simulated/wall/auto/shuttle{
 	opacity = 1
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/dock)
+"bV" = (
+/obj/indestructible/shuttle_corner{
+	dir = 1
+	},
+/turf/space,
+/area/shuttle/colonial_ship/transit)
 "cq" = (
 /obj/indestructible/shuttle_corner,
 /turf/space,
-/area/space)
-"dg" = (
-/obj/structure/window_frame/shuttle{
-	icon_state = "shuttle-8"
+/area/shuttle/colonial_ship/transit/bridge)
+"cC" = (
+/turf/simulated/wall/auto/shuttle{
+	icon_state = "13";
+	opacity = 1
+	},
+/area/shuttle/colonial_ship/transit/dock)
+"dr" = (
+/obj/machinery/light/incandescent/cool{
+	pixel_y = 21;
+	dir = 1
+	},
+/obj/machinery/power/apc/autoname_east,
+/obj/cable{
+	icon_state = "0-2"
+	},
+/turf/simulated/floor/shuttle,
+/area/shuttle/colonial_ship/transit)
+"ez" = (
+/obj/machinery/door/airlock/pyro/weapons{
+	dir = 4
+	},
+/obj/access_spawn/security,
+/obj/access_spawn/heads,
+/obj/cable{
+	icon_state = "4-8"
+	},
+/turf/simulated/floor/shuttle{
+	icon_state = "floor4"
+	},
+/area/shuttle/colonial_ship/transit/sec)
+"ff" = (
+/obj/machinery/atmospherics/valve{
+	dir = 4
 	},
 /turf/simulated/floor/plating,
-/area/space)
-"ez" = (
-/obj/decal/tile_edge/stripe/extra_big{
-	icon_state = "delivery2"
+/area/shuttle/colonial_ship/transit/maint)
+"fm" = (
+/obj/cable{
+	icon_state = "1-2"
 	},
-/turf/simulated/floor/shuttle{
-	icon_state = "floor4"
+/turf/simulated/floor/shuttle,
+/area/shuttle/colonial_ship/transit)
+"fs" = (
+/turf/simulated/wall/auto/shuttle{
+	icon_state = "14";
+	opacity = 1
 	},
-/area/space)
-"ff" = (
-/obj/machinery/port_a_brig,
-/turf/simulated/floor/shuttle{
-	icon_state = "floor4"
-	},
-/area/space)
+/area/shuttle/colonial_ship/transit/dock)
 "gR" = (
 /turf/simulated/wall/auto/shuttle{
 	icon_state = "13";
 	opacity = 1
 	},
-/area/space)
-"gU" = (
-/turf/simulated/wall/auto/shuttle{
-	icon_state = 9;
-	opacity = 1
-	},
-/area/space)
+/area/shuttle/colonial_ship/transit)
 "ha" = (
 /obj/surgery_tray,
 /obj/item/scissors/surgical_scissors,
@@ -66,19 +88,31 @@
 /turf/simulated/floor/shuttle{
 	icon_state = "floor3"
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/med)
 "hr" = (
 /obj/decal/tile_edge/stripe/extra_big{
 	dir = 5
 	},
 /turf/simulated/floor/engine,
-/area/space)
+/area/shuttle/colonial_ship/transit/dock)
+"hz" = (
+/obj/machinery/light/incandescent/cool{
+	pixel_y = 21;
+	dir = 1
+	},
+/obj/cable{
+	icon_state = "4-8"
+	},
+/turf/simulated/floor/shuttle{
+	icon_state = "floor4"
+	},
+/area/shuttle/colonial_ship/transit/sec)
 "hK" = (
 /obj/decal/tile_edge/stripe/extra_big{
 	dir = 1
 	},
 /turf/simulated/floor/engine,
-/area/space)
+/area/shuttle/colonial_ship/transit/dock)
 "hT" = (
 /obj/machinery/optable{
 	id = "OR1"
@@ -91,7 +125,7 @@
 /turf/simulated/floor/shuttle{
 	icon_state = "floor3"
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/med)
 "it" = (
 /obj/submachine/chef_sink/chem_sink{
 	dir = 8;
@@ -101,7 +135,7 @@
 /turf/simulated/floor/shuttle{
 	icon_state = "floor3"
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/med)
 "iz" = (
 /obj/indestructible/shuttle_corner{
 	dir = 1
@@ -109,7 +143,7 @@
 /turf/simulated/floor/shuttle{
 	icon_state = "floor2"
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/bridge)
 "ja" = (
 /obj/machinery/stasis_pod{
 	dir = 4
@@ -120,28 +154,46 @@
 /turf/simulated/floor/shuttle{
 	icon_state = "floor4"
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/sec)
 "jo" = (
-/obj/machinery/light/incandescent/cool{
-	dir = 4;
-	pixel_x = 10
-	},
+/obj/machinery/port_a_brig,
+/obj/machinery/power/apc/autoname_south,
+/obj/cable,
 /turf/simulated/floor/shuttle{
-	icon_state = "floor2"
+	icon_state = "floor4"
 	},
-/area/space)
-"jT" = (
-/obj/structure/window_frame/shuttle{
-	icon_state = "shuttle-4"
+/area/shuttle/colonial_ship/transit/sec)
+"jw" = (
+/obj/window_frame_wingrille_spawner/reinforced/shuttle{
+	dir = 4
 	},
 /turf/simulated/floor/plating,
-/area/space)
+/area/shuttle/colonial_ship/transit/sec)
 "ka" = (
 /turf/simulated/wall/auto/shuttle{
 	icon_state = "14";
 	opacity = 1
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit)
+"kf" = (
+/obj/cable{
+	icon_state = "1-2"
+	},
+/turf/simulated/floor/shuttle{
+	icon_state = "floor4"
+	},
+/area/shuttle/colonial_ship/transit/sec)
+"kt" = (
+/turf/simulated/wall/auto/shuttle{
+	icon_state = "15";
+	opacity = 1
+	},
+/area/shuttle/colonial_ship/transit/sec)
+"kz" = (
+/turf/simulated/wall/auto/shuttle{
+	opacity = 1
+	},
+/area/shuttle/colonial_ship/transit)
 "kE" = (
 /obj/machinery/computer/shuttle/embedded/west,
 /obj/stool/chair/comfy/shuttle/pilot{
@@ -150,28 +202,41 @@
 /turf/simulated/floor/shuttle{
 	icon_state = "floor2"
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/bridge)
+"md" = (
+/turf/simulated/wall/auto/shuttle{
+	opacity = 1
+	},
+/area/shuttle/colonial_ship/transit/med)
+"mp" = (
+/turf/simulated/wall/auto/shuttle{
+	icon_state = "12";
+	opacity = 1
+	},
+/area/shuttle/colonial_ship/transit/sec)
 "mQ" = (
-/obj/table/reinforced/auto,
-/obj/item/remote/porter/port_a_nanomed{
-	pixel_y = 2;
-	pixel_x = -4
-	},
-/obj/item/storage/box/biohazard_bags{
-	pixel_x = 6;
-	pixel_y = 4
-	},
-/obj/item/storage/box/body_bag{
-	pixel_x = 6
+/obj/cable{
+	icon_state = "2-4"
 	},
 /turf/simulated/floor/shuttle{
-	icon_state = "floor3"
+	icon_state = "floor4"
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/sec)
+"mS" = (
+/obj/window_frame_wingrille_spawner/reinforced/shuttle{
+	dir = 4
+	},
+/turf/simulated/floor/plating,
+/area/shuttle/colonial_ship/transit)
+"nE" = (
+/turf/simulated/wall/auto/shuttle{
+	opacity = 1
+	},
+/area/shuttle/colonial_ship/transit/maint)
 "nP" = (
 /obj/cryotron,
 /turf/simulated/floor/shuttle,
-/area/space)
+/area/shuttle/colonial_ship/transit)
 "oo" = (
 /obj/machinery/computer/announcement,
 /obj/machinery/light/incandescent/cool{
@@ -181,25 +246,25 @@
 /turf/simulated/floor/shuttle{
 	icon_state = "floor2"
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/bridge)
 "ow" = (
 /turf/simulated/floor/shuttle{
 	icon_state = "floor2"
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/bridge)
 "oL" = (
 /obj/machinery/light/incandescent/cool{
 	dir = 8;
 	pixel_x = -10
 	},
 /turf/simulated/floor/plating,
-/area/space)
+/area/shuttle/colonial_ship/transit/maint)
 "oP" = (
 /turf/simulated/floor/shuttle,
-/area/space)
+/area/shuttle/colonial_ship/transit)
 "pf" = (
 /turf/simulated/wall/auto/shuttle,
-/area/space)
+/area/shuttle/colonial_ship/transit/sec)
 "qx" = (
 /obj/machinery/shuttle/engine/heater{
 	icon_state = "alt_heater";
@@ -210,47 +275,99 @@
 	icon_state = "3";
 	opacity = 1
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/maint)
+"qB" = (
+/obj/window_frame_wingrille_spawner/reinforced/shuttle,
+/turf/simulated/floor/plating,
+/area/shuttle/colonial_ship/transit/dock)
 "qT" = (
-/obj/machinery/light/incandescent/cool{
-	dir = 4;
-	pixel_x = 10
+/obj/machinery/atmospherics/pipe/simple{
+	dir = 5
 	},
-/turf/simulated/floor/shuttle{
-	icon_state = "floor3"
-	},
-/area/space)
+/turf/simulated/floor/plating,
+/area/shuttle/colonial_ship/transit/maint)
 "rj" = (
 /obj/indestructible/shuttle_corner{
 	dir = 4
 	},
 /turf/space,
-/area/space)
+/area/shuttle/colonial_ship/transit/bridge)
+"rt" = (
+/obj/decal/tile_edge/stripe/extra_big{
+	icon_state = "delivery2"
+	},
+/obj/cable{
+	icon_state = "4-8"
+	},
+/turf/simulated/floor/shuttle{
+	icon_state = "floor4"
+	},
+/area/shuttle/colonial_ship/transit/sec)
 "rz" = (
 /obj/machinery/door/poddoor/blast/pyro{
 	icon_state = "bdoorleft1"
 	},
 /obj/forcefield/energyshield/perma/doorlink,
 /turf/simulated/floor/engine,
-/area/space)
+/area/shuttle/colonial_ship/transit/dock)
+"rL" = (
+/obj/machinery/power/apc/autoname_west,
+/obj/cable{
+	icon_state = "0-2"
+	},
+/turf/simulated/floor/plating,
+/area/shuttle/colonial_ship/transit/maint)
+"sM" = (
+/turf/simulated/wall/auto/shuttle{
+	icon_state = "12";
+	opacity = 1
+	},
+/area/shuttle/colonial_ship/transit/maint)
+"sV" = (
+/obj/cable{
+	icon_state = "1-4"
+	},
+/turf/simulated/floor/shuttle{
+	icon_state = "floor2"
+	},
+/area/shuttle/colonial_ship/transit/bridge)
+"tu" = (
+/obj/machinery/light/incandescent/cool{
+	dir = 4;
+	pixel_x = 10
+	},
+/obj/cable{
+	icon_state = "1-8"
+	},
+/turf/simulated/floor/shuttle{
+	icon_state = "floor3"
+	},
+/area/shuttle/colonial_ship/transit/med)
 "tV" = (
 /obj/landmark/start/latejoin,
 /turf/simulated/floor/shuttle,
-/area/space)
+/area/shuttle/colonial_ship/transit)
 "tZ" = (
 /obj/indestructible/shuttle_corner{
 	dir = 1
 	},
 /turf/simulated/floor/shuttle,
-/area/space)
+/area/shuttle/colonial_ship/transit/sec)
 "uh" = (
 /turf/space,
 /area/space)
 "uG" = (
-/turf/simulated/floor/shuttle{
-	icon_state = "floor4"
+/obj/machinery/light/incandescent/cool{
+	dir = 4;
+	pixel_x = 10
 	},
-/area/space)
+/obj/cable{
+	icon_state = "1-2"
+	},
+/turf/simulated/floor/shuttle{
+	icon_state = "floor2"
+	},
+/area/shuttle/colonial_ship/transit/bridge)
 "uI" = (
 /obj/decal/poster/wallsign/stencil_large/i,
 /obj/decal/poster/wallsign/stencil_large/n{
@@ -265,17 +382,17 @@
 /turf/simulated/wall/auto/shuttle{
 	opacity = 1
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/sec)
 "uJ" = (
-/obj/structure/window_frame/shuttle{
-	icon_state = "shuttle-12"
+/obj/window_frame_wingrille_spawner/reinforced/shuttle,
+/turf/simulated/floor/plating,
+/area/shuttle/colonial_ship/transit/med)
+"uZ" = (
+/obj/machinery/atmospherics/pipe/manifold{
+	dir = 1
 	},
 /turf/simulated/floor/plating,
-/area/space)
-"uZ" = (
-/obj/machinery/door/airlock/pyro/weapons,
-/turf/simulated/floor/shuttle,
-/area/space)
+/area/shuttle/colonial_ship/transit/maint)
 "vf" = (
 /obj/decal/poster/wallsign/stencil_large/n,
 /obj/decal/poster/wallsign/stencil_large/s{
@@ -288,7 +405,22 @@
 	icon_state = "13";
 	opacity = 1
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/sec)
+"xx" = (
+/obj/cable{
+	icon_state = "4-8"
+	},
+/obj/cable{
+	icon_state = "2-4"
+	},
+/turf/simulated/floor/shuttle,
+/area/shuttle/colonial_ship/transit)
+"xD" = (
+/obj/machinery/atmospherics/pipe/simple{
+	dir = 6
+	},
+/turf/simulated/floor/plating,
+/area/shuttle/colonial_ship/transit/maint)
 "xU" = (
 /obj/machinery/stasis_pod,
 /obj/machinery/light/incandescent/cool,
@@ -298,19 +430,28 @@
 /turf/simulated/floor/shuttle{
 	icon_state = "floor2"
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/bridge)
 "yh" = (
 /obj/indestructible/shuttle_corner{
 	dir = 8
 	},
 /turf/space,
-/area/space)
+/area/shuttle/colonial_ship/transit/dock)
 "yw" = (
 /obj/submachine/weapon_vendor/security,
+/obj/machinery/light/incandescent/cool{
+	dir = 8;
+	pixel_x = -10
+	},
 /turf/simulated/floor/shuttle{
 	icon_state = "floor4"
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/sec)
+"yC" = (
+/turf/simulated/wall/auto/shuttle{
+	opacity = 1
+	},
+/area/shuttle/colonial_ship/transit/sec)
 "yJ" = (
 /obj/indestructible/shuttle_corner{
 	dir = 8
@@ -318,52 +459,75 @@
 /turf/simulated/floor/shuttle{
 	icon_state = "floor2"
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/bridge)
 "zl" = (
 /obj/indestructible/shuttle_corner,
 /turf/simulated/floor/engine,
-/area/space)
-"zw" = (
-/obj/structure/window_frame/shuttle{
+/area/shuttle/colonial_ship/transit/dock)
+"zx" = (
+/obj/window_frame_wingrille_spawner/reinforced/shuttle{
 	dir = 4
 	},
 /turf/simulated/floor/plating,
-/area/space)
+/area/shuttle/colonial_ship/transit/maint)
 "zL" = (
+/obj/cable{
+	icon_state = "4-8"
+	},
+/turf/simulated/floor/shuttle,
+/area/shuttle/colonial_ship/transit)
+"Ae" = (
 /obj/machinery/door/airlock/pyro/classic{
 	dir = 8
 	},
+/obj/cable{
+	icon_state = "4-8"
+	},
 /turf/simulated/floor/plating,
-/area/space)
-"Ae" = (
-/obj/machinery/light/incandescent/cool{
-	pixel_y = 21;
-	dir = 1
-	},
-/turf/simulated/floor/shuttle{
-	icon_state = "floor4"
-	},
-/area/space)
+/area/shuttle/colonial_ship/transit/maint)
 "Ap" = (
 /turf/simulated/shuttle/wall/cockpit{
 	dir = 4
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/bridge)
+"AB" = (
+/obj/cable{
+	icon_state = "2-8"
+	},
+/turf/simulated/floor/shuttle,
+/area/shuttle/colonial_ship/transit/dock)
 "AC" = (
 /turf/simulated/floor/shuttle{
 	icon_state = "floor3"
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/med)
+"AG" = (
+/obj/machinery/light/incandescent/cool,
+/obj/cable{
+	icon_state = "4-8"
+	},
+/turf/simulated/floor/shuttle,
+/area/shuttle/colonial_ship/transit)
+"By" = (
+/obj/indestructible/shuttle_corner{
+	dir = 8
+	},
+/turf/space,
+/area/shuttle/colonial_ship/transit/maint)
 "Cx" = (
-/obj/machinery/power/apc/autoname_west,
+/obj/machinery/atmospherics/pipe/simple,
 /turf/simulated/floor/plating,
-/area/space)
+/area/shuttle/colonial_ship/transit/maint)
 "Db" = (
 /turf/simulated/wall/auto/shuttle{
 	icon_state = "15";
 	opacity = 1
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit)
+"Dk" = (
+/obj/indestructible/shuttle_corner,
+/turf/space,
+/area/shuttle/colonial_ship/transit)
 "Em" = (
 /obj/machinery/shuttle/engine/heater{
 	dir = 4;
@@ -372,7 +536,7 @@
 /turf/simulated/wall/auto/shuttle{
 	opacity = 1
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/maint)
 "EI" = (
 /turf/cordon,
 /area/cordon)
@@ -381,7 +545,11 @@
 /turf/simulated/floor/shuttle{
 	icon_state = "floor3"
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/med)
+"ET" = (
+/obj/machinery/atmospherics/pipe/manifold,
+/turf/simulated/floor/plating,
+/area/shuttle/colonial_ship/transit/maint)
 "FU" = (
 /turf/space,
 /area/shuttle_particle_spawn/east)
@@ -394,23 +562,23 @@
 	},
 /obj/landmark/start,
 /turf/simulated/floor/shuttle,
-/area/space)
+/area/shuttle/colonial_ship/transit)
 "Hv" = (
 /obj/machinery/sleeper/compact,
 /turf/simulated/floor/shuttle{
 	icon_state = "floor3"
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/med)
 "HH" = (
-/obj/structure/window_frame/shuttle,
+/obj/window_frame_wingrille_spawner/reinforced/shuttle,
 /turf/simulated/floor/plating,
-/area/space)
+/area/shuttle/colonial_ship/transit/sec)
 "HQ" = (
 /turf/simulated/wall/auto/shuttle{
 	icon_state = 8;
 	opacity = 1
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/med)
 "Ie" = (
 /obj/decal/poster/wallsign/stencil_large/e,
 /obj/decal/poster/wallsign/stencil_large/p{
@@ -425,20 +593,20 @@
 /turf/simulated/wall/auto/shuttle{
 	opacity = 1
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/sec)
 "Ip" = (
 /obj/machinery/door/poddoor/blast/pyro{
 	icon_state = "bdoorright1"
 	},
 /obj/forcefield/energyshield/perma/doorlink,
 /turf/simulated/floor/engine,
-/area/space)
-"Jl" = (
+/area/shuttle/colonial_ship/transit/dock)
+"IP" = (
 /turf/simulated/wall/auto/shuttle{
-	icon_state = "12";
+	icon_state = "13";
 	opacity = 1
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/med)
 "Jm" = (
 /obj/stool/chair/comfy/shuttle{
 	dir = 8
@@ -446,23 +614,40 @@
 /turf/simulated/floor/shuttle{
 	icon_state = "floor2"
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/bridge)
 "JB" = (
 /obj/machinery/light/incandescent/cool{
 	pixel_y = 21;
 	dir = 1
 	},
 /turf/simulated/floor/shuttle,
-/area/space)
+/area/shuttle/colonial_ship/transit)
+"Lk" = (
+/obj/cable{
+	icon_state = "1-8"
+	},
+/turf/simulated/floor/plating,
+/area/shuttle/colonial_ship/transit/maint)
 "Ln" = (
-/obj/machinery/door/airlock/pyro/weapons{
-	dir = 4
+/obj/cable{
+	icon_state = "1-2"
 	},
-/obj/access_spawn/heads,
+/obj/cable{
+	icon_state = "1-8"
+	},
 /turf/simulated/floor/shuttle{
-	icon_state = "floor2"
+	icon_state = "floor4"
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/sec)
+"Lr" = (
+/obj/machinery/door/airlock/pyro/weapons,
+/obj/cable{
+	icon_state = "1-2"
+	},
+/turf/simulated/floor/shuttle{
+	icon_state = "floor3"
+	},
+/area/shuttle/colonial_ship/transit/med)
 "LU" = (
 /obj/machinery/stasis_pod,
 /obj/landmark/start{
@@ -471,38 +656,49 @@
 /turf/simulated/floor/shuttle{
 	icon_state = "floor2"
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/bridge)
 "MG" = (
 /obj/machinery/door/airlock/pyro/weapons{
 	dir = 4
 	},
-/obj/access_spawn/security,
 /obj/access_spawn/heads,
-/turf/simulated/floor/shuttle{
-	icon_state = "floor4"
+/obj/cable{
+	icon_state = "4-8"
 	},
-/area/space)
+/turf/simulated/floor/shuttle{
+	icon_state = "floor2"
+	},
+/area/shuttle/colonial_ship/transit/bridge)
 "Nr" = (
 /obj/decal/tile_edge/stripe/extra_big{
 	icon_state = "bot2"
 	},
 /turf/simulated/floor/engine,
-/area/space)
+/area/shuttle/colonial_ship/transit/dock)
 "NA" = (
 /obj/indestructible/shuttle_corner{
 	dir = 1
 	},
 /turf/space,
-/area/space)
+/area/shuttle/colonial_ship/transit/maint)
 "NC" = (
 /turf/simulated/floor/plating,
-/area/space)
+/area/shuttle/colonial_ship/transit/maint)
 "Po" = (
 /turf/simulated/wall/auto/shuttle{
 	icon_state = 4;
 	opacity = 1
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/dock)
+"PX" = (
+/obj/cable{
+	icon_state = "4-8"
+	},
+/obj/cable{
+	icon_state = "1-4"
+	},
+/turf/simulated/floor/shuttle,
+/area/shuttle/colonial_ship/transit)
 "QJ" = (
 /obj/machinery/shuttle/engine/heater{
 	dir = 4;
@@ -511,21 +707,46 @@
 /turf/simulated/wall/auto/shuttle{
 	opacity = 1
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/maint)
 "QT" = (
-/obj/machinery/light/incandescent/cool{
-	dir = 8;
-	pixel_x = -10
+/obj/iv_stand,
+/obj/item/reagent_containers/iv_drip/saline,
+/obj/machinery/power/apc/autoname_north,
+/obj/cable{
+	icon_state = "0-4"
 	},
-/turf/simulated/floor/shuttle,
-/area/space)
+/turf/simulated/floor/shuttle{
+	icon_state = "floor3"
+	},
+/area/shuttle/colonial_ship/transit/med)
+"Re" = (
+/obj/item/storage/box/iv_box{
+	pixel_x = 7;
+	pixel_y = 4
+	},
+/obj/item/storage/box/biohazard_bags{
+	pixel_x = 6;
+	pixel_y = 1
+	},
+/obj/table/reinforced/auto,
+/obj/item/storage/box/body_bag{
+	pixel_x = 6;
+	pixel_y = -2
+	},
+/obj/item/remote/porter/port_a_nanomed{
+	pixel_y = 3;
+	pixel_x = -4
+	},
+/turf/simulated/floor/shuttle{
+	icon_state = "floor3"
+	},
+/area/shuttle/colonial_ship/transit/med)
+"Rk" = (
+/turf/simulated/wall/auto/shuttle,
+/area/shuttle/colonial_ship/transit/bridge)
 "Rm" = (
 /obj/machinery/stasis_pod{
 	dir = 8
-	},
-/obj/machinery/light/incandescent/cool{
-	dir = 8;
-	pixel_x = -10
 	},
 /obj/landmark/start{
 	name = "Security Officer"
@@ -533,30 +754,69 @@
 /turf/simulated/floor/shuttle{
 	icon_state = "floor4"
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/sec)
 "RU" = (
 /obj/machinery/light/incandescent/cool,
 /turf/simulated/floor/shuttle,
-/area/space)
+/area/shuttle/colonial_ship/transit)
+"Sz" = (
+/obj/cable{
+	icon_state = "4-8"
+	},
+/turf/simulated/floor/shuttle,
+/area/shuttle/colonial_ship/transit/dock)
+"Te" = (
+/obj/indestructible/shuttle_corner{
+	dir = 4
+	},
+/turf/space,
+/area/shuttle/colonial_ship/transit/sec)
+"Tl" = (
+/obj/machinery/power/apc/autoname_east,
+/obj/cable,
+/turf/simulated/floor/shuttle,
+/area/shuttle/colonial_ship/transit/dock)
+"TW" = (
+/obj/machinery/light/incandescent/cool{
+	dir = 8;
+	pixel_x = -10
+	},
+/obj/cable{
+	icon_state = "1-4"
+	},
+/turf/simulated/floor/shuttle,
+/area/shuttle/colonial_ship/transit/dock)
 "Uc" = (
 /obj/machinery/stasis_pod{
 	dir = 8
 	},
 /obj/landmark/start,
 /turf/simulated/floor/shuttle,
-/area/space)
+/area/shuttle/colonial_ship/transit)
 "UK" = (
 /obj/indestructible/shuttle_corner{
 	dir = 4
 	},
 /turf/simulated/floor/shuttle,
-/area/space)
-"VD" = (
-/obj/machinery/door/airlock/pyro/weapons,
-/turf/simulated/floor/shuttle{
-	icon_state = "floor3"
+/area/shuttle/colonial_ship/transit)
+"UL" = (
+/obj/indestructible/shuttle_corner{
+	dir = 4
 	},
-/area/space)
+/turf/space,
+/area/shuttle/colonial_ship/transit/med)
+"VD" = (
+/obj/fakeobjects{
+	icon = 'icons/obj/atmospherics/tanks/red_orange_pipe_tank.dmi';
+	icon_state = intact;
+	name = "Shuttle Fuel (Plasma)";
+	desc = "A large vessel containing pressurized gas. This one feeds a pressurized plasma-oxidizer mix into the engines."
+	},
+/obj/machinery/atmospherics/pipe/simple{
+	dir = 5
+	},
+/turf/simulated/floor/plating,
+/area/shuttle/colonial_ship/transit/maint)
 "VF" = (
 /obj/indestructible/shuttle_corner{
 	dir = 1
@@ -564,7 +824,12 @@
 /turf/simulated/floor/shuttle{
 	icon_state = "floor3"
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/med)
+"Ws" = (
+/turf/simulated/wall/auto/shuttle{
+	opacity = 1
+	},
+/area/shuttle/colonial_ship/transit/bridge)
 "Wz" = (
 /turf/space,
 /area/shuttle_transit_space/east)
@@ -575,61 +840,97 @@
 /turf/simulated/floor/shuttle{
 	icon_state = "floor4"
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/sec)
 "Xl" = (
 /obj/machinery/computer/operating,
 /turf/simulated/floor/shuttle{
 	icon_state = "floor3"
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/med)
 "XM" = (
 /obj/machinery/door/poddoor/blast/pyro{
 	icon_state = "bdoormid1"
 	},
 /obj/forcefield/energyshield/perma/doorlink,
 /turf/simulated/floor/engine,
-/area/space)
+/area/shuttle/colonial_ship/transit/dock)
+"Ye" = (
+/mob/living/critter/small_animal/cat/jones,
+/obj/machinery/power/apc/autoname_east,
+/obj/cable{
+	icon_state = "0-2"
+	},
+/turf/simulated/floor/shuttle{
+	icon_state = "floor2"
+	},
+/area/shuttle/colonial_ship/transit/bridge)
 "Yw" = (
 /obj/indestructible/shuttle_corner{
 	dir = 4
 	},
 /turf/simulated/floor/plating,
-/area/space)
+/area/shuttle/colonial_ship/transit/maint)
 "YG" = (
 /obj/indestructible/shuttle_corner{
 	dir = 8
 	},
 /turf/simulated/floor/shuttle,
-/area/space)
+/area/shuttle/colonial_ship/transit)
 "YI" = (
 /turf/simulated/floor/engine,
-/area/space)
+/area/shuttle/colonial_ship/transit/dock)
+"YP" = (
+/obj/machinery/light/incandescent/cool{
+	pixel_y = 21;
+	dir = 1
+	},
+/obj/cable{
+	icon_state = "4-8"
+	},
+/turf/simulated/floor/shuttle,
+/area/shuttle/colonial_ship/transit/dock)
 "YS" = (
 /obj/machinery/shuttle/engine/propulsion{
 	dir = 4;
 	icon_state = "alt_propulsion"
 	},
 /turf/space,
-/area/space)
+/area/shuttle/colonial_ship/transit/maint)
 "Zc" = (
 /obj/table/reinforced/auto,
 /obj/item/remote/porter/port_a_brig,
+/obj/machinery/light/incandescent/cool{
+	dir = 4;
+	pixel_x = 10
+	},
 /turf/simulated/floor/shuttle{
 	icon_state = "floor4"
 	},
-/area/space)
-"Zq" = (
-/mob/living/critter/small_animal/cat/jones,
-/turf/simulated/floor/shuttle{
-	icon_state = "floor2"
+/area/shuttle/colonial_ship/transit/sec)
+"Zl" = (
+/obj/machinery/door/airlock/pyro/weapons,
+/obj/cable{
+	icon_state = "1-2"
 	},
-/area/space)
+/turf/simulated/floor/shuttle,
+/area/shuttle/colonial_ship/transit/dock)
+"Zq" = (
+/obj/machinery/atmospherics/pipe/simple{
+	dir = 4;
+	level = 2
+	},
+/turf/simulated/floor/plating,
+/area/shuttle/colonial_ship/transit/maint)
 "ZO" = (
 /obj/table/reinforced/auto,
 /turf/simulated/floor/shuttle{
 	icon_state = "floor2"
 	},
-/area/space)
+/area/shuttle/colonial_ship/transit/bridge)
+"ZW" = (
+/obj/window_frame_wingrille_spawner/reinforced/shuttle,
+/turf/simulated/floor/plating,
+/area/shuttle/colonial_ship/transit)
 
 (1,1,1) = {"
 uh
@@ -1823,9 +2124,9 @@ Wz
 Wz
 Wz
 Wz
-cq
-Ap
-rj
+Wz
+Wz
+Wz
 Wz
 Wz
 Wz
@@ -2124,11 +2425,11 @@ Wz
 Wz
 Wz
 Wz
-cq
-bM
-bM
-bM
-rj
+Wz
+Wz
+Wz
+Wz
+Wz
 Wz
 Wz
 Wz
@@ -2142,6 +2443,912 @@ GJ
 EI
 "}
 (6,1,1) = {"
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+EI
+GJ
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+GJ
+EI
+"}
+(7,1,1) = {"
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+EI
+GJ
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+cq
+Ap
+rj
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+GJ
+EI
+"}
+(8,1,1) = {"
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+uh
+EI
+GJ
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+cq
+Rk
+Rk
+Rk
+rj
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+GJ
+EI
+"}
+(9,1,1) = {"
 uh
 uh
 uh
@@ -2443,912 +3650,6 @@ Wz
 GJ
 EI
 "}
-(7,1,1) = {"
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-EI
-GJ
-Wz
-Wz
-Wz
-Wz
-Wz
-Wz
-Wz
-Wz
-bM
-oo
-ow
-ow
-ow
-xU
-bM
-Wz
-Wz
-Wz
-Wz
-Wz
-Wz
-Wz
-Wz
-GJ
-EI
-"}
-(8,1,1) = {"
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-EI
-GJ
-Wz
-Wz
-Wz
-Wz
-Wz
-Wz
-Wz
-Wz
-bM
-ZO
-Zq
-jo
-ow
-LU
-bM
-Wz
-Wz
-Wz
-Wz
-Wz
-Wz
-Wz
-Wz
-GJ
-EI
-"}
-(9,1,1) = {"
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-EI
-GJ
-Wz
-Wz
-Wz
-Wz
-Wz
-Wz
-Wz
-cq
-Db
-zw
-aE
-pf
-Ln
-zw
-Db
-rj
-Wz
-Wz
-Wz
-Wz
-Wz
-Wz
-Wz
-GJ
-EI
-"}
 (10,1,1) = {"
 uh
 uh
@@ -3632,15 +3933,15 @@ Wz
 Wz
 Wz
 Wz
-ka
-YG
-oP
-Jl
-yw
-ez
-Rm
-Xe
-vf
+Wz
+Ws
+oo
+ow
+ow
+ow
+xU
+Ws
+Wz
 Wz
 Wz
 Wz
@@ -3934,15 +4235,15 @@ Wz
 Wz
 Wz
 Wz
-bM
-nP
-oP
-HH
+Wz
+Ws
+ZO
+Ye
 uG
-uG
-uG
-ff
-uI
+sV
+LU
+Ws
+Wz
 Wz
 Wz
 Wz
@@ -4236,15 +4537,15 @@ Wz
 Wz
 Wz
 Wz
-bM
-tV
-RU
-Jl
-Ae
-ja
-ja
-Zc
-Ie
+Dk
+Db
+mS
+yC
+pf
+MG
+jw
+kt
+Te
 Wz
 Wz
 Wz
@@ -4537,17 +4838,17 @@ Wz
 Wz
 Wz
 Wz
-cq
-gR
+Wz
+ka
+YG
 oP
-oP
-tZ
-MG
-Db
-bM
-bM
-Db
-rj
+yC
+yw
+rt
+Rm
+Xe
+vf
+Wz
 Wz
 Wz
 Wz
@@ -4839,17 +5140,17 @@ Wz
 Wz
 Wz
 Wz
-ka
-YG
+Wz
+kz
+nP
 oP
-oP
-oP
-oP
-jT
-Xl
-hT
-VF
-gR
+HH
+mQ
+Ln
+kf
+jo
+uI
+Wz
 Wz
 Wz
 Wz
@@ -5141,17 +5442,17 @@ Wz
 Wz
 Wz
 Wz
-jT
-Uc
-Uc
-Uc
-Uc
-oP
-dg
-ES
-AC
-ha
-jT
+Wz
+kz
+tV
+RU
+mp
+hz
+ja
+ja
+Zc
+Ie
+Wz
 Wz
 Wz
 Wz
@@ -5443,17 +5744,17 @@ Wz
 Wz
 Wz
 Wz
-uJ
+Dk
+gR
 oP
 oP
-oP
-oP
-RU
-HQ
-AC
-AC
-Hv
-uJ
+tZ
+ez
+yC
+yC
+yC
+kt
+UL
 Wz
 Wz
 Wz
@@ -5745,17 +6046,17 @@ Wz
 Wz
 Wz
 Wz
-dg
-GW
-GW
-GW
-GW
+ka
+YG
 oP
-VD
-qT
-it
-mQ
-dg
+oP
+oP
+zL
+uJ
+Xl
+hT
+VF
+IP
 Wz
 Wz
 Wz
@@ -6047,17 +6348,17 @@ Wz
 Wz
 Wz
 Wz
-Jl
+ZW
 Uc
 Uc
 Uc
 Uc
-oP
-bM
-bM
-bM
-bM
-gU
+zL
+uJ
+ES
+AC
+ha
+uJ
 Wz
 Wz
 Wz
@@ -6349,17 +6650,17 @@ Wz
 Wz
 Wz
 Wz
-bM
-JB
+ZW
 oP
 oP
 oP
 oP
-uZ
+AG
+HQ
 QT
-hK
-Nr
-rz
+AC
+Hv
+uJ
 Wz
 Wz
 Wz
@@ -6651,17 +6952,17 @@ Wz
 Wz
 Wz
 Wz
-Jl
+ZW
 GW
 GW
 GW
 GW
-RU
-Po
-oP
-hK
-YI
-XM
+xx
+Lr
+tu
+it
+Re
+uJ
 Wz
 Wz
 Wz
@@ -6953,17 +7254,17 @@ Wz
 Wz
 Wz
 Wz
-jT
+kz
 Uc
 Uc
 Uc
 Uc
-oP
-jT
-oP
-hK
-Nr
-XM
+zL
+md
+md
+md
+md
+md
 Wz
 Wz
 Wz
@@ -7255,17 +7556,17 @@ Wz
 Wz
 Wz
 Wz
-uJ
+kz
+JB
 oP
 oP
 oP
-oP
-oP
-uJ
-oP
+xx
+Zl
+TW
 hK
-YI
-XM
+Nr
+rz
 Wz
 Wz
 Wz
@@ -7557,17 +7858,17 @@ Wz
 Wz
 Wz
 Wz
-dg
+kz
 GW
 GW
 GW
 GW
-oP
-dg
-oP
+AG
+Po
+Sz
 hK
-Nr
-Ip
+YI
+XM
 Wz
 Wz
 Wz
@@ -7859,17 +8160,17 @@ Wz
 Wz
 Wz
 Wz
-ka
-UK
+ZW
 Uc
 Uc
 Uc
-RU
-bM
-JB
-hr
-zl
-gR
+Uc
+zL
+qB
+Sz
+hK
+Nr
+XM
 Wz
 Wz
 Wz
@@ -8161,17 +8462,17 @@ Wz
 Wz
 Wz
 Wz
-NA
-gR
-JB
+ZW
 oP
 oP
 oP
-bM
 oP
-oP
-ka
-yh
+zL
+qB
+Sz
+hK
+YI
+XM
 Wz
 Wz
 Wz
@@ -8463,17 +8764,17 @@ Wz
 Wz
 Wz
 Wz
-Wz
-bM
-bM
-bM
-bM
+ZW
+GW
+GW
+GW
+GW
 zL
-bM
-bM
-bM
-bM
-Wz
+qB
+Sz
+hK
+Nr
+Ip
 Wz
 Wz
 Wz
@@ -8765,17 +9066,17 @@ Wz
 Wz
 Wz
 Wz
-Wz
+ka
+UK
+Uc
+Uc
+Uc
+AG
 bM
-NC
-oL
-Cx
-NC
-NC
-oL
-NC
-bM
-Wz
+YP
+hr
+zl
+cC
 Wz
 Wz
 Wz
@@ -9067,17 +9368,17 @@ Wz
 Wz
 Wz
 Wz
-Wz
+bV
+gR
+dr
+fm
+fm
+PX
 bM
-NC
-NC
-NC
-NC
-NC
-NC
-NC
-bM
-Wz
+AB
+Tl
+fs
+yh
 Wz
 Wz
 Wz
@@ -9370,15 +9671,15 @@ Wz
 Wz
 Wz
 Wz
-Jl
-NC
-NC
-NC
-NC
-NC
-NC
-NC
-Jl
+nE
+nE
+nE
+nE
+Ae
+bM
+bM
+bM
+bM
 Wz
 Wz
 Wz
@@ -9672,15 +9973,15 @@ Wz
 Wz
 Wz
 Wz
-NA
-qx
-Yw
+nE
+VD
+oL
+rL
+Lk
 NC
-NC
-NC
-aR
-qx
-yh
+oL
+VD
+nE
 Wz
 Wz
 Wz
@@ -9974,15 +10275,15 @@ Wz
 Wz
 Wz
 Wz
-Wz
-YS
-QJ
-Em
-zw
-QJ
-Em
-YS
-Wz
+nE
+ff
+NC
+NC
+NC
+NC
+NC
+ff
+nE
 Wz
 Wz
 Wz
@@ -10276,15 +10577,15 @@ Wz
 Wz
 Wz
 Wz
-Wz
-FU
-YS
-YS
-Wz
-YS
-YS
-FU
-Wz
+sM
+uZ
+Cx
+qT
+NC
+xD
+Cx
+ET
+sM
 Wz
 Wz
 Wz
@@ -10578,15 +10879,15 @@ Wz
 Wz
 Wz
 Wz
-Wz
-FU
-FU
-FU
-Wz
-FU
-FU
-FU
-Wz
+NA
+qx
+Yw
+Zq
+NC
+Zq
+aR
+qx
+By
 Wz
 Wz
 Wz
@@ -10881,13 +11182,13 @@ Wz
 Wz
 Wz
 Wz
-Wz
-FU
-FU
-Wz
-FU
-FU
-Wz
+YS
+QJ
+Em
+zx
+QJ
+Em
+YS
 Wz
 Wz
 Wz
@@ -11183,13 +11484,13 @@ Wz
 Wz
 Wz
 Wz
+FU
+YS
+YS
 Wz
-Wz
-Wz
-Wz
-Wz
-Wz
-Wz
+YS
+YS
+FU
 Wz
 Wz
 Wz
@@ -11477,29 +11778,29 @@ uh
 uh
 EI
 GJ
-GJ
-GJ
-GJ
-GJ
-GJ
-GJ
-GJ
-GJ
-GJ
-GJ
-GJ
-GJ
-GJ
-GJ
-GJ
-GJ
-GJ
-GJ
-GJ
-GJ
-GJ
-GJ
-GJ
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+FU
+FU
+FU
+Wz
+FU
+FU
+FU
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
 GJ
 EI
 "}
@@ -11778,31 +12079,31 @@ uh
 uh
 uh
 EI
-EI
-EI
-EI
-EI
-EI
-EI
-EI
-EI
-EI
-EI
-EI
-EI
-EI
-EI
-EI
-EI
-EI
-EI
-EI
-EI
-EI
-EI
-EI
-EI
-EI
+GJ
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+FU
+FU
+Wz
+FU
+FU
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+GJ
 EI
 "}
 (38,1,1) = {"
@@ -12079,33 +12380,33 @@ uh
 uh
 uh
 uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
+EI
+GJ
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+GJ
+EI
 "}
 (39,1,1) = {"
 uh
@@ -12381,33 +12682,33 @@ uh
 uh
 uh
 uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
+EI
+GJ
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+Wz
+GJ
+EI
 "}
 (40,1,1) = {"
 uh
@@ -12683,33 +12984,33 @@ uh
 uh
 uh
 uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
+EI
+GJ
+GJ
+GJ
+GJ
+GJ
+GJ
+GJ
+GJ
+GJ
+GJ
+GJ
+GJ
+GJ
+GJ
+GJ
+GJ
+GJ
+GJ
+GJ
+GJ
+GJ
+GJ
+GJ
+GJ
+GJ
+EI
 "}
 (41,1,1) = {"
 uh
@@ -12985,33 +13286,33 @@ uh
 uh
 uh
 uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
-uh
+EI
+EI
+EI
+EI
+EI
+EI
+EI
+EI
+EI
+EI
+EI
+EI
+EI
+EI
+EI
+EI
+EI
+EI
+EI
+EI
+EI
+EI
+EI
+EI
+EI
+EI
+EI
 "}
 (42,1,1) = {"
 uh
