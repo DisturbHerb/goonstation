@@ -1,10 +1,8 @@
 //MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
 "aa" = (
-/obj/machinery/light_area_manager,
 /obj/effects/precipitation/snow/grey/tile,
-/obj/dmm_suite/comment{
-	coordinates = "1,1,1";
-	dimensions = "300,300,1"
+/obj/landmark/map{
+	name = "BREAKING_GROUND"
 	},
 /turf/simulated/wall/auto/asteroid/mountain{
 	health = 75;

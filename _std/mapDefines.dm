@@ -64,9 +64,11 @@
 #define CHECK_MORE_RUNTIMES 1
 #define PREFAB_CHECKING 1
 
-#elif defined (MAP_OVERRIDE_EVENT)
+// HERBSTATION CHANGE
+#elif defined (MAP_OVERRIDE_BREAKING_GROUND)
 
 #define TERRESTRIAL_MAP 1
+// END OF HERBSTATION CHANGE
 
 //Entry below is the "default" map
 #else

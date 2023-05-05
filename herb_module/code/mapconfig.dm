@@ -1,4 +1,4 @@
-/datum/map_settings/event
+/datum/map_settings/breaking_ground
 	name = "BREAKING_GROUND"
 	display_name = "Banshee Trough"
 	default_gamemode = "extended"

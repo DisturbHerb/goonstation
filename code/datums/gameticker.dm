@@ -218,7 +218,12 @@ var/global/current_state = GAME_STATE_WORLD_INIT
 		ircbot.event("roundstart")
 		mode.post_setup()
 
+// HERBSTATION CHANGE
+#ifndef MAP_OVERRIDE_BREAKING_GROUND
 		build_random_floor_turf_list()
+#endif
+		// build_random_floor_turf_list() // HERBSTATION CHANGE - ORIGINAL
+// END OF HERBSTATION CHANGE
 
 		mode.post_post_setup()
 
