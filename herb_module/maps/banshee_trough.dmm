@@ -14628,6 +14628,15 @@
 	layer = 2.101
 	},
 /area/space)
+"vM" = (
+/obj/stone/snow/random,
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow/rough{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	layer = 2.102
+	},
+/area/shuttle/colonial_ship/planetfall)
 "vN" = (
 /obj/shrub/snow/random{
 	max_uses = 4;
@@ -25227,7 +25236,16 @@
 	icon_state = "snow_rough2";
 	layer = 2.102
 	},
-/area/shuttle/colonial_ship/planetfall/sec)
+/area/shuttle/colonial_ship/planetfall/dock)
+"NV" = (
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow/rough{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	icon_state = "snow_rough3";
+	layer = 2.102
+	},
+/area/shuttle/colonial_ship/planetfall/maint)
 "NY" = (
 /obj/stone/snow/random{
 	dir = 6
@@ -25238,7 +25256,15 @@
 	can_replace_with_stuff = 1;
 	layer = 2.102
 	},
-/area/shuttle/colonial_ship/planetfall)
+/area/shuttle/colonial_ship/planetfall/maint)
+"NZ" = (
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	layer = 2.101
+	},
+/area/shuttle/colonial_ship/planetfall/bridge)
 "Oe" = (
 /obj/effects/precipitation/snow/grey/tile,
 /turf/unsimulated/floor/auto/snow/rough{
@@ -25247,6 +25273,17 @@
 	layer = 2.102
 	},
 /area/shuttle/colonial_ship/planetfall/dock)
+"Oz" = (
+/obj/stone/snow/random{
+	dir = 5
+	},
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow/rough{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	layer = 2.102
+	},
+/area/shuttle/colonial_ship/planetfall/sec)
 "Pc" = (
 /obj/effects/precipitation/snow/grey/tile,
 /turf/unsimulated/floor/auto/snow/rough{
@@ -25257,8 +25294,18 @@
 	},
 /area/shuttle/colonial_ship/planetfall/bridge)
 "PO" = (
-/obj/stone/snow/random{
-	dir = 10
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	icon_state = "snow4";
+	layer = 2.101
+	},
+/area/shuttle/colonial_ship/planetfall/bridge)
+"Qb" = (
+/obj/decal/fakeobjects/smallrocks{
+	real_name = "small rocks";
+	true_name = "small rocks"
 	},
 /obj/effects/precipitation/snow/grey/tile,
 /turf/unsimulated/floor/auto/snow/rough{
@@ -25266,7 +25313,7 @@
 	can_replace_with_stuff = 1;
 	layer = 2.102
 	},
-/area/shuttle/colonial_ship/planetfall/dock)
+/area/shuttle/colonial_ship/planetfall/sec)
 "QA" = (
 /obj/effects/precipitation/snow/grey/tile,
 /turf/unsimulated/floor/auto/snow/rough{
@@ -25302,6 +25349,14 @@
 	layer = 2.102
 	},
 /area/shuttle/colonial_ship/planetfall/bridge)
+"Uk" = (
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	layer = 2.101
+	},
+/area/shuttle/colonial_ship/planetfall/sec)
 "Up" = (
 /obj/effects/precipitation/snow/grey/tile,
 /turf/unsimulated/floor/auto/snow/rough{
@@ -25339,6 +25394,34 @@
 	layer = 2.102
 	},
 /area/shuttle/colonial_ship/planetfall)
+"Yk" = (
+/obj/stone/snow/random,
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow/rough{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	layer = 2.102
+	},
+/area/shuttle/colonial_ship/planetfall/sec)
+"Yp" = (
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	layer = 2.101
+	},
+/area/shuttle/colonial_ship/planetfall/med)
+"Yu" = (
+/obj/stone/snow/random{
+	dir = 5
+	},
+/obj/effects/precipitation/snow/grey/tile,
+/turf/unsimulated/floor/auto/snow/rough{
+	temperature = 235;
+	can_replace_with_stuff = 1;
+	layer = 2.102
+	},
+/area/shuttle/colonial_ship/planetfall/bridge)
 "Zg" = (
 /obj/effects/precipitation/snow/grey/tile,
 /turf/unsimulated/floor/auto/snow/rough{
@@ -59616,9 +59699,9 @@ wd
 wd
 wd
 wd
-wd
-jc
-wc
+TI
+Yu
+NZ
 wc
 wc
 wc
@@ -59917,11 +60000,11 @@ wd
 wd
 wd
 wd
-wd
-wd
-dH
-wd
-wd
+TI
+TI
+Pc
+TI
+TI
 wc
 wc
 wc
@@ -60218,13 +60301,13 @@ wd
 wd
 wd
 wd
-wd
-wd
-wd
-wd
-wd
-wc
-wc
+TI
+TI
+TI
+TI
+TI
+NZ
+NZ
 wc
 wc
 wc
@@ -60520,13 +60603,13 @@ wd
 wd
 wd
 wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
+TI
+TI
+TI
+TI
+TI
+TI
+TI
 wc
 wc
 xY
@@ -60822,13 +60905,13 @@ wd
 wd
 wd
 wd
-wd
-wd
-wd
-wd
-wr
-wc
-cb
+TI
+TI
+TI
+TI
+PO
+NZ
+Sk
 wd
 wc
 wc
@@ -61123,15 +61206,15 @@ wd
 wd
 cb
 wd
-wd
-wd
-wd
-wd
-wd
-wd
-fP
-wd
-wc
+wW
+wW
+wW
+ZZ
+ZZ
+TI
+Qb
+ZZ
+Uk
 ng
 mW
 wc
@@ -61425,15 +61508,15 @@ wd
 wd
 wd
 wd
-dH
-wd
-wd
-cb
-wd
-wd
-wd
-wd
-wc
+No
+wW
+wW
+QA
+ZZ
+ZZ
+ZZ
+ZZ
+Uk
 wc
 wc
 wc
@@ -61727,15 +61810,15 @@ wd
 wd
 wd
 wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
-wd
+wW
+wW
+wW
+ZZ
+ZZ
+ZZ
+ZZ
+ZZ
+ZZ
 wd
 wc
 wc
@@ -62029,15 +62112,15 @@ wd
 wd
 wd
 wd
-wd
-wd
-wd
-wd
-gZ
-wd
-wc
-jc
-wc
+wW
+wW
+wW
+ZZ
+Yk
+ZZ
+Uk
+Oz
+Uk
 wd
 wc
 wc
@@ -62330,17 +62413,17 @@ wd
 wd
 wd
 wd
-wd
-wd
-wd
-gZ
-TI
-TI
-TI
-wd
-wd
-wd
-wd
+wW
+wW
+wW
+vM
+ZZ
+ZZ
+ZZ
+ZZ
+ZZ
+ZZ
+Na
 wc
 wc
 wc
@@ -62632,17 +62715,17 @@ wd
 wd
 wd
 dH
-wd
-wd
-wd
-TI
-Pc
-TI
-TI
-TI
-wc
-wd
-wd
+wW
+wW
+wW
+wW
+No
+wW
+Na
+Na
+Yp
+Na
+Na
 wd
 wd
 wc
@@ -62934,17 +63017,17 @@ wd
 wd
 wd
 wd
-wd
-wd
-TI
-Sk
-TI
-TI
-TI
-TI
-TI
-wd
-wd
+wW
+wW
+wW
+Up
+wW
+wW
+Na
+Na
+Na
+Na
+Na
 wd
 wc
 wc
@@ -63236,17 +63319,17 @@ wd
 wd
 wd
 wd
-wd
-wd
-TI
-TI
-TI
-TI
-TI
-TI
-TI
-wd
-wd
+wW
+wW
+wW
+wW
+wW
+wW
+Na
+Na
+Na
+Na
+Na
 wc
 wd
 wd
@@ -63538,17 +63621,17 @@ wd
 wd
 wd
 wd
-wd
-wd
-TI
-TI
-TI
-TI
-TI
-TI
-TI
-wd
-wd
+wW
+wW
+wW
+wW
+wW
+wW
+Na
+Na
+Na
+Na
+Na
 wd
 wr
 wd
@@ -63840,17 +63923,17 @@ wd
 wd
 wd
 wd
-wd
 wW
 wW
 wW
-ZZ
-ZZ
-TI
-ZZ
-ZZ
-ZZ
-wd
+wW
+wW
+wW
+Na
+Na
+Na
+Na
+Na
 wd
 wd
 wc
@@ -64142,17 +64225,17 @@ dH
 wd
 wd
 wd
-wd
 wW
 wW
 wW
-ZZ
-ZZ
-ZZ
-ZZ
-ZZ
-ZZ
-wd
+wW
+wW
+wW
+Oe
+Oe
+Oe
+Oe
+Oe
 wd
 wd
 wd
@@ -64444,17 +64527,17 @@ wd
 wd
 gZ
 cb
-wd
 wW
 wW
 wW
-ZZ
-ZZ
-ZZ
-ZZ
-ZZ
-ZZ
-wd
+wW
+wW
+wW
+Oe
+Oe
+Oe
+Oe
+Oe
 wd
 wd
 wd
@@ -64746,17 +64829,17 @@ wd
 wd
 wd
 cb
-wd
 wW
 wW
 wW
-ZZ
-ZZ
-ZZ
-ZZ
-ZZ
+wW
+wW
+wW
+Oe
+Oe
+Oe
 NJ
-cb
+Zg
 wd
 wd
 wd
@@ -65052,13 +65135,13 @@ wW
 wW
 wW
 wW
-ZZ
-ZZ
-ZZ
-ZZ
-QA
-ZZ
-Na
+wW
+wW
+Oe
+Oe
+Zg
+Oe
+Oe
 cb
 dH
 wd
@@ -65356,11 +65439,11 @@ wW
 wW
 wW
 wW
-Na
-Na
-Na
-Na
-Na
+Oe
+Oe
+Oe
+Oe
+Oe
 wd
 wd
 wd
@@ -65658,11 +65741,11 @@ wW
 No
 wW
 wW
-Na
-Na
-Na
-Na
-Na
+Oe
+Oe
+Oe
+Oe
+Oe
 wd
 wd
 wd
@@ -65960,11 +66043,11 @@ Vg
 wW
 wW
 wW
-Na
-Na
-Na
-Na
-Na
+Oe
+Oe
+Oe
+Oe
+Oe
 wd
 wd
 wd
@@ -66256,17 +66339,17 @@ wd
 wd
 wd
 wd
-No
+dH
 NY
-wW
-wW
-wW
-wW
-Na
-Na
-Na
-Na
-Na
+Uv
+Uv
+Uv
+Uv
+Oe
+Oe
+Oe
+Oe
+Oe
 wd
 wd
 wd
@@ -66558,17 +66641,17 @@ wd
 wd
 wd
 wd
-wW
-wW
-wW
-wW
-wW
-wW
-Na
-Na
-Na
-Na
-Na
+wd
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+wd
 wd
 wd
 wd
@@ -66860,17 +66943,17 @@ wd
 cb
 wd
 jn
-wW
-wW
-wW
-wW
-wW
-wW
-Oe
-Oe
-Oe
-Oe
-Oe
+wd
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+wd
 cb
 wd
 wd
@@ -67162,17 +67245,17 @@ wd
 wd
 wd
 wd
-Up
-Up
-wW
-wW
-wW
-No
-Oe
-Oe
-Oe
-Oe
-Oe
+cb
+NV
+Uv
+Uv
+Uv
+Sl
+Uv
+Uv
+Uv
+Uv
+wd
 wd
 wd
 wd
@@ -67464,17 +67547,17 @@ wd
 wd
 dH
 wd
-wW
-wW
-wW
-wW
-wW
-wW
-Oe
-Oe
-Oe
-Oe
-PO
+wd
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+fg
 wd
 wd
 wd
@@ -67766,17 +67849,17 @@ wd
 wd
 wd
 gZ
-wW
-Up
-wW
-wW
-Up
-wW
-Oe
-Oe
-Oe
-Oe
-Oe
+wd
+NV
+Uv
+Uv
+NV
+Uv
+Uv
+Uv
+Uv
+Uv
+wd
 wd
 wd
 xQ
@@ -68068,17 +68151,17 @@ wd
 wd
 wd
 wd
-wW
-wW
-wW
-wW
-wW
-wW
-Oe
-Oe
-Oe
-Oe
-Oe
+wd
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+wd
 wd
 qB
 xQ
@@ -68370,17 +68453,17 @@ wd
 wd
 wd
 wd
-wW
-wW
-wW
-wW
-wW
-wW
-Oe
-Oe
-Oe
-Oe
-Oe
+wd
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+wd
 wd
 wd
 xQ
@@ -68672,17 +68755,17 @@ wd
 wd
 wd
 wd
-wW
-wW
-wW
-wW
-wW
-wW
-Oe
-Oe
-Oe
-Oe
-Oe
+wd
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+Uv
+wd
 wd
 wd
 xQ
@@ -68980,10 +69063,10 @@ Uv
 Uv
 Uv
 Uv
-Zg
-Oe
-Oe
-Oe
+NV
+Uv
+Uv
+Uv
 wd
 wd
 wd
@@ -69277,7 +69360,7 @@ cb
 wd
 wd
 wd
-Uv
+wd
 Uv
 Uv
 Sl
@@ -69285,7 +69368,7 @@ Uv
 Uv
 Ur
 Uv
-Uv
+wd
 wd
 wd
 cb
@@ -69579,15 +69662,15 @@ wd
 wd
 wd
 wd
+wd
+wd
 Uv
 Uv
+wd
 Uv
 Uv
-Uv
-Uv
-Uv
-Uv
-Uv
+wd
+wd
 wd
 wd
 wd
@@ -69881,15 +69964,15 @@ wd
 wd
 wd
 wd
-Uv
-Uv
-Uv
-Uv
-Uv
-Uv
-Uv
-Uv
-Sl
+wd
+wd
+wd
+wd
+wd
+wd
+wd
+wd
+dH
 wd
 wd
 wd
@@ -70183,15 +70266,15 @@ wd
 wd
 wd
 wd
-Uv
-Uv
-Uv
-Uv
-Uv
-Uv
-Uv
-Uv
-Uv
+wd
+wd
+wd
+wd
+wd
+wd
+wd
+wd
+wd
 wd
 cb
 wd
@@ -70486,13 +70569,13 @@ wd
 wd
 wd
 wd
-Uv
-Uv
-Uv
-Uv
-Uv
-Uv
-Uv
+wd
+wd
+wd
+wd
+wd
+wd
+wd
 wd
 wd
 cb
@@ -70789,11 +70872,11 @@ wd
 wd
 wd
 wd
-Uv
-Uv
 wd
-Uv
-Uv
+wd
+wd
+wd
+wd
 wd
 wd
 wd
