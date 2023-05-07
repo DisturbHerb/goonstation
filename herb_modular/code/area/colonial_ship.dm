@@ -1,6 +1,6 @@
 /area/shuttle/colonial_ship
 	name = "NCS Intrepid"
-	icon = 'herb_module/icons/turf/areas.dmi'
+	icon = 'herb_modular/icons/turf/areas.dmi'
 	force_fullbright = 0
 	luminosity = 0
 

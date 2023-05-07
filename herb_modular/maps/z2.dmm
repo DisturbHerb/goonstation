@@ -38,6 +38,12 @@
 	},
 /turf/space,
 /area/shuttle/colonial_ship/transit)
+"bY" = (
+/mob/living/critter/small_animal/cat/jones,
+/turf/simulated/floor/shuttle{
+	icon_state = "floor2"
+	},
+/area/shuttle/colonial_ship/transit/bridge)
 "cq" = (
 /obj/indestructible/shuttle_corner,
 /turf/space,
@@ -110,7 +116,7 @@
 /area/shuttle/colonial_ship/transit/dock)
 "fs" = (
 /turf/simulated/wall/auto/shuttle{
-	icon_state = "14";
+	icon_state = "15";
 	opacity = 1
 	},
 /area/shuttle/colonial_ship/transit/dock)
@@ -181,11 +187,9 @@
 	},
 /area/shuttle/colonial_ship/transit/med)
 "iz" = (
-/obj/indestructible/shuttle_corner{
-	dir = 1
-	},
-/turf/simulated/floor/shuttle{
-	icon_state = "floor2"
+/turf/simulated/wall/auto/shuttle{
+	opacity = 1;
+	icon_state = "10"
 	},
 /area/shuttle/colonial_ship/transit/bridge)
 "ja" = (
@@ -286,7 +290,9 @@
 /obj/window_frame_spawner/reinforced/shuttle{
 	dir = 4
 	},
-/turf/simulated/floor/plating,
+/turf/simulated/floor/shuttle{
+	icon_state = "floor2"
+	},
 /area/shuttle/colonial_ship/transit)
 "nC" = (
 /obj/cable{
@@ -299,6 +305,13 @@
 	opacity = 1
 	},
 /area/shuttle/colonial_ship/transit/maint)
+"nL" = (
+/obj/machinery/light/incandescent/cool{
+	dir = 8;
+	pixel_x = -10
+	},
+/turf/simulated/floor/plating,
+/area/shuttle/colonial_ship/transit/maint)
 "nP" = (
 /obj/cryotron,
 /turf/simulated/floor/shuttle,
@@ -306,8 +319,8 @@
 "oo" = (
 /obj/machinery/computer/announcement,
 /obj/machinery/light/incandescent/cool{
-	pixel_y = 21;
-	dir = 1
+	dir = 8;
+	pixel_x = -10
 	},
 /turf/simulated/floor/shuttle{
 	icon_state = "floor2"
@@ -354,7 +367,7 @@
 /area/shuttle/colonial_ship/transit/maint)
 "qB" = (
 /obj/window_frame_spawner/reinforced/shuttle,
-/turf/simulated/floor/plating,
+/turf/simulated/floor/shuttle,
 /area/shuttle/colonial_ship/transit/dock)
 "qT" = (
 /obj/cable{
@@ -444,7 +457,7 @@
 "up" = (
 /obj/fakeobjects{
 	icon = 'icons/obj/atmospherics/tanks/red_orange_pipe_tank.dmi';
-	icon_state = intact;
+	icon_state = "intact";
 	name = "Shuttle Fuel (Plasma)";
 	desc = "A large vessel containing pressurized gas. This one feeds a pressurized plasma-oxidizer mix into the engines."
 	},
@@ -479,7 +492,9 @@
 /area/shuttle/colonial_ship/transit/sec)
 "uJ" = (
 /obj/window_frame_spawner/reinforced/shuttle,
-/turf/simulated/floor/plating,
+/turf/simulated/floor/shuttle{
+	icon_state = "floor3"
+	},
 /area/shuttle/colonial_ship/transit/med)
 "uQ" = (
 /obj/machinery/light/incandescent/cool{
@@ -528,9 +543,12 @@
 /area/shuttle/colonial_ship/transit/maint)
 "xU" = (
 /obj/machinery/stasis_pod,
-/obj/machinery/light/incandescent/cool,
 /obj/landmark/start{
 	name = "Captain"
+	},
+/obj/machinery/light/incandescent/cool{
+	dir = 8;
+	pixel_x = -10
 	},
 /turf/simulated/floor/shuttle{
 	icon_state = "floor2"
@@ -553,10 +571,6 @@
 /area/shuttle/colonial_ship/transit/maint)
 "yw" = (
 /obj/submachine/weapon_vendor/security,
-/obj/machinery/light/incandescent/cool{
-	dir = 8;
-	pixel_x = -10
-	},
 /turf/simulated/floor/shuttle{
 	icon_state = "floor4"
 	},
@@ -567,11 +581,9 @@
 	},
 /area/shuttle/colonial_ship/transit/sec)
 "yJ" = (
-/obj/indestructible/shuttle_corner{
-	dir = 8
-	},
-/turf/simulated/floor/shuttle{
-	icon_state = "floor2"
+/turf/simulated/wall/auto/shuttle{
+	opacity = 1;
+	icon_state = "9"
 	},
 /area/shuttle/colonial_ship/transit/bridge)
 "zl" = (
@@ -725,7 +737,7 @@
 /area/shuttle/colonial_ship/transit/med)
 "HH" = (
 /obj/window_frame_spawner/reinforced/shuttle,
-/turf/simulated/floor/plating,
+/turf/simulated/floor/shuttle,
 /area/shuttle/colonial_ship/transit/sec)
 "HQ" = (
 /turf/simulated/wall/auto/shuttle{
@@ -810,6 +822,12 @@
 	icon_state = "floor2"
 	},
 /area/shuttle/colonial_ship/transit/bridge)
+"Mi" = (
+/turf/simulated/wall/auto/shuttle{
+	icon_state = "14";
+	opacity = 1
+	},
+/area/shuttle/colonial_ship/transit/maint)
 "MG" = (
 /obj/cable{
 	icon_state = "4-8"
@@ -967,8 +985,9 @@
 	},
 /area/shuttle/colonial_ship/transit/med)
 "Ws" = (
-/turf/simulated/wall/auto/shuttle{
-	opacity = 1
+/obj/window_frame_spawner/reinforced/shuttle,
+/turf/simulated/floor/shuttle{
+	icon_state = "floor2"
 	},
 /area/shuttle/colonial_ship/transit/bridge)
 "Wz" = (
@@ -983,7 +1002,6 @@
 	},
 /area/shuttle/colonial_ship/transit/sec)
 "Xg" = (
-/mob/living/critter/small_animal/cat/jones,
 /obj/machinery/power/apc/autoname_east,
 /obj/cable{
 	icon_state = "0-2"
@@ -1104,7 +1122,7 @@
 /area/shuttle/colonial_ship/transit/bridge)
 "ZW" = (
 /obj/window_frame_spawner/reinforced/shuttle,
-/turf/simulated/floor/plating,
+/turf/simulated/floor/shuttle,
 /area/shuttle/colonial_ship/transit)
 
 (1,1,1) = {"
@@ -5018,7 +5036,7 @@ Wz
 Ws
 oo
 ow
-ow
+bY
 ow
 xU
 Ws
@@ -10752,7 +10770,7 @@ Wz
 Wz
 Wz
 Wz
-nE
+Mi
 nE
 nE
 nE
@@ -12566,11 +12584,11 @@ Wz
 Wz
 nE
 up
-NC
+nL
 Cx
 Kt
 NC
-NC
+nL
 up
 nE
 Wz

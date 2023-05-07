@@ -45,7 +45,7 @@
 	)
 	///Used to select "zoom" level into the perlin noise, higher numbers result in slower transitions
 	var/perlin_zoom = PERLIN_ZOOM
-	var/icon/height_map = icon('herb_module/icons/misc/crater_heightmap.dmi')
+	var/icon/height_map = icon('herb_modular/icons/misc/crater_heightmap.dmi')
 	wall_turf_type	= /turf/simulated/wall/auto/asteroid/mountain
 	floor_turf_type = /turf/simulated/floor/plating/airless/asteroid/mountain
 

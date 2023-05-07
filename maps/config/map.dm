@@ -86,7 +86,7 @@
 #include "event.dm"
 
 #elif defined(MAP_OVERRIDE_BREAKING_GROUND)
-#include "../../herb_module/maps/config/breaking_ground.dm"
+#include "../../herb_modular/maps/config/breaking_ground.dm"
 
 #elif defined(GOTTA_GO_FAST_BUT_ZLEVELS_TOO_SLOW)
 #include "gottagofast.dm"

@@ -1,7 +1,7 @@
 // yes a lot of this is blatantly stolen sleeper code but FLAVOUR, my boy
 /obj/machinery/stasis_pod
 	name = "stasis pod"
-	icon = 'herb_module/icons/obj/machinery/stasis.dmi'
+	icon = 'herb_modular/icons/obj/machinery/stasis.dmi'
 	icon_state = "stasis_pod"
 	desc = {"A device that can preseve its occupants in cryo-stasis for an extended period of time on long space journeys. Doubles as a casket if the
 			occupant does not wake up."}
