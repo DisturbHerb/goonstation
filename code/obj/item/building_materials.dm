@@ -1094,6 +1094,14 @@ ABSTRACT_TYPE(/datum/sheet_crafting_recipe/wood)
 	var/craftedType //The type of item the recipe will build
 
 	reinforced_metal
+		// HERBSTATION CHANGE
+		rwindow_frame
+			recipe_id = "rwindow_frame"
+			craftedType = /obj/structure/window_frame/reinforced
+			name = "Reinforced Window Frame"
+			icon = 'herb_modular/icons/obj/structures/rwall_window_frames.dmi'
+			icon_state = "rwall-0"
+		// END OF HERBSTATION CHANGE
 		retable
 			recipe_id = "retable"
 			craftedType = /obj/item/furniture_parts/table/reinforced
@@ -1139,6 +1147,16 @@ ABSTRACT_TYPE(/datum/sheet_crafting_recipe/wood)
 			name = "Railing"
 			icon = 'icons/obj/objects.dmi'
 			icon_state = "railing"
+
+		// HERBSTATION CHANGE
+		window_frame
+			recipe_id = "window_frame"
+			craftedType = /obj/structure/window_frame
+			name = "Window Frame"
+			icon = 'herb_modular/icons/obj/structures/wall_window_frames.dmi'
+			icon_state = "wall-0"
+		// END OF HERBSTATION CHANGE
+
 		stool
 			recipe_id = "stool"
 			craftedType = /obj/stool

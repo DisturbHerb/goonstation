@@ -27,24 +27,25 @@
 			icon_state = "ship_sec"
 
 	transit
+		name = "NCS Intrepid Transit"
 		icon_state = "ship_transit"
 
 		bridge
-			name = "Command Bridge"
+			name = "Command Bridge Transit"
 			icon_state = "ship_transit_bridge"
 
 		dock
-			name = "Ship Dock"
+			name = "Ship Dock Transit"
 			icon_state = "ship_transit_dock"
 
 		maint
-			name = "Storage and Maintenance"
+			name = "Storage and Maintenance Transit"
 			icon_state = "ship_transit_maint"
 
 		med
-			name = "Infirmary"
+			name = "Infirmary Transit"
 			icon_state = "ship_transit_med"
 
 		sec
-			name = "Secure Wing"
+			name = "Secure Wing Transit"
 			icon_state = "ship_transit_sec"

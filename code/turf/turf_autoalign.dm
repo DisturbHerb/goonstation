@@ -19,10 +19,7 @@ TYPEINFO(/turf/simulated/wall/auto)
 	var/connect_diagonal = 0
 TYPEINFO_NEW(/turf/simulated/wall/auto)
 	. = ..()
-	// HERBSTATION CHANGE
-	connects_to = typecacheof(list(/turf/simulated/wall/auto,/turf/simulated/wall/false_wall,/obj/structure/window_frame))
-	// connects_to = typecacheof(list(/turf/simulated/wall/auto,/turf/simulated/wall/false_wall)) // HERBSTATION CHANGE - ORIGINAL
-	// END OF HERBSTATION CHANGE
+	connects_to = typecacheof(list(/turf/simulated/wall/auto,/turf/simulated/wall/false_wall)) // HERBSTATION CHANGE - ORIGINAL
 	connects_to_exceptions = typecacheof(/turf/simulated/wall/auto/shuttle)
 	connects_with_overlay = list()
 	connects_with_overlay_exceptions = list()

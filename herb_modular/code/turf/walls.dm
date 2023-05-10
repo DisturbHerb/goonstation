@@ -10,13 +10,15 @@ TYPEINFO_NEW(/turf/simulated/wall/auto/herb)
 		/turf/simulated/wall/auto/supernorn, /turf/simulated/wall/auto/reinforced/supernorn,
 		/turf/simulated/wall/false_wall, /obj/machinery/door, /obj/window, /obj/wingrille_spawn,
 		/turf/simulated/wall/auto/jen, /turf/simulated/wall/auto/reinforced/jen,
-		/turf/simulated/wall/auto/old, /turf/simulated/wall/auto/reinforced/old
+		/turf/simulated/wall/auto/old, /turf/simulated/wall/auto/reinforced/old,
+		/obj/structure/window_frame
 	))
 	connects_with_overlay = typecacheof(list(
 		/turf/simulated/wall/auto/shuttle,
 		/turf/simulated/wall/auto/shuttle, /obj/machinery/door, /obj/window, /obj/wingrille_spawn,
 		/turf/simulated/wall/auto/jen, /turf/simulated/wall/auto/reinforced/jen
 	))
+	connects_with_overlay_exceptions = typecacheof(list(/obj/window/auto/framed))
 
 /turf/simulated/wall/auto/herb
 	icon = 'herb_modular/icons/turf/wall.dmi'
@@ -44,13 +46,15 @@ TYPEINFO_NEW(/turf/simulated/wall/auto/reinforced/herb)
 		/turf/simulated/wall/false_wall, /turf/simulated/wall/auto/shuttle, /obj/machinery/door,
 		/obj/window, /obj/wingrille_spawn, /turf/simulated/wall/auto/reinforced/supernorn/yellow,
 		/turf/simulated/wall/auto/reinforced/supernorn/blackred, /turf/simulated/wall/auto/reinforced/supernorn/orange,
-		/turf/simulated/wall/auto/old, /turf/simulated/wall/auto/reinforced/old
+		/turf/simulated/wall/auto/old, /turf/simulated/wall/auto/reinforced/old,
+		/obj/structure/window_frame
 	))
 	connects_with_overlay = typecacheof(list(
 		/turf/simulated/wall/auto/jen, /turf/simulated/wall/auto/reinforced/jen,
 		/turf/simulated/wall/auto/shuttle, /obj/machinery/door, /obj/window,
 		/obj/wingrille_spawn, /turf/simulated/wall/auto/reinforced/paper
 	))
+	connects_with_overlay_exceptions = typecacheof(list(/obj/window/auto/framed))
 
 /turf/simulated/wall/auto/reinforced/herb
 	icon = 'herb_modular/icons/turf/rwall.dmi'

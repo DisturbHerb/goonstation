@@ -86,11 +86,20 @@ TYPEINFO_NEW(/turf/simulated/wall/auto/shuttle)
 	. = ..()
 	// override parent so we can connect to ourselves
 	connects_to_exceptions = list()
+	// HERBSTATION CHANGE
 	connects_to = typecacheof(list(
 		/turf/simulated/wall/auto/supernorn, /turf/simulated/wall/auto/reinforced/supernorn, /turf/simulated/wall/auto/supernorn/wood,
 		/turf/simulated/wall/false_wall, /obj/machinery/door, /obj/window, /obj/wingrille_spawn,
-		/turf/simulated/wall/auto/shuttle, /obj/indestructible/shuttle_corner
+		/turf/simulated/wall/auto/shuttle, /obj/indestructible/shuttle_corner,
+		/obj/structure/window_frame
 	))
+	connects_with_overlay_exceptions = typecacheof(list(/obj/window/auto/framed))
+	// connects_to = typecacheof(list(
+	// 	/turf/simulated/wall/auto/supernorn, /turf/simulated/wall/auto/reinforced/supernorn, /turf/simulated/wall/auto/supernorn/wood,
+	// 	/turf/simulated/wall/false_wall, /obj/machinery/door, /obj/window, /obj/wingrille_spawn,
+	// 	/turf/simulated/wall/auto/shuttle, /obj/indestructible/shuttle_corner
+	// )) // HERBSTATION CHANGE - ORIGINAL
+	// END OF HERBSTATION CHANGE
 	connects_with_overlay = typecacheof(list(
 		/turf/simulated/wall/auto/supernorn/wood, /turf/simulated/wall/false_wall/reinforced,
 		/obj/machinery/door, /obj/window, /obj/wingrille_spawn
