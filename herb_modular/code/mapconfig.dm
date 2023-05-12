@@ -5,6 +5,11 @@
 	walls = /turf/simulated/wall/auto/herb
 	rwalls = /turf/simulated/wall/auto/reinforced/herb
 
+	parallax_layers = list(
+		/atom/movable/screen/parallax_layer/foreground/snow,
+		/atom/movable/screen/parallax_layer/foreground/snow/sparse,
+		)
+
 	arrivals_type = MAP_SPAWN_CRYO
 
 	windows = /obj/window/auto

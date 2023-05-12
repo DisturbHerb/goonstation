@@ -2126,6 +2126,8 @@ var/datum/preMapLoad/preMapLoad = new
 #include "herb_modular\code\obj\window_frame.dm"
 #include "herb_modular\code\obj\decal\poster.dm"
 #include "herb_modular\code\obj\machinery\stasis_pod.dm"
+#include "herb_modular\code\parallax\foreground_parallax_occlusion_overlay.dm"
+#include "herb_modular\code\parallax\parallax.dm"
 #include "herb_modular\code\turf\walls.dm"
 #include "interface\skin.dmf"
 #include "maps\config\map.dm"
