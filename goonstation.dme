@@ -2125,6 +2125,7 @@ var/datum/preMapLoad/preMapLoad = new
 #include "herb_modular\code\modules\worldgen\mapgen\SnowCraterGenerator.dm"
 #include "herb_modular\code\obj\window_frame.dm"
 #include "herb_modular\code\obj\decal\poster.dm"
+#include "herb_modular\code\obj\item\clothing\parka.dm"
 #include "herb_modular\code\obj\machinery\stasis_pod.dm"
 #include "herb_modular\code\parallax\foreground_parallax_occlusion_overlay.dm"
 #include "herb_modular\code\parallax\parallax.dm"
