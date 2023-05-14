@@ -23,6 +23,10 @@ var/datum/preMapLoad/preMapLoad = new
 // Standard Library Inclusions
 #include "_std\__std.dme"
 
+// HERBSTATION CHANGE
+#include "herb_modular\_herb_defines\_herb_defines.dme"
+// END OF HERBSTATION CHANGE
+
 // Secret Code Handling
 #if !defined(FASTDMM) && !defined(DISABLE_SECRETS)
 #include "+secret\__secret.dme"
@@ -2120,12 +2124,15 @@ var/datum/preMapLoad/preMapLoad = new
 #include "code\z_dmm_suite\map_placeholders.dm"
 #include "code\z_dmm_suite\reader.dm"
 #include "code\z_dmm_suite\writer.dm"
+#include "herb_modular\code\ability_buttons.dm"
 #include "herb_modular\code\mapconfig.dm"
 #include "herb_modular\code\area\colonial_ship.dm"
+#include "herb_modular\code\datums\components\parka_toggles.dm"
 #include "herb_modular\code\modules\worldgen\mapgen\SnowCraterGenerator.dm"
 #include "herb_modular\code\obj\window_frame.dm"
 #include "herb_modular\code\obj\decal\poster.dm"
 #include "herb_modular\code\obj\item\clothing\parka.dm"
+#include "herb_modular\code\obj\item\storage\snow_starter_box.dm"
 #include "herb_modular\code\obj\machinery\stasis_pod.dm"
 #include "herb_modular\code\parallax\foreground_parallax_occlusion_overlay.dm"
 #include "herb_modular\code\parallax\parallax.dm"

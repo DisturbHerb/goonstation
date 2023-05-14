@@ -16,7 +16,7 @@
 
 	New()
 		..()
-		src.AddComponent(/datum/component/toggle_hood, hood_style = "parka")
+		src.AddComponent(/datum/component/toggle_hood_coat, hood_style = "parka", coat_style = "[src.coat_style]", buttoned = TRUE)
 
 	setupProperties()
 		..()

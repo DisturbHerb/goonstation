@@ -13,7 +13,14 @@
 	max_wclass = W_CLASS_NORMAL
 	wear_image_icon = 'icons/mob/clothing/back.dmi'
 	opens_if_worn = TRUE
+	// HERBSTATION CHANGE
+#ifdef MAP_OVERRIDE_BREAKING_GROUND
+	spawn_contents = list(/obj/item/storage/box/snow_starter, /obj/item/clothing/suit/parka)
+#else
 	spawn_contents = list(/obj/item/storage/box/starter)
+#endif
+	// spawn_contents = list(/obj/item/storage/box/starter) // HERBSTATION CHANGE - ORIGINAL
+	// END OF HERBSTATION CHANGE
 	duration_remove = 3 SECONDS
 	duration_put = 3 SECONDS
 	var/satchel_compatible = TRUE
