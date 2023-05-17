@@ -147,7 +147,7 @@
 /area/shuttle/colonial_ship/transit/dock)
 "hF" = (
 /turf/simulated/wall/auto/shuttle{
-	icon_state = "13"
+	icon_state = "3"
 	},
 /area/shuttle/colonial_ship/transit/bridge)
 "hK" = (
@@ -1036,9 +1036,6 @@
 	},
 /turf/simulated/floor/shuttle,
 /area/shuttle/colonial_ship/transit)
-"Yn" = (
-/turf/space,
-/area/shuttle/colonial_ship/transit/bridge)
 "Yw" = (
 /obj/machinery/power/apc/autoname_east,
 /obj/cable,
@@ -4417,13 +4414,13 @@ Wz
 Wz
 Wz
 Wz
-Yn
+Wz
 Ap
 hF
 hF
 hF
 Po
-Yn
+Wz
 Wz
 Wz
 Wz
