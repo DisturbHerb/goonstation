@@ -1,0 +1,2117 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"at" = (
+/obj/decal/tile_edge/line/black{
+	dir = 10;
+	icon_state = "line2"
+	},
+/turf/simulated/floor/red,
+/area/station/security/interrogation)
+"aJ" = (
+/obj/decal/tile_edge/line/grey{
+	icon_state = "line1"
+	},
+/turf/simulated/floor/black,
+/area/station/security/checkpoint/sec_foyer{
+	name = "Secure Release Foyer"
+	})
+"aP" = (
+/turf/simulated/floor/redblack/corner{
+	dir = 1
+	},
+/area/station/security/processing{
+	name = "Security Dispatch"
+	})
+"aV" = (
+/obj/decal/tile_edge/line/black{
+	dir = 5;
+	icon_state = "line1"
+	},
+/turf/simulated/floor/red,
+/area/station/security/interrogation)
+"be" = (
+/obj/decal/tile_edge/line/red{
+	dir = 5;
+	icon_state = "line2"
+	},
+/turf/simulated/floor,
+/area/station/security/brig/genpop)
+"bv" = (
+/turf/simulated/floor/redblack{
+	dir = 1
+	},
+/area/station/security/equipment)
+"bS" = (
+/obj/decal/tile_edge/line/red{
+	dir = 9;
+	icon_state = "line2"
+	},
+/obj/machinery/floorflusher/genpop,
+/turf/simulated/floor,
+/area/station/security/brig/genpop)
+"ca" = (
+/obj/machinery/door/airlock/pyro/security{
+	req_access = null
+	},
+/turf/simulated/floor/redblack{
+	dir = 1
+	},
+/area/station/security/secwing)
+"cl" = (
+/obj/decal/tile_edge/line/black{
+	icon_state = "line1";
+	tag = "icon-line1"
+	},
+/turf/simulated/floor/red,
+/area/station/security/interrogation)
+"cm" = (
+/obj/machinery/door/airlock/pyro/security{
+	dir = 4;
+	req_access = null
+	},
+/turf/simulated/floor/red,
+/area/station/security/interrogation)
+"cF" = (
+/obj/decal/tile_edge/line/red{
+	dir = 5;
+	icon_state = "line1"
+	},
+/turf/simulated/floor/black,
+/area/station/security/armory)
+"cV" = (
+/turf/simulated/floor/redblack{
+	dir = 9
+	},
+/area/station/security/processing{
+	name = "Security Dispatch"
+	})
+"cY" = (
+/obj/decal/poster/wallsign/stencil_ru/left/o,
+/obj/decal/poster/wallsign/stencil_ru/right/kha{
+	pixel_x = 10
+	},
+/turf/simulated/wall/auto/reinforced/jen/red,
+/area/station/security/main)
+"dq" = (
+/turf/simulated/floor/black{
+	icon_state = "respect6"
+	},
+/area/station/security/secwing)
+"dy" = (
+/obj/decal/tile_edge/line/grey{
+	dir = 10;
+	icon_state = "line2"
+	},
+/obj/storage/secure/closet/brig/automatic/genpop,
+/turf/simulated/floor/black,
+/area/station/security/checkpoint/sec_foyer{
+	name = "Secure Release Foyer"
+	})
+"dz" = (
+/obj/machinery/vending/snack,
+/turf/simulated/floor/redblack,
+/area/station/security/main)
+"dB" = (
+/obj/decal/tile_edge/line/red{
+	dir = 5;
+	icon_state = "line1"
+	},
+/turf/simulated/floor,
+/area/station/security/brig/genpop)
+"dV" = (
+/obj/decal/tile_edge/line/red{
+	dir = 4;
+	icon_state = "line1"
+	},
+/turf/simulated/floor,
+/area/station/security/brig/genpop)
+"eh" = (
+/turf/simulated/wall/auto/reinforced/jen/red,
+/area/station/security/brig)
+"eo" = (
+/obj/machinery/computer3/generic/secure_data{
+	dir = 8
+	},
+/turf/simulated/floor/redblack{
+	dir = 6
+	},
+/area/station/security/processing{
+	name = "Security Dispatch"
+	})
+"ey" = (
+/turf/simulated/floor/redblack{
+	dir = 4
+	},
+/area/station/security/secwing)
+"eH" = (
+/obj/decal/tile_edge/line/red{
+	dir = 9;
+	icon_state = "line2"
+	},
+/obj/machinery/floorflusher/minibrig2,
+/turf/simulated/floor,
+/area/station/security/brig)
+"fo" = (
+/obj/decal/tile_edge/line/black{
+	dir = 9;
+	icon_state = "line2"
+	},
+/turf/simulated/floor/red,
+/area/station/security/interrogation)
+"fB" = (
+/obj/machinery/door/airlock/pyro/glass/security{
+	req_access = null
+	},
+/turf/simulated/floor/red,
+/area/station/security/secwing)
+"gd" = (
+/turf/simulated/floor/black{
+	icon_state = "respect1"
+	},
+/area/station/security/secwing)
+"hh" = (
+/obj/decal/tile_edge/line/red{
+	dir = 8;
+	icon_state = "line1"
+	},
+/turf/simulated/floor/red/redblackchecker,
+/area/station/security/armory)
+"hF" = (
+/obj/wingrille_spawn/reinforced_crystal/full,
+/turf/simulated/floor/plating,
+/area/station/security/brig)
+"in" = (
+/turf/simulated/wall/auto/supernorn,
+/area/space)
+"ip" = (
+/obj/decal/tile_edge/line/red{
+	icon_state = "line1"
+	},
+/turf/simulated/floor,
+/area/station/security/brig/genpop)
+"iu" = (
+/turf/simulated/floor/redblack{
+	dir = 5
+	},
+/area/station/security/equipment)
+"iG" = (
+/turf/simulated/floor/redblack/corner,
+/area/station/security/main)
+"iL" = (
+/turf/simulated/floor/redblack{
+	dir = 8
+	},
+/area/station/security/equipment)
+"jb" = (
+/obj/machinery/computer3/generic/secure_data{
+	dir = 4
+	},
+/turf/simulated/floor/redblack{
+	dir = 10
+	},
+/area/station/security/processing{
+	name = "Security Dispatch"
+	})
+"jg" = (
+/turf/simulated/wall/auto/reinforced/jen/red,
+/area/station/security/processing{
+	name = "Security Dispatch"
+	})
+"jo" = (
+/turf/simulated/floor/black{
+	icon_state = "respect2"
+	},
+/area/station/security/secwing)
+"jw" = (
+/obj/machinery/door/airlock/pyro/security{
+	dir = 4;
+	req_access = null
+	},
+/turf/simulated/floor/redblack{
+	dir = 4
+	},
+/area/station/security/secwing)
+"jI" = (
+/obj/landmark/spawner{
+	name = "monkeyspawn_stirstir"
+	},
+/turf/simulated/floor/grime,
+/area/station/security/brig/genpop)
+"ka" = (
+/obj/decal/tile_edge/line/red{
+	dir = 5;
+	icon_state = "line2"
+	},
+/turf/simulated/floor/red/redblackchecker,
+/area/station/security/armory)
+"lc" = (
+/obj/decal/tile_edge/line/red{
+	dir = 9;
+	icon_state = "line2"
+	},
+/turf/simulated/floor/red/redblackchecker,
+/area/station/security/armory)
+"lf" = (
+/turf/simulated/wall/auto/reinforced/jen/red,
+/area/station/security/secwing)
+"lh" = (
+/turf/simulated/floor/sanitary,
+/area/station/security/hos)
+"lB" = (
+/turf/space,
+/area/space)
+"lN" = (
+/obj/machinery/door/airlock/pyro/security{
+	req_access = null
+	},
+/turf/simulated/floor/red,
+/area/station/security/secoffquarters)
+"lZ" = (
+/obj/decal/tile_edge/line/grey{
+	dir = 9;
+	icon_state = "line2"
+	},
+/turf/simulated/floor/black,
+/area/station/security/checkpoint/sec_foyer{
+	name = "Secure Release Foyer"
+	})
+"mj" = (
+/turf/simulated/floor/redblack{
+	dir = 9
+	},
+/area/station/security/secwing)
+"mn" = (
+/turf/simulated/floor/redblack,
+/area/station/security/processing{
+	name = "Security Dispatch"
+	})
+"ms" = (
+/obj/decal/tile_edge/line/grey{
+	dir = 9;
+	icon_state = "line2"
+	},
+/obj/storage/secure/closet/brig/automatic/minibrig,
+/turf/simulated/floor/black,
+/area/station/security/checkpoint/sec_foyer{
+	name = "Secure Release Foyer"
+	})
+"mF" = (
+/turf/simulated/floor/red/redblackchecker,
+/area/station/security/secoffquarters)
+"mQ" = (
+/turf/simulated/wall/auto/reinforced/jen/red,
+/area/station/security/brig/genpop)
+"nl" = (
+/turf/simulated/floor/black{
+	icon_state = "respect1"
+	},
+/area/space)
+"no" = (
+/obj/machinery/door/airlock/pyro/glass/security{
+	req_access = null
+	},
+/turf/simulated/floor/red,
+/area/station/security/equipment)
+"nH" = (
+/turf/simulated/floor/black{
+	icon_state = "respect5"
+	},
+/area/space)
+"nR" = (
+/turf/simulated/floor/black{
+	icon_state = "respect4"
+	},
+/area/space)
+"od" = (
+/obj/machinery/door/airlock/pyro/glass/security{
+	dir = 4;
+	req_access = null
+	},
+/turf/simulated/floor,
+/area/station/security/brig)
+"oq" = (
+/obj/decal/tile_edge/line/grey{
+	dir = 4;
+	icon_state = "line1"
+	},
+/turf/simulated/floor/black,
+/area/station/security/checkpoint/sec_foyer{
+	name = "Secure Release Foyer"
+	})
+"or" = (
+/obj/wingrille_spawn/reinforced_crystal/full,
+/turf/simulated/floor/plating,
+/area/station/security/brig/genpop)
+"oy" = (
+/obj/decal/tile_edge/line/red{
+	icon_state = "line1"
+	},
+/turf/simulated/floor/black,
+/area/station/security/armory)
+"oZ" = (
+/turf/simulated/floor/redblack{
+	dir = 6
+	},
+/area/station/security/equipment)
+"ph" = (
+/turf/simulated/floor/redblack/corner,
+/area/station/security/secwing)
+"pq" = (
+/turf/simulated/floor/redblack{
+	dir = 5
+	},
+/area/station/security/processing{
+	name = "Security Dispatch"
+	})
+"pT" = (
+/turf/simulated/floor/redblack/corner,
+/area/station/security/equipment)
+"pY" = (
+/turf/simulated/floor/redblack{
+	dir = 4
+	},
+/area/space)
+"qo" = (
+/obj/decal/tile_edge/line/grey{
+	dir = 5;
+	icon_state = "line2"
+	},
+/turf/simulated/floor/black,
+/area/station/security/checkpoint/sec_foyer{
+	name = "Secure Release Foyer"
+	})
+"qI" = (
+/obj/decal/tile_edge/line/red{
+	dir = 9;
+	icon_state = "line2"
+	},
+/obj/machinery/floorflusher/minibrig,
+/turf/simulated/floor,
+/area/station/security/brig)
+"rq" = (
+/obj/decal/tile_edge/line/red{
+	dir = 10;
+	icon_state = "line2"
+	},
+/turf/simulated/floor/red/redblackchecker,
+/area/station/security/armory)
+"rx" = (
+/turf/simulated/floor/redblack,
+/area/station/security/secwing)
+"rA" = (
+/turf/simulated/floor/black{
+	icon_state = "respect4"
+	},
+/area/station/security/secwing)
+"sc" = (
+/obj/decal/tile_edge/line/red{
+	dir = 4;
+	icon_state = "line1"
+	},
+/turf/simulated/floor/red/redblackchecker,
+/area/station/security/armory)
+"sK" = (
+/obj/decal/tile_edge/line/red{
+	dir = 9;
+	icon_state = "line2"
+	},
+/turf/simulated/floor/black,
+/area/station/security/interrogation)
+"sM" = (
+/turf/simulated/floor/redblack{
+	dir = 10
+	},
+/area/station/security/secwing)
+"sV" = (
+/obj/decal/tile_edge/line/red{
+	icon_state = "line1"
+	},
+/turf/simulated/floor/black,
+/area/station/security/interrogation)
+"tj" = (
+/obj/table/reinforced/auto,
+/obj/machinery/door/airlock/pyro/glass/windoor{
+	dir = 4
+	},
+/turf/simulated/floor/redblack{
+	dir = 8
+	},
+/area/station/security/processing{
+	name = "Security Dispatch"
+	})
+"tv" = (
+/obj/decal/tile_edge/line/black{
+	dir = 6;
+	icon_state = "line2"
+	},
+/turf/simulated/floor/red,
+/area/station/security/interrogation)
+"tz" = (
+/turf/simulated/floor/black,
+/area/station/security/equipment)
+"tH" = (
+/turf/simulated/wall/auto/reinforced/jen/red,
+/area/station/security/checkpoint/sec_foyer{
+	name = "Secure Release Foyer"
+	})
+"tM" = (
+/obj/shrub{
+	dir = 4;
+	icon = 'icons/obj/stationobjs.dmi';
+	icon_state = "plant"
+	},
+/turf/simulated/floor/redblack/corner{
+	dir = 8
+	},
+/area/station/security/main)
+"uz" = (
+/obj/machinery/door/airlock/pyro/security{
+	dir = 4;
+	req_access = null
+	},
+/turf/simulated/floor/red,
+/area/station/security/secoffquarters)
+"uH" = (
+/obj/machinery/door/airlock/pyro/glass/security{
+	dir = 8;
+	req_access = null
+	},
+/turf/simulated/floor/red,
+/area/station/security/equipment)
+"uM" = (
+/obj/decal/tile_edge/line/red{
+	dir = 10;
+	icon_state = "line2"
+	},
+/turf/simulated/floor/black,
+/area/station/security/armory)
+"uV" = (
+/turf/simulated/floor/black,
+/area/station/security/processing{
+	name = "Security Dispatch"
+	})
+"uZ" = (
+/obj/decal/tile_edge/line/black{
+	dir = 8;
+	icon_state = "line1"
+	},
+/turf/simulated/floor/red,
+/area/station/security/interrogation)
+"va" = (
+/turf/simulated/floor/red,
+/area/station/security/interrogation)
+"vS" = (
+/obj/decal/poster/wallsign/stencil_ru/left/en{
+	pixel_x = -18
+	},
+/obj/decal/poster/wallsign/stencil_ru/right/a{
+	pixel_x = -6
+	},
+/turf/simulated/wall/auto/reinforced/jen/red,
+/area/station/security/main)
+"wc" = (
+/obj/decal/tile_edge/line/red{
+	dir = 1;
+	icon_state = "line1"
+	},
+/turf/simulated/floor,
+/area/station/security/brig/genpop)
+"wv" = (
+/obj/decal/tile_edge/line/red{
+	dir = 8;
+	icon_state = "line1"
+	},
+/turf/simulated/floor/black,
+/area/station/security/armory)
+"xa" = (
+/obj/decal/tile_edge/line/red{
+	dir = 10;
+	icon_state = "line2"
+	},
+/obj/submachine/chef_sink/chem_sink{
+	desc = "A water-filled unit intended for hand-washing purposes.";
+	dir = 1
+	},
+/turf/simulated/floor,
+/area/station/security/brig)
+"xk" = (
+/obj/machinery/door/airlock/pyro/glass/security{
+	req_access = null
+	},
+/turf/simulated/floor/red,
+/area/station/security/brig/genpop)
+"xw" = (
+/obj/machinery/door/airlock/pyro/security{
+	dir = 4;
+	req_access = null
+	},
+/turf/simulated/floor/red,
+/area/station/security/brig/genpop)
+"xO" = (
+/obj/decal/tile_edge/line/red{
+	dir = 5;
+	icon_state = "line2"
+	},
+/turf/simulated/floor/black,
+/area/station/security/interrogation)
+"yh" = (
+/obj/machinery/door/airlock/pyro/security{
+	dir = 8;
+	req_access = null
+	},
+/turf/simulated/floor/red/side{
+	dir = 4
+	},
+/area/station/security/checkpoint/sec_foyer{
+	name = "Secure Release Foyer"
+	})
+"yp" = (
+/obj/wingrille_spawn/reinforced_crystal/full,
+/turf/simulated/floor/plating,
+/area/station/security/equipment)
+"yZ" = (
+/turf/simulated/floor/redblack{
+	dir = 1
+	},
+/area/space)
+"zr" = (
+/turf/simulated/floor/black,
+/area/station/security/checkpoint/sec_foyer{
+	name = "Secure Release Foyer"
+	})
+"zs" = (
+/obj/machinery/door/airlock/pyro/security{
+	dir = 8;
+	req_access = null
+	},
+/turf/simulated/floor/redblack{
+	dir = 8
+	},
+/area/station/security/processing{
+	name = "Security Dispatch"
+	})
+"zC" = (
+/turf/simulated/wall/auto/reinforced/jen/red,
+/area/station/security/interrogation)
+"zD" = (
+/obj/table/round,
+/turf/simulated/floor/redblack/corner{
+	dir = 1
+	},
+/area/station/security/main)
+"zY" = (
+/turf/simulated/floor/redblack,
+/area/station/security/equipment)
+"Ab" = (
+/turf/simulated/wall/auto/reinforced/jen/red,
+/area/station/security/hos)
+"Ai" = (
+/obj/decal/tile_edge/line/red{
+	icon_state = "line1"
+	},
+/turf/simulated/floor/red/redblackchecker,
+/area/station/security/armory)
+"As" = (
+/obj/table/reinforced/auto,
+/turf/simulated/floor/redblack,
+/area/station/security/interrogation)
+"Ay" = (
+/obj/decal/tile_edge/line/red{
+	dir = 8;
+	icon_state = "line1"
+	},
+/turf/simulated/floor,
+/area/station/security/brig/genpop)
+"AD" = (
+/obj/decal/tile_edge/line/red{
+	dir = 1;
+	icon_state = "line1"
+	},
+/obj/item/storage/toilet,
+/turf/simulated/floor,
+/area/station/security/brig)
+"BV" = (
+/turf/simulated/floor/redblack{
+	dir = 4
+	},
+/area/station/security/main)
+"Cn" = (
+/obj/machinery/door/airlock/pyro/glass/security{
+	dir = 4;
+	req_access = null
+	},
+/turf/simulated/floor/red,
+/area/station/security/equipment)
+"Ct" = (
+/obj/decal/tile_edge/line/red{
+	dir = 9;
+	icon_state = "line1"
+	},
+/turf/simulated/floor,
+/area/station/security/brig/genpop)
+"Dc" = (
+/obj/decal/tile_edge/line/red{
+	dir = 1;
+	icon_state = "line1"
+	},
+/turf/simulated/floor/black,
+/area/station/security/interrogation)
+"Df" = (
+/turf/simulated/floor,
+/area/station/security/brig/genpop)
+"Dj" = (
+/obj/decal/tile_edge/line/grey{
+	dir = 1;
+	icon_state = "line1"
+	},
+/turf/simulated/floor/black,
+/area/station/security/checkpoint/sec_foyer{
+	name = "Secure Release Foyer"
+	})
+"Eg" = (
+/turf/simulated/floor/redblack{
+	dir = 6
+	},
+/area/station/security/secwing)
+"Ep" = (
+/turf/simulated/floor/black,
+/area/station/security/secwing)
+"Es" = (
+/obj/decal/tile_edge/line/grey{
+	dir = 8;
+	icon_state = "line1"
+	},
+/obj/storage/secure/closet/brig/automatic/minibrig2,
+/turf/simulated/floor/black,
+/area/station/security/checkpoint/sec_foyer{
+	name = "Secure Release Foyer"
+	})
+"EF" = (
+/obj/wingrille_spawn/reinforced_crystal/full,
+/turf/simulated/floor/plating,
+/area/station/security/main)
+"EG" = (
+/obj/machinery/vending/cola/blue,
+/turf/simulated/floor/redblack/corner{
+	dir = 4
+	},
+/area/station/security/main)
+"Fh" = (
+/obj/shrub{
+	dir = 1;
+	icon = 'icons/obj/stationobjs.dmi';
+	icon_state = "plant"
+	},
+/turf/simulated/floor/redblack,
+/area/station/security/main)
+"Fr" = (
+/turf/simulated/wall/auto/reinforced/jen/red,
+/area/station/security/armory)
+"FP" = (
+/obj/wingrille_spawn/reinforced_crystal/full,
+/turf/simulated/floor/plating,
+/area/station/security/checkpoint/sec_foyer{
+	name = "Secure Release Foyer"
+	})
+"Gw" = (
+/obj/decal/tile_edge/line/grey{
+	dir = 9;
+	icon_state = "line1"
+	},
+/turf/simulated/floor/black,
+/area/station/security/checkpoint/sec_foyer{
+	name = "Secure Release Foyer"
+	})
+"GA" = (
+/obj/table/reinforced/auto,
+/obj/machinery/door/airlock/pyro/glass/windoor,
+/turf/simulated/floor/red,
+/area/station/security/processing{
+	name = "Security Dispatch"
+	})
+"GX" = (
+/turf/simulated/floor/redblack{
+	dir = 9
+	},
+/area/station/security/equipment)
+"Hb" = (
+/obj/decal/tile_edge/line/red{
+	dir = 10;
+	icon_state = "line2"
+	},
+/turf/simulated/floor/black,
+/area/station/security/interrogation)
+"Hi" = (
+/obj/decal/tile_edge/line/red{
+	icon_state = "line1"
+	},
+/obj/machinery/shower,
+/obj/machinery/drainage,
+/turf/simulated/floor,
+/area/station/security/brig)
+"Hl" = (
+/obj/decal/tile_edge/line/red{
+	dir = 10;
+	icon_state = "line2"
+	},
+/turf/simulated/floor,
+/area/station/security/brig/genpop)
+"Hr" = (
+/obj/decal/poster/wallsign/stencil_ru/left/er{
+	pixel_x = -11
+	},
+/obj/decal/poster/wallsign/stencil_ru/right/a{
+	pixel_x = 2
+	},
+/turf/simulated/wall/auto/reinforced/jen/red,
+/area/station/security/main)
+"HV" = (
+/obj/decal/tile_edge/line/red{
+	dir = 5;
+	icon_state = "line2"
+	},
+/obj/table,
+/turf/simulated/floor,
+/area/station/security/brig)
+"It" = (
+/turf/simulated/wall/auto/reinforced/jen/red,
+/area/station/security/main)
+"Iv" = (
+/obj/machinery/door/airlock/pyro/glass/security{
+	req_access = null
+	},
+/turf/simulated/floor/red/side,
+/area/station/security/processing{
+	name = "Security Dispatch"
+	})
+"ID" = (
+/turf/simulated/floor/grime,
+/area/station/security/brig/genpop)
+"Jz" = (
+/obj/reagent_dispensers/watertank/fountain,
+/turf/simulated/floor/redblack/corner{
+	dir = 4
+	},
+/area/station/security/main)
+"Ki" = (
+/turf/simulated/floor/black,
+/area/station/security/armory)
+"Ko" = (
+/obj/stool/chair/red{
+	dir = 1
+	},
+/turf/simulated/floor/redblack{
+	dir = 1
+	},
+/area/station/security/main)
+"Kw" = (
+/turf/simulated/floor/wood/seven,
+/area/station/security/hos)
+"KA" = (
+/obj/decal/tile_edge/line/red{
+	dir = 6;
+	icon_state = "line2"
+	},
+/turf/simulated/floor/black,
+/area/station/security/interrogation)
+"KL" = (
+/obj/machinery/door/airlock/pyro/security{
+	dir = 4;
+	req_access = null
+	},
+/turf/simulated/floor/red,
+/area/station/security/armory)
+"KY" = (
+/turf/simulated/floor/redblack/corner{
+	dir = 8
+	},
+/area/space)
+"LJ" = (
+/turf/simulated/floor/redblack,
+/area/station/security/main)
+"LU" = (
+/obj/decal/tile_edge/line/red{
+	dir = 9;
+	icon_state = "line2"
+	},
+/turf/simulated/floor,
+/area/station/security/brig/genpop)
+"Ml" = (
+/turf/simulated/wall/auto/reinforced/jen/red,
+/area/station/security/secoffquarters)
+"MB" = (
+/turf/simulated/floor/red/redblackchecker,
+/area/station/security/armory)
+"MG" = (
+/obj/decal/tile_edge/line/red{
+	dir = 10;
+	icon_state = "line1"
+	},
+/turf/simulated/floor/red/redblackchecker,
+/area/station/security/armory)
+"MH" = (
+/turf/simulated/floor/redblack{
+	dir = 1
+	},
+/area/station/security/processing{
+	name = "Security Dispatch"
+	})
+"MO" = (
+/obj/stool/chair/office/red,
+/turf/simulated/floor/redblack,
+/area/station/security/processing{
+	name = "Security Dispatch"
+	})
+"Nz" = (
+/obj/decal/tile_edge/line/black{
+	dir = 5;
+	icon_state = "line2"
+	},
+/turf/simulated/floor/red,
+/area/station/security/interrogation)
+"NZ" = (
+/turf/simulated/floor/redblack/corner{
+	dir = 1
+	},
+/area/station/security/secwing)
+"PQ" = (
+/turf/simulated/floor/black{
+	icon_state = "respect3"
+	},
+/area/station/security/secwing)
+"Ql" = (
+/obj/wingrille_spawn/reinforced_crystal/full,
+/turf/simulated/floor/plating,
+/area/station/security/processing{
+	name = "Security Dispatch"
+	})
+"QJ" = (
+/obj/decal/tile_edge/line/grey{
+	dir = 6;
+	icon_state = "line2"
+	},
+/turf/simulated/floor/black,
+/area/station/security/checkpoint/sec_foyer{
+	name = "Secure Release Foyer"
+	})
+"QR" = (
+/turf/simulated/floor/redblack{
+	dir = 5
+	},
+/area/space)
+"QV" = (
+/turf/simulated/floor/black,
+/area/space)
+"Rc" = (
+/turf/simulated/floor/black{
+	icon_state = "respect7"
+	},
+/area/station/security/secwing)
+"Rl" = (
+/turf/simulated/floor/black{
+	icon_state = "respect5"
+	},
+/area/station/security/secwing)
+"RI" = (
+/obj/machinery/door/airlock/pyro/glass/security{
+	req_access = null
+	},
+/turf/simulated/floor/black,
+/area/station/security/main)
+"Sj" = (
+/obj/decal/tile_edge/line/red{
+	dir = 6;
+	icon_state = "line2"
+	},
+/obj/stool/bed/brig,
+/turf/simulated/floor,
+/area/station/security/brig)
+"Su" = (
+/turf/simulated/floor/red,
+/area/station/security/main)
+"SD" = (
+/turf/simulated/floor/red,
+/area/station/security/secoffquarters)
+"SM" = (
+/obj/decal/tile_edge/line/red{
+	dir = 6;
+	icon_state = "line2"
+	},
+/turf/simulated/floor,
+/area/station/security/brig/genpop)
+"Tc" = (
+/turf/simulated/floor/redblack{
+	dir = 4
+	},
+/area/station/security/processing{
+	name = "Security Dispatch"
+	})
+"Tg" = (
+/turf/simulated/floor/redblack{
+	dir = 5
+	},
+/area/station/security/secwing)
+"Tq" = (
+/turf/simulated/floor/black{
+	icon_state = "respect2"
+	},
+/area/space)
+"Uc" = (
+/turf/simulated/floor/redblack{
+	dir = 8
+	},
+/area/station/security/processing{
+	name = "Security Dispatch"
+	})
+"Ug" = (
+/turf/simulated/floor/black{
+	icon_state = "respect7"
+	},
+/area/space)
+"UJ" = (
+/turf/simulated/floor/black{
+	icon_state = "respect6"
+	},
+/area/space)
+"UU" = (
+/obj/decal/tile_edge/line/red{
+	dir = 6;
+	icon_state = "line2"
+	},
+/turf/simulated/floor/red/redblackchecker,
+/area/station/security/armory)
+"Vb" = (
+/turf/simulated/floor/redblack{
+	dir = 8
+	},
+/area/station/security/secwing)
+"Vd" = (
+/turf/simulated/floor/redblack{
+	dir = 1
+	},
+/area/station/security/main)
+"Vf" = (
+/turf/simulated/floor/redblack{
+	dir = 10
+	},
+/area/station/security/main)
+"Vh" = (
+/obj/decal/tile_edge/line/black{
+	dir = 1;
+	icon_state = "line1"
+	},
+/turf/simulated/floor/red,
+/area/station/security/interrogation)
+"Wq" = (
+/turf/simulated/floor/redblack{
+	dir = 10
+	},
+/area/station/security/equipment)
+"WN" = (
+/obj/decal/tile_edge/line/red{
+	dir = 1;
+	icon_state = "line1"
+	},
+/turf/simulated/floor/black,
+/area/station/security/armory)
+"WP" = (
+/turf/simulated/floor/redblack{
+	dir = 1
+	},
+/area/station/security/secwing)
+"Xn" = (
+/turf/simulated/wall/auto/reinforced/jen/red,
+/area/station/security/equipment)
+"XD" = (
+/turf/simulated/floor/redblack/corner{
+	dir = 4
+	},
+/area/station/security/secwing)
+"XY" = (
+/turf/simulated/floor/redblack{
+	dir = 4
+	},
+/area/station/security/equipment)
+"XZ" = (
+/obj/stool/chair/office/red{
+	dir = 4
+	},
+/turf/simulated/floor/redblack{
+	dir = 4
+	},
+/area/station/security/processing{
+	name = "Security Dispatch"
+	})
+"YW" = (
+/obj/decal/tile_edge/line/red{
+	dir = 1;
+	icon_state = "line1"
+	},
+/turf/simulated/floor/red/redblackchecker,
+/area/station/security/armory)
+"Zi" = (
+/turf/simulated/floor/redblack/corner{
+	dir = 1
+	},
+/area/station/security/equipment)
+"Zx" = (
+/obj/decal/tile_edge/line/red{
+	dir = 4;
+	icon_state = "line1"
+	},
+/turf/simulated/floor/black,
+/area/station/security/armory)
+"ZJ" = (
+/turf/simulated/floor/redblack{
+	dir = 8
+	},
+/area/station/security/main)
+"ZV" = (
+/turf/simulated/floor/black{
+	icon_state = "respect3"
+	},
+/area/space)
+
+(1,1,1) = {"
+lB
+lB
+lB
+lB
+lB
+lB
+lB
+lB
+lB
+lB
+lB
+lB
+lB
+lB
+lB
+lB
+Ml
+Ml
+Ml
+Ml
+Ml
+yZ
+QV
+QV
+QV
+in
+lB
+"}
+(2,1,1) = {"
+lB
+lB
+lB
+lB
+lB
+lB
+lf
+lf
+lf
+lf
+Ml
+Ml
+Ml
+Ml
+Ml
+Ml
+Ml
+SD
+mF
+SD
+Ml
+yZ
+QV
+QV
+QV
+in
+lB
+"}
+(3,1,1) = {"
+lB
+Ab
+Ab
+Ab
+Ab
+Ab
+Ab
+mj
+Vb
+sM
+Ml
+mF
+SD
+mF
+SD
+mF
+SD
+mF
+SD
+mF
+Ml
+yZ
+QV
+QV
+QV
+in
+lB
+"}
+(4,1,1) = {"
+Ab
+Ab
+Kw
+Kw
+Kw
+Kw
+Ab
+WP
+Ep
+rx
+Ml
+SD
+mF
+SD
+mF
+SD
+mF
+SD
+mF
+SD
+Ml
+yZ
+QV
+QV
+QV
+in
+lB
+"}
+(5,1,1) = {"
+Ab
+Kw
+Kw
+Kw
+Kw
+Kw
+Ab
+WP
+Ep
+rx
+lN
+mF
+SD
+mF
+SD
+mF
+SD
+mF
+SD
+mF
+Ml
+yZ
+QV
+QV
+QV
+in
+lB
+"}
+(6,1,1) = {"
+Ab
+Kw
+Kw
+Kw
+Kw
+Kw
+Ab
+WP
+Ep
+rx
+Ml
+SD
+mF
+SD
+mF
+SD
+mF
+SD
+mF
+SD
+Ml
+yZ
+QV
+QV
+QV
+in
+lB
+"}
+(7,1,1) = {"
+Ab
+Kw
+Kw
+Kw
+Kw
+Kw
+Ab
+WP
+Ep
+rx
+Ml
+mF
+SD
+mF
+SD
+mF
+Ml
+uz
+Ml
+Ml
+Ml
+yZ
+QV
+QV
+QV
+in
+lB
+"}
+(8,1,1) = {"
+Ab
+Kw
+Kw
+Kw
+Kw
+Kw
+Ab
+WP
+ph
+Eg
+Ml
+Ml
+Ml
+Ml
+Ml
+Ml
+Ml
+cV
+Uc
+jb
+Ql
+yZ
+QV
+QV
+QV
+in
+lB
+"}
+(9,1,1) = {"
+Ab
+Kw
+Kw
+Kw
+Kw
+Kw
+Ab
+WP
+rx
+tH
+tH
+ms
+Es
+dy
+jg
+cV
+Uc
+aP
+uV
+MO
+GA
+yZ
+QV
+QV
+QV
+in
+lB
+"}
+(10,1,1) = {"
+Ab
+Ab
+Kw
+Kw
+Kw
+Kw
+Ab
+WP
+rx
+tH
+lZ
+Gw
+zr
+aJ
+Iv
+MH
+uV
+uV
+uV
+mn
+GA
+yZ
+QV
+QV
+QV
+in
+lB
+"}
+(11,1,1) = {"
+lB
+Ab
+Ab
+Ab
+Ab
+Ab
+Ab
+WP
+rx
+tH
+Dj
+zr
+zr
+aJ
+jg
+pq
+Tc
+Tc
+XZ
+eo
+Ql
+yZ
+nl
+QV
+QV
+in
+lB
+"}
+(12,1,1) = {"
+lB
+lB
+Ab
+lh
+lh
+lh
+Ab
+WP
+rx
+tH
+Dj
+zr
+zr
+aJ
+jg
+jg
+zs
+Ql
+tj
+Ql
+jg
+yZ
+Tq
+QV
+QV
+in
+lB
+"}
+(13,1,1) = {"
+lB
+lB
+Ab
+lh
+lh
+lh
+Ab
+WP
+rx
+tH
+Dj
+zr
+zr
+aJ
+RI
+iG
+BV
+BV
+BV
+tM
+EF
+yZ
+ZV
+QV
+QV
+in
+lB
+"}
+(14,1,1) = {"
+lB
+lB
+Ab
+lh
+lh
+lh
+Ab
+WP
+rx
+tH
+qo
+oq
+oq
+QJ
+EF
+dz
+Su
+Su
+Su
+Vd
+RI
+QV
+nR
+QV
+QV
+in
+lB
+"}
+(15,1,1) = {"
+lB
+lB
+Ab
+lh
+lh
+Ab
+Ab
+WP
+rx
+tH
+tH
+yh
+FP
+FP
+It
+EG
+Vf
+Su
+Su
+Ko
+EF
+yZ
+nH
+QV
+QV
+in
+lB
+"}
+(16,1,1) = {"
+lB
+lB
+Ab
+Ab
+Ab
+Ab
+mj
+NZ
+XD
+Vb
+Vb
+Vb
+Vb
+sM
+lf
+lf
+Fh
+Su
+Su
+Ko
+cY
+yZ
+UJ
+QV
+QV
+in
+lB
+"}
+(17,1,1) = {"
+lB
+lB
+lf
+mj
+Vb
+Vb
+NZ
+Ep
+Ep
+Ep
+Ep
+Ep
+Ep
+XD
+sM
+ca
+LJ
+Su
+Su
+Ko
+Hr
+yZ
+Ug
+QV
+QV
+in
+in
+"}
+(18,1,1) = {"
+lB
+lB
+lf
+WP
+Ep
+Ep
+ph
+ey
+ey
+ey
+ey
+ey
+ey
+ey
+Eg
+lf
+Jz
+ZJ
+ZJ
+zD
+vS
+yZ
+QV
+QV
+QV
+QV
+in
+"}
+(19,1,1) = {"
+lB
+lB
+lf
+WP
+Ep
+ph
+Eg
+Xn
+Xn
+Cn
+Xn
+Xn
+Xn
+Xn
+Xn
+lf
+lf
+jw
+jw
+lf
+lf
+yZ
+QV
+QV
+QV
+QV
+in
+"}
+(20,1,1) = {"
+lB
+lB
+lf
+WP
+Ep
+rx
+Xn
+Xn
+GX
+iL
+iL
+iL
+iL
+Wq
+yp
+mj
+Vb
+Vb
+Vb
+sM
+lf
+QR
+KY
+QV
+QV
+QV
+QV
+"}
+(21,1,1) = {"
+lB
+lB
+lf
+WP
+Ep
+rx
+Xn
+GX
+Zi
+tz
+tz
+tz
+tz
+zY
+no
+WP
+Ep
+gd
+Ep
+rx
+lf
+lf
+yZ
+QV
+QV
+QV
+QV
+"}
+(22,1,1) = {"
+lB
+lB
+lf
+WP
+Ep
+rx
+Xn
+bv
+tz
+tz
+tz
+pT
+XY
+oZ
+yp
+WP
+Ep
+jo
+Ep
+XD
+sM
+lf
+yZ
+QV
+QV
+QV
+QV
+"}
+(23,1,1) = {"
+lB
+lB
+lf
+WP
+Ep
+rx
+no
+bv
+tz
+tz
+tz
+zY
+Xn
+Xn
+Xn
+WP
+Ep
+PQ
+Ep
+Ep
+rx
+lf
+QR
+pY
+pY
+pY
+pY
+"}
+(24,1,1) = {"
+lB
+lB
+lf
+WP
+Ep
+rx
+Xn
+iu
+XY
+XY
+XY
+oZ
+Xn
+mj
+Vb
+NZ
+Ep
+rA
+Ep
+Ep
+rx
+mQ
+mQ
+mQ
+mQ
+mQ
+mQ
+"}
+(25,1,1) = {"
+lB
+lB
+lf
+WP
+Ep
+rx
+Xn
+Xn
+Xn
+uH
+Xn
+Xn
+Xn
+WP
+Ep
+Ep
+Ep
+Rl
+Ep
+Ep
+rx
+or
+bS
+Ay
+Ay
+Hl
+mQ
+"}
+(26,1,1) = {"
+lB
+lB
+lf
+WP
+Ep
+XD
+Vb
+Vb
+Vb
+Vb
+Vb
+sM
+lf
+WP
+Ep
+Ep
+Ep
+dq
+Ep
+Ep
+rx
+xk
+wc
+Df
+Df
+ip
+mQ
+"}
+(27,1,1) = {"
+lB
+lB
+lf
+WP
+Ep
+Ep
+Ep
+Ep
+Ep
+Ep
+Ep
+rx
+fB
+WP
+Ep
+Ep
+Ep
+Rc
+Ep
+Ep
+rx
+or
+wc
+Df
+Df
+ip
+mQ
+"}
+(28,1,1) = {"
+lB
+lB
+lf
+Tg
+ey
+ey
+ey
+ey
+ey
+ey
+ey
+Eg
+lf
+Tg
+ey
+ey
+ey
+ey
+ey
+ey
+Eg
+or
+wc
+Df
+Df
+ip
+mQ
+"}
+(29,1,1) = {"
+lB
+Fr
+Fr
+Fr
+Fr
+KL
+Fr
+Fr
+zC
+cm
+zC
+zC
+zC
+cm
+eh
+hF
+od
+eh
+hF
+od
+mQ
+mQ
+wc
+Df
+Df
+ip
+mQ
+"}
+(30,1,1) = {"
+lB
+Fr
+lc
+wv
+hh
+wv
+rq
+Fr
+fo
+uZ
+at
+As
+sK
+Hb
+eh
+qI
+xa
+eh
+eH
+xa
+mQ
+LU
+Ct
+Df
+Df
+ip
+mQ
+"}
+(31,1,1) = {"
+lB
+Fr
+WN
+MB
+Ki
+MB
+oy
+Fr
+Vh
+va
+cl
+As
+Dc
+sV
+eh
+AD
+Hi
+eh
+AD
+Hi
+mQ
+be
+dV
+dV
+dB
+ip
+mQ
+"}
+(32,1,1) = {"
+lB
+Fr
+YW
+Ki
+MB
+Ki
+Ai
+Fr
+Nz
+aV
+cl
+As
+xO
+KA
+eh
+HV
+Sj
+eh
+HV
+Sj
+mQ
+mQ
+mQ
+mQ
+be
+SM
+mQ
+"}
+(33,1,1) = {"
+lB
+Fr
+WN
+MB
+Ki
+MB
+oy
+Fr
+Fr
+Nz
+tv
+zC
+zC
+zC
+eh
+eh
+eh
+eh
+eh
+eh
+mQ
+ID
+ID
+mQ
+xw
+mQ
+mQ
+"}
+(34,1,1) = {"
+lB
+Fr
+ka
+cF
+MB
+Ki
+MG
+uM
+Fr
+zC
+zC
+zC
+lB
+lB
+lB
+lB
+lB
+lB
+lB
+lB
+mQ
+ID
+jI
+ID
+ID
+mQ
+lB
+"}
+(35,1,1) = {"
+lB
+Fr
+Fr
+ka
+Zx
+sc
+Zx
+UU
+Fr
+lB
+lB
+lB
+lB
+lB
+lB
+lB
+lB
+lB
+lB
+lB
+mQ
+ID
+ID
+ID
+ID
+mQ
+lB
+"}
+(36,1,1) = {"
+lB
+lB
+Fr
+Fr
+Fr
+Fr
+Fr
+Fr
+Fr
+lB
+lB
+lB
+lB
+lB
+lB
+lB
+lB
+lB
+lB
+lB
+mQ
+mQ
+mQ
+mQ
+mQ
+mQ
+lB
+"}

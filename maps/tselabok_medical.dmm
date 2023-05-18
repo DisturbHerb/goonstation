@@ -251,6 +251,10 @@
 /obj/cable/blue{
 	icon_state = "0-4"
 	},
+/obj/stool/chair{
+	dir = 4
+	},
+/obj/item/clothing/suit/monkey,
 /turf/simulated/floor/grass,
 /area/station/medical/dome)
 "cK" = (
@@ -261,9 +265,10 @@
 /turf/simulated/floor/white,
 /area/station/medical/medbay/surgery/storage)
 "cP" = (
-/obj/decal/fakeobjects/palmtree,
-/turf/simulated/floor/grass,
-/area/station/medical/dome)
+/obj/decal/tile_edge/stripe/extra_big,
+/obj/machinery/recharge_station,
+/turf/simulated/floor/black,
+/area/station/medical/robotics)
 "cS" = (
 /obj/rack,
 /turf/simulated/floor/sanitary/white,
@@ -618,6 +623,12 @@
 /obj/storage/secure/closet/personal,
 /turf/simulated/floor/darkblue/checker,
 /area/station/medical/staff)
+"gU" = (
+/obj/machinery/door/airlock/pyro/maintenance{
+	dir = 8
+	},
+/turf/simulated/floor/green,
+/area/station/medical/dome)
 "ha" = (
 /obj/disposalpipe/segment/mail,
 /obj/cable/blue{
@@ -1060,7 +1071,7 @@
 	},
 /area/space)
 "me" = (
-/obj/machinery/computer/robot_module_rewriter,
+/obj/machinery/vending/standard,
 /turf/simulated/floor/black,
 /area/station/medical/robotics)
 "mj" = (
@@ -1769,10 +1780,8 @@
 /turf/simulated/floor,
 /area/station/medical/medbay)
 "sl" = (
-/obj/machinery/recharge_station,
-/obj/decal/tile_edge/stripe/extra_big{
-	dir = 1
-	},
+/obj/decal/mule/dropoff,
+/mob/living/silicon/hivebot/eyebot,
 /turf/simulated/floor/black,
 /area/station/medical/robotics)
 "so" = (
@@ -2173,7 +2182,9 @@
 /obj/decal/poster/wallsign/nosmoking{
 	pixel_x = 30
 	},
-/obj/machinery/vending/standard,
+/obj/machinery/computer/robot_module_rewriter{
+	dir = 8
+	},
 /turf/simulated/floor/black,
 /area/station/medical/robotics)
 "wZ" = (
@@ -2279,10 +2290,7 @@
 /turf/simulated/floor/green/checker,
 /area/station/medical/medbay/cloner)
 "yW" = (
-/obj/stool/chair{
-	dir = 4
-	},
-/obj/item/clothing/suit/monkey,
+/obj/shrub,
 /turf/simulated/floor/grass,
 /area/station/medical/dome)
 "yY" = (
@@ -2900,6 +2908,10 @@
 /area/station/medical/medbay/surgery/storage)
 "EP" = (
 /obj/decal/cleanable/dirt,
+/obj/health_scanner/wall{
+	id = "lobby";
+	pixel_y = 32
+	},
 /turf/simulated/floor/blue/side{
 	dir = 1
 	},
@@ -3507,8 +3519,10 @@
 /turf/simulated/floor/darkblue,
 /area/station/medical/medbay/psychiatrist)
 "LW" = (
-/obj/decal/mule/dropoff,
-/mob/living/silicon/hivebot/eyebot,
+/obj/decal/tile_edge/stripe/extra_big{
+	dir = 10
+	},
+/obj/machinery/recharge_station,
 /turf/simulated/floor/black,
 /area/station/medical/robotics)
 "Mg" = (
@@ -4250,7 +4264,7 @@
 /turf/simulated/floor,
 /area/station/medical/medbay)
 "SM" = (
-/obj/shrub,
+/obj/decal/fakeobjects/palmtree,
 /turf/simulated/floor/grass,
 /area/station/medical/dome)
 "SR" = (
@@ -4754,10 +4768,6 @@
 /area/station/medical/medbay)
 "Yd" = (
 /obj/machinery/computer3/generic/med_data,
-/obj/health_scanner/wall{
-	id = "lobby";
-	pixel_y = 24
-	},
 /obj/machinery/power/data_terminal,
 /obj/cable/blue{
 	icon_state = "0-4"
@@ -4919,10 +4929,8 @@
 /area/station/medical/medbay/cloner)
 "ZM" = (
 /obj/decal/cleanable/dirt/jen,
-/obj/machinery/recharge_station,
-/obj/decal/tile_edge/stripe/extra_big{
-	dir = 5
-	},
+/obj/decal/mule/dropoff,
+/mob/living/silicon/hivebot/eyebot,
 /turf/simulated/floor/black,
 /area/station/medical/robotics)
 "ZQ" = (
@@ -5102,7 +5110,7 @@ RS
 Eg
 gs
 uk
-uk
+gU
 uk
 uk
 fT
@@ -5138,7 +5146,7 @@ qD
 gs
 gs
 SM
-yW
+iP
 kV
 uk
 uk
@@ -5173,8 +5181,8 @@ Uu
 fo
 DL
 vk
+yW
 iP
-cP
 JB
 cE
 uk
@@ -5598,8 +5606,8 @@ We
 VA
 WC
 nQ
-oI
-Yl
+Rm
+SC
 SC
 SC
 Yl
@@ -5782,7 +5790,7 @@ Rm
 vX
 AW
 kR
-Rm
+oI
 EP
 at
 Gk
@@ -6174,7 +6182,7 @@ vB
 Ot
 Wj
 Io
-LW
+cP
 gp
 wS
 me
