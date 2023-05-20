@@ -15,6 +15,11 @@
 #elif defined(MAP_OVERRIDE_CONSTRUCTION)
 #include "construction.dm"
 
+// HERBSTATION CHANGE
+#elif defined(MAP_OVERRIDE_BREAKING_GROUND)
+#include "../../herb_modular/maps/config/breaking_ground.dm"
+// END OF HERBSTATION CHANGE
+
 #elif defined(MAP_OVERRIDE_POD_WARS)
 #include "pod_wars.dm"
 
