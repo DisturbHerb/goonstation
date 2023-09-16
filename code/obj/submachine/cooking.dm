@@ -157,107 +157,115 @@ TYPEINFO(/obj/submachine/ice_cream_dispenser)
 	anchored = ANCHORED
 	density = 1
 	deconstruct_flags = DECON_WRENCH | DECON_CROWBAR | DECON_WELDER
-	flags = NOSPLASH
+	flags = FPRINT | NOSPLASH | TGUI_INTERACTIVE
+	var/list/list/flavor_information = list()
 	var/list/flavors = list("chocolate","vanilla","coffee")
 	var/obj/item/reagent_containers/glass/beaker = null
 	var/obj/item/reagent_containers/food/snacks/ice_cream_cone/cone = null
 	var/doing_a_thing = 0
 
-	attack_hand(var/mob/user)
-		src.add_dialog(user)
-		var/dat = "<b>Ice Cream-O-Mat 9900</b><br>"
-		if(src.cone)
-			dat += "<a href='?src=\ref[src];eject=cone'>Eject Cone</a><br>"
-			dat += "<b>Select a Flavor:</b><br><ul>"
-			for(var/flavor in flavors)
-				dat += "<li><a href='?src=\ref[src];flavor=[flavor]'>[capitalize(flavor)]</a></li>"
-			if(src.beaker)
-				dat += "<li><a href='?src=\ref[src];flavor=beaker'>From Beaker</a></li>"
-			dat += "</ul><br>"
+	New()
+		..()
+		src.generate_flavor_info()
 
-		else
-			dat += "<b>No Cone Inserted!</b><br>"
+	ui_interact(mob/user, datum/tgui/ui)
+		ui = tgui_process.try_update_ui(user, src, ui)
+		if(!ui)
+			ui = new(user, src, "IceCream")
+			ui.open()
 
-		if(src.beaker)
-			dat += "<a href='?src=\ref[src];eject=beaker'>Eject Beaker</a><br>"
+	ui_static_data(mob/user)
+		. = list(
+			"name" = src.name
+		)
+		.["flavors"] = flavor_information
 
-		user.Browse(dat, "window=icecream;size=400x500")
-		onclose(user, "icecream")
-		return
+	ui_data(mob/user)
+		. = list(
+			"cone" = src.cone ? TRUE : FALSE,
+		)
+		.["containerData"] = src.beaker ? src.get_reagents_data(src.beaker.reagents, src.beaker.name) : null
 
-	attack_ai(var/mob/user as mob)
-		return attack_hand(user)
-
-	Topic(href, href_list)
-		if (istype(src.loc, /turf) && (( BOUNDS_DIST(src, usr) == 0) || issilicon(usr) || isAI(usr)))
-			if (!isliving(usr) || iswraith(usr) || isintangible(usr))
-				return
-			if (is_incapacitated(usr) || usr.restrained())
-				return
-
-			src.add_fingerprint(usr)
-			src.add_dialog(usr)
-
-			if(href_list["eject"])
-				switch(href_list["eject"])
-					if("beaker")
-						if(src.beaker)
-							src.beaker.set_loc(src.loc)
-							usr.put_in_hand_or_eject(src.beaker) // try to eject it into the users hand, if we can
-							src.beaker = null
-							src.UpdateIcon()
-
-					if("cone")
-						if(src.cone)
-							src.cone.set_loc(src.loc)
-							usr.put_in_hand_or_eject(src.cone) // try to eject it into the users hand, if we can
-							src.cone = null
-							src.UpdateIcon()
-
-			else if(href_list["flavor"])
-				if(doing_a_thing)
-					src.updateUsrDialog()
+	ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
+		. = ..()
+		if (.) return
+		src.add_fingerprint(usr)
+		switch (action)
+			if ("dispense_flavor")
+				if (src.doing_a_thing)
 					return
-				if(!cone)
+				if (!src.cone)
 					boutput(usr, "<span class='alert'>There is no cone loaded!</span>")
-					src.updateUsrDialog()
 					return
-
-				var/the_flavor = href_list["flavor"]
-				if(the_flavor == "beaker")
-					if(!beaker)
+				var/the_flavor = params["flavor"]
+				if (the_flavor == "beaker")
+					if(!src.beaker)
 						boutput(usr, "<span class='alert'>There is no beaker loaded!</span>")
-						src.updateUsrDialog()
 						return
-
-					if(!beaker.reagents.total_volume)
+					if(!src.beaker.reagents.total_volume)
 						boutput(usr, "<span class='alert'>The beaker is empty!</span>")
-						src.updateUsrDialog()
 						return
-
-					doing_a_thing = 1
+					src.doing_a_thing = TRUE
 					qdel(src.cone)
 					src.cone = null
 					var/obj/item/reagent_containers/food/snacks/ice_cream/newcream = new
-					beaker.reagents.trans_to(newcream,40)
-					newcream.set_loc(src.loc)
-
+					src.beaker.reagents.trans_to(newcream, 40)
+					usr.put_in_hand_or_eject(newcream)
+					src.doing_a_thing = FALSE
+					src.UpdateIcon()
+				else if (the_flavor in src.flavors)
+					src.doing_a_thing = TRUE
+					qdel(src.cone)
+					src.cone = null
+					var/obj/item/reagent_containers/food/snacks/ice_cream/newcream = new
+					newcream.reagents.add_reagent(the_flavor, 40)
+					usr.put_in_hand_or_eject(newcream)
+					src.doing_a_thing = FALSE
+					src.UpdateIcon()
 				else
-					if(the_flavor in src.flavors)
-						doing_a_thing = 1
-						qdel(src.cone)
-						src.cone = null
-						var/obj/item/reagent_containers/food/snacks/ice_cream/newcream = new
-						newcream.reagents.add_reagent(the_flavor,40)
-						newcream.set_loc(src.loc)
-					else
-						boutput(usr, "<span class='alert'>Unknown flavor!</span>")
+					boutput(usr, "<span class='alert'>Unknown flavor!</span>")
+					src.doing_a_thing = FALSE
+					src.UpdateIcon()
+				. = TRUE
+			if ("eject_beaker")
+				if(src.beaker)
+					src.beaker.set_loc(src.loc)
+					usr.put_in_hand_or_eject(src.beaker)
+					src.beaker = null
+					src.UpdateIcon()
+					. = TRUE
+			if ("eject_cone")
+				if(src.cone)
+					src.cone.set_loc(src.loc)
+					usr.put_in_hand_or_eject(src.cone)
+					src.cone = null
+					src.UpdateIcon()
+					. = TRUE
+			if ("insert_beaker")
+				var/obj/item/held_item = usr.equipped()
+				if(src.beaker)
+					boutput(usr, "There is already a beaker loaded.")
+					return
+				if (istype(held_item, /obj/item/reagent_containers/glass/) || istype(held_item, /obj/item/reagent_containers/food/drinks/))
+					usr.drop_item()
+					held_item.set_loc(src)
+					src.beaker = held_item
+					boutput(usr, "<span class='alert'>You load [held_item] into [src].</span>")
+					. = TRUE
+			if ("insert_cone")
+				var/obj/item/held_item = usr.equipped()
+				if(src.cone)
+					boutput(usr, "There is already a beaker loaded.")
+					return
+				if (istype(held_item, /obj/item/reagent_containers/food/snacks/ice_cream_cone))
+					usr.drop_item()
+					held_item.set_loc(src)
+					src.cone = held_item
+					boutput(usr, "<span class='alert'>You load [held_item] into [src].</span>")
+					. = TRUE
 
-				doing_a_thing = 0
-				src.UpdateIcon()
-
-			src.updateUsrDialog()
-		return
+	attack_ai(var/mob/user as mob)
+		return attack_hand(user)
 
 	attackby(obj/item/W, mob/user)
 		if (W.cant_drop) // For borg held items
@@ -305,6 +313,41 @@ TYPEINFO(/obj/submachine/ice_cream_dispenser)
 		src.icon_state = "ice_creamer[src.cone ? "1" : "0"]"
 
 		return
+
+	proc/generate_flavor_info()
+		src.flavor_information = list()
+		for (var/flavor in src.flavors)
+			if (reagents_cache[flavor])
+				var/datum/reagent/current_flavor = reagents_cache[flavor]
+				current_flavor = new current_flavor.type
+				flavor_information += list(
+					list("flavorName" = flavor, "flavorColor" = "[current_flavor.fluid_r], [current_flavor.fluid_g], [current_flavor.fluid_b]")
+				)
+
+	proc/get_reagents_data(datum/reagents/R, container_name)
+		. = list(
+			name = container_name,
+			maxVolume = R.maximum_volume,
+			totalVolume = R.total_volume,
+			temperature = R.total_temperature,
+			contents = list(),
+			finalColor = "#000000"
+		)
+
+		var/list/contents = .["contents"]
+		if(istype(R) && length(R.reagent_list))
+			.["finalColor"] = R.get_average_rgb()
+			for(var/reagent_id in R.reagent_list)
+				var/datum/reagent/current_reagent = R.reagent_list[reagent_id]
+
+				contents.Add(list(list(
+					name = reagents_cache[reagent_id],
+					id = reagent_id,
+					colorR = current_reagent.fluid_r,
+					colorG = current_reagent.fluid_g,
+					colorB = current_reagent.fluid_b,
+					volume = current_reagent.volume
+				)))
 
 /// COOKING RECODE ///
 
