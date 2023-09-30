@@ -1846,3 +1846,55 @@ ABSTRACT_TYPE(/obj/item/clothing/under/gimmick)
     desc = "A shirt imbued with the color scheme of the scientifically best icecream flavor."
     icon_state = "mint_chip"
     item_state = "mint_chip"
+
+ABSTRACT_TYPE(/obj/item/clothing/under/misc/blouse_skirt)
+/obj/item/clothing/under/misc/blouse_skirt
+	name = "blouse and skirt"
+	desc = "A space rayon blouse with a pencil skirt. Professional."
+	icon_state = "blouse_skirt-white"
+	item_state = "blouse_skirt-white"
+
+/obj/item/clothing/under/misc/blouse_skirt/white
+	name = "white blouse and skirt"
+	icon_state = "blouse_skirt-white"
+	item_state = "blouse_skirt-white"
+
+/obj/item/clothing/under/misc/blouse_skirt/pink
+	name = "pink blouse and skirt"
+	icon_state = "blouse_skirt-pink"
+	item_state = "blouse_skirt-pink"
+
+/obj/item/clothing/under/misc/blouse_skirt/red
+	name = "red blouse and skirt"
+	icon_state = "blouse_skirt-red"
+	item_state = "blouse_skirt-red"
+
+/obj/item/clothing/under/misc/blouse_skirt/dark_red
+	name = "dark red blouse and skirt"
+	icon_state = "blouse_skirt-dred"
+	item_state = "blouse_skirt-dred"
+
+/obj/item/clothing/under/misc/blouse_skirt/orange
+	name = "orange blouse and skirt"
+	icon_state = "blouse_skirt-orange"
+	item_state = "blouse_skirt-orange"
+
+/obj/item/clothing/under/misc/blouse_skirt/yellow
+	name = "yellow blouse and skirt"
+	icon_state = "blouse_skirt-yellow"
+	item_state = "blouse_skirt-yellow"
+
+/obj/item/clothing/under/misc/blouse_skirt/blue
+	name = "blue blouse and skirt"
+	icon_state = "blouse_skirt-blue"
+	item_state = "blouse_skirt-blue"
+
+/obj/item/clothing/under/misc/blouse_skirt/navy_blue
+	name = "navy blue blouse and skirt"
+	icon_state = "blouse_skirt-dblue"
+	item_state = "blouse_skirt-dblue"
+
+/obj/item/clothing/under/misc/blouse_skirt/green
+	name = "green blouse and skirt"
+	icon_state = "blouse_skirt-green"
+	item_state = "blouse_skirt-green"
