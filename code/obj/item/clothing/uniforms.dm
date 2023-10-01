@@ -1874,6 +1874,11 @@ ABSTRACT_TYPE(/obj/item/clothing/under/misc/blouse_skirt)
 	icon_state = "blouse_skirt-dred"
 	item_state = "blouse_skirt-dred"
 
+/obj/item/clothing/under/misc/blouse_skirt/brown
+	name = "brown blouse and skirt"
+	icon_state = "blouse_skirt-brown"
+	item_state = "blouse_skirt-brown"
+
 /obj/item/clothing/under/misc/blouse_skirt/orange
 	name = "orange blouse and skirt"
 	icon_state = "blouse_skirt-orange"
