@@ -13,7 +13,7 @@ ABSTRACT_TYPE(/datum/clothingbooth_item)
 	var/initial_variant = FALSE
 	var/initial_detail = FALSE
 	var/cost = 1
-	var/item_path = /obj/item/clothing/jumpsuit/under/white
+	var/item_path = /obj/item/clothing/jumpsuit/under/color/white
 
 	New()
 		..()
@@ -384,7 +384,7 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/head)
 	name = "Ten-Gallon Hat"
 	variant_name = "Beige"
 	cost = PAY_UNTRAINED/2
-	path = /obj/item/clothing/head/westhat
+	item_path = /obj/item/clothing/head/westhat
 
 	black
 		variant_name = "Black"
@@ -524,7 +524,7 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/wear_suit)
 
 /datum/clothingbooth_item/wear_suit/dinosaur_pajamas
 	cost = PAY_TRADESMAN/2
-	path = /obj/item/clothing/suit/gimmick/dinosaur
+	item_path = /obj/item/clothing/suit/gimmick/dinosaur
 
 /datum/clothingbooth_item/wear_suit/dress
 	name = "Dress"
@@ -996,9 +996,9 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform)
 	cost = PAY_DOCTORATE/3
 	item_path = /obj/item/clothing/under/rank/bartender/tuxedo
 
-/datum/clothingbooth_item/w_uniform/weddingdress
+/datum/clothingbooth_item/w_uniform/wedding_dress
 	cost = PAY_IMPORTANT*3
-	item_path = /obj/item/clothing/under/gimmick/weddingdress
+	item_path = /obj/item/clothing/under/gimmick/wedding_dress
 
 /datum/clothingbooth_item/w_uniform/western
 	cost = PAY_UNTRAINED/1
@@ -1021,3 +1021,70 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform)
 	very_red
 		variant_name = "VERY Red"
 		item_path = /obj/item/clothing/under/misc/yoga/communist
+
+/* ----------------------- SEASONAL ---------------------- */
+/* ---------------------- Halloween ---------------------- */
+#ifdef HALLOWEEN
+
+/* ------------------------- Head ------------------------ */
+/datum/clothingbooth_item/head/giraffehat
+	item_path = /obj/item/clothing/head/giraffehat
+
+/datum/clothingbooth_item/head/axehat
+	cost = PAY_TRADESMAN/3
+	item_path = /obj/item/clothing/head/axehat
+
+/datum/clothingbooth_item/head/rhinobeetlehat
+	name = "Beetle Helm"
+	variant_name = "Rhino Beetle"
+	item_path = /obj/item/clothing/head/rhinobeetle
+
+	stagbeetle
+		variant_name = "Stag Beetle"
+		item_path = /obj/item/clothing/head/stagbeetle
+
+/datum/clothingbooth_item/head/elephanthat
+	name = "Elephant Hat"
+	variant_name = "Pink"
+	cost = PAY_TRADESMAN/3
+	item_path = /obj/item/clothing/head/elephanthat/pink
+
+	gold
+		variant_name = "Gold"
+		item_path = /obj/item/clothing/head/elephanthat/gold
+
+	green
+		variant_name = "Green"
+		item_path = /obj/item/clothing/head/elephanthat/green
+
+	blue
+		variant_name = "Blue"
+		item_path = /obj/item/clothing/head/elephanthat/blue
+
+/datum/clothingbooth_item/head/mushroomcap
+	name = "Mushroom Cap"
+	variant_name = "Red"
+	item_path = /obj/item/clothing/head/mushroomcap/red
+
+	shiitake
+		name = "Shiitake Mushroom Cap"
+		item_path = /obj/item/clothing/head/mushroomcap/shiitake
+
+	indigo
+		name = "Indigo Mushroom Cap"
+		item_path = /obj/item/clothing/head/mushroomcap/indigo
+
+	inky
+		name = "Inky Mushroom Cap"
+		cost = PAY_TRADESMAN
+		item_path = /obj/item/clothing/head/mushroomcap/inky
+
+/datum/clothingbooth_item/head/minotaurmask
+	cost = PAY_TRADESMAN
+	item_path = /obj/item/clothing/head/minotaurmask
+
+/datum/clothingbooth_item/head/tengumask
+	name = "Tengu Mask"
+	path = /obj/item/clothing/mask/tengu
+
+#endif
