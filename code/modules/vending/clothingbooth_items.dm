@@ -1,15 +1,19 @@
+#define SEASON_HALLOWEEN 1
+
 ABSTRACT_TYPE(/datum/clothingbooth_item)
 /datum/clothingbooth_item
 	/**	Displayed on the list of available items. Please ensure that the name conforms as closely as possible to the actual names of the item and its
 		child types. */
 	var/name = null
+	/// Only use this for items that are `#ifdef`'d for a given season.
+	var/season = null
 	var/slot = SLOT_W_UNIFORM
 	var/variant_name = null
 	var/variant_color = null
-	// Just in case *some* rogue clothing item needs to have two different variables. Grumble grumble.
+	/// Just in case *some* rogue clothing item needs to have two different variables. Grumble grumble.
 	var/detail_name = null
 	var/detail_color = null
-	// Set these to true for the variant/detail type that is selected by default.
+	/// Set these to true for the variant/detail type that is selected by default.
 	var/initial_variant = FALSE
 	var/initial_detail = FALSE
 	var/cost = 1
@@ -1028,14 +1032,17 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform)
 
 /* ------------------------- Head ------------------------ */
 /datum/clothingbooth_item/head/giraffehat
+	season = SEASON_HALLOWEEN
 	item_path = /obj/item/clothing/head/giraffehat
 
 /datum/clothingbooth_item/head/axehat
+	season = SEASON_HALLOWEEN
 	cost = PAY_TRADESMAN/3
 	item_path = /obj/item/clothing/head/axehat
 
 /datum/clothingbooth_item/head/rhinobeetlehat
 	name = "Beetle Helm"
+	season = SEASON_HALLOWEEN
 	variant_name = "Rhino Beetle"
 	item_path = /obj/item/clothing/head/rhinobeetle
 
@@ -1045,6 +1052,7 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform)
 
 /datum/clothingbooth_item/head/elephanthat
 	name = "Elephant Hat"
+	season = SEASON_HALLOWEEN
 	variant_name = "Pink"
 	cost = PAY_TRADESMAN/3
 	item_path = /obj/item/clothing/head/elephanthat/pink
@@ -1063,6 +1071,7 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform)
 
 /datum/clothingbooth_item/head/mushroomcap
 	name = "Mushroom Cap"
+	season = SEASON_HALLOWEEN
 	variant_name = "Red"
 	item_path = /obj/item/clothing/head/mushroomcap/red
 
@@ -1080,11 +1089,15 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform)
 		item_path = /obj/item/clothing/head/mushroomcap/inky
 
 /datum/clothingbooth_item/head/minotaurmask
+	season = SEASON_HALLOWEEN
 	cost = PAY_TRADESMAN
 	item_path = /obj/item/clothing/head/minotaurmask
 
 /datum/clothingbooth_item/head/tengumask
 	name = "Tengu Mask"
+	season = SEASON_HALLOWEEN
 	path = /obj/item/clothing/mask/tengu
 
 #endif
+
+#undef SEASON_HALLOWEEN
