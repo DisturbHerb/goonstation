@@ -5,17 +5,25 @@ ABSTRACT_TYPE(/datum/clothingbooth_item)
 	/**	Displayed on the list of available items. Please ensure that the name conforms as closely as possible to the actual names of the item and its
 		child types. */
 	var/name = null
-	/// Only use this for items that are `#ifdef`'d for a given season.
+	/// Only use this for items that are `#ifdef`'d for a given season. Available seasons are defined locally in this file.
 	var/season = null
+	/// This var expects an inventory slot define as set in `clothing.dm`.
 	var/slot = SLOT_W_UNIFORM
+
 	var/variant_name = null
 	var/variant_color = null
 	/// Just in case *some* rogue clothing item needs to have two different variables. Grumble grumble.
 	var/detail_name = null
 	var/detail_color = null
+	/// HSL representation of `src.detail_color` used for sorting, generated at runtime. Do not override manually.
+	var/detail_color_hsl = null
 	/// Set these to true for the variant/detail type that is selected by default.
 	var/initial_variant = FALSE
 	var/initial_detail = FALSE
+	/** To override the alphabetical or HSL sorting schema when displaying the available variants, `variant_list_place` can be overriden with an
+		integer denoting its index in the list ascending from 1. Index 1 will appear after the type with `initial_variant`. */
+	var/variant_list_place = null
+
 	var/cost = 1
 	var/item_path = /obj/item/clothing/jumpsuit/under/color/white
 
@@ -31,15 +39,18 @@ ABSTRACT_TYPE(/datum/clothingbooth_item)
 		src.cost = round(src.cost)
 
 /* ----------------------- Glasses ----------------------- */
-ABSTRACT_TYPE(/datum/clothingbooth_item/glasses)
+ABSTRACT_TYPE(/datum/clothingbooth_item/mask)
 /datum/clothingbooth_item/mask
 	slot = SLOT_WEAR_MASK
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/mask/masquerade)
 /datum/clothingbooth_item/mask/masquerade
 	name = "Masquerade Mask"
-	variant_name = "Cherryblossom"
 	cost = PAY_TRADESMAN/5
-	item_path = /obj/item/clothing/mask/blossommask
+
+	cherryblossom
+		variant_name = "Cherryblossom"
+		item_path = /obj/item/clothing/mask/blossommask
 
 	peacock
 		variant_name = "Peacock"
@@ -77,11 +88,14 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/head)
 	slot = SLOT_HEAD
 	cost = PAY_TRADESMAN/2
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/head/barrettes)
 /datum/clothingbooth_item/head/barrettes
 	name = "Barrettes"
-	variant_name = "Black"
 	cost = PAY_TRADESMAN/5
-	item_path = /obj/item/clothing/head/barrette/black
+
+	black
+		variant_name = "Black"
+		item_path = /obj/item/clothing/head/barrette/black
 
 	blue
 		variant_name = "Blue"
@@ -102,11 +116,14 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/head)
 		variant_name = "Silver"
 		item_path = /obj/item/clothing/head/barrette/silver
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/head/basecap)
 /datum/clothingbooth_item/head/basecap
 	name = "Baseball Cap"
-	variant_name = "Black"
 	cost = PAY_TRADESMAN/5
-	item_path = /obj/item/clothing/head/basecap/black
+
+	black
+		variant_name = "Black"
+		item_path = /obj/item/clothing/head/basecap/black
 
 	white
 		variant_name = "White"
@@ -136,11 +153,14 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/head)
 		variant_name = "Purple"
 		item_path = /obj/item/clothing/head/basecap/purple
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/head/beret)
 /datum/clothingbooth_item/head/beret
 	name = "Beret"
-	variant_name = "White"
 	cost = PAY_TRADESMAN/3
-	item_path = /obj/item/clothing/head/frenchberet/white
+
+	white
+		variant_name = "White"
+		item_path = /obj/item/clothing/head/frenchberet/white
 
 	purple
 		variant_name = "Purple"
@@ -174,11 +194,27 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/head)
 	cost = PAY_TRADESMAN/5
 	item_path = /obj/item/clothing/head/mime_bowler
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/head/butterfly_hairclip)
+/datum/clothingbooth_item/head/butterfly_hairclip
+	name = "Butterfly Hairclip"
+	cost = PAY_TRADESMAN/5
+
+	blue
+		variant_name = "Blue"
+		item_path = /obj/item/clothing/head/barrette/butterflyblu
+
+	orange
+		variant_name = "Orange"
+		item_path = /obj/item/clothing/head/barrette/butterflyorg
+
+ABSTRACT_TYPE(/datum/clothingbooth_item/head/cat_ears)
 /datum/clothingbooth_item/head/cat_ears
 	name = "Cat Ears"
-	variant_name = "White"
 	cost = PAY_TRADESMAN/2
-	item_path = /obj/item/clothing/head/headband/nyan/white
+
+	white
+		variant_name = "White"
+		item_path = /obj/item/clothing/head/headband/nyan/white
 
 	black
 		variant_name = "Black"
@@ -212,11 +248,14 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/head)
 		variant_name = "Yellow"
 		item_path = /obj/item/clothing/head/headband/nyan/yellow
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/head/costume_goggles)
 /datum/clothingbooth_item/head/costume_goggles
 	name = "Costume Goggles"
-	variant_name = "Yellow"
 	cost = PAY_TRADESMAN/3
-	item_path = /obj/item/clothing/head/goggles/yellow
+
+	purple
+		variant_name = "Yellow"
+		item_path = /obj/item/clothing/head/goggles/yellow
 
 	red
 		variant_name = "Red"
@@ -244,11 +283,14 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/head)
 	cost = PAY_TRADESMAN/5
 	item_path = /obj/item/clothing/head/waitresshat
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/head/fedora)
 /datum/clothingbooth_item/head/fedora
 	name = "Fedora"
-	variant_name = "Black"
 	cost = PAY_TRADESMAN/5
-	item_path = /obj/item/clothing/head/fedora
+
+	black
+		variant_name = "Black"
+		item_path = /obj/item/clothing/head/fedora
 
 	brown
 		variant_name = "Brown"
@@ -270,11 +312,14 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/head)
 	cost = PAY_TRADESMAN/5
 	item_path = /obj/item/clothing/head/pokervisor
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/head/hairbow)
 /datum/clothingbooth_item/head/hairbow
 	name = "Hairbow"
-	variant_name = "blue"
 	cost = PAY_TRADESMAN/3
-	item_path = /obj/item/clothing/head/hairbow/blue
+
+	blue
+		variant_name = "blue"
+		item_path = /obj/item/clothing/head/hairbow/blue
 
 	matteblack
 		variant_name = "Matte Black"
@@ -343,52 +388,67 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/head)
 	cost = PAY_TRADESMAN
 	item_path = /obj/item/clothing/head/pinwheel_hat
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/head/pirate)
 /datum/clothingbooth_item/head/pirate
 	name = "Pirate"
-	variant_name = "Black"
-	item_path = /obj/item/clothing/head/pirate_blk
+
+	black
+		variant_name = "Black"
+		item_path = /obj/item/clothing/head/pirate_blk
 
 	brown
 		variant_name = "Brown"
 		item_path = /obj/item/clothing/head/pirate_brn
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/head/pomhat)
 /datum/clothingbooth_item/head/pomhat
 	name = "Pomhat"
-	variant_name = "Red"
-	item_path = /obj/item/clothing/head/pomhat_red
+
+	red
+		variant_name = "Red"
+		item_path = /obj/item/clothing/head/pomhat_red
 
 	blue
 		variant_name = "Blue"
 		item_path = /obj/item/clothing/head/pomhat_blue
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/head/sunhat)
 /datum/clothingbooth_item/head/sunhat
 	name = "Sunhat"
-	variant_name = "Blue"
 	cost = PAY_TRADESMAN/5
-	item_path = /obj/item/clothing/head/sunhat
-
-	green
-		variant_name = "Green"
-		item_path = /obj/item/clothing/head/sunhat/sunhatg
 
 	red
 		variant_name = "Red"
 		item_path = /obj/item/clothing/head/sunhat/sunhatr
 
+	green
+		variant_name = "Green"
+		item_path = /obj/item/clothing/head/sunhat/sunhatg
+
+	blue
+		variant_name = "Blue"
+		item_path = /obj/item/clothing/head/sunhat
+
+ABSTRACT_TYPE(/datum/clothingbooth_item/head/tophat)
 /datum/clothingbooth_item/head/tophat
 	name = "Top Hat"
-	variant_name = "Black"
-	item_path = /obj/item/clothing/head/that
+
+	black
+		variant_name = "Black"
+		item_path = /obj/item/clothing/head/that
 
 	white
 		variant_name = "White"
 		item_path = /obj/item/clothing/head/that/white
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/head/westhat)
 /datum/clothingbooth_item/head/westhat
 	name = "Ten-Gallon Hat"
-	variant_name = "Beige"
 	cost = PAY_UNTRAINED/2
-	item_path = /obj/item/clothing/head/westhat
+
+	beige
+		variant_name = "Beige"
+		item_path = /obj/item/clothing/head/westhat
 
 	black
 		variant_name = "Black"
@@ -420,11 +480,14 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/shoes)
 	slot = SLOT_SHOES
 	cost = PAY_TRADESMAN/5
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/shoes/boots)
 /datum/clothingbooth_item/shoes/boots
 	name = "Boots"
-	variant_name = "Black"
 	cost = PAY_DOCTORATE/5
-	item_path = /obj/item/clothing/shoes/bootsblk
+
+	black
+		variant_name = "Black"
+		item_path = /obj/item/clothing/shoes/bootsblk
 
 	white
 		variant_name = "White"
@@ -438,11 +501,15 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/shoes)
 		variant_name = "Blue"
 		item_path = /obj/item/clothing/shoes/bootsblu
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/shoes/cowboy_boots)
 /datum/clothingbooth_item/shoes/cowboy_boots
 	name = "Cowboy Boots"
-	variant_name = "Real"
 	cost = PAY_UNTRAINED/2
-	item_path = /obj/item/clothing/shoes/westboot
+
+	real
+		variant_name = "Real"
+		item_path = /obj/item/clothing/shoes/westboot
+		initial_variant = TRUE
 
 	dirty
 		variant_name = "Dirty"
@@ -460,10 +527,14 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/shoes)
 	cost = PAY_DOCTORATE/5
 	item_path = /obj/item/clothing/shoes/dress_shoes
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/shoes/flats)
 /datum/clothingbooth_item/shoes/flats
 	name = "Flats"
-	variant_name = "Black"
-	item_path = /obj/item/clothing/shoes/flatsblk
+
+	black
+		variant_name = "Black"
+		item_path = /obj/item/clothing/shoes/flatsblk
+		initial_variant = TRUE
 
 	white
 		variant_name = "White"
@@ -484,11 +555,14 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/shoes)
 /datum/clothingbooth_item/shoes/floppy_boots
 	item_path = /obj/item/clothing/shoes/floppy
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/shoes/heels)
 /datum/clothingbooth_item/shoes/heels
 	name = "Heels"
-	variant_name = "White"
 	cost = PAY_DOCTORATE/5
-	item_path = /obj/item/clothing/shoes/heels
+
+	white
+		variant_name = "White"
+		item_path = /obj/item/clothing/shoes/heels
 
 	black
 		variant_name = "Black"
@@ -502,10 +576,13 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/shoes)
 	cost = PAY_DOCTORATE/5
 	item_path = /obj/item/clothing/shoes/cwboots
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/shoes/mary_janes)
 /datum/clothingbooth_item/shoes/mary_janes
 	name = "Mary Janes"
-	variant_name = "Black"
-	item_path = /obj/item/clothing/shoes/mjblack
+
+	black
+		variant_name = "Black"
+		item_path = /obj/item/clothing/shoes/mjblack
 
 	brown
 		variant_name = "Brown"
@@ -526,15 +603,21 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/wear_suit)
 	slot = SLOT_WEAR_SUIT
 	cost = PAY_TRADESMAN/3
 
+/datum/clothingbooth_item/wear_suit/baseball_jacket
+	item_path = /obj/item/clothing/suit/jacketsjacket
+
 /datum/clothingbooth_item/wear_suit/dinosaur_pajamas
 	cost = PAY_TRADESMAN/2
 	item_path = /obj/item/clothing/suit/gimmick/dinosaur
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/wear_suit/dress)
 /datum/clothingbooth_item/wear_suit/dress
 	name = "Dress"
-	variant_name = "Black"
 	cost = PAY_DOCTORATE/3
-	item_path = /obj/item/clothing/suit/dressb
+
+	black
+		variant_name = "Black"
+		item_path = /obj/item/clothing/suit/dressb
 
 	blue
 		variant_name = "Blue"
@@ -552,11 +635,15 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/wear_suit)
 	cost = PAY_IMPORTANT/3
 	item_path = /obj/item/clothing/suit/guards_coat
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/wear_suit/hoodie)
 /datum/clothingbooth_item/wear_suit/hoodie
 	name = "Hoodie"
-	variant_name = "Orange"
 	cost = PAY_UNTRAINED/3
-	item_path = /obj/item/clothing/suit/hoodie
+
+	orange
+		variant_name = "Orange"
+		item_path = /obj/item/clothing/suit/hoodie
+		initial_variant = TRUE
 
 	pink
 		variant_name = "Pink"
@@ -602,11 +689,14 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/wear_suit)
 		variant_name = "Black"
 		item_path = /obj/item/clothing/suit/hoodie/black
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/wear_suit/jacket)
 /datum/clothingbooth_item/wear_suit/jacket
 	name = "Jacket"
-	variant_name = "Cerulean"
 	cost = PAY_TRADESMAN/3
-	item_path = /obj/item/clothing/suit/jacket/design/cerulean
+
+	cerulean
+		variant_name = "Cerulean"
+		item_path = /obj/item/clothing/suit/jacket/design/cerulean
 
 	grey
 		variant_name = "Grey"
@@ -649,11 +739,14 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/wear_suit)
 /datum/clothingbooth_item/wear_suit/overcoat_and_scarf
 	item_path = /obj/item/clothing/suit/johnny_coat
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/wear_suit/poncho)
 /datum/clothingbooth_item/wear_suit/poncho
 	name = "Poncho"
-	variant_name = "Flower"
 	cost = PAY_UNTRAINED/1
-	item_path = /obj/item/clothing/suit/poncho/flower
+
+	flower
+		variant_name = "Flower"
+		item_path = /obj/item/clothing/suit/poncho/flower
 
 	leaf
 		variant_name = "Leaf"
@@ -689,8 +782,8 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform)
 	slot = SLOT_W_UNIFORM
 	cost = PAY_UNTRAINED/3
 
-/datum/clothingbooth_item/w_uniform/bubble_shirt
-	item_path = /obj/item/clothing/under/misc/bubble
+/datum/clothingbooth_item/w_uniform/bandshirt
+	item_path = /obj/item/clothing/under/misc/bandshirt
 
 /datum/clothingbooth_item/w_uniform/bubble_shirt
 	item_path = /obj/item/clothing/under/misc/bubble
@@ -699,10 +792,13 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform)
 	cost = PAY_DOCTORATE/3
 	item_path = /obj/item/clothing/under/gimmick/butler
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/card_suit_shirt)
 /datum/clothingbooth_item/w_uniform/card_suit_shirt
 	name = "Card Suit Shirt"
-	variant_name = "Spades"
-	item_path = /obj/item/clothing/under/misc/spade
+
+	spades
+		variant_name = "Spades"
+		item_path = /obj/item/clothing/under/misc/spade
 
 	clubs
 		variant_name = "Clubs"
@@ -716,6 +812,7 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform)
 		variant_name = "Diamonds"
 		item_path = /obj/item/clothing/under/misc/diamond
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/collar_dress)
 /datum/clothingbooth_item/w_uniform/collar_dress
 	name = "Collar Dress"
 	variant_name = "Black"
@@ -737,10 +834,13 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform)
 	cost = PAY_DOCTORATE/5
 	item_path = /obj/item/clothing/under/gimmick/cwfashion
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/diner_waitress_dress)
 /datum/clothingbooth_item/w_uniform/diner_waitress_dress
 	name = "Diner Waitress's Dress"
-	variant_name = "Mint"
-	item_path = /obj/item/clothing/under/gimmick/dinerdress_mint
+
+	mint
+		variant_name = "Mint"
+		item_path = /obj/item/clothing/under/gimmick/dinerdress_mint
 
 	pink
 		variant_name = "Pink"
@@ -749,11 +849,14 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform)
 /datum/clothingbooth_item/w_uniform/dirty_vest
 	item_path = /obj/item/clothing/under/misc/dirty_vest
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/dress_shirt_wcoat)
 /datum/clothingbooth_item/w_uniform/dress_shirt_wcoat
 	name = "Dress Shirt and Waistcoat"
-	variant_name = "Black"
 	cost = PAY_DOCTORATE/3
-	item_path = /obj/item/clothing/under/gimmick/black_wcoat
+
+	black
+		variant_name = "Black"
+		item_path = /obj/item/clothing/under/gimmick/black_wcoat
 
 	blue
 		variant_name = "Blue"
@@ -770,8 +873,12 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform)
 /datum/clothingbooth_item/w_uniform/fish
 	item_path = /obj/item/clothing/under/misc/fish
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/flame_shirt)
 /datum/clothingbooth_item/w_uniform/flame_shirt
-	item_path = /obj/item/clothing/under/misc/flame_purple
+	name = "Flame Shirt"
+
+	purple
+		item_path = /obj/item/clothing/under/misc/flame_purple
 
 	rainbow
 		item_path = /obj/item/clothing/under/misc/flame_rainbow
@@ -787,11 +894,14 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform)
 	cost = PAY_DOCTORATE/3
 	item_path = /obj/item/clothing/under/misc/dress/hawaiian
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/little_dress)
 /datum/clothingbooth_item/w_uniform/little_dress
 	name = "Little Dress"
-	variant_name = "Black"
 	cost = PAY_IMPORTANT/3
-	item_path = /obj/item/clothing/under/misc/dress
+
+	black
+		variant_name = "Black"
+		item_path = /obj/item/clothing/under/misc/dress
 
 	red
 		variant_name = "Red"
@@ -804,11 +914,14 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform)
 	cost = PAY_TRADESMAN/3
 	item_path = /obj/item/clothing/under/gimmick/maid
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/masquerade)
 /datum/clothingbooth_item/w_uniform/masquerade
 	name = "Masquerade Dress"
-	variant_name = "Cherryblossom"
 	cost = PAY_DOCTORATE/3
-	item_path = /obj/item/clothing/under/blossomdress
+
+	cherryblossom
+		variant_name = "Cherryblossom"
+		item_path = /obj/item/clothing/under/blossomdress
 
 	peacock
 		variant_name = "Peacock"
@@ -821,11 +934,14 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform)
 	cost = PAY_TRADESMAN/3
 	item_path = /obj/item/clothing/under/redtie
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/scifi)
 /datum/clothingbooth_item/w_uniform/scifi
 	name = "Sci-Fi Jumpsuit"
-	variant_name = "Black and Purple"
 	cost = PAY_DOCTORATE/3
-	item_path = /obj/item/clothing/under/misc/sfjumpsuitbp
+
+	black_and_purple
+		variant_name = "Black and Purple"
+		item_path = /obj/item/clothing/under/misc/sfjumpsuitbp
 
 	black_and_red
 		variant_name = "Black and Red"
@@ -839,10 +955,13 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform)
 		variant_name = "Bee"
 		item_path = /obj/item/clothing/under/misc/sfjumpsuitbee
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/shirt_and_jeans)
 /datum/clothingbooth_item/w_uniform/shirt_and_jeans
 	name = "Shirt and Jeans"
-	variant_name = "White"
-	item_path = /obj/item/clothing/under/misc/casualjeanswb
+
+	white
+		variant_name = "White"
+		item_path = /obj/item/clothing/under/misc/casualjeanswb
 
 	black_skull
 		variant_name = "Black Skull"
@@ -876,64 +995,81 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform)
 		variant_name = "Yellow"
 		item_path = /obj/item/clothing/under/misc/casualjeansyel
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/shirt_and_pants)
 /datum/clothingbooth_item/w_uniform/shirt_and_pants
 	name = "Shirt and Pants"
-	variant_name = "Black Pants"
-	detail_name = "No Tie"
 	cost = PAY_TRADESMAN/3
-	item_path = /obj/item/clothing/under/shirt_pants_b
 
-	red_tie
+	black_pants_no_tie
+		variant_name = "Black Pants"
+		detail_name = "No Tie"
+		item_path = /obj/item/clothing/under/shirt_pants_b
+		initial_variant = TRUE
+		initial_detail = TRUE
+
+	black_pants_red_tie
+		variant_name = "Black Pants"
 		detail_name = "Red Tie"
 		item_path = /obj/item/clothing/under/shirt_pants_b/redtie
 
-	black_tie
+	black_pants_black_tie
+		variant_name = "Black Pants"
 		detail_name = "Black Tie"
 		item_path = /obj/item/clothing/under/shirt_pants_b/blacktie
 
-	blue_tie
+	black_pants_blue_tie
+		variant_name = "Black Pants"
 		detail_name = "Blue Tie"
 		item_path = /obj/item/clothing/under/shirt_pants_b/bluetie
 
-	brown_pants
+	brown_pants_no_tie
 		variant_name = "Brown Pants"
 		detail_name = "No Tie"
 		item_path = /obj/item/clothing/under/shirt_pants_br
 
-		red_tie
-			detail_name = "Red Tie"
-			item_path = /obj/item/clothing/under/shirt_pants_br/redtie
+	brown_pants_red_tie
+		variant_name = "Brown Pants"
+		detail_name = "Red Tie"
+		item_path = /obj/item/clothing/under/shirt_pants_br/redtie
 
-		black_tie
-			detail_name = "Black Tie"
-			item_path = /obj/item/clothing/under/shirt_pants_br/blacktie
+	brown_pants_black_tie
+		variant_name = "Brown Pants"
+		detail_name = "Black Tie"
+		item_path = /obj/item/clothing/under/shirt_pants_br/blacktie
 
-		blue_tie
-			detail_name = "Blue Tie"
-			item_path = /obj/item/clothing/under/shirt_pants_br/bluetie
+	brown_pants_blue_tie
+		variant_name = "Brown Pants"
+		detail_name = "Blue Tie"
+		item_path = /obj/item/clothing/under/shirt_pants_br/bluetie
 
-	white
+	white_pants_no_tie
 		variant_name = "White Pants"
 		detail_name = "No Tie"
 		item_path = /obj/item/clothing/under/shirt_pants_w
 
-		red_tie
-			detail_name = "Red Tie"
-			item_path = /obj/item/clothing/under/shirt_pants_w/redtie
+	white_pants_red_tie
+		variant_name = "White Pants"
+		detail_name = "Red Tie"
+		item_path = /obj/item/clothing/under/shirt_pants_w/redtie
 
-		black_tie
-			detail_name = "Black Tie"
-			item_path = /obj/item/clothing/under/shirt_pants_w/blacktie
+	white_pants_black_tie
+		variant_name = "White Pants"
+		detail_name = "Black Tie"
+		item_path = /obj/item/clothing/under/shirt_pants_w/blacktie
 
-		blue_tie
-			detail_name = "Blue Tie"
-			item_path = /obj/item/clothing/under/shirt_pants_w/bluetie
+	white_pants_blue_tie
+		variant_name = "White Pants"
+		detail_name = "Blue Tie"
+		item_path = /obj/item/clothing/under/shirt_pants_w/bluetie
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/skirt_dress)
 /datum/clothingbooth_item/w_uniform/skirt_dress
 	name = "Skirt Dress"
-	variant_name = "Red and Black"
 	cost = PAY_TRADESMAN/3
-	item_path = /obj/item/clothing/under/misc/sktdress_red
+
+	red
+		variant_name = "Red and Black"
+		item_path = /obj/item/clothing/under/misc/sktdress_red
 
 	blue
 		variant_name = "Blue and Black"
@@ -952,13 +1088,15 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform)
 
 /datum/clothingbooth_item/w_uniform/tracksuit
 	name = "Tracksuit"
-	variant_name = "Black"
 	item_path = /obj/item/clothing/under/gimmick/adidad
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/tshirt_dress)
 /datum/clothingbooth_item/w_uniform/tshirt_dress
 	name = "Tshirt Dress"
-	variant_name = "Black"
-	item_path = /obj/item/clothing/under/misc/casdressblk
+
+	black
+		variant_name = "Black"
+		item_path = /obj/item/clothing/under/misc/casdressblk
 
 	blue
 		variant_name = "Blue"
@@ -1012,11 +1150,14 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform)
 	cost = PAY_UNTRAINED/1
 	item_path = /obj/item/clothing/under/misc/westerndress
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/yoga)
 /datum/clothingbooth_item/w_uniform/yoga
 	name = "Yoga Outfit"
-	variant_name = "White"
 	cost = PAY_TRADESMAN/3
-	item_path = /obj/item/clothing/under/misc/yoga
+
+	white
+		variant_name = "White"
+		item_path = /obj/item/clothing/under/misc/yoga
 
 	red
 		variant_name = "Red"
@@ -1040,22 +1181,28 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform)
 	cost = PAY_TRADESMAN/3
 	item_path = /obj/item/clothing/head/axehat
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/head/rhinobeetlehat)
 /datum/clothingbooth_item/head/rhinobeetlehat
 	name = "Beetle Helm"
 	season = SEASON_HALLOWEEN
-	variant_name = "Rhino Beetle"
-	item_path = /obj/item/clothing/head/rhinobeetle
+
+	rhinobeetle
+		variant_name = "Rhino Beetle"
+		item_path = /obj/item/clothing/head/rhinobeetle
 
 	stagbeetle
 		variant_name = "Stag Beetle"
 		item_path = /obj/item/clothing/head/stagbeetle
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/head/elephanthat)
 /datum/clothingbooth_item/head/elephanthat
 	name = "Elephant Hat"
 	season = SEASON_HALLOWEEN
-	variant_name = "Pink"
 	cost = PAY_TRADESMAN/3
-	item_path = /obj/item/clothing/head/elephanthat/pink
+
+	pink
+		variant_name = "Pink"
+		item_path = /obj/item/clothing/head/elephanthat/pink
 
 	gold
 		variant_name = "Gold"
@@ -1069,11 +1216,14 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform)
 		variant_name = "Blue"
 		item_path = /obj/item/clothing/head/elephanthat/blue
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/head/mushroomcap)
 /datum/clothingbooth_item/head/mushroomcap
 	name = "Mushroom Cap"
 	season = SEASON_HALLOWEEN
-	variant_name = "Red"
-	item_path = /obj/item/clothing/head/mushroomcap/red
+
+	red
+		variant_name = "Red"
+		item_path = /obj/item/clothing/head/mushroomcap/red
 
 	shiitake
 		name = "Shiitake Mushroom Cap"
