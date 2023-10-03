@@ -12,14 +12,19 @@ ABSTRACT_TYPE(/datum/clothingbooth_item)
 
 	var/variant_name = null
 	var/variant_color = null
+	/// HSL representation of `src.variant_color` used for sorting, generated at runtime. Do not override manually.
+	var/variant_color_hsl = null
+
 	/// Just in case *some* rogue clothing item needs to have two different variables. Grumble grumble.
 	var/detail_name = null
 	var/detail_color = null
 	/// HSL representation of `src.detail_color` used for sorting, generated at runtime. Do not override manually.
 	var/detail_color_hsl = null
+
 	/// Set these to true for the variant/detail type that is selected by default.
 	var/initial_variant = FALSE
 	var/initial_detail = FALSE
+
 	/** To override the alphabetical or HSL sorting schema when displaying the available variants, `variant_list_place` can be overriden with an
 		integer denoting its index in the list ascending from 1. Index 1 will appear after the type with `initial_variant`. */
 	var/variant_list_place = null
@@ -34,9 +39,27 @@ ABSTRACT_TYPE(/datum/clothingbooth_item)
 			src.name = initial(item.name)
 		if (!src.detail_color && src.detail_name)
 			src.detail_color = get_average_color(getFlatIcon(item.icon, no_anim = TRUE))
+		var/list/detail_hsl_buffer = rgb2num(src.detail_color, COLORSPACE_HSL)
+		src.detail_color_hsl = "[add_zero((detail_hsl_buffer[1]), 3)][add_zero((detail_hsl_buffer[2]), 3)][add_zero((detail_hsl_buffer[3]), 3)]"
 		if (!src.variant_color)
 			src.variant_color = get_average_color(getFlatIcon(item.icon, no_anim = TRUE))
+		var/list/variant_hsl_buffer = rgb2num(src.variant_color, COLORSPACE_HSL)
+		src.variant_color_hsl = "[add_zero((variant_hsl_buffer[1]), 3)][add_zero((variant_hsl_buffer[2]), 3)][add_zero((variant_hsl_buffer[3]), 3)]"
 		src.cost = round(src.cost)
+
+	/// Returns a string representation of a number with leading zeroes added until it reaches the desired_length given.
+	proc/add_leading_zeroes(number, desired_length = 3)
+		if (!number) return FALSE
+		if (number > desired_length)
+			CRASH("[number] already has a greater length than the given desired length ([desired_length])!")
+		var/number_buffer = "[number]"
+		var/is_at_length = FALSE
+		while (!is_at_length)
+			if (length(number_buffer) = desired_length)
+				is_at_length = TRUE
+			else
+				number_buffer = "0[number_buffer]"
+		return number_buffer
 
 /* ----------------------- Glasses ----------------------- */
 ABSTRACT_TYPE(/datum/clothingbooth_item/mask)

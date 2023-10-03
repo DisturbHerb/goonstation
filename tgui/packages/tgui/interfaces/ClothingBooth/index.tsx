@@ -1,3 +1,10 @@
+/**
+ * @file
+ * @copyright 2023
+ * @author DisturbHerb (https://github.com/disturbherb)
+ * @license ISC
+ */
+
 import { classes } from 'common/react';
 import { useBackend, useLocalState } from '../../backend';
 import { Box, Button, Divider, Dropdown, Image, Section, Stack } from '../../components';

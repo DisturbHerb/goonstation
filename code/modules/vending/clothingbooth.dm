@@ -1,3 +1,5 @@
+// don't forget to implement support for variants having different prices bestie <3
+
 /*Clothing Booth UI*/
 //list creation
 var/list/clothingbooth_stock = list()
