@@ -85,7 +85,7 @@ var/list/list/clothingbooth_stock_information_list = list()
 			"season" = current_item_list_entry["season"],
 			"slot_name" = current_item_list_entry["slot_name"],
 			"variant_count" = length(current_item_list_entry["variants"]),
-			"cost_range" =
+			"cost_range" = "[cost_min != cost_max ? "[cost_min] - [cost_max]" : "[cost_max]"]"
 		))
 
 	global.clothingbooth_stock_item_list = item_list_buffer
