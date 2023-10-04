@@ -31,7 +31,7 @@ var/list/list/clothingbooth_stock_information_list = list()
 		var/current_item_path_name = "[current_item.item_path]"
 		var/current_item_cost = current_item.cost
 
-		var/atom/dummy_atom = current_item_path
+		var/atom/dummy_atom = current_item.item_path
 		var/icon/dummy_icon = icon(initial(dummy_atom.icon), initial(dummy_atom.icon_state), frame = 1)
 		var/current_item_image = icon2base64(dummy_icon)
 
@@ -52,7 +52,7 @@ var/list/list/clothingbooth_stock_information_list = list()
 					))
 					match_found = TRUE
 		if (!match_found)
-			item_list_buffer[i] += list(list(
+			item_list_buffer += list(list(
 				"name" = current_item_name,
 				"image" = current_item_image,
 				"season" = current_item_season,
