@@ -1864,6 +1864,11 @@ ABSTRACT_TYPE(/obj/item/clothing/under/misc/blouse_skirt)
 	icon_state = "blouse_skirt-cream"
 	item_state = "blouse_skirt-cream"
 
+/obj/item/clothing/under/misc/blouse_skirt/khaki
+	name = "khaki blouse and skirt"
+	icon_state = "blouse_skirt-khaki"
+	item_state = "blouse_skirt-khaki"
+
 /obj/item/clothing/under/misc/blouse_skirt/pink
 	name = "pink blouse and skirt"
 	icon_state = "blouse_skirt-pink"
@@ -1879,20 +1884,15 @@ ABSTRACT_TYPE(/obj/item/clothing/under/misc/blouse_skirt)
 	icon_state = "blouse_skirt-dred"
 	item_state = "blouse_skirt-dred"
 
-/obj/item/clothing/under/misc/blouse_skirt/khaki
-	name = "khaki blouse and skirt"
-	icon_state = "blouse_skirt-khaki"
-	item_state = "blouse_skirt-khaki"
+/obj/item/clothing/under/misc/blouse_skirt/orange
+	name = "orange blouse and skirt"
+	icon_state = "blouse_skirt-orange"
+	item_state = "blouse_skirt-orange"
 
 /obj/item/clothing/under/misc/blouse_skirt/brown
 	name = "brown blouse and skirt"
 	icon_state = "blouse_skirt-brown"
 	item_state = "blouse_skirt-brown"
-
-/obj/item/clothing/under/misc/blouse_skirt/orange
-	name = "orange blouse and skirt"
-	icon_state = "blouse_skirt-orange"
-	item_state = "blouse_skirt-orange"
 
 /obj/item/clothing/under/misc/blouse_skirt/yellow
 	name = "yellow blouse and skirt"
@@ -1909,12 +1909,17 @@ ABSTRACT_TYPE(/obj/item/clothing/under/misc/blouse_skirt)
 	icon_state = "blouse_skirt-dgreen"
 	item_state = "blouse_skirt-dgreen"
 
+/obj/item/clothing/under/misc/blouse_skirt/mint
+	name = "mint blouse and skirt"
+	icon_state = "blouse_skirt-mint"
+	item_state = "blouse_skirt-mint"
+
 /obj/item/clothing/under/misc/blouse_skirt/blue
 	name = "blue blouse and skirt"
 	icon_state = "blouse_skirt-blue"
 	item_state = "blouse_skirt-blue"
 
-/obj/item/clothing/under/misc/blouse_skirt/navy_blue
+/obj/item/clothing/under/misc/blouse_skirt/dark_blue
 	name = "navy blue blouse and skirt"
 	icon_state = "blouse_skirt-dblue"
 	item_state = "blouse_skirt-dblue"
