@@ -1,50 +1,122 @@
 // don't forget to implement support for variants having different prices bestie <3
+// multi variant and singlet types should be accounted for when building the damn thing
 
-/*Clothing Booth UI*/
-//list creation
-var/list/clothingbooth_stock = list()
-var/list/clothingbooth_paths = list()
+/// A verbose list containing every single parent item and its variants and detail types.
+var/list/list/clothingbooth_stock_item_list = list()
+/// Condensed information on the essential information concerning a given parent item.
+var/list/list/clothingbooth_stock_information_list = list()
 
-/proc/clothingbooth_setup()
-	var/list/list/list/boothlist = list()
-	for(var/datum/clothingbooth_item/type as anything in concrete_typesof(/datum/clothingbooth_item))
-		var/datum/clothingbooth_item/I = new type
-		var/item_name = I.name
-		var/path_name = "[I.path]"
-		var/category_name = I.category
-		var/cost = I.cost
+/proc/build_clothingbooth_caches()
+	var/list/list/item_list_buffer = list()
+	var/list/list/information_list_buffer = list()
 
-		var/atom/dummy_atom = I.path
+	for(var/clothingbooth_list_entry in concrete_typesof(/datum/clothingbooth_item))
+		var/datum/clothingbooth_item/current_item = new clothingbooth_list_entry
+		if (!istype(current_item, /datum/clothingbooth_item))
+			continue
+
+		var/current_item_name = current_item.name
+		var/current_item_season = current_item.season
+		var/current_item_slot = current_item.slot
+		var/current_item_slot_name = slot_macro_to_string(current_item_slot)
+		var/current_item_variant_name = current_item.variant_name
+		var/current_item_variant_color = current_item.variant_color
+		var/current_item_variant_color_hsl = current_item.variant_color_hsl
+		var/current_item_detail_name = current_item.detail_name
+		var/current_item_detail_color = current_item.detail_color
+		var/current_item_detail_color_hsl = current_item.detail_color_hsl
+		var/current_item_initial_variant = current_item.initial_variant
+		var/current_item_initial_detail = current_item.initial_detail
+		var/current_item_variant_list_place = current_item.variant_list_place
+		var/current_item_path_name = "[current_item.item_path]"
+		var/current_item_cost = current_item.cost
+
+		var/atom/dummy_atom = current_item_path
 		var/icon/dummy_icon = icon(initial(dummy_atom.icon), initial(dummy_atom.icon_state), frame = 1)
-		var/item_img = icon2base64(dummy_icon)
+		var/current_item_image = icon2base64(dummy_icon)
 
 		var/match_found = FALSE
-		if(length(boothlist))
-			for(var/i=1, i<=boothlist.len, i++)
-				if(boothlist[i]["category"] == category_name)
-					match_found = TRUE
-					boothlist[i]["items"] += list(list(
-							"cost" = cost,
-							"img" = item_img,
-							"name" = item_name,
-							"path" = path_name
+		if (length(path_list_buffer))
+			for (var/i in 1 to length(path_list_buffer))
+				if (path_list_buffer[i] == current_item_name)
+					path_list_buffer[i]["variants"] += list(list(
+						"variant_name" = current_item_variant_name,
+						"variant_color" = current_item_variant_color,
+						"variant_color_hsl" = current_item_variant_color_hsl,
+						"detail_name" = current_item_detail_name,
+						"detail_color" = current_item_detail_color,
+						"detail_color_hsl" = current_item_detail_color_hsl,
+						"variant_list_place" = current_item_variant_list_place,
+						"path_name" = current_item_path_name,
+						"cost" = current_item_cost,
 					))
-					break
-		if(!match_found)
-			boothlist += list(list(
-				"category" = category_name,
-				"items" = list(list(
-					"cost" = cost,
-					"img" = item_img,
-					"name" = item_name,
-					"path" = path_name
+					match_found = TRUE
+		if (!match_found)
+			path_list_buffer[i] += list(list(
+				"name" = current_item_name,
+				"image" = current_item_image,
+				"season" = current_item_season,
+				"slot" = current_item_slot,
+				"slot_name" = current_item_slot_name,
+				"variants" = list(list(
+					"variant_name" = current_item_variant_name,
+					"variant_color" = current_item_variant_color,
+					"variant_color_hsl" = current_item_variant_color_hsl,
+					"detail_name" = current_item_detail_name,
+					"detail_color" = current_item_detail_color,
+					"detail_color_hsl" = current_item_detail_color_hsl,
+					"variant_list_place" = current_item_variant_list_place,
+					"path_name" = current_item_path_name,
+					"cost" = current_item_cost,
 				))
 			))
 
-		clothingbooth_paths[path_name] = I
-	clothingbooth_stock = boothlist
+	for (var/j in 1 to length(item_list_buffer))
+		var/current_item_list_entry = item_list_buffer[j]
+		if (!current_item_list_entry)
+			continue
 
-//clothing booth stuffs <3
+		var/cost_min = 0
+		var/cost_max = 0
+
+		information_list_buffer += list(list(
+			"name" = current_item_list_entry["name"],
+			"image" = current_item_list_entry["image"],
+			"season" = current_item_list_entry["season"],
+			"slot_name" = current_item_list_entry["slot_name"],
+			"variant_count" = length(current_item_list_entry["variants"]),
+			"cost_range" =
+		))
+
+	global.clothingbooth_stock_item_list = item_list_buffer
+	global.clothingbooth_stock_information_list = information_list_buffer
+
+/proc/slot_macro_to_string(slot_macro)
+	switch (slot_macro)
+		if (SLOT_BACK)
+			. = "Back"
+		if (SLOT_WEAR_MASK)
+			. = "Mask"
+		if (SLOT_BELT)
+			. = "Belt"
+		if (SLOT_WEAR_ID)
+			. = "ID"
+		if (SLOT_EARS)
+			. = "Ears"
+		if (SLOT_GLASSES)
+			. = "Glasses"
+		if (SLOT_GLOVES)
+			. = "Gloves"
+		if (SLOT_HEAD)
+			. = "Headwear"
+		if (SLOT_SHOES)
+			. = "Shoes"
+		if (SLOT_WEAR_SUIT)
+			. = "Suit"
+		if (SLOT_W_UNIFORM)
+			. = "Clothing"
+
+// clothing booth stuffs <3
 /obj/machinery/clothingbooth
 	name = "Clothing Booth"
 	desc = "Contains a sophisticated autoloom system capable of manufacturing a variety of clothing items on demand."
@@ -53,43 +125,49 @@ var/list/clothingbooth_paths = list()
 	flags = FPRINT | TGUI_INTERACTIVE
 	anchored = ANCHORED
 	density = 1
-	var/datum/movable_preview/character/multiclient/preview
-	var/datum/light/light
+	var/datum/light/ambient_light
+
+	// Preview and purchase-related.
 	var/datum/clothingbooth_item/item_to_purchase = null
+	var/datum/movable_preview/character/multiclient/preview
 	var/mob/living/carbon/human/occupant
 	var/obj/item/preview_item = null
-	var/money = 0
-	var/open = TRUE
-	var/preview_direction
 	var/preview_direction_default = SOUTH
+	/// This is set to `src.preview_direction_default` on New() and whenever a new occupant is added. This can be rotated in the UI.
+	var/current_preview_direction
+
+	/// Amount of inserted cash; presently, only cash is accepted.
+	var/money = 0
+	/// `src` can only be entered if `src.open` is TRUE.
+	var/open = TRUE
 
 	New()
 		..()
 		UnsubscribeProcess()
-		light = new /datum/light/point
-		light.attach(src)
-		light.set_brightness(0.6)
-		light.set_height(1.5)
-		light.enable()
+		src.ambient_light = new /datum/light/point
+		src.ambient_light.attach(src)
+		src.ambient_light.set_brightness(0.6)
+		src.ambient_light.set_height(1.5)
+		src.ambient_light.enable()
 		src.preview = new()
 		src.preview.add_background()
-		src.preview_direction = src.preview_direction_default
+		src.current_preview_direction = src.preview_direction_default
 
-	attackby(obj/item/weapon, mob/user)
-		if(istype(weapon, /obj/item/currency/spacecash))
+	attackby(obj/item/W, mob/user)
+		if(istype(W, /obj/item/currency/spacecash))
 			if(!(locate(/mob) in src))
-				src.money += weapon.amount
-				weapon.amount = 0
+				src.money += W.amount
+				W.amount = 0
 				user.visible_message("<span class='notice'>[user.name] inserts credits into [src]")
 				playsound(user, 'sound/machines/capsulebuy.ogg', 80, TRUE)
-				user.u_equip(weapon)
-				weapon.dropped(user)
-				qdel(weapon)
+				user.u_equip(W)
+				W.dropped(user)
+				qdel(W)
 			else
 				boutput(user,"<span style=\"color:red\">It seems the clothing booth is currently occupied. Maybe it's better to just wait.</span>")
 
-		else if (istype(weapon, /obj/item/grab))
-			var/obj/item/grab/G = weapon
+		else if (istype(W, /obj/item/grab))
+			var/obj/item/grab/G = W
 			if (ismob(G.affecting))
 				var/mob/GM = G.affecting
 				if (src.open)
@@ -199,11 +277,11 @@ var/list/clothingbooth_paths = list()
 				else
 					boutput(usr, "<span class='alert'>No item selected!</span>")
 			if ("rotate-cw")
-				src.preview_direction = turn(src.preview_direction, -90)
+				src.current_preview_direction = turn(src.current_preview_direction, -90)
 				update_preview()
 				. = TRUE
 			if ("rotate-ccw")
-				src.preview_direction = turn(src.preview_direction, 90)
+				src.current_preview_direction = turn(src.current_preview_direction, 90)
 				update_preview()
 				. = TRUE
 			if("select")
@@ -226,13 +304,13 @@ var/list/clothingbooth_paths = list()
 	proc/open()
 		flick("clothingbooth-opening", src)
 		src.icon_state = "clothingbooth-open"
-		open = TRUE
+		src.open = TRUE
 
 	/// close the booth
 	proc/close()
 		flick("clothingbooth-closing", src)
 		src.icon_state = "clothingbooth-closed"
-		open = FALSE
+		src.open = FALSE
 
 	/// ejects occupant if any along with any contents
 	proc/eject(mob/occupant)
@@ -242,7 +320,7 @@ var/list/clothingbooth_paths = list()
 			qdel(src.preview_item)
 			qdel(src.item_to_purchase)
 			src.preview.remove_all_clients()
-			src.preview_direction = src.preview_direction_default
+			src.current_preview_direction = src.preview_direction_default
 			src.item_to_purchase = null
 			tgui_process.close_uis(src)
 			var/turf/T = get_turf(src)
@@ -266,4 +344,4 @@ var/list/clothingbooth_paths = list()
 
 	/// generates a preview of the current occupant
 	proc/update_preview()
-		src.preview.update_appearance(src.occupant.bioHolder.mobAppearance, src.occupant.mutantrace, src.preview_direction, src.occupant.real_name)
+		src.preview.update_appearance(src.occupant.bioHolder.mobAppearance, src.occupant.mutantrace, src.current_preview_direction, src.occupant.real_name)
