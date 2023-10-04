@@ -36,10 +36,10 @@ var/list/list/clothingbooth_stock_information_list = list()
 		var/current_item_image = icon2base64(dummy_icon)
 
 		var/match_found = FALSE
-		if (length(path_list_buffer))
-			for (var/i in 1 to length(path_list_buffer))
-				if (path_list_buffer[i] == current_item_name)
-					path_list_buffer[i]["variants"] += list(list(
+		if (length(item_list_buffer))
+			for (var/i in 1 to length(item_list_buffer))
+				if (item_list_buffer[i] == current_item_name)
+					item_list_buffer[i]["variants"] += list(list(
 						"variant_name" = current_item_variant_name,
 						"variant_color" = current_item_variant_color,
 						"variant_color_hsl" = current_item_variant_color_hsl,
@@ -52,7 +52,7 @@ var/list/list/clothingbooth_stock_information_list = list()
 					))
 					match_found = TRUE
 		if (!match_found)
-			path_list_buffer[i] += list(list(
+			item_list_buffer[i] += list(list(
 				"name" = current_item_name,
 				"image" = current_item_image,
 				"season" = current_item_season,
@@ -76,17 +76,25 @@ var/list/list/clothingbooth_stock_information_list = list()
 		if (!current_item_list_entry)
 			continue
 
-		var/cost_min = 0
-		var/cost_max = 0
+		var/current_entry_cost_min
+		var/current_entry_cost_max
+		for (var/k in 1 to length(current_item_list_entry["variants"]))
+			var/current_variant_cost = current_item_list_entry["variants"][k]["cost"]
+			if (!current_entry_cost_min || (current_entry_cost_min && current_variant_cost < current_entry_cost_min))
+				current_entry_cost_min = current_variant_cost
+				continue
+			if (!current_entry_cost_max || (current_entry_cost_max && current_variant_cost < current_entry_cost_max))
+				current_entry_cost_max = current_variant_cost
+				continue
 
-		information_list_buffer += list(list(
-			"name" = current_item_list_entry["name"],
+		information_list_buffer[current_item_list_entry["name"]] += list(
 			"image" = current_item_list_entry["image"],
 			"season" = current_item_list_entry["season"],
 			"slot_name" = current_item_list_entry["slot_name"],
 			"variant_count" = length(current_item_list_entry["variants"]),
-			"cost_range" = "[cost_min != cost_max ? "[cost_min] - [cost_max]" : "[cost_max]"]"
-		))
+			"cost_min" = current_entry_cost_min,
+			"cost_max" = current_entry_cost_max,
+		)
 
 	global.clothingbooth_stock_item_list = item_list_buffer
 	global.clothingbooth_stock_information_list = information_list_buffer

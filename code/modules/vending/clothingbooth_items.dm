@@ -10,7 +10,7 @@ ABSTRACT_TYPE(/datum/clothingbooth_item)
 	/// This var expects an inventory slot define as set in `clothing.dm`.
 	var/slot = SLOT_W_UNIFORM
 
-	var/variant_name = null
+	var/variant_name = "Default"
 	var/variant_color = null
 	/// HSL representation of `src.variant_color` used for sorting, generated at runtime. Do not override manually.
 	var/variant_color_hsl = null
