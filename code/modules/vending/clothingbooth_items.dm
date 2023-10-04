@@ -47,20 +47,6 @@ ABSTRACT_TYPE(/datum/clothingbooth_item)
 		src.variant_color_hsl = "[add_zero((variant_hsl_buffer[1]), 3)][add_zero((variant_hsl_buffer[2]), 3)][add_zero((variant_hsl_buffer[3]), 3)]"
 		src.cost = round(src.cost)
 
-	/// Returns a string representation of a number with leading zeroes added until it reaches the desired_length given.
-	proc/add_leading_zeroes(number, desired_length = 3)
-		if (!number) return FALSE
-		if (number > desired_length)
-			CRASH("[number] already has a greater length than the given desired length ([desired_length])!")
-		var/number_buffer = "[number]"
-		var/is_at_length = FALSE
-		while (!is_at_length)
-			if (length(number_buffer) = desired_length)
-				is_at_length = TRUE
-			else
-				number_buffer = "0[number_buffer]"
-		return number_buffer
-
 /* ----------------------- Glasses ----------------------- */
 ABSTRACT_TYPE(/datum/clothingbooth_item/mask)
 /datum/clothingbooth_item/mask
