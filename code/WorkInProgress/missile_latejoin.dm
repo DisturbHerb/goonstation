@@ -11,7 +11,7 @@
 	bound_width = 32
 	bound_height = 64
 	layer = 30
-	flags = IMMUNE_MANTA_PUSH | IMMUNE_SINGULARITY
+	event_handler_flags = IMMUNE_MANTA_PUSH | IMMUNE_SINGULARITY | IMMUNE_TRENCH_WARP
 	dir = NORTH
 	var/move_dir = NORTH
 	var/moved_on_flooring = 0
@@ -120,8 +120,12 @@
 
 			var/area/AR = get_area(src)
 			var/turf/T = get_turf(src)
-			if (!src.target && istype(T, /turf/simulated/floor) && !AR.teleport_blocked && istype(AR, /area/station) && \
-					!istype(AR, /area/station/solar) && !istype(AR, /area/station/engine/singcore) && !T.density && T.z == 1)
+			var/area_check = istype(AR, /area/station) && !istype(AR, /area/station/solar) && !istype(AR, /area/station/engine/singcore)
+			var/turf_check = istype(T, /turf/simulated/floor) && !T.density
+			if (istype(AR, /area/pod_wars))
+				AR = TRUE
+				turf_check = !T.density
+			if (!src.target && turf_check && area_check && !AR.teleport_blocked && T.z == missile_z)
 				var/ok = TRUE
 				for(var/atom/A in T)
 					if(A.density)

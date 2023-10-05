@@ -158,6 +158,9 @@
 				SEND_SIGNAL(parent, COMSIG_TRANSFER_INCOMING, I)
 				transfers++
 			incoming.UpdateIcon()
+			if (istype(incoming, /obj/item/satchel))
+				var/obj/item/satchel/changed_satchel = incoming
+				changed_satchel.tooltip_rebuild = 1
 			if (transfers)
 				attacker.visible_message("<span class='notice'>[attacker] dumps [transfers] items out of [incoming] into [parent].</span>")
 			else
@@ -249,7 +252,7 @@
 			if (M.type != load_type)
 				continue
 			if(SEND_SIGNAL(target, COMSIG_TRANSFER_INCOMING, M))
-				playsound(target, 'sound/items/Deconstruct.ogg', 40, 1)
+				playsound(target, 'sound/items/Deconstruct.ogg', 40, TRUE)
 				onRestart()
 				return
 

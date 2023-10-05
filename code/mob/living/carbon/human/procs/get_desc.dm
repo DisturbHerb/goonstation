@@ -13,8 +13,9 @@
 		return // heh
 
 	. = list()
+	. += ..()
 	if (isalive(usr))
-		. += "<br><span class='notice'>You look closely at <B>[src.name]</B>.</span>"
+		. += "<br><span class='notice'>You look closely at <B>[src.name] ([src.get_pronouns()])</B>.</span>"
 		sleep(GET_DIST(usr.client.eye, src) + 1)
 		if (!usr.client.eye)
 			return // heh heh
@@ -28,13 +29,11 @@
 			. = "<br>[src.bioHolder.mobAppearance.flavor_text]"
 		catch
 			//nop
-
-	. +=  "<br><span class='notice'>*---------*</span>"
-
 	// crappy hack because you can't do \his[src] etc
 	var/t_his = his_or_her(src)
 	var/t_him = him_or_her(src)
 
+	. +=  "<br><span class='notice'>*---------*</span>"
 	var/datum/ailment_data/found = src.find_ailment_by_type(/datum/ailment/disability/memetic_madness)
 	if (!ignore_checks && found)
 		if (!ishuman(usr))
@@ -114,11 +113,18 @@
 				. += "<br><span class='alert'>[src.name] is wearing [bicon(src.wear_id)] [src.wear_id.name] yet doesn't seem to be that person!!!</span>"
 			else
 				. += "<br><span class='notice'>[src.name] is wearing [bicon(src.wear_id)] [src.wear_id.name].</span>"
-		else if (istype(src.wear_id, /obj/item/device/pda2) && src.wear_id:ID_card)
-			if (src.wear_id:ID_card:registered != src.real_name && in_interact_range(src, usr) && prob(10))
-				. += "<br><span class='alert'>[src.name] is wearing [bicon(src.wear_id)] [src.wear_id.name] with [bicon(src.wear_id:ID_card)] [src.wear_id:ID_card:name] in it yet doesn't seem to be that person!!!</span>"
+		else if ((istype(src.wear_id, /obj/item/device/pda2) && src.wear_id:ID_card) || istype(src.wear_id, /obj/item/clothing/lanyard))
+			var/obj/item/card/id/desc_id_card
+			if (istype(src.wear_id, /obj/item/clothing/lanyard))
+				var/obj/item/clothing/lanyard/lanyard = src.wear_id
+				desc_id_card = lanyard.get_stored_id()
 			else
-				. += "<br><span class='notice'>[src.name] is wearing [bicon(src.wear_id)] [src.wear_id.name] with [bicon(src.wear_id:ID_card)] [src.wear_id:ID_card:name] in it.</span>"
+				desc_id_card = src.wear_id:ID_card
+			if (desc_id_card)
+				if (desc_id_card.registered != src.real_name && in_interact_range(src, usr) && prob(10))
+					. += "<br><span class='alert'>[src.name] is wearing [bicon(src.wear_id)] [src.wear_id.name] with [bicon(desc_id_card)] [desc_id_card.name] in it yet doesn't seem to be that person!!!</span>"
+				else
+					. += "<br><span class='notice'>[src.name] is wearing [bicon(src.wear_id)] [src.wear_id.name] with [bicon(desc_id_card)] [desc_id_card.name] in it.</span>"
 
 	if (src.arrestIcon?.icon_state)
 		if(global.client_image_groups?[CLIENT_IMAGE_GROUP_ARREST_ICONS]?.subscribed_mobs_with_subcount[usr]) // are you in the list of people who can see arrest icons??
@@ -132,19 +138,19 @@
 		var/count = 0
 		for (var/obj/item/implant/projectile/body_visible/dart/P in src.implant)
 			count++
-		. += "<br><span class='alert'>[src] has [count > 1 ? "darts" : "a dart"] stuck in them!</span>"
+		. += "<br><span class='alert'>[src] has [count > 1 ? "darts" : "a dart"] stuck in [him_or_her(src)]!</span>"
 
 	if (locate(/obj/item/implant/projectile/body_visible/syringe) in src.implant)
 		var/count = 0
 		for (var/obj/item/implant/projectile/body_visible/syringe/P in src.implant)
 			count++
-		. += "<br><span class='alert'>[src] has [count > 1 ? "syringes" : "a syringe"] stuck in them!</span>"
+		. += "<br><span class='alert'>[src] has [count > 1 ? "syringes" : "a syringe"] stuck in [him_or_her(src)]!</span>"
 
 	if (locate(/obj/item/implant/projectile/body_visible/arrow) in src.implant)
 		var/count = 0
 		for (var/obj/item/implant/projectile/body_visible/arrow/P in src.implant)
 			count++
-		. += "<br><span class='alert'>[src] has [count > 1 ? "arrows" : "an arrow"] stuck in them!</span>"
+		. += "<br><span class='alert'>[src] has [count > 1 ? "arrows" : "an arrow"] stuck in [him_or_her(src)]!</span>"
 
 	if (src.is_jittery)
 		switch(src.jitteriness)
@@ -201,16 +207,15 @@
 
 		if (src.organHolder.chest)
 			if (src.organHolder.chest.op_stage > 0.0)
-				if (src.organHolder.chest.op_stage < 9.0)
+				if (src.organHolder.chest.op_stage < 2.0)
 					. += "<br><span class='alert'><B>[src.name] has an indeterminate number of small surgical scars on [t_his] chest!</B></span>"
-				if (src.organHolder.chest.op_stage >= 9.0 && src.organHolder.chest.op_stage < 10.0)
+				if (src.organHolder.chest.op_stage >= 2.0)
 					if (src.organHolder.heart)
 						. += "<br><span class='alert'><B>[src.name]'s chest is cut wide open!</B></span>"
 					else
 						. += "<br><span class='alert'><B>[src.name]'s chest is cut wide open and [t_his] heart has been removed!</B></span>"
-				else if(src.organHolder.chest.op_stage > 0.0)
-					. += "<br><span class='alert'><B>[src.name] has an indeterminate number of small surgical scars on [t_his] chest!</B></span>"
-
+					if (!src.chest_cavity_clamped)
+						. += "<br><span class='alert'><B>Blood is slowly seeping out of [src.name]'s un-clamped chest wound.</B></span>"
 			//tailstuff
 			if (src.organHolder.tail) // Has a tail?
 				// Comment if their tail deviates from the norm.
@@ -220,11 +225,11 @@
 					else
 						. += "<br><span class='notice'>[src.name] has [src.organHolder.tail.name] attached just above [t_his] butt.</span>"
 				// don't bother telling people that you have the tail you're supposed to have. nobody congratulates me for having all my legs
-				if (src.organHolder.chest.op_stage >= 10.0 && src.mob_flags & ~IS_BONEY) // assive ass wound? and not a skeleton?
+				if (src.organHolder.back_op_stage >= BACK_SURGERY_OPENED && src.mob_flags & ~IS_BONEY) // assive ass wound? and not a skeleton?
 					. += "<br><span class='alert'><B>[src.name] has a long incision around the base of [t_his] tail!</B></span>"
 
 			else // missing a tail?
-				if (src.organHolder.chest.op_stage >= 10.0) // first person to call this a tailhole is getting dropkicked into the sun
+				if (src.organHolder.back_op_stage >= BACK_SURGERY_OPENED) // first person to call this a tailhole is getting dropkicked into the sun
 					if (src.mob_flags & SHOULD_HAVE_A_TAIL) // Are they supposed to have a tail?
 						if (!src.organHolder.butt) // Also missing a butt?
 							. += "<br><span class='alert'><B>[src.name] has a large incision at the base of [t_his] back where [t_his] tail should be!</B></span>"
@@ -242,8 +247,8 @@
 			. += "<br><span class='alert'><B>[src.name]'s entire chest is missing!</B></span>"
 
 
-		if (src.butt_op_stage > 0)
-			if (src.butt_op_stage >= 4)
+		if (src.organHolder.back_op_stage > BACK_SURGERY_CLOSED)
+			if (!src.organHolder.butt)
 				. += "<br><span class='alert'><B>[src.name]'s butt seems to be missing!</B></span>"
 			else
 				. += "<br><span class='alert'><B>[src.name] has an open incision on [t_his] butt!</B></span>"
@@ -276,8 +281,6 @@
 			var/limbtxt = src.limbs.r_leg.on_holder_examine()
 			if (limbtxt)
 				. += "<br><span class='notice'>[src.name] [limbtxt] right leg.</span>"
-	if (src.chest_cavity_open)
-		. += "<br><span class='alert'><B>[src.name] has a large gaping hole down [t_his] chest!</B></span>"
 	if (src.bleeding && !isdead(src))
 		switch (src.bleeding)
 			if (1 to 2)
@@ -386,7 +389,7 @@
 		var/count = 0
 		for (var/obj/O in src.juggling)
 			count ++
-			if (src.juggling.len > 1 && count == src.juggling.len)
+			if (length(src.juggling) > 1 && count == src.juggling.len)
 				items += " and [O]"
 				continue
 			items += ", [O]"

@@ -9,7 +9,7 @@
 
 	hand_count = 1
 
-	ai_type = /datum/aiHolder/wanderer_aggressive
+	ai_type = /datum/aiHolder/aggressive
 	is_npc = TRUE
 
 	speechverb_say = "materializes"
@@ -89,7 +89,7 @@
 		src.hurt(50)
 
 	bullet_act(obj/projectile/P)
-		if (P.proj_data.damage_type == D_ENERGY && round(P.power * (1 - P.proj_data.ks_ratio), 1) > 1)
+		if (P.proj_data.hits_ghosts || (P.proj_data.damage_type == D_ENERGY && round(P.power * (1 - P.proj_data.ks_ratio), 1) > 1))
 			src.hurt(100)
 
 	projCanHit(datum/projectile/P)

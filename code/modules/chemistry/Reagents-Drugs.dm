@@ -67,7 +67,7 @@ datum
 
 				if(check < 8)
 					M.reagents.add_reagent(pick("methamphetamine", "crank", "neurotoxin"), rand(1,5))
-					M.visible_message("<span class='alert'><b>[M.name]</b> scratches at something under their skin!</span>")
+					M.visible_message("<span class='alert'><b>[M.name]</b> scratches at something under their [issilicon(M) ? "chassis" : "skin"]!</span>")
 					random_brute_damage(M, 5 * mult)
 				else if (check < 16)
 					switch(rand(1,2))
@@ -491,6 +491,238 @@ datum
 				if(probmult(7)) M.emote(pick("twitch","drool","moan","giggle"))
 				..()
 				return
+
+		drug/caffeine        //Unified chem for lots of caffeinated drinks, similar to how ethanol functions
+			name = "caffeine"
+			id = "caffeine"
+			description = "An addictive stimulant contained in coffee beans and many caffeinated beverages."
+			reagent_state = LIQUID
+			fluid_r = 230
+			fluid_g = 220
+			fluid_b = 230
+			addiction_prob = 1 //It lasts a while, it's not as low as it seems
+			addiction_min = 100
+			max_addiction_severity = "LOW"
+			stun_resist = 3
+			depletion_rate = 0.1
+			taste = "bitter"
+			overdose = 60
+			threshold = THRESHOLD_INIT
+			var/stamina_regen = 1
+			var/expected_stamina_regen = 1
+			var/expected_stun_resist = 3
+			var/heart_failure_counter = 0
+
+			proc/caffeine_stamina_change(stun_resist, stamina_regen)
+				var/mob/M = holder.my_atom // All of the caffeine regen properties in a single place
+				if (M.reagents.get_reagent_amount(src.id) <= threshold)
+					return // Shouldn't add any stun resist to a chem that isn't there
+				APPLY_ATOM_PROPERTY(M, PROP_MOB_STUN_RESIST, "reagent_[src.id]", stun_resist)
+				APPLY_ATOM_PROPERTY(M, PROP_MOB_STUN_RESIST_MAX, "reagent_[src.id]", stun_resist)
+				APPLY_ATOM_PROPERTY(M, PROP_MOB_STAMINA_REGEN_BONUS, "caffeine_rush", stamina_regen)
+				return
+
+			cross_threshold_over()
+				if(ismob(holder?.my_atom))
+					var/mob/M = holder.my_atom
+					APPLY_ATOM_PROPERTY(M, PROP_MOB_STAMINA_REGEN_BONUS, "caffeine_rush", stamina_regen)
+				..()
+
+			cross_threshold_under()
+				if(ismob(holder?.my_atom))
+					var/mob/M = holder.my_atom
+					REMOVE_ATOM_PROPERTY(M, PROP_MOB_STAMINA_REGEN_BONUS, "caffeine_rush")
+				..()
+
+			on_mob_life(var/mob/M, var/mult = 1)
+				if(!M) M = holder.my_atom
+				var/caffeine_amt = holder.get_reagent_amount(src.id)
+
+				if (heart_failure_counter > 150 && ishuman(M)) // This has to get pretty high for bad things to happen
+					var/mob/living/L = M
+					L.contract_disease(/datum/ailment/malady/heartfailure, null, null, 1)
+					heart_failure_counter = 0
+
+				switch(caffeine_amt) //use ~midpoints for depeletion rate thresholds - need stronger coffees or blends to overcaffeinate
+					if(0 to 3)
+						depletion_rate = 0.05
+					if(3 to 10)
+						depletion_rate = 0.1
+					if(10 to 30)
+						depletion_rate = 0.2
+					if(30 to 50)
+						depletion_rate = 0.4
+					if(50 to INFINITY)
+						depletion_rate = 0.5
+
+				switch(caffeine_amt)
+					if(0 to 5)   //This is your trace amount of caffeine, doesn't do much
+						expected_stamina_regen = 1
+						expected_stun_resist   = 3
+
+					if(5 to 20)  //A regular coffee mug's worth
+						if (M.get_eye_blurry() && prob(75))
+							M.change_eye_blurry(-1 * mult)
+						expected_stamina_regen = 2
+						expected_stun_resist   = 7
+						M.dizziness = max(0, M.dizziness-3)
+						M.changeStatus("drowsy", -2 * mult SECONDS) //Helps combat that morning fatigue
+						if (prob(25))
+							M.make_jittery(10 * mult)
+
+					if(20 to 40) //A significant amount of caffeine
+						if (M.get_eye_blurry())
+							M.change_eye_blurry(-1 * mult)
+						expected_stamina_regen = 4
+						expected_stun_resist   = 12
+						M.changeStatus("drowsy", -4 * mult SECONDS)
+						M.dizziness = max(0, M.dizziness-5)
+						M.sleeping = 0 //Causes insomnia
+						if (prob(35))
+							M.make_jittery(10 * mult)
+						if (probmult(3) && !ON_COOLDOWN(M, "Caffeine Message", 30 SECONDS)) // Keeps down that emote span
+							boutput(M, pick("<span class='notice'>You a slight twitch in your arm.</span>",\
+									"<span class='notice'>You feel a slight tension in your shoulders.</span>",\
+									"<span class='notice'>You feel resltess and anxious.</span>",\
+									"<span class='alert'>You feel ready for anything!</span>",\
+									"<span class='alert'>You feel a rush of energy.</span>",\
+									"<span class='alert'>You can feel a slight pressure in your skull.</span>"))
+
+					if(40 to 60) //A unhealthy amount of caffeine
+						if (M.get_eye_blurry())
+							M.change_eye_blurry(-2 * mult)
+						expected_stamina_regen = 6
+						expected_stun_resist   = 20
+						M.changeStatus("drowsy", -10 * mult SECONDS)
+						M.dizziness = max(0, M.dizziness-7)
+						M.make_jittery(10 * mult)
+						M.change_misstep_chance(1 * mult)
+						M.sleeping = 0
+						if (probmult(3) && !ON_COOLDOWN(M, "Caffeine Message", 30 SECONDS)) // Keeps down that emote span
+							boutput(M, pick("<span class='notice'>You a slight twitch in your arm.</span>",\
+									"<span class='notice'>You feel a slight tension in your shoulders.</span>",\
+									"<span class='notice'>You feel resltess and anxious.</span>",\
+									"<span class='alert'>You feel ready for anything!</span>",\
+									"<span class='alert'>You feel a rush of energy.</span>",\
+									"<span class='alert'>You can feel a slight pressure in your skull.</span>"))
+						else if (probmult(9))
+							M.emote(pick("twitch","twitch_v","blink_r", "shiver"))
+						heart_failure_counter += mult //This can be bad for you over time
+
+					if(60 to INFINITY)  //Too much coffee. Way bad for you. This is actually non-trivial to reach now
+						if (M.get_eye_blurry())
+							M.change_eye_blurry(-3 * mult)
+						expected_stamina_regen = 8
+						expected_stun_resist   = 25
+						M.change_misstep_chance(4 * mult)
+						M.changeStatus("drowsy", -15 SECONDS)
+						M.dizziness = max(0,M.dizziness-10)
+						M.make_jittery(15 * mult)
+						M.sleeping = 0
+						if (probmult(3) && !ON_COOLDOWN(M, "Caffeine Message", 30 SECONDS))
+							boutput(M, pick("<span class='alert'>You feel your chest clutching for a moment.</span>",\
+									"<span class='alert'>YOU ARE ENERGY INCARNATE.</span>",\
+									"<span class='alert'>YOU FEEL LIKE YOU COULD CONQUER THE WORLD.</span>",\
+									"<span class='alert'>YOU CAN DO EVERYTHING, YOU ARE READY FOR ANY CHALLENGE.</span>",\
+									"<span class='alert'>Your chest burns slightly.</span>",\
+									"<span class='alert'>You feel a flash of pain in your head.</span>",\
+									"<span class='alert'>You are speed.</span>",\
+									"<span class='notice'>Something is wrong.</span>"))
+						else if (probmult(12))
+							M.emote(pick("shiver","twitch_v","blink_r","wheeze"))
+						else if(probmult(9) && !ON_COOLDOWN(M, "feeling_own heartbeat", 60 SECONDS)) //This can't be good for you
+							M.playsound_local(get_turf(M), 'sound/effects/HeartBeatLong.ogg', 20, 1)
+							M.take_toxin_damage(5)
+						heart_failure_counter += 5 * mult // This can be really bad for you
+
+				if (stun_resist != expected_stun_resist || stamina_regen != expected_stamina_regen)
+					stun_resist = expected_stun_resist
+					stamina_regen = expected_stamina_regen
+					caffeine_stamina_change(stun_resist, stamina_regen)
+
+				..()
+				return
+
+		drug/solipsizine
+			name = "solipsizine"
+			id = "solipsizine"
+			description = "A highly potent hallucinogenic substance that causes intense delirium and acute inability to percieve others."
+			reagent_state = LIQUID
+			depletion_rate = 0.2
+			addiction_prob = 8
+			fluid_r = 200
+			fluid_g = 120
+			fluid_b = 120
+			transparency = 50
+			var/counter = 1
+			var/list/invisible_people
+			var/list/mob/not_yet_invisible
+			var/datum/client_image_group/invisible_group
+			var/tick_counter = 0 // we actually count ticks, no mult here
+
+			on_mob_life(var/mob/M, var/mult = 1)
+				if(isnull(invisible_people))
+					invisible_people = list()
+				if(!M) M = holder.my_atom
+				src.counter += 1 * mult //around half realtime
+				src.tick_counter += 1
+
+				if(probmult(3))
+					boutput(M, pick("<span class='notice'>You feel eerily alone..</span>",\
+									"<span class='notice'>You feel like everything's gone silent.</span>",\
+									"<span class='notice'>Everything seems so quiet all of a sudden.</span>",\
+									"<span class='notice'>You can hear your heart beating.</span>",\
+									"<span class='notice'>Something is wrong.</span>"))
+				else if(probmult(3))
+					M.emote(pick("shiver","shudder","drool"))
+
+				if(counter > 15) //turn everyone into nothing
+					if(M.ear_damage < 15 && M.ear_deaf < 5)
+						M.take_ear_damage(3 * mult, 1) //makes it so you can't hear people after a bit
+
+					var/list/candidates = null
+					// every 15 ticks we check for newly created mobs just in case
+					if(isnull(not_yet_invisible) || tick_counter % 15 == 0)
+						not_yet_invisible = by_type[/mob/living/carbon/human] - invisible_people
+					var/list/mob/current_viewers = viewers(M)
+					candidates = not_yet_invisible - current_viewers
+					not_yet_invisible &= current_viewers
+
+					if(length(candidates) > 0)  //makes the other people disappear
+						if (isnull(invisible_group))
+							invisible_group = new /datum/client_image_group
+							invisible_group.add_mob(M)
+						for(var/mob/living/carbon/human/chosen in candidates)
+							var/image/invisible_img = image(null, chosen, null, chosen.layer)
+							invisible_img.name = "\u200b"
+							invisible_img.override = TRUE
+							invisible_group.add_image(invisible_img)
+							invisible_people += chosen
+
+				if(counter > 25)                   //some side effects (not using a switch statement so the stages stack)
+					if(M.get_brain_damage() <= 40)
+						M.take_brain_damage(1 * mult) //some amount of brain damage
+					if(probmult(9) && !ON_COOLDOWN(M, "heartbeat_hallucination", 60 SECONDS)) //play some hearbeat sounds
+						M.playsound_local(get_turf(M), 'sound/effects/HeartBeatLong.ogg', 20, 1)
+				..()
+
+			on_remove()
+				. = ..()
+				if (ismob(holder.my_atom))
+					var/mob/M = holder.my_atom
+
+					if(!isnull(invisible_group) && (M.get_brain_damage() > 10))          //hits you and knocks you down for a little
+						M.visible_message("<span class='alert'><B>[M]</B> starts convulsing violently!</span>",\
+											"You feel as if your body is tearing itself apart!")
+						M.setStatusMin("weakened", 10 SECONDS)
+						M.make_jittery(500)
+
+				qdel(invisible_group)
+				qdel(invisible_people)
+				qdel(not_yet_invisible)
+				invisible_group = null
+				invisible_people = null
+				not_yet_invisible = null
 
 		drug/THC
 			name = "tetrahydrocannabinol"
@@ -1094,6 +1326,20 @@ datum
 				fluid_r = 115 // This shit's pure and blue
 				fluid_g = 197
 				fluid_b = 250
+
+		drug/question_mark
+			name = "???"
+			id = "question_mark"
+			depletion_rate = 2
+
+			on_mob_life(var/mob/M, var/mult = 1)
+				if (prob(40))
+					if(!M)
+						M = holder.my_atom
+					M.reagents.add_reagent(pick_string("chemistry_tools.txt", "CYBERPUNK_drug_primaries"), 3 * mult)
+					M.reagents.add_reagent(pick_string("chemistry_tools.txt", "CYBERPUNK_drug_adulterants"), 2 * mult)
+					M.reagents.remove_reagent(src, 1 * mult)
+				..()
 
 		drug/hellshroom_extract
 			name = "Hellshroom extract"

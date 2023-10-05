@@ -135,6 +135,7 @@
 	reclaim_fail = 15
 	var/talk_prob = 10
 	var/list/talk_strings = list("PISS","FUCK","SHIT","DAMN","ARGH","WOOF","CRAP","HECK","FRICK","JESUS")
+	var/empowered_popup_style = "font-weight: bold;"
 	icon_state  = "bad"
 
 	OnLife(var/mult)
@@ -145,6 +146,12 @@
 		if (isdead(L))
 			return
 		if (probmult(talk_prob))
+			if(src.power > 1)
+				var/original_speechpopupstyle = L.speechpopupstyle
+				L.speechpopupstyle += empowered_popup_style
+				L.say(pick(talk_strings))
+				L.speechpopupstyle = original_speechpopupstyle
+				return
 			L.say(pick(talk_strings))
 
 /datum/bioEffect/shortsighted
@@ -485,7 +492,7 @@
 			for(var/turf/simulated/floor/T in orange(L, 10))
 				randomturfs.Add(T)
 
-			if (randomturfs.len > 0)
+			if (length(randomturfs) > 0)
 				L.emote("hiccup")
 				var/turf/destination = pick(randomturfs)
 				logTheThing(LOG_COMBAT, L, "was teleported by Spatial Destabilization from [log_loc(L)] to [log_loc(destination)].")
@@ -657,7 +664,7 @@
 
 	OnLife(var/mult)
 		var/mob/living/L = owner
-		if (!istype(L) || (L.stat == 2))
+		if (!istype(L) || (isdead(L)))
 			return
 		if (probmult(prob_sting))
 			if (ishuman(L))
@@ -903,7 +910,7 @@
 					for(var/turf/simulated/floor/T in orange(L, 10))
 						randomturfs.Add(T)
 
-					if (randomturfs.len > 0)
+					if (length(randomturfs) > 0)
 						L.emote("hiccup")
 						L.set_loc(pick(randomturfs))
 				if (3)

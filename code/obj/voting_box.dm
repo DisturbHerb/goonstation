@@ -49,7 +49,7 @@
 	attackby(obj/item/S, mob/user)
 		src.add_fingerprint(user)
 
-		if (istype(S, /obj/item/spacecash))
+		if (istype(S, /obj/item/currency/spacecash))
 			if (!mapSwitcher.playersVoting)
 				boutput(user, "<span class='alert'>There's no point in buying a vote when there's no vote going on.</span>")
 				return
@@ -79,18 +79,17 @@
 							bribeAmount = S.amount
 							bribeJerk = user.real_name
 							map_vote_holder.voting_box(src,chosen)
+						S.amount = 0
+						user.u_equip(S)
+						S.dropped(user)
+						qdel( S )
+						animate_storage_rustle(src)
+						playsound(src.loc, 'sound/machines/ping.ogg', 75)
+						SPAWN(1 SECOND)
+							playsound(src.loc, 'sound/machines/paper_shredder.ogg', 90, 1)
 				else
 					boutput(user, "<span class='alert'>You can't buy a vote when you haven't voted, doofus.</span>")
 					return
-
-			S.amount = 0
-			user.u_equip(S)
-			S.dropped(user)
-			qdel( S )
-			animate_storage_rustle(src)
-			playsound(src.loc, 'sound/machines/ping.ogg', 75)
-			SPAWN(1 SECOND)
-				playsound(src.loc, 'sound/machines/paper_shredder.ogg', 90, 1)
 			return
 
 

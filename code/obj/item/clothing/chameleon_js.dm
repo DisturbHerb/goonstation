@@ -541,9 +541,8 @@
 	desc = "Nice and comfy on those cold space evenings."
 	icon_state = "hoodie"
 	item_state = "hoodie"
-	icon = 'icons/obj/clothing/overcoats/item_suit.dmi'
-	inhand_image_icon = 'icons/mob/inhand/overcoat/hand_suit.dmi'
-	wear_image_icon = 'icons/mob/clothing/overcoats/worn_suit.dmi'
+	icon = 'icons/obj/clothing/overcoats/hoods/hoodies.dmi'
+	wear_image_icon = 'icons/mob/clothing/overcoats/hoods/worn_hoodies.dmi'
 	uses_multiple_icon_states = TRUE
 	over_hair = FALSE
 	var/list/clothing_choices = list()
@@ -1682,6 +1681,10 @@
 	icon_state = "remote"
 	item_state = "electronic"
 	w_class = W_CLASS_SMALL
+	HELP_MESSAGE_OVERRIDE({"Use the remote in hand to change the appearance of all chameleon clothing.
+							Right click on a piece of chameleon clothing and use <b>"Change appearance"</b> to change the appearance of that specific piece.
+							Use a piece of clothing on the corresponding chameleon clothing piece to add that appearance to the list of possible appearances.
+							Use the remote in hand and select the <b>"New Outfit Set"</b> option to create a new set of clothing."})
 
 	var/obj/item/storage/backpack/chameleon/connected_backpack = null
 	var/obj/item/clothing/under/chameleon/connected_jumpsuit = null

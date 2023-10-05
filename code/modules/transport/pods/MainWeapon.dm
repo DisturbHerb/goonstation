@@ -12,6 +12,9 @@
 	var/remaining_ammunition = 0
 	var/muzzle_flash = null
 
+	/// Can it be removed by a player
+	var/removable = TRUE
+
 	icon = 'icons/obj/podweapons.dmi'		//remove this line.  or leave it. Could put these sprites in ship.dmi like how the original is
 	icon_state = "class-a"
 
@@ -91,7 +94,7 @@
 /obj/item/shipcomponent/mainweapon/mining
 	name = "Plasma Cutter System"
 	desc = "A high-temperature rock cutter for pods. Use with extreme caution."
-	power_used = 130
+	power_used = 80
 	weapon_score = 0.7
 	current_projectile = new/datum/projectile/laser/mining
 	appearanceString = "pod_weapon_cutter_on"
@@ -101,7 +104,7 @@
 /obj/item/shipcomponent/mainweapon/bad_mining
 	name = "Mining Phaser System"
 	desc = "A weak, short-range phaser that can cut through solid rock. Weak damage, but more effective against critters."
-	power_used = 1
+	power_used = 10
 	current_projectile = new/datum/projectile/laser/light/mining
 	appearanceString = "pod_weapon_ltlaser"
 	firerate = 7
@@ -161,9 +164,11 @@
 	name = "Svet-Oruzhiye Mk.4"
 	weapon_score = 0.6
 	current_projectile = new/datum/projectile/laser/glitter
+	power_used = 75
 	firerate = 5
 	icon_state = "strelka"
 	muzzle_flash = "muzzle_flash_laser"
+	removable = FALSE
 
 /obj/item/shipcomponent/mainweapon/disruptor_light
 	name = "Mk.3 Disruptor"
@@ -185,6 +190,7 @@
 	name = "SPE-12 Ballistic System"
 	desc = "A one of it's kind kinetic podweapon, designed to fire shotgun rounds similar to those in a SPES-12."
 	weapon_score = 1.25
+	power_used = 30
 	current_projectile = new/datum/projectile/bullet/a12/weak
 	appearanceString = "pod_weapon_gun_off"
 	firerate = 10
@@ -194,7 +200,7 @@
 /obj/item/shipcomponent/mainweapon/laser_ass // hehhh
 	name = "Mk.4 Assault Laser"
 	weapon_score = 1.25
-	power_used = 350
+	power_used = 300
 	firerate = 35
 	appearanceString = "pod_weapon_emitter"
 	current_projectile = new/datum/projectile/laser/asslaser
@@ -204,7 +210,7 @@
 /obj/item/shipcomponent/mainweapon/rockdrills
 	name = "Rock Drilling Rig"
 	desc = "A strudy drill designed for chewing up asteroids like nobodies business."
-	power_used = 100
+	power_used = 90
 	weapon_score = 1
 	current_projectile = new/datum/projectile/laser/drill
 	appearanceString = "pod_weapon_drills"

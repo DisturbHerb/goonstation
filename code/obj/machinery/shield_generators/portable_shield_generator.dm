@@ -112,11 +112,15 @@ ADMIN_INTERACT_PROCS(/obj/machinery/shieldgenerator, proc/turn_on, proc/turn_off
 		return
 
 	use_power(var/amount, var/chan=EQUIP)
-		if(PCEL && !connected && active)
-			PCEL.use(src.power_usage)
+		var/line_shielded = FALSE
 		if(connected && active)
 			var/datum/powernet/net = src.connected_wire.get_powernet()
-			net?.newload += src.power_usage
+			if(net.newload + amount <= net.avail)
+				net.newload += amount
+				line_shielded = TRUE
+		if(!line_shielded && PCEL && active)
+			PCEL.use(src.power_usage)
+
 
 	proc/process_wired()
 		//check for linepower
@@ -211,7 +215,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/shieldgenerator, proc/turn_on, proc/turn_off
 			if(src.active)
 				src.turn_off()
 			else
-				src.turn_on()
+				src.turn_on(user)
 
 	proc/turn_on(mob/user)
 		if (src.active)
@@ -224,7 +228,8 @@ ADMIN_INTERACT_PROCS(/obj/machinery/shieldgenerator, proc/turn_on, proc/turn_off
 		else	//turn on power if connected to a power grid with power in it
 			if(line_powered() && connected)
 				src.shield_on()
-				src.visible_message("<b>[user.name]</b> powers up the [src.name].")
+				if (user)
+					src.visible_message("<b>[user.name]</b> powers up the [src.name].")
 			else
 				boutput(user, "The [src.name]'s battery light flickers briefly.")
 		build_icon()
@@ -444,7 +449,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/shieldgenerator, proc/turn_on, proc/turn_off
 	desc = "A force field that can block various states of matter."
 	icon = 'icons/obj/meteor_shield.dmi'
 	icon_state = "shieldw"
-	event_handler_flags = USE_FLUID_ENTER
+	event_handler_flags = USE_FLUID_ENTER | IMMUNE_TRENCH_WARP
 	var/powerlevel //Stores the power level of the deployer
 	var/isactive = TRUE
 	density = 0
@@ -637,7 +642,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/shieldgenerator, proc/turn_on, proc/turn_off
 	layer = 2.5 //sits under doors if we want it to
 	flags = ALWAYS_SOLID_FLUID | FLUID_DENSE
 	gas_impermeable = TRUE
-	event_handler_flags = USE_FLUID_ENTER
+	event_handler_flags = USE_FLUID_ENTER | IMMUNE_TRENCH_WARP
 
 	meteorhit(obj/O as obj)
 		return

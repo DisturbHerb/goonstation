@@ -3,7 +3,7 @@ var/global/list/chem_whitelist = list("antihol", "charcoal", "epinephrine", "ins
 "oculine", "mannitol", "penteticacid", "styptic_powder", "methamphetamine", "spaceacillin", "saline",\
 "salicylic_acid", "cryoxadone", "blood", "bloodc", "synthflesh",\
 "menthol", "cold_medicine", "antihistamine", "ipecac",\
-"booster_enzyme", "anti_fart", "goodnanites", "smelling_salt", "CBD")
+"booster_enzyme", "anti_fart", "goodnanites", "smelling_salt", "CBD", "promethazine")
 
 /* =================================================== */
 /* -------------------- Hypospray -------------------- */
@@ -175,7 +175,7 @@ TYPEINFO(/obj/item/reagent_containers/hypospray)
 			target.reagents.trans_to(src, src.reagents.maximum_volume)
 			return
 
-		if (isobj(target) && target.is_open_container() && target.reagents)
+		if (isobj(target) && target.is_open_container(TRUE) && target.reagents)
 			if (!src.reagents || !src.reagents.total_volume)
 				boutput(user, "<span class='alert'>[src] is already empty.</span>")
 				return
