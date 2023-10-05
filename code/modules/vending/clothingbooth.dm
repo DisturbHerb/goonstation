@@ -15,77 +15,60 @@ var/list/list/clothingbooth_stock_information_list = list()
 		if (!istype(current_item, /datum/clothingbooth_item))
 			continue
 
-		var/current_item_name = current_item.name
-		var/current_item_season = current_item.season
-		var/current_item_slot = current_item.slot
-		var/current_item_slot_name = slot_macro_to_string(current_item_slot)
-		var/current_item_variant_name = current_item.variant_name
-		var/current_item_variant_color = current_item.variant_color
-		var/current_item_variant_color_hsl = current_item.variant_color_hsl
-		var/current_item_detail_name = current_item.detail_name
-		var/current_item_detail_color = current_item.detail_color
-		var/current_item_detail_color_hsl = current_item.detail_color_hsl
-		var/current_item_initial_variant = current_item.initial_variant
-		var/current_item_initial_detail = current_item.initial_detail
-		var/current_item_variant_list_place = current_item.variant_list_place
-		var/current_item_path_name = "[current_item.item_path]"
-		var/current_item_cost = current_item.cost
-
-		var/atom/dummy_atom = current_item.item_path
-		var/icon/dummy_icon = icon(initial(dummy_atom.icon), initial(dummy_atom.icon_state), frame = 1)
-		var/current_item_image = icon2base64(dummy_icon)
+		var/current_variant_data = list(
+			"variant_name" = current_item.variant_name,
+			"variant_color" = current_item.variant_color,
+			"variant_color_hsl" = current_item.variant_color_hsl,
+			"detail_name" = current_item.detail_name,
+			"detail_color" = current_item.detail_color,
+			"detail_color_hsl" = current_item.detail_color_hsl,
+			"initial_variant" = current_item.initial_variant,
+			"initial_detail" = current_item.initial_detail,
+			"variant_list_place" = current_item.variant_list_place,
+			"path_name" = current_item.path_name,
+			"cost" = current_item.cost,
+		)
 
 		var/match_found = FALSE
 		if (length(item_list_buffer))
-			for (var/i in 1 to length(item_list_buffer))
-				if (item_list_buffer[i] == current_item_name)
-					item_list_buffer[i]["variants"] += list(list(
-						"variant_name" = current_item_variant_name,
-						"variant_color" = current_item_variant_color,
-						"variant_color_hsl" = current_item_variant_color_hsl,
-						"detail_name" = current_item_detail_name,
-						"detail_color" = current_item_detail_color,
-						"detail_color_hsl" = current_item_detail_color_hsl,
-						"variant_list_place" = current_item_variant_list_place,
-						"path_name" = current_item_path_name,
-						"cost" = current_item_cost,
-					))
+			for (var/item_list_index in 1 to length(item_list_buffer))
+				if (item_list_buffer[item_list_index] == current_item_name)
+					item_list_buffer[item_list_index]["variants"] += list(current_variant_data)
 					match_found = TRUE
+					break
 		if (!match_found)
 			item_list_buffer += list(list(
-				"name" = current_item_name,
-				"image" = current_item_image,
-				"season" = current_item_season,
-				"slot" = current_item_slot,
-				"slot_name" = current_item_slot_name,
-				"variants" = list(list(
-					"variant_name" = current_item_variant_name,
-					"variant_color" = current_item_variant_color,
-					"variant_color_hsl" = current_item_variant_color_hsl,
-					"detail_name" = current_item_detail_name,
-					"detail_color" = current_item_detail_color,
-					"detail_color_hsl" = current_item_detail_color_hsl,
-					"variant_list_place" = current_item_variant_list_place,
-					"path_name" = current_item_path_name,
-					"cost" = current_item_cost,
-				))
+				"name" = current_item.name,
+				"season" = current_item.season,
+				"slot" = current_item.slot,
+				"slot_name" = slot_macro_to_string(current_item.slot),
+				"variants" = list(current_variant_data)
 			))
 
-	for (var/j in 1 to length(item_list_buffer))
-		var/current_item_list_entry = item_list_buffer[j]
+	for (var/item_list_index in 1 to length(item_list_buffer))
+		var/current_item_list_entry = item_list_buffer[item_list_index]
 		if (!current_item_list_entry)
 			continue
 
 		var/current_entry_cost_min
 		var/current_entry_cost_max
-		for (var/k in 1 to length(current_item_list_entry["variants"]))
-			var/current_variant_cost = current_item_list_entry["variants"][k]["cost"]
+		for (var/variant_list_index in 1 to length(current_item_list_entry["variants"]))
+			var/current_variant_cost = current_item_list_entry["variants"][variant_list_index]["cost"]
 			if (!current_entry_cost_min || (current_entry_cost_min && current_variant_cost < current_entry_cost_min))
 				current_entry_cost_min = current_variant_cost
-				continue
-			if (!current_entry_cost_max || (current_entry_cost_max && current_variant_cost < current_entry_cost_max))
+			else if (!current_entry_cost_max || (current_entry_cost_max && current_variant_cost < current_entry_cost_max))
 				current_entry_cost_max = current_variant_cost
-				continue
+
+			var/is_initial_variant = FALSE
+			if (current_item_list_entry["variants"][variant_list_index]["initial_variant"])
+				is_initial_variant = TRUE
+			var/is_initial_detail = FALSE
+			if (current_item_list_entry["variants"][variant_list_index]["initial_variant"])
+				is_initial_detail = TRUE
+
+		var/atom/dummy_atom = current_item.item_path
+		var/icon/dummy_icon = icon(initial(dummy_atom.icon), initial(dummy_atom.icon_state), frame = 1)
+		var/current_item_image = icon2base64(dummy_icon)
 
 		information_list_buffer[current_item_list_entry["name"]] += list(
 			"image" = current_item_list_entry["image"],

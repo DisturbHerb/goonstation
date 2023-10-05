@@ -2,8 +2,8 @@
 
 ABSTRACT_TYPE(/datum/clothingbooth_item)
 /datum/clothingbooth_item
-	/**	Displayed on the list of available items. Please ensure that the name conforms as closely as possible to the actual names of the item and its
-		child types. */
+	/**	Displayed on the list of available items. Names must be unique. Please ensure that the name conforms as closely as possible to the actual
+		names of the item and its child types. */
 	var/name = null
 	/// Only use this for items that are `#ifdef`'d for a given season. Available seasons are defined locally in this file.
 	var/season = null
