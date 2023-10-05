@@ -239,7 +239,7 @@ var/list/list/clothingbooth_stock_information_list = list()
 		.["clothingBoothCategories"] = clothingbooth_stock
 
 	ui_data(mob/user)
-		var/icon/preview_icon = src.preview.get_icon()
+		var/icon/preview_icon = getFlatIcon(src.preview.preview_thing, no_anim = TRUE)
 		. = list(
 			"money" = src.money,
 			"previewIcon" = icon2base64(preview_icon),
