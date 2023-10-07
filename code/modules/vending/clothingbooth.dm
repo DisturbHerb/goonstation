@@ -6,73 +6,80 @@ var/list/list/clothingbooth_stock_item_list = list()
 var/list/list/clothingbooth_stock_information_list = list()
 
 /proc/build_clothingbooth_caches()
-	var/list/list/item_list_buffer = list()
+	var/list/list/list/list/item_list_buffer = list()
 	var/list/list/information_list_buffer = list()
 
+	// Generate the verbose list of all the `clothingbooth_item` types, indexed by the
 	for(var/clothingbooth_list_entry in concrete_typesof(/datum/clothingbooth_item))
 		var/datum/clothingbooth_item/current_item = new clothingbooth_list_entry
 		if (!istype(current_item, /datum/clothingbooth_item))
 			continue
 
 		if (!item_list_buffer[current_item.name])
-			item_list_buffer[current_item.name] += list(list(
+			item_list_buffer[current_item.name] += list(
 				"name" = current_item.name,
 				"season" = current_item.season,
 				"slot" = current_item.slot,
 				"slot_name" = slot_macro_to_string(current_item.slot),
-			))
-		var/item_list_buffer_entry = item_list_buffer[current_item.name]
+				"variants" = list(),
+			)
+		var/list/list/item_list_buffer_entry = item_list_buffer[current_item.name]
 		if (!item_list_buffer_entry["variants"][current_item.variant_name])
-			item_list_buffer_entry["variants"][current_item.variant_name] += list(list(
+			item_list_buffer_entry["variants"][current_item.variant_name] += list(
 				"variant_name" = current_item.variant_name,
 				"variant_color" = current_item.variant_color,
 				"variant_color_hsl" = current_item.variant_color_hsl,
 				"variant_list_place" = current_item.variant_list_place,
+				"details" = list(),
 				"cost" = current_item.cost,
-			))
-		if (current_item.initial_variant)
+			)
+		if (current_item.initial_variant || !item_list_buffer_entry["initial_variant"])
 			item_list_buffer_entry["initial_variant"] = current_item.variant_name
 		if (current_item.detail_name)
-			item_list_buffer_entry["variants"][current_item.variant_name]["details"][current_item.detail_name] += list(list(
+			item_list_buffer_entry["variants"][current_item.variant_name]["details"][current_item.detail_name] += list(
 				"detail_name" = current_item.detail_name,
 				"detail_color" = current_item.detail_color,
 				"detail_color_hsl" = current_item.detail_color_hsl,
 				"detail_list_place" = current_item.detail_list_place,
 				"item_path_name" = "[current_item.item_path]",
-			))
+			)
 			if (current_item.initial_detail)
 				item_list_buffer_entry["variants"][current_item.variant_name]["initial_detail"] = current_item.detail_name
 		else
 			item_list_buffer_entry["variants"][current_item.variant_name]["item_path_name"] = "[current_item.item_path]"
 
-	for (var/item_list_index in 1 to length(item_list_buffer))
-		var/current_item_list_entry = item_list_buffer[item_list_index]
+	global.clothingbooth_stock_item_list = item_list_buffer
+
+	// Generate a significantly smaller list of
+	for (var/item_list_key in item_list_buffer)
+		var/list/current_item_list_entry = global.clothingbooth_stock_item_list[item_list_key]
 		if (!current_item_list_entry)
 			continue
 
+		// Determine the price range for a given stocklist entry.
 		var/current_entry_cost_min
 		var/current_entry_cost_max
-		var/initial_variant_index = 1
-		var/initial_detail_index = 1
-
-		for (var/variant_list_index in 1 to length(current_item_list_entry["variants"]))
-			var/current_variant_cost = current_item_list_entry["variants"][variant_list_index]["cost"]
+		for (var/variant_list_key in current_item_list_entry["variants"])
+			var/current_variant_cost = current_item_list_entry["variants"][variant_list_key]["cost"]
 			if (!current_entry_cost_min || (current_entry_cost_min && current_variant_cost < current_entry_cost_min))
 				current_entry_cost_min = current_variant_cost
-			else if (!current_entry_cost_max || (current_entry_cost_max && current_variant_cost < current_entry_cost_max))
+			if (!current_entry_cost_max || (current_entry_cost_max && current_variant_cost > current_entry_cost_max))
 				current_entry_cost_max = current_variant_cost
 
-			if (current_item_list_entry["variants"][variant_list_index]["initial_variant"])
-				initial_variant_index = variant_list_index
-
-		var/current_entry_initial_variant_path = text2path(current_item_list_entry["variants"][initial_variant_index]["item_path_name"])
-		var/datum/clothingbooth_item/current_entry_initial_variant = new current_entry_initial_variant_path
-		var/atom/dummy_atom = current_entry_initial_variant.item_path
+		// Get an image for the entry. Will draw from the initial variant and the initial detail if applicable.
+		var/current_entry_atom_path = /obj/item/clothing/under/color/white
+		var/current_entry_initial_variant = current_item_list_entry["variants"][current_item_list_entry["initial_variant"]]
+		var/detail_index = current_entry_initial_variant["initial_detail"] ? current_entry_initial_variant["initial_detail"] : 1
+		if (length(current_entry_initial_variant["details"]))
+			current_entry_atom_path = current_entry_initial_variant["details"][detail_index]["item_path"]
+		else
+			current_entry_atom_path = current_entry_initial_variant["item_path"]
+		var/atom/dummy_atom = current_entry_atom_path
 		var/icon/dummy_icon = icon(initial(dummy_atom.icon), initial(dummy_atom.icon_state), frame = 1)
-		var/current_item_image = icon2base64(dummy_icon)
+		var/current_entry_image = icon2base64(dummy_icon)
 
 		information_list_buffer[current_item_list_entry["name"]] += list(
-			"image" = current_item_list_entry["image"],
+			"image" = current_entry_image,
 			"season" = current_item_list_entry["season"],
 			"slot_name" = current_item_list_entry["slot_name"],
 			"initial_variant" = current_item_list_entry["initial_variant"],
@@ -81,7 +88,6 @@ var/list/list/clothingbooth_stock_information_list = list()
 			"cost_max" = current_entry_cost_max,
 		)
 
-	global.clothingbooth_stock_item_list = item_list_buffer
 	global.clothingbooth_stock_information_list = information_list_buffer
 
 /proc/slot_macro_to_string(slot_macro)
@@ -238,7 +244,6 @@ var/list/list/clothingbooth_stock_information_list = list()
 		. = list(
 			"name" = src.name
 		)
-		.["clothingBoothCategories"] = clothingbooth_stock
 
 	ui_data(mob/user)
 		var/icon/preview_icon = getFlatIcon(src.preview.preview_thing, no_anim = TRUE)
@@ -260,9 +265,6 @@ var/list/list/clothingbooth_stock_information_list = list()
 			if("purchase")
 				if(src.item_to_purchase)
 					if(text2num_safe(src.item_to_purchase.cost) <= src.money)
-						src.money -= text2num_safe(src.item_to_purchase.cost)
-						var/purchased_item_path = src.item_to_purchase.path
-						usr.put_in_hand_or_drop(new purchased_item_path(src))
 					else
 						boutput(usr, "<span class='alert'>Insufficient funds!</span>")
 						animate_shake(src, 12, 3, 3)
@@ -278,18 +280,6 @@ var/list/list/clothingbooth_stock_information_list = list()
 				update_preview()
 				. = TRUE
 			if("select")
-				var/datum/clothingbooth_item/selected_item = clothingbooth_paths[params["path"]]
-				if(!istype(selected_item))
-					return
-				var/selected_item_path = text2path(params["path"])
-				var/mob/living/carbon/human/preview_mob = src.preview.preview_thing
-				if(src.preview_item)
-					preview_mob.u_equip(src.preview_item)
-					qdel(src.preview_item)
-					src.preview_item = null
-				src.preview_item = new selected_item_path
-				preview_mob.force_equip(src.preview_item, selected_item.slot)
-				src.item_to_purchase = selected_item
 				update_preview()
 				. = TRUE
 

@@ -32,19 +32,24 @@ ABSTRACT_TYPE(/datum/clothingbooth_item)
 	var/detail_list_place = null
 
 	var/cost = 1
-	var/item_path = /obj/item/clothing/jumpsuit/under/color/white
+	var/item_path = /obj/item/clothing/under/color/white
 
 	New()
 		..()
-		var/obj/item/clothing/item = src.item_path
+		var/obj/item/clothing/item = new src.item_path
 		if (!src.name)
-			src.name = initial(item.name)
-		if (!src.detail_color && src.detail_name)
-			src.detail_color = get_average_color(getFlatIcon(item.icon, no_anim = TRUE))
-		var/list/detail_hsl_buffer = rgb2num(src.detail_color, COLORSPACE_HSL)
-		src.detail_color_hsl = "[add_zero((detail_hsl_buffer[1]), 3)][add_zero((detail_hsl_buffer[2]), 3)][add_zero((detail_hsl_buffer[3]), 3)]"
+			var/list/name_buffer = list()
+			var/list/split_name = splittext(initial(item.name), " ")
+			for (var/i in 1 to length(split_name))
+				name_buffer += capitalize(split_name[i])
+			src.name = jointext(name_buffer, " ")
+		if (src.detail_name)
+			if (!src.detail_color)
+				src.detail_color = get_average_color(getFlatIcon(item, no_anim = TRUE))
+			var/list/detail_hsl_buffer = rgb2num(src.detail_color, COLORSPACE_HSL)
+			src.detail_color_hsl = "[add_zero((detail_hsl_buffer[1]), 3)][add_zero((detail_hsl_buffer[2]), 3)][add_zero((detail_hsl_buffer[3]), 3)]"
 		if (!src.variant_color)
-			src.variant_color = get_average_color(getFlatIcon(item.icon, no_anim = TRUE))
+			src.variant_color = get_average_color(getFlatIcon(item, no_anim = TRUE))
 		var/list/variant_hsl_buffer = rgb2num(src.variant_color, COLORSPACE_HSL)
 		src.variant_color_hsl = "[add_zero((variant_hsl_buffer[1]), 3)][add_zero((variant_hsl_buffer[2]), 3)][add_zero((variant_hsl_buffer[3]), 3)]"
 		src.cost = round(src.cost)
