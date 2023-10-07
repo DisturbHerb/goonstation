@@ -1,5 +1,4 @@
 // don't forget to implement support for variants having different prices bestie <3
-// multi variant and singlet types should be accounted for when building the damn thing
 
 /// A verbose list containing every single parent item and its variants and detail types.
 var/list/list/clothingbooth_stock_item_list = list()
@@ -15,35 +14,36 @@ var/list/list/clothingbooth_stock_information_list = list()
 		if (!istype(current_item, /datum/clothingbooth_item))
 			continue
 
-		var/current_variant_data = list(
-			"variant_name" = current_item.variant_name,
-			"variant_color" = current_item.variant_color,
-			"variant_color_hsl" = current_item.variant_color_hsl,
-			"detail_name" = current_item.detail_name,
-			"detail_color" = current_item.detail_color,
-			"detail_color_hsl" = current_item.detail_color_hsl,
-			"initial_variant" = current_item.initial_variant,
-			"initial_detail" = current_item.initial_detail,
-			"variant_list_place" = current_item.variant_list_place,
-			"path_name" = current_item.path_name,
-			"cost" = current_item.cost,
-		)
-
-		var/match_found = FALSE
-		if (length(item_list_buffer))
-			for (var/item_list_index in 1 to length(item_list_buffer))
-				if (item_list_buffer[item_list_index] == current_item_name)
-					item_list_buffer[item_list_index]["variants"] += list(current_variant_data)
-					match_found = TRUE
-					break
-		if (!match_found)
-			item_list_buffer += list(list(
+		if (!item_list_buffer[current_item.name])
+			item_list_buffer[current_item.name] += list(list(
 				"name" = current_item.name,
 				"season" = current_item.season,
 				"slot" = current_item.slot,
 				"slot_name" = slot_macro_to_string(current_item.slot),
-				"variants" = list(current_variant_data)
 			))
+		var/item_list_buffer_entry = item_list_buffer[current_item.name]
+		if (!item_list_buffer_entry["variants"][current_item.variant_name])
+			item_list_buffer_entry["variants"][current_item.variant_name] += list(list(
+				"variant_name" = current_item.variant_name,
+				"variant_color" = current_item.variant_color,
+				"variant_color_hsl" = current_item.variant_color_hsl,
+				"variant_list_place" = current_item.variant_list_place,
+				"cost" = current_item.cost,
+			))
+		if (current_item.initial_variant)
+			item_list_buffer_entry["initial_variant"] = current_item.variant_name
+		if (current_item.detail_name)
+			item_list_buffer_entry["variants"][current_item.variant_name]["details"][current_item.detail_name] += list(list(
+				"detail_name" = current_item.detail_name,
+				"detail_color" = current_item.detail_color,
+				"detail_color_hsl" = current_item.detail_color_hsl,
+				"detail_list_place" = current_item.detail_list_place,
+				"item_path_name" = "[current_item.item_path]",
+			))
+			if (current_item.initial_detail)
+				item_list_buffer_entry["variants"][current_item.variant_name]["initial_detail"] = current_item.detail_name
+		else
+			item_list_buffer_entry["variants"][current_item.variant_name]["item_path_name"] = "[current_item.item_path]"
 
 	for (var/item_list_index in 1 to length(item_list_buffer))
 		var/current_item_list_entry = item_list_buffer[item_list_index]
@@ -52,6 +52,9 @@ var/list/list/clothingbooth_stock_information_list = list()
 
 		var/current_entry_cost_min
 		var/current_entry_cost_max
+		var/initial_variant_index = 1
+		var/initial_detail_index = 1
+
 		for (var/variant_list_index in 1 to length(current_item_list_entry["variants"]))
 			var/current_variant_cost = current_item_list_entry["variants"][variant_list_index]["cost"]
 			if (!current_entry_cost_min || (current_entry_cost_min && current_variant_cost < current_entry_cost_min))
@@ -59,14 +62,12 @@ var/list/list/clothingbooth_stock_information_list = list()
 			else if (!current_entry_cost_max || (current_entry_cost_max && current_variant_cost < current_entry_cost_max))
 				current_entry_cost_max = current_variant_cost
 
-			var/is_initial_variant = FALSE
 			if (current_item_list_entry["variants"][variant_list_index]["initial_variant"])
-				is_initial_variant = TRUE
-			var/is_initial_detail = FALSE
-			if (current_item_list_entry["variants"][variant_list_index]["initial_variant"])
-				is_initial_detail = TRUE
+				initial_variant_index = variant_list_index
 
-		var/atom/dummy_atom = current_item.item_path
+		var/current_entry_initial_variant_path = text2path(current_item_list_entry["variants"][initial_variant_index]["item_path_name"])
+		var/datum/clothingbooth_item/current_entry_initial_variant = new current_entry_initial_variant_path
+		var/atom/dummy_atom = current_entry_initial_variant.item_path
 		var/icon/dummy_icon = icon(initial(dummy_atom.icon), initial(dummy_atom.icon_state), frame = 1)
 		var/current_item_image = icon2base64(dummy_icon)
 
@@ -74,6 +75,7 @@ var/list/list/clothingbooth_stock_information_list = list()
 			"image" = current_item_list_entry["image"],
 			"season" = current_item_list_entry["season"],
 			"slot_name" = current_item_list_entry["slot_name"],
+			"initial_variant" = current_item_list_entry["initial_variant"],
 			"variant_count" = length(current_item_list_entry["variants"]),
 			"cost_min" = current_entry_cost_min,
 			"cost_max" = current_entry_cost_max,
@@ -105,7 +107,7 @@ var/list/list/clothingbooth_stock_information_list = list()
 		if (SLOT_WEAR_SUIT)
 			. = "Suit"
 		if (SLOT_W_UNIFORM)
-			. = "Clothing"
+			. = "Uniform"
 
 // clothing booth stuffs <3
 /obj/machinery/clothingbooth

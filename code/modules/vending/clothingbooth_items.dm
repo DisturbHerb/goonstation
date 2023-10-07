@@ -28,6 +28,8 @@ ABSTRACT_TYPE(/datum/clothingbooth_item)
 	/** To override the alphabetical or HSL sorting schema when displaying the available variants, `variant_list_place` can be overriden with an
 		integer denoting its index in the list ascending from 1. Index 1 will appear after the type with `initial_variant`. */
 	var/variant_list_place = null
+	// Operates the same as `src.variant_list_place` for a given variant's detail types.
+	var/detail_list_place = null
 
 	var/cost = 1
 	var/item_path = /obj/item/clothing/jumpsuit/under/color/white
