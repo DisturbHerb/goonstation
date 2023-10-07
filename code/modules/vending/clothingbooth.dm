@@ -9,7 +9,7 @@ var/list/list/clothingbooth_stock_information_list = list()
 	var/list/list/list/list/item_list_buffer = list()
 	var/list/list/information_list_buffer = list()
 
-	// Generate the verbose list of all the `clothingbooth_item` types, indexed by the
+	// Generate the verbose list of all the `clothingbooth_item` types, indexed by the name of the item.
 	for(var/clothingbooth_list_entry in concrete_typesof(/datum/clothingbooth_item))
 		var/datum/clothingbooth_item/current_item = new clothingbooth_list_entry
 		if (!istype(current_item, /datum/clothingbooth_item))
@@ -50,7 +50,7 @@ var/list/list/clothingbooth_stock_information_list = list()
 
 	global.clothingbooth_stock_item_list = item_list_buffer
 
-	// Generate a significantly smaller list of
+	// Generate an abridged list for displaying the clothingbooth stock on the player-facing list.
 	for (var/item_list_key in item_list_buffer)
 		var/list/current_item_list_entry = global.clothingbooth_stock_item_list[item_list_key]
 		if (!current_item_list_entry)
@@ -79,6 +79,7 @@ var/list/list/clothingbooth_stock_information_list = list()
 		var/current_entry_image = icon2base64(dummy_icon)
 
 		information_list_buffer[current_item_list_entry["name"]] += list(
+			"name" = current_item_list_entry["name"],
 			"image" = current_entry_image,
 			"season" = current_item_list_entry["season"],
 			"slot_name" = current_item_list_entry["slot_name"],
