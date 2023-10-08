@@ -6,10 +6,8 @@ var/list/list/clothingbooth_stock_item_list = list()
 var/list/list/clothingbooth_stock_information_list = list()
 
 /proc/build_clothingbooth_caches()
-	var/list/list/list/list/item_list_buffer = list()
-	var/list/list/information_list_buffer = list()
-
 	// Generate the verbose list of all the `clothingbooth_item` types, indexed by the name of the item.
+	var/list/list/list/list/item_list_buffer = list()
 	for(var/clothingbooth_list_entry in concrete_typesof(/datum/clothingbooth_item))
 		var/datum/clothingbooth_item/current_item = new clothingbooth_list_entry
 		if (!istype(current_item, /datum/clothingbooth_item))
@@ -51,7 +49,8 @@ var/list/list/clothingbooth_stock_information_list = list()
 	global.clothingbooth_stock_item_list = item_list_buffer
 
 	// Generate an abridged list for displaying the clothingbooth stock on the player-facing list.
-	for (var/item_list_key in item_list_buffer)
+	var/list/list/information_list_buffer = list()
+	for (var/item_list_key in global.clothingbooth_stock_item_list)
 		var/list/current_item_list_entry = global.clothingbooth_stock_item_list[item_list_key]
 		if (!current_item_list_entry)
 			continue
