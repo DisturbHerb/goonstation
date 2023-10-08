@@ -1,4 +1,25 @@
 
+(t)sat oct 07 23
+(u)zjdtmkhzt
+(p)15911
+(e)🪲🆕🔎📦|C-Bug, C-Feature, C-Code-Quality, A-Game-Objects
+(+)Light fixtures can now be placed directly on windows.
+(u)glowbold
+(p)16159
+(e)🆕💡|C-Feature, A-Station-Systems
+(*)When approving or denying cargo requests, PDA Messages are sent to the requestor.
+(u)Lord_Earthfire
+(p)16320
+(e)🎨⚖📦|C-Sprites, C-Balance, A-Game-Objects
+(+)The syndicate now supplies their botanists with experimental biological pouches instead of boxes.
+(u)Lord_Earthfire
+(p)16323
+(e)⚖📦⚙|C-Balance, A-Game-Objects, A-Internal
+(+)Stealth storages have become a little bit more stealthy.
+(u)glowbold
+(p)16310
+(e)🆕🎨📦|C-Feature, C-Sprites, A-Game-Objects
+(+)Mining PDAs have the new MineralMagic™ PDA cart pre-installed. Additional copies in the CartyParty.
 (t)fri oct 06 23
 (u)Lord_Earthfire
 (p)16302
