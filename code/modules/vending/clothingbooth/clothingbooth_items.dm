@@ -1,4 +1,5 @@
-#define SEASON_HALLOWEEN 1
+#define SEASON_AUTUMN 1
+#define SEASON_HALLOWEEN 2
 
 ABSTRACT_TYPE(/datum/clothingbooth_item)
 /datum/clothingbooth_item
@@ -1184,6 +1185,33 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/yoga)
 		item_path = /obj/item/clothing/under/misc/yoga/communist
 
 /* ----------------------- SEASONAL ---------------------- */
+/* ------------------------ Autumn ----------------------- */
+#ifdef AUTUMN
+
+/* ------------------------- Head ------------------------ */
+/datum/clothingbooth_item/head/autumn_tree
+	season = SEASON_AUTUMN
+	cost = PAY_UNTRAINED
+	item_path = /obj/item/clothing/head/autumn_tree
+
+/datum/clothingbooth_item/head/leaf_wreath
+	season = SEASON_AUTUMN
+	cost = PAY_UNTRAINED
+	item_path = /obj/item/clothing/head/leaf_wreath
+
+/* ------------------------ Suits ------------------------ */
+/datum/clothingbooth_item/wear_suit/autumn_cape
+	season = SEASON_AUTUMN
+	cost = PAY_UNTRAINED
+	item_path = /obj/item/clothing/suit/autumn_cape
+
+/datum/clothingbooth_item/wear_suit/autumn_jacket
+	season = SEASON_AUTUMN
+	cost = PAY_UNTRAINED
+	item_path = /obj/item/clothing/suit/jacket/autumn_jacket
+
+#endif
+
 /* ---------------------- Halloween ---------------------- */
 #ifdef HALLOWEEN
 
@@ -1266,4 +1294,5 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/head/mushroomcap)
 
 #endif
 
+#undef SEASON_AUTUMN
 #undef SEASON_HALLOWEEN
