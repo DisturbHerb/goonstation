@@ -1,5 +1,5 @@
 export interface ClothingBoothData {
-  clothingBoothCategories: ClothingBoothCategory[];
+  clothingBoothStockInformation: ClothingBoothItemInformationProps[];
   money: number;
   name: string;
   previewHeight: number;
@@ -8,14 +8,24 @@ export interface ClothingBoothData {
   selectedItemName: string;
 }
 
-export interface ClothingBoothCategory {
-  category: string;
-  items: CategoryItems[];
+export interface ClothingBoothItemInformationProps {
+  costMax: number;
+  costMin: number;
+  image: string;
+  initialVariant: string;
+  key: any;
+  name: string;
+  season: number;
+  slot: number;
+  variantCount: number;
 }
 
-export interface CategoryItems {
-  cost: number;
-  img: string;
-  name: string;
-  path: string;
+export enum ClothingBoothSlotKeys {
+  Mask = 2,
+  Glasses = 9,
+  Gloves = 10,
+  Headwear = 11,
+  Shoes = 12,
+  Suit = 13,
+  Uniform = 14,
 }

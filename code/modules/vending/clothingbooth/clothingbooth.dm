@@ -128,6 +128,7 @@
 		. = list(
 			"name" = src.name
 		)
+		.["clothingBoothStockInformation"] = global.clothingbooth_stock_information
 
 	ui_data(mob/user)
 		var/icon/preview_icon = getFlatIcon(src.preview.preview_thing, no_anim = TRUE)
@@ -136,8 +137,6 @@
 			"previewIcon" = icon2base64(preview_icon),
 			"previewHeight" = preview_icon.Height(),
 			"previewItem" = src.preview_item,
-			"selectedItemCost" = src.item_to_purchase?.cost,
-			"selectedItemName" = src.item_to_purchase?.name
 		)
 
 	ui_act(action, params)

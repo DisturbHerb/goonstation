@@ -47,13 +47,22 @@ ABSTRACT_TYPE(/datum/clothingbooth_item)
 		if (src.detail_name)
 			if (!src.detail_color)
 				src.detail_color = get_average_color(getFlatIcon(item, no_anim = TRUE))
-			var/list/detail_hsl_buffer = rgb2num(src.detail_color, COLORSPACE_HSL)
+			var/list/detail_hsl_buffer = src.clamp_dimensions(rgb2num(src.detail_color, COLORSPACE_HSL))
 			src.detail_color_hsl = "[add_zero((detail_hsl_buffer[1]), 3)][add_zero((detail_hsl_buffer[2]), 3)][add_zero((detail_hsl_buffer[3]), 3)]"
 		if (!src.variant_color)
 			src.variant_color = get_average_color(getFlatIcon(item, no_anim = TRUE))
-		var/list/variant_hsl_buffer = rgb2num(src.variant_color, COLORSPACE_HSL)
+		var/list/variant_hsl_buffer = src.clamp_dimensions(rgb2num(src.variant_color, COLORSPACE_HSL))
 		src.variant_color_hsl = "[add_zero((variant_hsl_buffer[1]), 3)][add_zero((variant_hsl_buffer[2]), 3)][add_zero((variant_hsl_buffer[3]), 3)]"
 		src.cost = round(src.cost)
+
+	/**
+	 *	Takes a list of values representing the components of a colour (such as HSL), rounds them to the nearest int, and returns the resulting colour
+	 *	representation.
+	 */
+	proc/clamp_dimensions(list/colour_list)
+		. = list()
+		for (var/dimension in colour_list)
+			. += round(dimension)
 
 /* ----------------------- Glasses ----------------------- */
 ABSTRACT_TYPE(/datum/clothingbooth_item/mask)
