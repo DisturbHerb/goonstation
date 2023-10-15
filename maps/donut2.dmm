@@ -9553,7 +9553,6 @@
 	},
 /obj/machinery/power/data_terminal,
 /obj/machinery/light/incandescent,
-/obj/machinery/light/incandescent,
 /turf/simulated/floor/wood,
 /area/station/medical/head)
 "aOu" = (
@@ -33309,10 +33308,6 @@
 /area/station/maintenance/inner/central)
 "kRy" = (
 /obj/decal/cleanable/generic,
-/obj/machinery/conveyor/EW{
-	name = "cargo belt - west";
-	operating = 1
-	},
 /turf/simulated/floor/plating,
 /area/station/maintenance/west)
 "kRB" = (

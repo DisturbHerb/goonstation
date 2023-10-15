@@ -384,10 +384,7 @@
 						message = "<B>[src]</B> points."
 					else
 						src.point(M)
-
-					if (M)
 						message = "<B>[src]</B> points to [M]."
-					else
 				m_type = 1
 
 			if ("panic","freakout")
@@ -2839,6 +2836,7 @@
 			UpdateOverlays(src.i_clothes, "clothes")
 		else
 			UpdateOverlays(null, "clothes")
+		src.update_mob_silhouette()
 
 	proc/compborg_force_unequip(var/slot = 0)
 		src.module_active = null
