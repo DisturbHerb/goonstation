@@ -1,4 +1,3 @@
-// don't forget to implement support for variants having different prices bestie <3
 // clothing booth stuffs <3
 /obj/machinery/clothingbooth
 	name = "Clothing Booth"

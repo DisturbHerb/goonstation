@@ -764,6 +764,7 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/wear_suit/jacket)
 	item_path = /obj/item/clothing/suit/labcoatlong
 
 /datum/clothingbooth_item/wear_suit/overcoat_and_scarf
+	name = "Overcoat and Scarf"
 	item_path = /obj/item/clothing/suit/johnny_coat
 
 ABSTRACT_TYPE(/datum/clothingbooth_item/wear_suit/poncho)
@@ -1280,15 +1281,15 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/head/mushroomcap)
 		item_path = /obj/item/clothing/head/mushroomcap/red
 
 	shiitake
-		name = "Shiitake Mushroom Cap"
+		variant_name = "Shiitake Mushroom Cap"
 		item_path = /obj/item/clothing/head/mushroomcap/shiitake
 
 	indigo
-		name = "Indigo Mushroom Cap"
+		variant_name = "Indigo Mushroom Cap"
 		item_path = /obj/item/clothing/head/mushroomcap/indigo
 
 	inky
-		name = "Inky Mushroom Cap"
+		variant_name = "Inky Mushroom Cap"
 		cost = PAY_TRADESMAN
 		item_path = /obj/item/clothing/head/mushroomcap/inky
 

@@ -12,7 +12,7 @@ import {
   ClothingBoothData,
   ClothingBoothItemInformationProps,
   ClothingBoothSlotKeys,
-  ClothingBoothSortKeys,
+  ClothingBoothSortType,
 } from './type';
 
 import { capitalize } from '../common/stringUtils';
@@ -69,12 +69,34 @@ export const ClothingBooth = (_, context) => {
   );
 };
 
+// Comparator functions courtesy of @mordent-goonstation.
+type ComparatorFn<T> = (a: T, b: T) => number;
+const stringComparator = (a: string, b: string) => (a ?? '').localeCompare(b ?? '');
+const numberComparator = (a: number, b: number) => a - b;
+
+const buildFieldComparator
+  = <T, V>(fieldFn: (stockItem: T) => V, comparatorFn: ComparatorFn<V>) =>
+    (a: T, b: T) =>
+      comparatorFn(fieldFn(a), fieldFn(b));
+
+const clothingBoothItemComparators: Record<ClothingBoothSortType, ComparatorFn<ClothingBoothItemInformationProps>> = {
+  [ClothingBoothSortType.Name]: buildFieldComparator((stockItem) => stockItem.name, stringComparator),
+  [ClothingBoothSortType.Price]: buildFieldComparator((stockItem) => stockItem.costMin, numberComparator),
+  [ClothingBoothSortType.Season]: buildFieldComparator((stockItem) => stockItem.season, stringComparator),
+};
+
 const ClothingBoothStockList = (_, context) => {
   const { data } = useBackend<ClothingBoothData>(context);
   const [hideUnaffordable] = useLocalState(context, 'hideUnaffordable', false);
   const [slotFilters] = useLocalState(context, 'slotFilters', {});
-  const [sortType, setSortType] = useLocalState(context, 'sortType', ClothingBoothSortKeys.aToZ);
   const [searchText, setSearchText] = useLocalState(context, 'searchText', '');
+  const [sortType, setSortType] = useLocalState(context, 'sortType', ClothingBoothSortType.Name);
+  const [sortAscending, toggleSortAscending] = useLocalState(context, 'sortAscending', false);
+
+  const getSortComparator
+    = (usedSortType: ClothingBoothSortType, usedSortDirection: boolean) =>
+      (a: ClothingBoothItemInformationProps, b: ClothingBoothItemInformationProps) =>
+        clothingBoothItemComparators[usedSortType](a, b) * (usedSortDirection ? 1 : -1);
 
   const stockInformationList = Object.values(data.clothingBoothStockInformation);
   const affordableFilteredStockInformationList = hideUnaffordable
@@ -88,22 +110,12 @@ const ClothingBoothStockList = (_, context) => {
       stockItem.name.toLowerCase().includes(searchText.toLowerCase())
     )
     : slotFilteredStockInformationList;
-  const sortedStockInformationList = searchFilteredStockInformationList.sort((a, b) => {
-    if (sortType === ClothingBoothSortKeys.aToZ || sortType === ClothingBoothSortKeys.zToA) {
-      let output = ('' + a['name']).localeCompare(b['name']);
-      if (sortType === ClothingBoothSortKeys.zToA) {
-        output = output * -1;
-      }
-      return output;
-    }
-    if (sortType === ClothingBoothSortKeys.highLow || sortType === ClothingBoothSortKeys.lowHigh) {
-      let output = a['costMin'] - b['costMin'];
-      if (sortType === ClothingBoothSortKeys.highLow) {
-        output = output * -1;
-      }
-      return output;
-    }
-  });
+  const sortedStockInformationList = searchFilteredStockInformationList.sort(
+    getSortComparator(sortType, sortAscending)
+  );
+  const seasonSortedStockInformationList = sortedStockInformationList.sort(
+    getSortComparator(ClothingBoothSortType.Season, false)
+  );
 
   return (
     <Stack fill>
@@ -115,21 +127,25 @@ const ClothingBoothStockList = (_, context) => {
           <Stack.Item>
             <Section>
               <Stack fluid align="center" justify="space-between">
-                <Stack.Item grow>
+                <Stack.Item grow={2}>
                   <Input fluid onInput={(e, value) => setSearchText(value)} placeholder="Search by name..." />
                 </Stack.Item>
                 <Stack.Item grow>
                   <Dropdown
+                    noscroll
                     className="clothingbooth__dropdown"
+                    displayText={`Sort: ${sortType}`}
                     onSelected={(value) => setSortType(value)}
-                    options={[
-                      ClothingBoothSortKeys.aToZ,
-                      ClothingBoothSortKeys.zToA,
-                      ClothingBoothSortKeys.highLow,
-                      ClothingBoothSortKeys.lowHigh,
-                    ]}
+                    options={[ClothingBoothSortType.Name, ClothingBoothSortType.Price]}
                     selected={sortType}
                     width="100%"
+                  />
+                </Stack.Item>
+                <Stack.Item>
+                  <Button
+                    icon={sortAscending ? 'arrow-up-short-wide' : 'arrow-down-wide-short'}
+                    onClick={() => toggleSortAscending(!sortAscending)}
+                    tooltip={"Toggle Sort Direction"}
                   />
                 </Stack.Item>
               </Stack>
@@ -137,7 +153,7 @@ const ClothingBoothStockList = (_, context) => {
           </Stack.Item>
           <Stack.Item grow>
             <Section fill scrollable>
-              {sortedStockInformationList.map((stockItem) => (
+              {seasonSortedStockInformationList.map((stockItem) => (
                 <ClothingBoothItem key={stockItem.name} {...stockItem} />
               ))}
             </Section>
@@ -148,7 +164,7 @@ const ClothingBoothStockList = (_, context) => {
   );
 };
 
-const ClothingBoothSlotFilters = (props, context) => {
+const ClothingBoothSlotFilters = (_, context) => {
   const [slotFilters, setSlotFilters] = useLocalState(context, 'slotFilters', {});
   const toggleSlotFilter = (filter: number) =>
     setSlotFilters({
@@ -160,10 +176,13 @@ const ClothingBoothSlotFilters = (props, context) => {
     <Section fill>
       <Stack fill vertical>
         <Stack.Item>
-          <Button onClick={() => setSlotFilters({})}>Clear Filters</Button>
+          <Button color="transparent" onClick={() => setSlotFilters({})}>
+            Clear Filters
+          </Button>
         </Stack.Item>
         <Stack.Item>
           <Button.Checkbox
+            fluid
             checked={!!slotFilters[ClothingBoothSlotKeys.Mask]}
             onClick={() => toggleSlotFilter(ClothingBoothSlotKeys.Mask)}>
             Mask
@@ -171,6 +190,7 @@ const ClothingBoothSlotFilters = (props, context) => {
         </Stack.Item>
         <Stack.Item>
           <Button.Checkbox
+            fluid
             checked={!!slotFilters[ClothingBoothSlotKeys.Glasses]}
             onClick={() => toggleSlotFilter(ClothingBoothSlotKeys.Glasses)}>
             Glasses
@@ -178,6 +198,7 @@ const ClothingBoothSlotFilters = (props, context) => {
         </Stack.Item>
         <Stack.Item>
           <Button.Checkbox
+            fluid
             checked={!!slotFilters[ClothingBoothSlotKeys.Gloves]}
             onClick={() => toggleSlotFilter(ClothingBoothSlotKeys.Gloves)}>
             Gloves
@@ -185,6 +206,7 @@ const ClothingBoothSlotFilters = (props, context) => {
         </Stack.Item>
         <Stack.Item>
           <Button.Checkbox
+            fluid
             checked={!!slotFilters[ClothingBoothSlotKeys.Headwear]}
             onClick={() => toggleSlotFilter(ClothingBoothSlotKeys.Headwear)}>
             Headwear
@@ -192,6 +214,7 @@ const ClothingBoothSlotFilters = (props, context) => {
         </Stack.Item>
         <Stack.Item>
           <Button.Checkbox
+            fluid
             checked={!!slotFilters[ClothingBoothSlotKeys.Shoes]}
             onClick={() => toggleSlotFilter(ClothingBoothSlotKeys.Shoes)}>
             Shoes
@@ -199,6 +222,7 @@ const ClothingBoothSlotFilters = (props, context) => {
         </Stack.Item>
         <Stack.Item>
           <Button.Checkbox
+            fluid
             checked={!!slotFilters[ClothingBoothSlotKeys.Suit]}
             onClick={() => toggleSlotFilter(ClothingBoothSlotKeys.Suit)}>
             Suit
@@ -206,6 +230,7 @@ const ClothingBoothSlotFilters = (props, context) => {
         </Stack.Item>
         <Stack.Item>
           <Button.Checkbox
+            fluid
             checked={!!slotFilters[ClothingBoothSlotKeys.Uniform]}
             onClick={() => toggleSlotFilter(ClothingBoothSlotKeys.Uniform)}>
             Uniform

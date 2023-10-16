@@ -30,9 +30,13 @@ export enum ClothingBoothSlotKeys {
   Uniform = 14,
 }
 
-export enum ClothingBoothSortKeys {
-  aToZ = "Name: A -> Z",
-  zToA = "Name: Z -> A",
-  highLow = "Price: High -> Low",
-  lowHigh = "Price: Low -> High",
+export enum ClothingBoothSortType {
+  Name = "Name",
+  Price = "Price",
+  Season = "Season",
+}
+
+export enum ClothingBoothSortComparatorType {
+  String,
+  Number,
 }
