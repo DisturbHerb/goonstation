@@ -300,6 +300,7 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/head/costume_goggles)
 		item_path = /obj/item/clothing/head/goggles/purple
 
 /datum/clothingbooth_item/head/cowboy
+	cost = PAY_TRADESMAN/5
 	item_path = /obj/item/clothing/head/cowboy
 
 /datum/clothingbooth_item/head/cwhat
