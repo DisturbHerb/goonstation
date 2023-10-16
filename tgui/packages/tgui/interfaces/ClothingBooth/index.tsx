@@ -9,24 +9,21 @@ import { classes } from 'common/react';
 import { useBackend, useLocalState } from '../../backend';
 import { Button, Divider, Dropdown, Image, Input, Section, Stack } from '../../components';
 import { Window } from '../../layouts';
-import { ClothingBoothData, ClothingBoothItemInformationProps, ClothingBoothSlotKeys } from './type';
+import {
+  ClothingBoothData,
+  ClothingBoothItemInformationProps,
+  ClothingBoothSlotKeys,
+  ClothingBoothSortKeys,
+} from './type';
 
 import { capitalize } from '../common/stringUtils';
 
-// Credit to @TobleroneSwordfish for this sort function.
-// basic sorting function for numbers and strings
-const AZCompare = function (a, b, sortBy) {
-  if (!isNaN(a[sortBy]) && !isNaN(b[sortBy])) {
-    return a[sortBy] - b[sortBy];
-  }
-  return ('' + a[sortBy]).localeCompare(b[sortBy]);
-};
-
 export const ClothingBooth = (_, context) => {
   const { data } = useBackend<ClothingBoothData>(context);
+  const [hideUnaffordable, toggleHideUnaffordable] = useLocalState(context, 'hideUnaffordable', false);
 
   return (
-    <Window title={data.name} width={400} height={500}>
+    <Window title={data.name} width={450} height={500}>
       <Window.Content>
         <Stack fill vertical>
           {/* Topmost section, containing the cash balance. */}
@@ -34,6 +31,13 @@ export const ClothingBooth = (_, context) => {
             <Section fill>
               <Stack fluid align="center" justify="space-between">
                 <Stack.Item bold>Cash: {data.money}⪽</Stack.Item>
+                <Stack.Item>
+                  <Button.Checkbox
+                    checked={!!hideUnaffordable}
+                    onClick={() => toggleHideUnaffordable(!hideUnaffordable)}>
+                    Hide Unaffordable
+                  </Button.Checkbox>
+                </Stack.Item>
               </Stack>
             </Section>
           </Stack.Item>
@@ -66,20 +70,48 @@ export const ClothingBooth = (_, context) => {
   );
 };
 
+// const AZCompare = function (a, b) {
+//   if (!isNaN(a[sortBy]) && !isNaN(b[sortBy])) {
+//     return a[sortBy] - b[sortBy];
+//   }
+//   return ('' + a[sortBy]).localeCompare(b[sortBy]);
+// };
+
 const ClothingBoothStockList = (_, context) => {
   const { data } = useBackend<ClothingBoothData>(context);
+  const [hideUnaffordable] = useLocalState(context, 'hideUnaffordable', false);
   const [slotFilters] = useLocalState(context, 'slotFilters', {});
+  const [sortType, setSortType] = useLocalState(context, 'sortType', ClothingBoothSortKeys.aToZ);
   const [searchText, setSearchText] = useLocalState(context, 'searchText', '');
 
   const stockInformationList = Object.values(data.clothingBoothStockInformation);
-  const slotFilteredStockInformationList = Object.values(slotFilters).length
-    ? stockInformationList.filter((stockItem) => slotFilters[stockItem.slot])
+  const affordableFilteredStockInformationList = hideUnaffordable
+    ? stockInformationList.filter((stockItem) => data.money >= stockItem.costMin)
     : stockInformationList;
+  const slotFilteredStockInformationList = Object.values(slotFilters).some((filter) => filter === true)
+    ? affordableFilteredStockInformationList.filter((stockItem) => slotFilters[stockItem.slot])
+    : affordableFilteredStockInformationList;
   const searchFilteredStockInformationList = searchText
     ? slotFilteredStockInformationList.filter((stockItem) =>
       stockItem.name.toLowerCase().includes(searchText.toLowerCase())
     )
     : slotFilteredStockInformationList;
+  const sortedStockInformationList = searchFilteredStockInformationList.sort((a, b) => {
+    if (sortType === ClothingBoothSortKeys.aToZ || sortType === ClothingBoothSortKeys.zToA) {
+      let output = ('' + a['name']).localeCompare(b['name']);
+      if (sortType === ClothingBoothSortKeys.zToA) {
+        output = output * -1;
+      }
+      return output;
+    }
+    if (sortType === ClothingBoothSortKeys.highLow || sortType === ClothingBoothSortKeys.lowHigh) {
+      let output = a['costMin'] - b['costMin'];
+      if (sortType === ClothingBoothSortKeys.highLow) {
+        output = output * -1;
+      }
+      return output;
+    }
+  });
 
   return (
     <Stack fill>
@@ -94,15 +126,26 @@ const ClothingBoothStockList = (_, context) => {
                 <Stack.Item grow>
                   <Input fluid onInput={(e, value) => setSearchText(value)} placeholder="Search by name..." />
                 </Stack.Item>
-                <Stack.Item>
-                  <Dropdown className="clothingbooth__dropdown" selected="A -> Z" />
+                <Stack.Item grow>
+                  <Dropdown
+                    className="clothingbooth__dropdown"
+                    onSelected={(value) => setSortType(value)}
+                    options={[
+                      ClothingBoothSortKeys.aToZ,
+                      ClothingBoothSortKeys.zToA,
+                      ClothingBoothSortKeys.highLow,
+                      ClothingBoothSortKeys.lowHigh,
+                    ]}
+                    selected={sortType}
+                    width="100%"
+                  />
                 </Stack.Item>
               </Stack>
             </Section>
           </Stack.Item>
           <Stack.Item grow>
             <Section fill scrollable>
-              {searchFilteredStockInformationList.map((stockItem) => (
+              {sortedStockInformationList.map((stockItem) => (
                 <ClothingBoothItem key={stockItem.name} {...stockItem} />
               ))}
             </Section>
@@ -189,14 +232,8 @@ const ClothingBoothItem = (props: ClothingBoothItemInformationProps, context) =>
         </Stack.Item>
         <Stack.Item grow={1}>
           <Stack fill vertical>
-            <Stack.Item bold>
-              {capitalize(props.name)}
-            </Stack.Item>
-            {props.variantCount > 1 && (
-              <Stack.Item italic>
-                {props.variantCount} variants
-              </Stack.Item>
-            )}
+            <Stack.Item bold>{capitalize(props.name)}</Stack.Item>
+            {props.variantCount > 1 && <Stack.Item italic>{props.variantCount} variants</Stack.Item>}
           </Stack>
         </Stack.Item>
         <Stack.Item bold>

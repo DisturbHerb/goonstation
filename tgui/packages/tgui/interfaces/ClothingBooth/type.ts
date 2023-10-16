@@ -29,3 +29,10 @@ export enum ClothingBoothSlotKeys {
   Suit = 13,
   Uniform = 14,
 }
+
+export enum ClothingBoothSortKeys {
+  aToZ = "Name: A -> Z",
+  zToA = "Name: Z -> A",
+  highLow = "Price: High -> Low",
+  lowHigh = "Price: Low -> High",
+}
