@@ -5,7 +5,6 @@
  * @license ISC
  */
 
-import { classes } from 'common/react';
 import { useBackend, useLocalState } from '../../backend';
 import { Button, Divider, Dropdown, Image, Input, Section, Stack } from '../../components';
 import { Window } from '../../layouts';
@@ -23,7 +22,7 @@ export const ClothingBooth = (_, context) => {
   const [hideUnaffordable, toggleHideUnaffordable] = useLocalState(context, 'hideUnaffordable', false);
 
   return (
-    <Window title={data.name} width={450} height={500}>
+    <Window title={data.name} width={450} height={550}>
       <Window.Content>
         <Stack fill vertical>
           {/* Topmost section, containing the cash balance. */}
@@ -69,13 +68,6 @@ export const ClothingBooth = (_, context) => {
     </Window>
   );
 };
-
-// const AZCompare = function (a, b) {
-//   if (!isNaN(a[sortBy]) && !isNaN(b[sortBy])) {
-//     return a[sortBy] - b[sortBy];
-//   }
-//   return ('' + a[sortBy]).localeCompare(b[sortBy]);
-// };
 
 const ClothingBoothStockList = (_, context) => {
   const { data } = useBackend<ClothingBoothData>(context);
@@ -168,6 +160,9 @@ const ClothingBoothSlotFilters = (props, context) => {
     <Section fill>
       <Stack fill vertical>
         <Stack.Item>
+          <Button onClick={() => setSlotFilters({})}>Clear Filters</Button>
+        </Stack.Item>
+        <Stack.Item>
           <Button.Checkbox
             checked={!!slotFilters[ClothingBoothSlotKeys.Mask]}
             onClick={() => toggleSlotFilter(ClothingBoothSlotKeys.Mask)}>
@@ -226,13 +221,20 @@ const ClothingBoothItem = (props: ClothingBoothItemInformationProps, context) =>
 
   return (
     <>
-      <Stack align="center" className={classes(['clothingbooth__boothitem'])}>
+      <Stack align="center" className="clothingbooth__boothitem">
         <Stack.Item>
           <Image pixelated src={`data:image/png;base64,${props.image}`} />
         </Stack.Item>
         <Stack.Item grow={1}>
           <Stack fill vertical>
             <Stack.Item bold>{capitalize(props.name)}</Stack.Item>
+            {props.season ? (
+              <Stack.Item italic className={props.season && `clothingbooth__boothitem__season-${props.season}`}>
+                {capitalize(props.season)} Collection
+              </Stack.Item>
+            ) : (
+              ''
+            )}
             {props.variantCount > 1 && <Stack.Item italic>{props.variantCount} variants</Stack.Item>}
           </Stack>
         </Stack.Item>

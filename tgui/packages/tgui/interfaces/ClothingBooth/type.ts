@@ -15,7 +15,7 @@ export interface ClothingBoothItemInformationProps {
   initialVariant: string;
   key: any;
   name: string;
-  season: number;
+  season: string;
   slot: number;
   variantCount: number;
 }

@@ -1,5 +1,5 @@
-#define SEASON_AUTUMN 1
-#define SEASON_HALLOWEEN 2
+#define SEASON_AUTUMN "autumn"
+#define SEASON_HALLOWEEN "halloween"
 
 ABSTRACT_TYPE(/datum/clothingbooth_item)
 /datum/clothingbooth_item
@@ -1298,9 +1298,8 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/head/mushroomcap)
 	item_path = /obj/item/clothing/head/minotaurmask
 
 /datum/clothingbooth_item/head/tengumask
-	name = "Tengu Mask"
 	season = SEASON_HALLOWEEN
-	path = /obj/item/clothing/mask/tengu
+	item_path = /obj/item/clothing/mask/tengu
 
 #endif
 
