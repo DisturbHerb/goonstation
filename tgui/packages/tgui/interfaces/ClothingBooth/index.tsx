@@ -5,6 +5,7 @@
  * @license ISC
  */
 
+import { classes } from 'common/react';
 import { useBackend, useLocalState } from '../../backend';
 import { Button, Divider, Dropdown, Image, Input, Section, Stack } from '../../components';
 import { Window } from '../../layouts';
@@ -91,7 +92,7 @@ const ClothingBoothStockList = (_, context) => {
   const [slotFilters] = useLocalState(context, 'slotFilters', {});
   const [searchText, setSearchText] = useLocalState(context, 'searchText', '');
   const [sortType, setSortType] = useLocalState(context, 'sortType', ClothingBoothSortType.Name);
-  const [sortAscending, toggleSortAscending] = useLocalState(context, 'sortAscending', false);
+  const [sortAscending, toggleSortAscending] = useLocalState(context, 'sortAscending', true);
 
   const getSortComparator
     = (usedSortType: ClothingBoothSortType, usedSortDirection: boolean) =>
@@ -127,7 +128,7 @@ const ClothingBoothStockList = (_, context) => {
           <Stack.Item>
             <Section>
               <Stack fluid align="center" justify="space-between">
-                <Stack.Item grow={2}>
+                <Stack.Item grow>
                   <Input fluid onInput={(e, value) => setSearchText(value)} placeholder="Search by name..." />
                 </Stack.Item>
                 <Stack.Item grow>
@@ -145,7 +146,7 @@ const ClothingBoothStockList = (_, context) => {
                   <Button
                     icon={sortAscending ? 'arrow-up-short-wide' : 'arrow-down-wide-short'}
                     onClick={() => toggleSortAscending(!sortAscending)}
-                    tooltip={"Toggle Sort Direction"}
+                    tooltip={'Toggle Sort Direction'}
                   />
                 </Stack.Item>
               </Stack>
@@ -246,7 +247,13 @@ const ClothingBoothItem = (props: ClothingBoothItemInformationProps, context) =>
 
   return (
     <>
-      <Stack align="center" className="clothingbooth__boothitem">
+      <Stack
+        align="center"
+        className={classes([
+          'clothingbooth__boothitem',
+          data.selectedItemName === props.name && 'clothingbooth__boothitem-selected',
+        ])}
+        onClick={() => data.selectedItemName !== props.name && act('select-item', { name: props.name })}>
         <Stack.Item>
           <Image pixelated src={`data:image/png;base64,${props.image}`} />
         </Stack.Item>
@@ -312,3 +319,5 @@ const PurchaseInfo = (_, context) => {
     </Stack>
   );
 };
+
+const VariantSwatch = (props: )

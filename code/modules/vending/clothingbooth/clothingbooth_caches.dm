@@ -24,23 +24,15 @@ var/list/list/clothingbooth_stock_information = list()
 			item_list_buffer_entry["variants"][current_item.variant_name] += list(
 				"variantName" = current_item.variant_name,
 				"variantColor" = current_item.variant_color,
-				"variantColorHSL" = current_item.variant_color_hsl,
-				"variantListPlace" = current_item.variant_list_place,
 				"details" = list(),
 				"cost" = current_item.cost,
 			)
-		if (current_item.initial_variant || !item_list_buffer_entry["initialVariant"])
-			item_list_buffer_entry["initialVariant"] = current_item.variant_name
 		if (current_item.detail_name)
 			item_list_buffer_entry["variants"][current_item.variant_name]["details"][current_item.detail_name] += list(
 				"detailName" = current_item.detail_name,
 				"detailColor" = current_item.detail_color,
-				"detailColorHSL" = current_item.detail_color_hsl,
-				"detailListPlace" = current_item.detail_list_place,
 				"itemPath" = current_item.item_path,
 			)
-			if (current_item.initial_detail)
-				item_list_buffer_entry["variants"][current_item.variant_name]["initialDetail"] = current_item.detail_name
 		else
 			item_list_buffer_entry["variants"][current_item.variant_name]["itemPath"] = current_item.item_path
 
@@ -65,8 +57,7 @@ var/list/list/clothingbooth_stock_information = list()
 
 		// Get an image for the entry. Will draw from the initial variant and the initial detail if applicable.
 		var/current_entry_atom_path = /obj/item/clothing/under/color/white
-		var/current_entry_initial_variant = current_item_list_entry["variants"][current_item_list_entry["initialVariant"]]
-		var/detail_index = current_entry_initial_variant["initialDetail"] ? current_entry_initial_variant["initialDetail"] : 1
+		var/current_entry_initial_variant = current_item_list_entry["variants"][1]
 		if (length(current_entry_initial_variant["details"]))
 			current_entry_atom_path = current_entry_initial_variant["details"][detail_index]["itemPath"]
 		else
@@ -80,7 +71,6 @@ var/list/list/clothingbooth_stock_information = list()
 			"image" = current_entry_image,
 			"season" = current_item_list_entry["season"],
 			"slot" = current_item_list_entry["slot"],
-			"initialVariant" = current_item_list_entry["initialVariant"],
 			"variantCount" = length(current_item_list_entry["variants"]),
 			"costMin" = current_entry_cost_min,
 			"costMax" = current_entry_cost_max,

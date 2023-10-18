@@ -13,24 +13,11 @@ ABSTRACT_TYPE(/datum/clothingbooth_item)
 
 	var/variant_name = "Default"
 	var/variant_color = null
-	/// HSL representation of `src.variant_color` used for sorting, generated at runtime. Do not override manually.
-	var/variant_color_hsl = null
 
 	/// Just in case *some* rogue clothing item needs to have two different variables. Grumble grumble.
 	var/detail_name = null
 	var/detail_color = null
-	/// HSL representation of `src.detail_color` used for sorting, generated at runtime. Do not override manually.
-	var/detail_color_hsl = null
 
-	/// Set these to true for the variant/detail type that is selected by default.
-	var/initial_variant = FALSE
-	var/initial_detail = FALSE
-
-	/** To override the alphabetical or HSL sorting schema when displaying the available variants, `variant_list_place` can be overriden with an
-		integer denoting its index in the list ascending from 1. Index 1 will appear after the type with `initial_variant`. */
-	var/variant_list_place = null
-	// Operates the same as `src.variant_list_place` for a given variant's detail types.
-	var/detail_list_place = null
 
 	var/cost = 1
 	var/item_path = /obj/item/clothing/under/color/white
@@ -47,24 +34,11 @@ ABSTRACT_TYPE(/datum/clothingbooth_item)
 		if (src.detail_name)
 			if (!src.detail_color)
 				src.detail_color = get_average_color(getFlatIcon(item, no_anim = TRUE))
-			var/list/detail_hsl_buffer = src.clamp_dimensions(rgb2num(src.detail_color, COLORSPACE_HSL))
-			src.detail_color_hsl = "[add_zero((detail_hsl_buffer[1]), 3)][add_zero((detail_hsl_buffer[2]), 3)][add_zero((detail_hsl_buffer[3]), 3)]"
 		if (!src.variant_color)
 			src.variant_color = get_average_color(getFlatIcon(item, no_anim = TRUE))
-		var/list/variant_hsl_buffer = src.clamp_dimensions(rgb2num(src.variant_color, COLORSPACE_HSL))
-		src.variant_color_hsl = "[add_zero((variant_hsl_buffer[1]), 3)][add_zero((variant_hsl_buffer[2]), 3)][add_zero((variant_hsl_buffer[3]), 3)]"
 		src.cost = round(src.cost)
 
-	/**
-	 *	Takes a list of values representing the components of a colour (such as HSL), rounds them to the nearest int, and returns the resulting colour
-	 *	representation.
-	 */
-	proc/clamp_dimensions(list/colour_list)
-		. = list()
-		for (var/dimension in colour_list)
-			. += round(dimension)
-
-/* ----------------------- Glasses ----------------------- */
+/* ------------------------ Masks ------------------------ */
 ABSTRACT_TYPE(/datum/clothingbooth_item/mask)
 /datum/clothingbooth_item/mask
 	slot = SLOT_WEAR_MASK
@@ -536,7 +510,6 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/shoes/cowboy_boots)
 	real
 		variant_name = "Real"
 		item_path = /obj/item/clothing/shoes/westboot
-		initial_variant = TRUE
 
 	dirty
 		variant_name = "Dirty"
@@ -561,7 +534,6 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/shoes/flats)
 	black
 		variant_name = "Black"
 		item_path = /obj/item/clothing/shoes/flatsblk
-		initial_variant = TRUE
 
 	white
 		variant_name = "White"
@@ -670,7 +642,6 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/wear_suit/hoodie)
 	orange
 		variant_name = "Orange"
 		item_path = /obj/item/clothing/suit/hoodie
-		initial_variant = TRUE
 
 	pink
 		variant_name = "Pink"
@@ -1032,8 +1003,6 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/shirt_and_pants)
 		variant_name = "Black Pants"
 		detail_name = "No Tie"
 		item_path = /obj/item/clothing/under/shirt_pants_b
-		initial_variant = TRUE
-		initial_detail = TRUE
 
 	black_pants_red_tie
 		variant_name = "Black Pants"
@@ -1226,6 +1195,12 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/yoga)
 /* ---------------------- Halloween ---------------------- */
 #ifdef HALLOWEEN
 
+/* ------------------------ Masks ------------------------ */
+/datum/clothingbooth_item/mask/tengumask
+	season = SEASON_HALLOWEEN
+	item_path = /obj/item/clothing/mask/tengu
+
+
 /* ------------------------- Head ------------------------ */
 /datum/clothingbooth_item/head/giraffehat
 	season = SEASON_HALLOWEEN
@@ -1297,10 +1272,6 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/head/mushroomcap)
 	season = SEASON_HALLOWEEN
 	cost = PAY_TRADESMAN
 	item_path = /obj/item/clothing/head/minotaurmask
-
-/datum/clothingbooth_item/head/tengumask
-	season = SEASON_HALLOWEEN
-	item_path = /obj/item/clothing/mask/tengu
 
 #endif
 

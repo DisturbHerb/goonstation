@@ -9,11 +9,15 @@
 	density = 1
 	var/datum/light/ambient_light
 
-	// Preview and purchase-related.
-	var/datum/clothingbooth_item/item_to_purchase = null
+	var/selected_item = null
+	var/selected_variant = null
+	var/selected_detail = null
+	/// Path ref for `/obj/item/clothing`.
+	var/clothing_to_purchase_path = null
+
 	var/datum/movable_preview/character/multiclient/preview
 	var/mob/living/carbon/human/occupant
-	var/obj/item/preview_item = null
+	var/obj/item/clothing/preview_item = null
 	var/preview_direction_default = SOUTH
 	/// This is set to `src.preview_direction_default` on New() and whenever a new occupant is added. This can be rotated in the UI.
 	var/current_preview_direction
@@ -99,7 +103,7 @@
 	disposing()
 		qdel(src.preview)
 		qdel(src.preview_item)
-		qdel(src.item_to_purchase)
+		qdel(src.selected_item)
 		..()
 
 	relaymove(mob/user as mob)
@@ -136,7 +140,10 @@
 			"previewIcon" = icon2base64(preview_icon),
 			"previewHeight" = preview_icon.Height(),
 			"previewItem" = src.preview_item,
+			"selectedVariant" = src.selected_variant,
+			"selectedDetail" = src.selected_detail,
 		)
+		.["selectedItem"]  = src.selected_item
 
 	ui_act(action, params)
 		. = ..()
@@ -144,12 +151,56 @@
 			return
 
 		switch(action)
-			if("purchase")
-				if(src.item_to_purchase)
-					if(text2num_safe(src.item_to_purchase.cost) <= src.money)
-					else
-						boutput(usr, "<span class='alert'>Insufficient funds!</span>")
-						animate_shake(src, 12, 3, 3)
+			if ("select-item")
+				var/selected_item_buffer = global.clothingbooth_stock_list[params["name"]]
+				if (selected_item_buffer)
+					src.selected_item = selected_item_buffer
+					src.selected_variant = selected_item_buffer["initialVariant"]
+					var/initial_detail = selected_item_buffer["variants"][src.selected_variant]["initialDetail"]
+					src.selected_detail = initial_detail ? selected_item_buffer["variants"][src.selected_variant]["details"][initial_detail] : null
+					src.equip_and_preview()
+					. = TRUE
+				else
+					boutput(usr, "<span class='alert'>Invalid item selected!</span>")
+			if ("select-variant")
+				if (!src.selected_item)
+					boutput(usr, "<span class='alert'>How? Nothing's selected!</span>")
+					return
+				if (!length(src.selected_item["variants"]))
+					boutput(usr, "<span class='alert'>No variants exist!</span>")
+					return
+				var/selected_variant_buffer = params["variantName"]
+				if (!selected_variant_buffer)
+					boutput(usr, "<span class='alert'>Selected variant doesn't exist!</span>")
+					return
+				src.selected_variant = src.selected_item["variants"][selected_variant_buffer]
+				src.equip_and_preview()
+				. = TRUE
+			if ("select-detail")
+				if (!src.selected_item)
+					boutput(usr, "<span class='alert'>How? Nothing's selected!</span>")
+					return
+				if (!length(src.selected_item["variants"][src.selected_variant]["details"]))
+					boutput(usr, "<span class='alert'>No detail types exist!</span>")
+					return
+				var/selected_detail_buffer = params["detailName"]
+				if (!selected_detail_buffer)
+					boutput(usr, "<span class='alert'>Selected detail type doesn't exist!</span>")
+					return
+				src.selected_detail = src.selected_item["variants"][src.selected_variant]["details"][selected_detail_buffer]
+				src.equip_and_preview()
+				. = TRUE
+			if ("purchase")
+				if (src.selected_item)
+					// var/variant_to_purchase = src.selected_item["variants"][src.selected_variant]
+					// if (text2num_safe(src.selected_item.cost) <= src.money)
+					// 	src.money -= text2num_safe(src.selected_item.cost)
+					// 	var/purchased_item_path
+					// 	if ()
+					// 	usr.put_in_hand_or_drop(new purchased_item_path(src))
+					// else
+					// 	boutput(usr, "<span class='alert'>Insufficient funds!</span>")
+					// 	animate_shake(src, 12, 3, 3)
 					. = TRUE
 				else
 					boutput(usr, "<span class='alert'>No item selected!</span>")
@@ -159,9 +210,6 @@
 				. = TRUE
 			if ("rotate-ccw")
 				src.current_preview_direction = turn(src.current_preview_direction, 90)
-				update_preview()
-				. = TRUE
-			if("select")
 				update_preview()
 				. = TRUE
 
@@ -183,10 +231,13 @@
 		open()
 		SPAWN(2 SECONDS)
 			qdel(src.preview_item)
-			qdel(src.item_to_purchase)
+			qdel(src.selected_item)
 			src.preview.remove_all_clients()
 			src.current_preview_direction = src.preview_direction_default
-			src.item_to_purchase = null
+			src.selected_item = null
+			src.selected_variant = null
+			src.selected_detail = null
+			src.clothing_to_purchase_path = null
 			tgui_process.close_uis(src)
 			var/turf/T = get_turf(src)
 			if (!occupant)
@@ -206,6 +257,21 @@
 				src.money = 0
 				for (var/atom/movable/AM in contents)
 					AM.set_loc(T)
+
+	proc/equip_and_preview()
+		var/mob/living/carbon/human/preview_mob = src.preview.preview_thing
+		if(src.preview_item)
+			preview_mob.u_equip(src.preview_item)
+			qdel(src.preview_item)
+			src.preview_item = null
+		if (length(src.selected_item["variants"][src.selected_variant]["details"]))
+			src.clothing_to_purchase_path = src.selected_item["variants"][src.selected_variant]["details"][src.selected_detail]["itemPath"]
+		else
+			src.clothing_to_purchase_path = src.selected_item["variants"][src.selected_variant]["itemPath"]
+		var/obj/item/clothing/clothing_item = new src.clothing_to_purchase_path
+		src.preview_item = clothing_item
+		preview_mob.force_equip(src.preview_item, src.selected_item["slot"])
+		src.update_preview()
 
 	/// generates a preview of the current occupant
 	proc/update_preview()

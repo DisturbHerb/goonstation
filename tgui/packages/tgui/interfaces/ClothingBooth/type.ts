@@ -1,9 +1,12 @@
+import { Color } from "../../../common/color";
+
 export interface ClothingBoothData {
   clothingBoothStockInformation: ClothingBoothItemInformationProps[];
   money: number;
   name: string;
   previewHeight: number;
   previewIcon: string;
+  selectedItem: ClothingBoothSelectedItemProps[];
   selectedItemCost: number;
   selectedItemName: string;
 }
@@ -12,12 +15,33 @@ export interface ClothingBoothItemInformationProps {
   costMax: number;
   costMin: number;
   image: string;
-  initialVariant: string;
   key: any;
   name: string;
   season: string;
   slot: number;
   variantCount: number;
+}
+
+export interface ClothingBoothSelectedItemProps {
+  name: string;
+  season: string;
+  slot: number;
+  variants: ItemVariantProps[];
+}
+
+export interface ItemVariantProps {
+  variantName: string;
+  variantColor: Color;
+  details: VariantDetailsProps[];
+  cost: number;
+  itemPath: string;
+}
+
+export interface VariantDetailsProps {
+  detailName: string;
+  detailColor: Color;
+  cost: number;
+  itemPath: string;
 }
 
 export enum ClothingBoothSlotKeys {
