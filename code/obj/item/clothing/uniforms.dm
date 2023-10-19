@@ -1933,3 +1933,10 @@ ABSTRACT_TYPE(/obj/item/clothing/under/misc/blouse_skirt)
 	name = "black blouse and skirt"
 	icon_state = "blouse_skirt-black"
 	item_state = "blouse_skirt-black"
+//Seasonal Stuff
+
+/obj/item/clothing/under/gimmick/clown_autumn
+	name = "autumn clown suit"
+	desc = "Lets you celebrate the season while still remaining autumnomous."
+	icon_state = "clown_autumn"
+	item_state = "clown_autumn"
