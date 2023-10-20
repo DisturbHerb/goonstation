@@ -299,8 +299,8 @@ const CharacterPreview = (_, context) => {
         />
       </Stack.Item>
       <Stack.Item>
-        <Button.Checkbox checked={data.showClothing} color="transparent" onClick={() => act('toggle-clothing')}>
-          Show Clothing
+        <Button.Checkbox checked={!data.showClothing} color="transparent" onClick={() => act('toggle-clothing')}>
+          Hide Clothing
         </Button.Checkbox>
       </Stack.Item>
     </Stack>
@@ -314,13 +314,13 @@ const PurchaseInfo = (_, context) => {
       {data.selectedItem ? (
         <>
           <Stack.Item>{`Selected: ${data.selectedItemName}`}</Stack.Item>
-          {!!data.selectedItem && (
+          {/* {!!data.selectedItem && (
             <Stack.Item>
               {Object.values(data.selectedItem).map((variant) => (
                 <VariantSwatch key={variant.name} {...variant} />
               ))}
             </Stack.Item>
-          )}
+          )} */}
           <Stack.Item>
             <Button color="green" disabled={data.selectedItemCost > data.money} onClick={() => act('purchase')}>
               {!(data.selectedItemCost > data.money) ? `Purchase (${data.selectedItemCost}⪽)` : `Insufficient Cash`}
@@ -335,5 +335,5 @@ const PurchaseInfo = (_, context) => {
 };
 
 const VariantSwatch = (props: ItemVariantProps, context) => {
-  return <Box />;
+  return <Box>your mum</Box>;
 };
