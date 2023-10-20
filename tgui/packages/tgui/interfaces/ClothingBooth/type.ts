@@ -9,6 +9,7 @@ export interface ClothingBoothData {
   selectedItem: ClothingBoothSelectedItemProps[];
   selectedItemCost: number;
   selectedItemName: string;
+  showClothing: boolean;
 }
 
 export interface ClothingBoothItemInformationProps {
@@ -19,6 +20,7 @@ export interface ClothingBoothItemInformationProps {
   name: string;
   season: string;
   slot: number;
+  initialVariant: string;
   variantCount: number;
 }
 
@@ -31,15 +33,9 @@ export interface ClothingBoothSelectedItemProps {
 
 export interface ItemVariantProps {
   variantName: string;
-  variantColor: Color;
-  details: VariantDetailsProps[];
-  cost: number;
-  itemPath: string;
-}
-
-export interface VariantDetailsProps {
-  detailName: string;
-  detailColor: Color;
+  variantBackgroundColor: Color;
+  variantForegroundShape: string;
+  variantForegroundColor: Color;
   cost: number;
   itemPath: string;
 }

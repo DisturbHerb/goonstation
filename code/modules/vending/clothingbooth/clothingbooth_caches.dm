@@ -17,24 +17,18 @@ var/list/list/clothingbooth_stock_information = list()
 				"name" = current_item.name,
 				"season" = current_item.season,
 				"slot" = current_item.slot,
+				"overrideDisplayOrder" = current_item.override_display_order,
 				"variants" = list(),
 			)
 		var/list/list/item_list_buffer_entry = item_list_buffer[current_item.name]
 		if (!item_list_buffer_entry["variants"][current_item.variant_name])
 			item_list_buffer_entry["variants"][current_item.variant_name] += list(
 				"variantName" = current_item.variant_name,
-				"variantColor" = current_item.variant_color,
-				"details" = list(),
+				"variantBackgroundColor" = current_item.variant_background_color,
+				"variantForegroundColor" = current_item.variant_foreground_color,
 				"cost" = current_item.cost,
-			)
-		if (current_item.detail_name)
-			item_list_buffer_entry["variants"][current_item.variant_name]["details"][current_item.detail_name] += list(
-				"detailName" = current_item.detail_name,
-				"detailColor" = current_item.detail_color,
 				"itemPath" = current_item.item_path,
 			)
-		else
-			item_list_buffer_entry["variants"][current_item.variant_name]["itemPath"] = current_item.item_path
 
 	global.clothingbooth_stock_list = item_list_buffer
 
@@ -55,13 +49,21 @@ var/list/list/clothingbooth_stock_information = list()
 			if (!current_entry_cost_max || (current_entry_cost_max && current_variant_cost > current_entry_cost_max))
 				current_entry_cost_max = current_variant_cost
 
-		// Get an image for the entry. Will draw from the initial variant and the initial detail if applicable.
-		var/current_entry_atom_path = /obj/item/clothing/under/color/white
-		var/current_entry_initial_variant = current_item_list_entry["variants"][1]
-		if (length(current_entry_initial_variant["details"]))
-			current_entry_atom_path = current_entry_initial_variant["details"][detail_index]["itemPath"]
-		else
-			current_entry_atom_path = current_entry_initial_variant["itemPath"]
+		// Get an image for the entry.
+		var/list/current_entry_initial_variant = current_item_list_entry["variants"][current_item_list_entry["variants"][1]]
+		if (!current_item_list_entry["overrideDisplayOrder"])
+			// Iterate over all the variants to find the one with the lowest hue. Use the item_path for that one instead.
+			// Actually sorting by hue is gonna be handled on the jsx/inferno side because I just can't anymore.
+			// HSL is a scalar from 0 to 255, right?
+			var/lowest_hue = 255
+			for (var/variant_list_key in current_item_list_entry["variants"])
+				// Get the hue of the the variant.
+				var/list/current_entry_hsl = rgb2num(current_item_list_entry["variants"][variant_list_key]["variantBackgroundColor"], COLORSPACE_HSL)
+				if (current_entry_hsl[1] >= lowest_hue)
+					continue
+				lowest_hue = current_entry_hsl[1]
+				current_entry_initial_variant = current_item_list_entry["variants"][variant_list_key]
+		var/current_entry_atom_path = current_entry_initial_variant["itemPath"] ? current_entry_initial_variant["itemPath"] : /obj/item/clothing/under/color/white
 		var/atom/dummy_atom = current_entry_atom_path
 		var/icon/dummy_icon = icon(initial(dummy_atom.icon), initial(dummy_atom.icon_state), frame = 1)
 		var/current_entry_image = icon2base64(dummy_icon)
@@ -71,6 +73,7 @@ var/list/list/clothingbooth_stock_information = list()
 			"image" = current_entry_image,
 			"season" = current_item_list_entry["season"],
 			"slot" = current_item_list_entry["slot"],
+			"initialVariant" = current_entry_initial_variant["variantName"],
 			"variantCount" = length(current_item_list_entry["variants"]),
 			"costMin" = current_entry_cost_min,
 			"costMax" = current_entry_cost_max,

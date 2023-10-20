@@ -7,13 +7,14 @@
 
 import { classes } from 'common/react';
 import { useBackend, useLocalState } from '../../backend';
-import { Button, Divider, Dropdown, Image, Input, Section, Stack } from '../../components';
+import { Box, Button, Divider, Dropdown, Image, Input, Section, Stack } from '../../components';
 import { Window } from '../../layouts';
 import {
   ClothingBoothData,
   ClothingBoothItemInformationProps,
   ClothingBoothSlotKeys,
   ClothingBoothSortType,
+  ItemVariantProps,
 } from './type';
 
 import { capitalize } from '../common/stringUtils';
@@ -144,9 +145,9 @@ const ClothingBoothStockList = (_, context) => {
                 </Stack.Item>
                 <Stack.Item>
                   <Button
-                    icon={sortAscending ? 'arrow-up-short-wide' : 'arrow-down-wide-short'}
+                    icon={sortAscending ? 'arrow-down-short-wide' : 'arrow-down-wide-short'}
                     onClick={() => toggleSortAscending(!sortAscending)}
-                    tooltip={'Toggle Sort Direction'}
+                    tooltip={`Sort Direction: ${sortAscending ? 'Ascending' : 'Descending'}`}
                   />
                 </Stack.Item>
               </Stack>
@@ -251,9 +252,11 @@ const ClothingBoothItem = (props: ClothingBoothItemInformationProps, context) =>
         align="center"
         className={classes([
           'clothingbooth__boothitem',
-          data.selectedItemName === props.name && 'clothingbooth__boothitem-selected',
+          // selectedItem.name === props.name && 'clothingbooth__boothitem-selected',
         ])}
-        onClick={() => data.selectedItemName !== props.name && act('select-item', { name: props.name })}>
+        onClick={() =>
+          data.selectedItemName !== props.name
+          && act('select-item', { name: props.name, variantName: props.initialVariant })}>
         <Stack.Item>
           <Image pixelated src={`data:image/png;base64,${props.image}`} />
         </Stack.Item>
@@ -287,13 +290,18 @@ const CharacterPreview = (_, context) => {
         <Image height={data.previewHeight * 2 + 'px'} pixelated src={`data:image/png;base64,${data.previewIcon}`} />
       </Stack.Item>
       <Stack.Item>
-        <Button icon="chevron-left" tooltip="Clockwise" tooltipPosition="right" onClick={() => act('rotate-cw')} />
+        <Button icon="rotate-right" tooltip="Clockwise" tooltipPosition="bottom" onClick={() => act('rotate-cw')} />
         <Button
-          icon="chevron-right"
+          icon="rotate-left"
           tooltip="Counter-clockwise"
-          tooltipPosition="right"
+          tooltipPosition="bottom"
           onClick={() => act('rotate-ccw')}
         />
+      </Stack.Item>
+      <Stack.Item>
+        <Button.Checkbox checked={data.showClothing} color="transparent" onClick={() => act('toggle-clothing')}>
+          Show Clothing
+        </Button.Checkbox>
       </Stack.Item>
     </Stack>
   );
@@ -303,13 +311,19 @@ const PurchaseInfo = (_, context) => {
   const { act, data } = useBackend<ClothingBoothData>(context);
   return (
     <Stack bold vertical textAlign="center">
-      {data.selectedItemName ? (
+      {data.selectedItem ? (
         <>
           <Stack.Item>{`Selected: ${data.selectedItemName}`}</Stack.Item>
-          <Stack.Item>{`Price: ${data.selectedItemCost}⪽`}</Stack.Item>
+          {!!data.selectedItem && (
+            <Stack.Item>
+              {Object.values(data.selectedItem).map((variant) => (
+                <VariantSwatch key={variant.name} {...variant} />
+              ))}
+            </Stack.Item>
+          )}
           <Stack.Item>
             <Button color="green" disabled={data.selectedItemCost > data.money} onClick={() => act('purchase')}>
-              {!(data.selectedItemCost > data.money) ? `Purchase` : `Insufficient Cash`}
+              {!(data.selectedItemCost > data.money) ? `Purchase (${data.selectedItemCost}⪽)` : `Insufficient Cash`}
             </Button>
           </Stack.Item>
         </>
@@ -320,4 +334,6 @@ const PurchaseInfo = (_, context) => {
   );
 };
 
-const VariantSwatch = (props: )
+const VariantSwatch = (props: ItemVariantProps, context) => {
+  return <Box />;
+};

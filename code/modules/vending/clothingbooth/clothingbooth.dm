@@ -11,16 +11,15 @@
 
 	var/selected_item = null
 	var/selected_variant = null
-	var/selected_detail = null
 	/// Path ref for `/obj/item/clothing`.
 	var/clothing_to_purchase_path = null
 
 	var/datum/movable_preview/character/multiclient/preview
 	var/mob/living/carbon/human/occupant
 	var/obj/item/clothing/preview_item = null
-	var/preview_direction_default = SOUTH
-	/// This is set to `src.preview_direction_default` on New() and whenever a new occupant is added. This can be rotated in the UI.
-	var/current_preview_direction
+	var/current_preview_direction = SOUTH
+	/// If `TRUE`, show the clothing that the occupant is currently wearing on the preview.
+	var/show_clothing = TRUE
 
 	/// Amount of inserted cash; presently, only cash is accepted.
 	var/money = 0
@@ -37,7 +36,6 @@
 		src.ambient_light.enable()
 		src.preview = new()
 		src.preview.add_background()
-		src.current_preview_direction = src.preview_direction_default
 
 	attackby(obj/item/W, mob/user)
 		if(istype(W, /obj/item/currency/spacecash))
@@ -141,7 +139,7 @@
 			"previewHeight" = preview_icon.Height(),
 			"previewItem" = src.preview_item,
 			"selectedVariant" = src.selected_variant,
-			"selectedDetail" = src.selected_detail,
+			"showClothing" = src.show_clothing,
 		)
 		.["selectedItem"]  = src.selected_item
 
@@ -153,41 +151,27 @@
 		switch(action)
 			if ("select-item")
 				var/selected_item_buffer = global.clothingbooth_stock_list[params["name"]]
-				if (selected_item_buffer)
-					src.selected_item = selected_item_buffer
-					src.selected_variant = selected_item_buffer["initialVariant"]
-					var/initial_detail = selected_item_buffer["variants"][src.selected_variant]["initialDetail"]
-					src.selected_detail = initial_detail ? selected_item_buffer["variants"][src.selected_variant]["details"][initial_detail] : null
-					src.equip_and_preview()
-					. = TRUE
-				else
+				if (!selected_item_buffer)
 					boutput(usr, "<span class='alert'>Invalid item selected!</span>")
-			if ("select-variant")
-				if (!src.selected_item)
-					boutput(usr, "<span class='alert'>How? Nothing's selected!</span>")
 					return
-				if (!length(src.selected_item["variants"]))
-					boutput(usr, "<span class='alert'>No variants exist!</span>")
-					return
+				src.selected_item = selected_item_buffer
 				var/selected_variant_buffer = params["variantName"]
-				if (!selected_variant_buffer)
+				if (!src.selected_item["variants"][selected_variant_buffer])
 					boutput(usr, "<span class='alert'>Selected variant doesn't exist!</span>")
+					src.selected_item = null
 					return
 				src.selected_variant = src.selected_item["variants"][selected_variant_buffer]
 				src.equip_and_preview()
 				. = TRUE
-			if ("select-detail")
+			if ("select-variant")
 				if (!src.selected_item)
 					boutput(usr, "<span class='alert'>How? Nothing's selected!</span>")
 					return
-				if (!length(src.selected_item["variants"][src.selected_variant]["details"]))
-					boutput(usr, "<span class='alert'>No detail types exist!</span>")
+				var/selected_variant_buffer = params["variantName"]
+				if (!src.selected_item["variants"][selected_variant_buffer])
+					boutput(usr, "<span class='alert'>Selected variant doesn't exist!</span>")
 					return
-				var/selected_detail_buffer = params["detailName"]
-				if (!selected_detail_buffer)
-					boutput(usr, "<span class='alert'>Selected detail type doesn't exist!</span>")
-					return
-				src.selected_detail = src.selected_item["variants"][src.selected_variant]["details"][selected_detail_buffer]
+				src.selected_variant = src.selected_item["variants"][selected_variant_buffer]
 				src.equip_and_preview()
 				. = TRUE
 			if ("purchase")
@@ -206,11 +190,15 @@
 					boutput(usr, "<span class='alert'>No item selected!</span>")
 			if ("rotate-cw")
 				src.current_preview_direction = turn(src.current_preview_direction, -90)
-				update_preview()
+				src.update_preview()
 				. = TRUE
 			if ("rotate-ccw")
 				src.current_preview_direction = turn(src.current_preview_direction, 90)
-				update_preview()
+				src.update_preview()
+				. = TRUE
+			if ("toggle-clothing")
+				src.show_clothing = !src.show_clothing
+				src.equip_and_preview()
 				. = TRUE
 
 	/// open the booth
@@ -233,10 +221,9 @@
 			qdel(src.preview_item)
 			qdel(src.selected_item)
 			src.preview.remove_all_clients()
-			src.current_preview_direction = src.preview_direction_default
+			src.current_preview_direction = initial(src.current_preview_direction)
 			src.selected_item = null
 			src.selected_variant = null
-			src.selected_detail = null
 			src.clothing_to_purchase_path = null
 			tgui_process.close_uis(src)
 			var/turf/T = get_turf(src)
@@ -260,18 +247,50 @@
 
 	proc/equip_and_preview()
 		var/mob/living/carbon/human/preview_mob = src.preview.preview_thing
-		if(src.preview_item)
+		if (src.preview_item)
 			preview_mob.u_equip(src.preview_item)
 			qdel(src.preview_item)
 			src.preview_item = null
-		if (length(src.selected_item["variants"][src.selected_variant]["details"]))
-			src.clothing_to_purchase_path = src.selected_item["variants"][src.selected_variant]["details"][src.selected_detail]["itemPath"]
-		else
-			src.clothing_to_purchase_path = src.selected_item["variants"][src.selected_variant]["itemPath"]
+		src.clothing_to_purchase_path = src.selected_variant["itemPath"]
 		var/obj/item/clothing/clothing_item = new src.clothing_to_purchase_path
 		src.preview_item = clothing_item
+		src.reference_clothes(src.occupant, preview_mob)
+		var/slot_to_clear = preview_mob.get_slot(src.selected_item["slot"])
+		slot_to_clear = null
 		preview_mob.force_equip(src.preview_item, src.selected_item["slot"])
 		src.update_preview()
+
+	proc/reference_clothes(mob/living/carbon/human/to_copy, mob/living/carbon/human/to_paste)
+		src.clear_clothing(to_paste)
+		if (!src.show_clothing)
+			return
+
+		to_paste.wear_suit = to_copy.wear_suit
+		to_paste.w_uniform = to_copy.w_uniform
+		to_paste.shoes = to_copy.shoes
+		to_paste.belt = to_copy.belt
+		to_paste.gloves = to_copy.gloves
+		to_paste.glasses = to_copy.glasses
+		to_paste.head = to_copy.head
+		to_paste.wear_id = to_copy.wear_id
+		to_paste.back = to_copy.back
+		to_paste.wear_mask = to_copy.wear_mask
+		to_paste.ears = to_copy.ears
+
+	proc/clear_clothing(mob/living/carbon/human/to_paste)
+		to_paste.wear_suit = null
+		to_paste.w_uniform = null
+		to_paste.shoes = null
+		to_paste.belt = null
+		to_paste.gloves = null
+		to_paste.glasses = null
+		to_paste.head = null
+		to_paste.wear_id = null
+		to_paste.r_store = null
+		to_paste.l_store = null
+		to_paste.back = null
+		to_paste.wear_mask = null
+		to_paste.ears = null
 
 	/// generates a preview of the current occupant
 	proc/update_preview()

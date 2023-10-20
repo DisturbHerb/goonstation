@@ -2,24 +2,54 @@
 #define SEASON_HALLOWEEN "halloween"
 
 ABSTRACT_TYPE(/datum/clothingbooth_item)
+/**
+ * 	# CLOTHINGBOOTH_ITEM DATUMS
+ *
+ * 	A representation of God's greatest mistake to mankind.
+ *
+ *	## Variants
+ *
+ *	A variant is a variation of a parent item type distinguished by color, form, cost, or any other potential differentiator. Variations of a
+ *	parent item type, however, should be tied together through some reasonable common form or attribute. Variants should not be overly specific
+ *	nor overly broad to aid in navigating the interface.
+ *
+ *	Each variant is represented with a colored swatch when an item type is selected on the interface. The variant
+ *	swatches only appear in the presence of more than one variant type to be selected.
+ *
+ * 	Technically, every concrete `/datum/clothingbooth_item` type is a variant tied to a group thereof with named after `name`, but many will have a
+ * 	variant list of	one (itself, named "Default").
+ */
 /datum/clothingbooth_item
 	/**	Displayed on the list of available items. Names must be unique. Please ensure that the name conforms as closely as possible to the actual
 		names of the item and its child types. */
 	var/name = null
-	/// Only use this for items that are `#ifdef`'d for a given season. Available seasons are defined locally in this file.
+	/** Only use this for items that are `#ifdef`'d for a given season. Available seasons are defined locally in this file. Ensure that, if desired,
+		a corresponding style is created in `ClothingBooth.scss` conforming to the name of the season. */
 	var/season = null
 	/// This var expects an inventory slot define as set in `clothing.dm`.
 	var/slot = SLOT_W_UNIFORM
 
+	/// The name of the variant. This is displayed on the tooltip.
 	var/variant_name = "Default"
-	var/variant_color = null
+	/** Hex representation of the variant's primary swatch color. If not specified, this is generated at runtime using the average pixel color.
+	 * 	You will probably want to override it so as to not make all the swatches look like mud. */
+	var/variant_background_color = null
 
-	/// Just in case *some* rogue clothing item needs to have two different variables. Grumble grumble.
-	var/detail_name = null
-	var/detail_color = null
+	// For variant swatches that need to be represented by more than a solid background color, the below vars can be overriden manually.
+	/// The name of an image file found in `tgui/packages/tgui/assets/clothingbooth`. Must be manually set.
+	var/variant_foreground_shape = null
+	/** This will be the color of the `variant_foreground_shape` specified. If unspecified, the color will be set to #FF0000 (Red in the RGB color
+	 * 	space) at runtime if a foreground shape is specified. */
+	var/variant_foreground_color = null
 
+	/** Override the display order for variant swatches to instead use the order in which they appear on this document. Or any other document that
+		someone decides to define `clothingbooth_item`s in. Please keep them to this document. Please, god, please. */
+	var/override_display_order = FALSE
 
+	/** Cost of the given item/variant in credits. Can vary across several variants, but if there's too wide of a gulf you might as well split it off
+		into its own item type. */
 	var/cost = 1
+	/// The type path of the actual item that is spat out by this variant if you buy it.
 	var/item_path = /obj/item/clothing/under/color/white
 
 	New()
@@ -31,11 +61,10 @@ ABSTRACT_TYPE(/datum/clothingbooth_item)
 			for (var/i in 1 to length(split_name))
 				name_buffer += capitalize(split_name[i])
 			src.name = jointext(name_buffer, " ")
-		if (src.detail_name)
-			if (!src.detail_color)
-				src.detail_color = get_average_color(getFlatIcon(item, no_anim = TRUE))
-		if (!src.variant_color)
-			src.variant_color = get_average_color(getFlatIcon(item, no_anim = TRUE))
+		if (!src.variant_background_color)
+			src.variant_background_color = get_average_color(getFlatIcon(item, no_anim = TRUE))
+		if (!src.variant_foreground_color && src.variant_foreground_shape)
+			src.variant_foreground_color = "#FF0000"
 		src.cost = round(src.cost)
 
 /* ------------------------ Masks ------------------------ */
@@ -47,6 +76,7 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/mask/masquerade)
 /datum/clothingbooth_item/mask/masquerade
 	name = "Masquerade Mask"
 	cost = PAY_TRADESMAN/5
+	override_display_order = TRUE
 
 	cherryblossom
 		variant_name = "Cherryblossom"
@@ -917,6 +947,7 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/masquerade)
 /datum/clothingbooth_item/w_uniform/masquerade
 	name = "Masquerade Dress"
 	cost = PAY_DOCTORATE/3
+	override_display_order = TRUE
 
 	cherryblossom
 		variant_name = "Cherryblossom"
@@ -998,65 +1029,54 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/shirt_and_pants)
 /datum/clothingbooth_item/w_uniform/shirt_and_pants
 	name = "Shirt and Pants"
 	cost = PAY_TRADESMAN/3
+	override_display_order = TRUE
 
 	black_pants_no_tie
-		variant_name = "Black Pants"
-		detail_name = "No Tie"
+		variant_name = "Black Pants No Tie"
 		item_path = /obj/item/clothing/under/shirt_pants_b
 
 	black_pants_red_tie
-		variant_name = "Black Pants"
-		detail_name = "Red Tie"
+		variant_name = "Black Pants Red Tie"
 		item_path = /obj/item/clothing/under/shirt_pants_b/redtie
 
 	black_pants_black_tie
-		variant_name = "Black Pants"
-		detail_name = "Black Tie"
+		variant_name = "Black Pants Black Tie"
 		item_path = /obj/item/clothing/under/shirt_pants_b/blacktie
 
 	black_pants_blue_tie
-		variant_name = "Black Pants"
-		detail_name = "Blue Tie"
+		variant_name = "Black Pants Blue Tie"
 		item_path = /obj/item/clothing/under/shirt_pants_b/bluetie
 
 	brown_pants_no_tie
-		variant_name = "Brown Pants"
-		detail_name = "No Tie"
+		variant_name = "Brown Pants No Tie"
 		item_path = /obj/item/clothing/under/shirt_pants_br
 
 	brown_pants_red_tie
-		variant_name = "Brown Pants"
-		detail_name = "Red Tie"
+		variant_name = "Brown Pants Red Tie"
 		item_path = /obj/item/clothing/under/shirt_pants_br/redtie
 
 	brown_pants_black_tie
-		variant_name = "Brown Pants"
-		detail_name = "Black Tie"
+		variant_name = "Brown Pants Black Tie"
 		item_path = /obj/item/clothing/under/shirt_pants_br/blacktie
 
 	brown_pants_blue_tie
-		variant_name = "Brown Pants"
-		detail_name = "Blue Tie"
+		variant_name = "Brown Pants Blue Tie"
 		item_path = /obj/item/clothing/under/shirt_pants_br/bluetie
 
 	white_pants_no_tie
-		variant_name = "White Pants"
-		detail_name = "No Tie"
+		variant_name = "White Pants No Tie"
 		item_path = /obj/item/clothing/under/shirt_pants_w
 
 	white_pants_red_tie
-		variant_name = "White Pants"
-		detail_name = "Red Tie"
+		variant_name = "White Pants Red Tie"
 		item_path = /obj/item/clothing/under/shirt_pants_w/redtie
 
 	white_pants_black_tie
-		variant_name = "White Pants"
-		detail_name = "Black Tie"
+		variant_name = "White Pants Black Tie"
 		item_path = /obj/item/clothing/under/shirt_pants_w/blacktie
 
 	white_pants_blue_tie
-		variant_name = "White Pants"
-		detail_name = "Blue Tie"
+		variant_name = "White Pants Blue Tie"
 		item_path = /obj/item/clothing/under/shirt_pants_w/bluetie
 
 ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/skirt_dress)
@@ -1198,6 +1218,7 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/yoga)
 /* ------------------------ Masks ------------------------ */
 /datum/clothingbooth_item/mask/tengumask
 	season = SEASON_HALLOWEEN
+	cost = PAY_TRADESMAN/2
 	item_path = /obj/item/clothing/mask/tengu
 
 
@@ -1211,8 +1232,8 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/yoga)
 	cost = PAY_TRADESMAN/3
 	item_path = /obj/item/clothing/head/axehat
 
-ABSTRACT_TYPE(/datum/clothingbooth_item/head/rhinobeetlehat)
-/datum/clothingbooth_item/head/rhinobeetlehat
+ABSTRACT_TYPE(/datum/clothingbooth_item/head/beetlehat)
+/datum/clothingbooth_item/head/beetlehat
 	name = "Beetle Helm"
 	season = SEASON_HALLOWEEN
 
