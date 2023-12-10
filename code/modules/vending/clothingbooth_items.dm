@@ -285,7 +285,7 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/casual)
 
 /datum/clothingbooth_item/casual/collar_pink
 	name = "Pink Collar Shirt"
-	path = /obj/item/clothing/under/misc/collar_pink
+	path = /obj/item/clothing/under/misc/collar_shirt/pink
 
 /datum/clothingbooth_item/casual/flame_purple
 	name = "Purple Flame Shirt"
