@@ -1900,6 +1900,10 @@ TYPEINFO(/obj/item/clothing/suit/space/industrial/salvager)
 		..()
 		setProperty("coldprot", 15)
 
+/obj/item/clothing/suit/sweater_vest/red
+	icon_state = "sweater_vest-red"
+	item_state = "sweater_vest-red"
+
 /obj/item/clothing/suit/sweater_vest/navy
 	icon_state = "sweater_vest-navy"
 	item_state = "sweater_vest-navy"
@@ -1907,6 +1911,14 @@ TYPEINFO(/obj/item/clothing/suit/space/industrial/salvager)
 /obj/item/clothing/suit/sweater_vest/green
 	icon_state = "sweater_vest-green"
 	item_state = "sweater_vest-green"
+
+/obj/item/clothing/suit/sweater_vest/grey
+	icon_state = "sweater_vest-grey"
+	item_state = "sweater_vest-grey"
+
+/obj/item/clothing/suit/sweater_vest/black
+	icon_state = "sweater_vest-black"
+	item_state = "sweater_vest-black"
 
 /obj/item/clothing/suit/hi_vis
 	name = "hi-vis vest"
