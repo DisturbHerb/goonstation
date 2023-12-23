@@ -636,6 +636,7 @@
 	name = "autoname  - SS13";
 	pixel_x = -10
 	},
+/obj/machinery/portable_atmospherics/canister/empty,
 /turf/simulated/floor/blue,
 /area/station/science/lab)
 "acM" = (
@@ -7044,9 +7045,8 @@
 /turf/simulated/floor/specialroom/cafeteria,
 /area/station/crew_quarters/kitchen)
 "aDF" = (
-/obj/machinery/atmospherics/binary/volume_pump{
+/obj/machinery/atmospherics/binary/volume_pump/active{
 	dir = 1;
-	on = 1;
 	transfer_rate = 1000
 	},
 /turf/simulated/wall/auto/supernorn,
@@ -11110,7 +11110,7 @@
 /turf/simulated/floor,
 /area/station/science/bot_storage)
 "aYy" = (
-/obj/machinery/portable_atmospherics/canister/empty,
+/obj/machinery/portable_atmospherics/canister/oxygen,
 /obj/machinery/camera{
 	c_tag = "autotag";
 	dir = 5;
@@ -11437,11 +11437,6 @@
 	},
 /turf/simulated/floor,
 /area/station/science/bot_storage)
-"aZO" = (
-/obj/machinery/portable_atmospherics/canister/empty,
-/obj/decal/stripe_caution,
-/turf/simulated/floor,
-/area/station/science/lab)
 "aZP" = (
 /obj/machinery/portable_atmospherics/canister/carbon_dioxide,
 /obj/decal/stripe_caution,
@@ -11731,7 +11726,7 @@
 	dir = 8;
 	pixel_x = -10
 	},
-/obj/machinery/portable_atmospherics/canister/empty,
+/obj/machinery/portable_atmospherics/canister/oxygen,
 /obj/decal/stripe_caution,
 /turf/simulated/floor,
 /area/station/science/lab)
@@ -13266,12 +13261,10 @@
 /turf/simulated/floor,
 /area/station/science/artifact)
 "blL" = (
-/obj/machinery/atmospherics/binary/pump{
+/obj/machinery/atmospherics/binary/pump/active{
 	frequency = 1229;
-	icon_state = "intact_on";
 	id = "Chamber Inlet";
 	name = "chamber inlet pump";
-	on = 1;
 	target_pressure = 1000
 	},
 /obj/machinery/activation_button/ignition_switch{
@@ -13282,13 +13275,11 @@
 /turf/simulated/floor/blue,
 /area/station/science/lab)
 "blM" = (
-/obj/machinery/atmospherics/binary/pump{
+/obj/machinery/atmospherics/binary/pump/active{
 	dir = 1;
 	frequency = 1229;
-	icon_state = "intact_on";
 	id = "Chamber Outlet";
 	name = "chamber outlet pump";
-	on = 1;
 	target_pressure = 1000
 	},
 /turf/simulated/floor/red,
@@ -13906,10 +13897,8 @@
 /obj/machinery/atmospherics/pipe/simple/heat_exchanging{
 	dir = 6
 	},
-/obj/machinery/atmospherics/unary/outlet_injector{
-	dir = 1;
-	icon_state = "on";
-	on = 1
+/obj/machinery/atmospherics/unary/outlet_injector/active{
+	dir = 1
 	},
 /obj/machinery/sparker{
 	id = "tox_ignition1";
@@ -17379,6 +17368,7 @@
 	dir = 8;
 	name = "Mixing West"
 	},
+/obj/machinery/portable_atmospherics/canister/oxygen,
 /turf/simulated/floor,
 /area/station/science/lab)
 "bNC" = (
@@ -25371,12 +25361,6 @@
 /obj/machinery/light,
 /turf/simulated/floor/bluewhite,
 /area/station/medical/medbay)
-"ilF" = (
-/obj/machinery/recharger/wall{
-	pixel_y = -11
-	},
-/turf/simulated/wall/auto/reinforced/supernorn,
-/area/station/security/main)
 "ilH" = (
 /obj/machinery/light_switch/east{
 	dir = 4
@@ -25585,13 +25569,11 @@
 /obj/decal/tile_edge/stripe/extra_big{
 	dir = 1
 	},
-/obj/machinery/atmospherics/binary/pump{
+/obj/machinery/atmospherics/binary/pump/active{
 	dir = 4;
 	frequency = 1225;
-	icon_state = "intact_on";
 	id = "Cold Loop Gas Supply (East)";
 	name = "cold loop gas supply pump";
-	on = 1;
 	target_pressure = 1000
 	},
 /obj/machinery/power/apc/autoname_north,
@@ -26099,9 +26081,8 @@
 /turf/unsimulated/floor/black,
 /area/station/crewquarters/cryotron)
 "iKv" = (
-/obj/machinery/atmospherics/binary/volume_pump{
+/obj/machinery/atmospherics/binary/volume_pump/active{
 	dir = 4;
-	on = 1;
 	transfer_rate = 1000
 	},
 /obj/cable/orange{
@@ -31506,13 +31487,11 @@
 /turf/simulated/floor/engine,
 /area/station/engine/core/nuclear)
 "mVo" = (
-/obj/machinery/atmospherics/binary/pump{
+/obj/machinery/atmospherics/binary/pump/active{
 	dir = 4;
 	frequency = 1225;
-	icon_state = "intact_on";
 	id = "Cold Loop Gas Supply (East)";
 	name = "cold loop gas supply pump";
-	on = 1;
 	target_pressure = 1000
 	},
 /obj/cable/orange{
@@ -41052,6 +41031,9 @@
 /turf/simulated/floor/redblack,
 /area/station/security/detectives_office)
 "uCg" = (
+/obj/machinery/recharger/wall{
+	pixel_y = 28
+	},
 /turf/simulated/floor/redblack{
 	dir = 1
 	},
@@ -73362,7 +73344,7 @@ aLW
 oMV
 aPp
 gqn
-ilF
+aQR
 uCg
 bgp
 gOV
@@ -88274,7 +88256,7 @@ aUG
 aWd
 aXk
 aYy
-aZO
+aYz
 baY
 bch
 gmd
