@@ -926,8 +926,143 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/masquerade)
 		name = "Peacock"
 		item_path = /obj/item/clothing/under/peacockdress
 
-/datum/clothingbooth_item/w_uniform/pink_collared_shirt
-	item_path = /obj/item/clothing/under/misc/collar_pink
+ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/blouse_skirt)
+/datum/clothingbooth_item/w_uniform/blouse_skirt
+	name = "Blouse and Skirt"
+
+	white
+		name = "White"
+		swatch_background_colour = "#ffffff"
+		item_path = /obj/item/clothing/under/misc/blouse_skirt/white
+	cream
+		name = "Cream"
+		swatch_background_colour = "#fff3dd"
+		item_path = /obj/item/clothing/under/misc/blouse_skirt/cream
+	khaki
+		name = "Khaki"
+		swatch_background_colour = "#c7b491"
+		item_path = /obj/item/clothing/under/misc/blouse_skirt/khaki
+	pink
+		name = "Pink"
+		swatch_background_colour = "#f8aaaa"
+		item_path = /obj/item/clothing/under/misc/blouse_skirt/pink
+	red
+		name = "Red"
+		swatch_background_colour = "#8d1422"
+		item_path = /obj/item/clothing/under/misc/blouse_skirt/red
+	dark_red
+		name = "Dark Red"
+		swatch_background_colour = "#510f22"
+		item_path = /obj/item/clothing/under/misc/blouse_skirt/dark_red
+	orange
+		name = "Orange"
+		swatch_background_colour = "#ffc074"
+		item_path = /obj/item/clothing/under/misc/blouse_skirt/orange
+	brown
+		name = "Brown"
+		swatch_background_colour = "#724f29"
+		item_path = /obj/item/clothing/under/misc/blouse_skirt/brown
+	yellow
+		name = "Yellow"
+		swatch_background_colour = "#fcf574"
+		item_path = /obj/item/clothing/under/misc/blouse_skirt/yellow
+	green
+		name = "Green"
+		swatch_background_colour = "#9eee80"
+		item_path = /obj/item/clothing/under/misc/blouse_skirt/green
+	dark_green
+		name = "Dark Green"
+		swatch_background_colour = "#3fb43f"
+		item_path = /obj/item/clothing/under/misc/blouse_skirt/dark_green
+	mint
+		name = "Mint"
+		swatch_background_colour = "#86ddc9"
+		item_path = /obj/item/clothing/under/misc/blouse_skirt/mint
+	blue
+		name = "Blue"
+		swatch_background_colour = "#62a5ee"
+		item_path = /obj/item/clothing/under/misc/blouse_skirt/blue
+	dark_blue
+		name = "Dark Blue"
+		swatch_background_colour = "#1a378d"
+		item_path = /obj/item/clothing/under/misc/blouse_skirt/dark_blue
+	purple
+		name = "Purple"
+		swatch_background_colour = "#5a1d8a"
+		item_path = /obj/item/clothing/under/misc/blouse_skirt/purple
+	black
+		name = "Black"
+		swatch_background_colour = "#1d223c"
+		item_path = /obj/item/clothing/under/misc/blouse_skirt/black
+
+ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform/collar_shirt)
+/datum/clothingbooth_item/w_uniform/collar_shirt
+	name = "Collar Shirt"
+
+	white
+		name = "White"
+		swatch_background_colour = "#ffffff"
+		item_path = /obj/item/clothing/under/misc/collar_shirt/white
+	cream
+		name = "Cream"
+		swatch_background_colour = "#fff3dd"
+		item_path = /obj/item/clothing/under/misc/collar_shirt/cream
+	khaki
+		name = "Khaki"
+		swatch_background_colour = "#c7b491"
+		item_path = /obj/item/clothing/under/misc/collar_shirt/khaki
+	pink
+		name = "Pink"
+		swatch_background_colour = "#f8aaaa"
+		item_path = /obj/item/clothing/under/misc/collar_shirt/pink
+	red
+		name = "Red"
+		swatch_background_colour = "#8d1422"
+		item_path = /obj/item/clothing/under/misc/collar_shirt/red
+	dark_red
+		name = "Dark Red"
+		swatch_background_colour = "#510f22"
+		item_path = /obj/item/clothing/under/misc/collar_shirt/dark_red
+	orange
+		name = "Orange"
+		swatch_background_colour = "#ffc074"
+		item_path = /obj/item/clothing/under/misc/collar_shirt/orange
+	brown
+		name = "Brown"
+		swatch_background_colour = "#724f29"
+		item_path = /obj/item/clothing/under/misc/collar_shirt/brown
+	yellow
+		name = "Yellow"
+		swatch_background_colour = "#fcf574"
+		item_path = /obj/item/clothing/under/misc/collar_shirt/yellow
+	green
+		name = "Green"
+		swatch_background_colour = "#9eee80"
+		item_path = /obj/item/clothing/under/misc/collar_shirt/green
+	dark_green
+		name = "Dark Green"
+		swatch_background_colour = "#3fb43f"
+		item_path = /obj/item/clothing/under/misc/collar_shirt/dark_green
+	mint
+		name = "Mint"
+		swatch_background_colour = "#86ddc9"
+		item_path = /obj/item/clothing/under/misc/collar_shirt/mint
+	blue
+		name = "Blue"
+		swatch_background_colour = "#62a5ee"
+		item_path = /obj/item/clothing/under/misc/collar_shirt/blue
+	dark_blue
+		name = "Dark Blue"
+		swatch_background_colour = "#1a378d"
+		item_path = /obj/item/clothing/under/misc/collar_shirt/dark_blue
+	purple
+		name = "Purple"
+		swatch_background_colour = "#5a1d8a"
+		item_path = /obj/item/clothing/under/misc/collar_shirt/purple
+	black
+		name = "Black"
+		swatch_background_colour = "#1d223c"
+		item_path = /obj/item/clothing/under/misc/collar_shirt/black
 
 /datum/clothingbooth_item/w_uniform/redtie
 	cost = PAY_TRADESMAN/3

@@ -31,6 +31,9 @@ ABSTRACT_TYPE(/datum/clothingbooth_grouping_tag/formality)
 /datum/clothingbooth_grouping_tag/formality/formal
 	name = "Formal"
 
+/datum/clothingbooth_grouping_tag/formality/smart
+	name = "Smart"
+
 /datum/clothingbooth_grouping_tag/formality/casual
 	name = "Casual"
 
