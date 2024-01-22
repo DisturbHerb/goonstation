@@ -3,6 +3,7 @@ var/list/removed_jobs = list(
 	// jobs that have been removed or replaced (replaced -> new name, removed -> null)
 	"Barman" = "Bartender",
 	"Mechanic" = "Engineer",
+	"Mailman" = "Mail Courier"
 )
 
 /datum/preferences
@@ -130,6 +131,8 @@ var/list/removed_jobs = list(
 			ui = new(user, src, "CharacterPreferences")
 			ui.set_autoupdate(FALSE)
 			ui.open()
+		SPAWN(0) //this awful hack is required to stop the preview rendering with the scale all wrong the first time the window is opened
+			src.update_preview_icon() //apparently you need to poke byond into re-sending the window data by changing something about the preview mob??
 
 	ui_close(mob/user)
 		. = ..()
@@ -960,11 +963,11 @@ var/list/removed_jobs = list(
 				return TRUE
 
 			if ("select-trait")
-				src.profile_modified = src.traitPreferences.selectTrait(params["id"])
+				src.profile_modified = src.traitPreferences.selectTrait(params["id"], src.custom_parts)
 				return TRUE
 
 			if ("unselect-trait")
-				src.profile_modified = src.traitPreferences.unselectTrait(params["id"])
+				src.profile_modified = src.traitPreferences.unselectTrait(params["id"], src.custom_parts)
 				return TRUE
 
 			if ("reset-traits")
