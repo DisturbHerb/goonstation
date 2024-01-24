@@ -1586,9 +1586,9 @@ ABSTRACT_TYPE(/obj/item/clothing/under/misc/collar_shirt)
 	shirt_colour_name = "red"
 
 /obj/item/clothing/under/misc/collar_shirt/dark_red
-	icon_state = "red_collar"
-	item_state = "red_collar"
-	shirt_colour_name = "dark_red"
+	icon_state = "dred_collar"
+	item_state = "dred_collar"
+	shirt_colour_name = "dark red"
 
 /obj/item/clothing/under/misc/collar_shirt/orange
 	icon_state = "orange_collar"
@@ -1613,7 +1613,7 @@ ABSTRACT_TYPE(/obj/item/clothing/under/misc/collar_shirt)
 /obj/item/clothing/under/misc/collar_shirt/dark_green
 	icon_state = "dgreen_collar"
 	item_state = "dgreen_collar"
-	shirt_colour_name = "dark_green"
+	shirt_colour_name = "dark green"
 
 /obj/item/clothing/under/misc/collar_shirt/mint
 	icon_state = "mint_collar"
@@ -1628,7 +1628,7 @@ ABSTRACT_TYPE(/obj/item/clothing/under/misc/collar_shirt)
 /obj/item/clothing/under/misc/collar_shirt/dark_blue
 	icon_state = "dblue_collar"
 	item_state = "dblue_collar"
-	shirt_colour_name = "dark_blue"
+	shirt_colour_name = "dark blue"
 
 /obj/item/clothing/under/misc/collar_shirt/purple
 	icon_state = "purple_collar"
