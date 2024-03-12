@@ -1,17 +1,19 @@
 import { useBackend } from '../../backend';
 import { Button, Flex, Stack } from '../../components';
-import type { ClothingBoothData, ClothingBoothGroupingTagsData, ClothingBoothItemData } from './type';
+import type { ClothingBoothData, ClothingBoothItemData, ClothingBoothSlotKey } from './type';
 import { GroupingTagContainer as GroupingTagContainer } from './GroupingTag';
 import { ItemSwatch as ItemSwatch } from './ItemSwatch';
 
 export const PurchaseInfo = (_, context) => {
   const { act, data } = useBackend<ClothingBoothData>(context);
-  const { catalogue, money, selectedGroupingName, selectedItemName } = data;
+  const { catalogue, accountBalance, cash, selectedGroupingName, selectedItemName } = data;
 
-  let selectedGroupingTags: Record<string, ClothingBoothGroupingTagsData> | undefined;
-  let selectedItem: ClothingBoothItemData | undefined;
   const selectedGrouping = catalogue[selectedGroupingName];
+  let selectedGroupingSlot: ClothingBoothSlotKey | undefined;
+  let selectedGroupingTags: string[] | undefined;
+  let selectedItem: ClothingBoothItemData | undefined;
   if (selectedGrouping) {
+    selectedGroupingSlot = selectedGrouping.slot;
     selectedGroupingTags = selectedGrouping.grouping_tags;
     selectedItem = selectedGrouping.clothingbooth_items[selectedItemName];
   }
@@ -23,13 +25,19 @@ export const PurchaseInfo = (_, context) => {
     <Stack vertical textAlign="center">
       {selectedItemName ? (
         <>
-          <Stack.Item bold>{selectedGroupingName}</Stack.Item>
+          <Stack.Item bold>
+            <Stack align="center" justify="center">
+              <Stack.Item>
+                {selectedGroupingName}
+              </Stack.Item>
+            </Stack>
+          </Stack.Item>
           {Object.values(selectedGroupingTags).length && (
             <Stack.Item>
               <Stack justify="center">
                 <Stack.Item bold>Tags: </Stack.Item>
                 <Stack.Item style={{ opacity: '0.5' }}>
-                  <GroupingTagContainer {...selectedGroupingTags} />
+                  <GroupingTagContainer slot={selectedGroupingSlot} grouping_tags={selectedGroupingTags} />
                 </Stack.Item>
               </Stack>
             </Stack.Item>
@@ -51,8 +59,8 @@ export const PurchaseInfo = (_, context) => {
             </Stack.Item>
           )}
           <Stack.Item bold>
-            <Button color="good" disabled={selectedItem.cost > money} onClick={handlePurchase}>
-              {`${selectedItem.cost > money ? 'Insufficent Cash' : 'Purchase'} (${selectedItem.cost}⪽)`}
+            <Button color="good" disabled={selectedItem.cost > cash + accountBalance} onClick={handlePurchase}>
+              {`${selectedItem.cost > cash + accountBalance ? 'Insufficent Money' : 'Purchase'} (${selectedItem.cost}⪽)`}
             </Button>
           </Stack.Item>
         </>

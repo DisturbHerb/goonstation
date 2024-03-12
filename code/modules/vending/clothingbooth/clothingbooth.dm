@@ -1,4 +1,11 @@
-// clothing booth stuffs <3
+/**
+ * # Clothing Booth
+ *
+ * A vendor for purchasing clothing items using a TGUI interface that (should) allow for the easy navigation of an otherwise large pile of available
+ * stock.
+ *
+ * Pulls the list of available stock from `global.clothingbooth_catalogue`, see `clothingbooth_datums.dm` to see how those are all generated.
+ */
 /obj/machinery/clothingbooth
 	name = "Clothing Booth"
 	desc = "Contains a sophisticated autoloom system capable of manufacturing a variety of clothing items on demand."
@@ -7,289 +14,391 @@
 	flags = FPRINT | TGUI_INTERACTIVE
 	anchored = ANCHORED
 	density = 1
+
+	/// Clothing booth emits an ambient light when powered.
 	var/datum/light/ambient_light
 
+	// Grouping and item selection.
+	/// Currently selected item grouping, corresponding to the items visible on the catalogue.
 	var/datum/clothingbooth_grouping/selected_grouping = null
+	/// Currently selected item, corresponding to each individual swatch for multi-item groupings, or the single item inside of a singlet grouping.
 	var/datum/clothingbooth_item/selected_item = null
 
-	var/datum/movable_preview/character/multiclient/preview
+	/// The current mob inside.
 	var/mob/living/carbon/human/occupant
-	var/obj/item/clothing/preview_item = null
+	/// Occupant preview.
+	var/datum/movable_preview/character/multiclient/preview
+	/// The item of clothing to be previewed.
+	var/obj/item/clothing/preview_item
+	/// The direction that the preview mob is currently facing.
 	var/current_preview_direction = SOUTH
 	/// If `TRUE`, show the clothing that the occupant is currently wearing on the preview.
 	var/show_clothing = TRUE
 
-	/// Amount of inserted cash; presently, only cash is accepted.
-	var/money = 0
-	/// `src` can only be entered if `src.open` is TRUE.
-	var/open = TRUE
+	// Money handling.
+	var/datum/db_record/accessed_record
+	var/obj/item/card/id/scanned_id
+	/// Amount of inserted cash.
+	var/cash = 0
 
-	New()
-		..()
-		UnsubscribeProcess()
-		src.ambient_light = new /datum/light/point
-		src.ambient_light.attach(src)
-		src.ambient_light.set_brightness(0.6)
-		src.ambient_light.set_height(1.5)
+	/// Optional dye color or matrix to apply to all sold objects.
+	var/dye
+
+/obj/machinery/clothingbooth/New()
+	..()
+	// Set up ambient lighting.
+	src.ambient_light = new /datum/light/point
+	src.ambient_light.attach(src)
+	src.ambient_light.set_brightness(0.6)
+	src.ambient_light.set_height(1.5)
+	// Preview stuff.
+	src.preview = new()
+	src.preview.add_background()
+
+/obj/machinery/clothingbooth/disposing()
+	src.eject_contents()
+	src.clear_preview_item()
+	qdel(src.preview)
+	..()
+
+/obj/machinery/clothingbooth/power_change()
+	if (src.powered())
+		src.status &= ~NOPOWER
 		src.ambient_light.enable()
-		src.preview = new()
-		src.preview.add_background()
+	else
+		src.status |= NOPOWER
+		src.ambient_light.disable()
 
-	attackby(obj/item/W, mob/user)
-		if(istype(W, /obj/item/currency/spacecash))
-			if(!(locate(/mob) in src))
-				src.money += W.amount
-				W.amount = 0
-				user.visible_message("<span class='notice'>[user.name] inserts credits into [src]")
-				playsound(user, 'sound/machines/capsulebuy.ogg', 80, TRUE)
-				user.u_equip(W)
-				W.dropped(user)
-				qdel(W)
-			else
-				boutput(user,"<span style=\"color:red\">It seems the clothing booth is currently occupied. Maybe it's better to just wait.</span>")
-
-		else if (istype(W, /obj/item/grab))
-			var/obj/item/grab/G = W
-			if (ismob(G.affecting))
-				var/mob/GM = G.affecting
-				if (src.open)
-					GM.set_loc(src)
-					src.occupant = GM
-					src.preview.add_client(GM.client)
-					src.update_preview()
-					ui_interact(GM)
-					user.visible_message("<span class='alert'><b>[user] stuffs [GM.name] into [src]!</b></span>","<span class='alert'><b>You stuff [GM.name] into [src]!</b></span>")
-					src.close()
-					qdel(G)
-					logTheThing(LOG_COMBAT, user, "places [constructTarget(GM,"combat")] into [src] at [log_loc(src)].")
-		else
-			..()
-
-	attack_hand(mob/user)
-		if (!ishuman(user))
-			boutput(user,"<span style=\"color:red\">Human clothes don't fit you!</span>")
-			return
-		if (!IN_RANGE(user, src, 1))
-			return
-		if (!can_act(user))
-			return
-		if (open)
-			user.set_loc(src.loc)
-			SPAWN(0.5 SECONDS)
-				if (!open) return
-				user.set_loc(src)
-				src.close()
-				src.occupant = user
-				src.preview.add_client(user.client)
-				src.update_preview()
-				ui_interact(user)
-		else
-			SETUP_GENERIC_ACTIONBAR(user, src, 10 SECONDS, PROC_REF(eject), null, src.icon, src.icon_state, "[user] forces open [src]!", INTERRUPT_MOVE | INTERRUPT_STUNNED | INTERRUPT_ACTION)
-
-	Click()
-		if((usr in src) && (src.open == 0))
-			if(istype(usr.equipped(),/obj/item/currency/spacecash))
-				var/obj/item/dummycredits = usr.equipped()
-				src.money += dummycredits.amount
-				dummycredits.amount = 0
-				qdel(dummycredits)
-			src.ui_interact(usr)
+/obj/machinery/clothingbooth/attackby(obj/item/W, mob/user)
+	var/obj/item/card/id/id_card = get_id_card(W)
+	if (istype(id_card))
+		src.process_card(user, id_card)
+	else if (istype(W, /obj/item/currency/spacecash))
+		src.cash += W.amount
+		W.amount = 0
+		user.visible_message(SPAN_NOTICE("[user.name] inserts credits into [src]"))
+		playsound(user, 'sound/machines/capsulebuy.ogg', 80, TRUE)
+		user.u_equip(W)
+		W.dropped(user)
+		qdel(W)
+	else if (istype(W, /obj/item/grab))
+		var/obj/item/grab/G = W
+		if (ismob(G.affecting))
+			var/mob/GM = G.affecting
+			if (!src.occupant)
+				src.add_occupant(GM)
+				qdel(G)
+				user.visible_message(SPAN_ALERT("<b>[user] stuffs [GM.name] into [src]!</b>"), SPAN_ALERT("<b>You stuff [GM.name] into [src]!</b>"))
+				logTheThing(LOG_COMBAT, user, "places [constructTarget(GM,"combat")] into [src] at [log_loc(src)].")
+	else
 		..()
 
-	disposing()
-		qdel(src.preview)
-		qdel(src.preview_item)
-		..()
+/obj/machinery/clothingbooth/attack_hand(mob/user)
+	if (!ishuman(user))
+		boutput(user, SPAN_ALERT("Human clothes don't fit you!"))
+		return
+	if (!IN_RANGE(user, src, 1))
+		return
+	if (!can_act(user))
+		return
+	if (!src.occupant)
+		src.add_occupant(user)
+	else
+		SETUP_GENERIC_ACTIONBAR(user, src, 10 SECONDS, PROC_REF(remove_occupant), src.occupant, src.icon, src.icon_state, "[user] forces open [src]!", INTERRUPT_MOVE | INTERRUPT_STUNNED | INTERRUPT_ACTION)
 
-	relaymove(mob/user as mob)
-		if (!isalive(user))
-			return
-		eject(user)
+/obj/machinery/clothingbooth/Click()
+	if ((usr in src) && src.occupant)
+		var/obj/item/equipped_item = usr.equipped()
+		var/obj/item/card/id/id_card = get_id_card(equipped_item)
+		if (istype(id_card))
+			src.process_card(usr, id_card)
+		if (istype(equipped_item, /obj/item/currency/spacecash))
+			var/obj/item/dummy_credits = equipped_item
+			src.cash += dummy_credits.amount
+			dummy_credits.amount = 0
+			qdel(dummy_credits)
+		src.ui_interact(usr)
+	..()
 
-	ui_interact(mob/user, datum/tgui/ui)
-		if(!user.client)
-			return
-		if(!ishuman(user))
-			return
-		ui = tgui_process.try_update_ui(user, src, ui)
-		if(!ui)
-			ui = new(user, src, "ClothingBooth")
-			ui.open()
+/obj/machinery/clothingbooth/relaymove(mob/user as mob)
+	if (!isalive(user))
+		return
+	src.remove_occupant(user)
 
-	ui_close(mob/user)
-		. = ..()
-		if (!isnull(src.preview_item))
-			qdel(src.preview_item)
-			src.preview_item = null
+/obj/machinery/clothingbooth/ui_interact(mob/user, datum/tgui/ui)
+	if (!user.client)
+		return
+	ui = tgui_process.try_update_ui(user, src, ui)
+	if (!ui)
+		ui = new(user, src, "ClothingBooth")
+		ui.open()
 
-	ui_static_data(mob/user)
-		. = ..()
-		.["catalogue"] = global.serialized_clothingbooth_catalogue
-		.["name"] = src.name
+/obj/machinery/clothingbooth/ui_close(mob/user)
+	. = ..()
+	src.clear_preview_item()
 
-	ui_data(mob/user)
-		var/icon/preview_icon = getFlatIcon(src.preview.preview_thing, no_anim = TRUE)
-		. = list(
-			"money" = src.money,
-			"previewIcon" = icon2base64(preview_icon),
-			"previewHeight" = preview_icon.Height(),
-			"previewItem" = src.preview_item,
-			"previewShowClothing" = src.show_clothing,
-			"selectedGroupingName" = src.selected_grouping?.name,
-			"selectedItemName" = src.selected_item?.name
-		)
+/obj/machinery/clothingbooth/ui_static_data(mob/user)
+	. = ..()
+	.["catalogue"] = global.serialized_clothingbooth_catalogue
+	.["tags"] = global.serialized_clothingbooth_tags
+	.["name"] = src.name
 
-	ui_act(action, params)
-		. = ..()
-		if (. || !(usr in src.contents))
-			return
-		switch (action)
-			if ("select-grouping")
-				var/datum/clothingbooth_grouping/selected_grouping_buffer = global.clothingbooth_catalogue[params["name"]]
-				if (!selected_grouping_buffer)
-					boutput(usr, "<span class='alert'>Invalid group selected!</span>")
-					return
-				src.selected_grouping = selected_grouping_buffer
-				var/first_item_name = src.selected_grouping.clothingbooth_items[1]
-				var/datum/clothingbooth_item/selected_item_buffer = src.selected_grouping.clothingbooth_items[first_item_name]
-				if (!selected_item_buffer)
-					src.selected_item = null
-					return
-				src.selected_item = selected_item_buffer
-				src.equip_and_preview()
+/obj/machinery/clothingbooth/ui_data(mob/user)
+	var/icon/preview_icon = getFlatIcon(src.preview.preview_thing, no_anim = TRUE)
+	. = list(
+		"accountBalance" = src.accessed_record ? src.accessed_record["current_money"] : 0,
+		"cash" = src.cash,
+		"previewIcon" = icon2base64(preview_icon),
+		"previewHeight" = preview_icon.Height(),
+		"previewItem" = src.preview_item,
+		"previewShowClothing" = src.show_clothing,
+		"scannedID" = src.scanned_id,
+		"selectedGroupingName" = src.selected_grouping?.name,
+		"selectedItemName" = src.selected_item?.name
+	)
+
+/obj/machinery/clothingbooth/ui_act(action, params)
+	. = ..()
+	if (. || !(usr in src.contents))
+		return
+	switch (action)
+		if ("login")
+			var/obj/item/equipped_item = usr.equipped()
+			var/obj/item/card/id/id_card = get_id_card(equipped_item)
+			if (istype(id_card))
+				src.process_card(usr, id_card)
 				. = TRUE
-			if ("select-item")
-				if (!src.selected_grouping)
-					// TODO: dev log
-					src.selected_item = null
-					return
-				var/datum/clothingbooth_item/selected_item_buffer = src.selected_grouping.clothingbooth_items[params["name"]]
-				if (!selected_item_buffer)
-					src.selected_item = null
-					return
-				src.selected_item = selected_item_buffer
-				src.equip_and_preview()
-				. = TRUE
-
-			if ("purchase")
-				if (src.selected_item)
-					if (text2num_safe(src.selected_item.cost) <= src.money)
-						src.money -= text2num_safe(src.selected_item.cost)
-						var/purchased_item_path = src.selected_item.item_path
-						if (!purchased_item_path)
-							return
-						usr.put_in_hand_or_drop(new purchased_item_path(src))
+		if ("logout")
+			src.scanned_id = null
+			src.accessed_record = null
+			. = TRUE
+		if ("eject_cash")
+			src.eject_cash(get_turf(src), usr)
+			. = TRUE
+		if ("select-grouping")
+			var/datum/clothingbooth_grouping/selected_grouping_buffer = global.clothingbooth_catalogue[params["name"]]
+			if (!selected_grouping_buffer)
+				boutput(usr, SPAN_ALERT("Invalid group selected! Please call 1-800-CODER!"))
+				return
+			src.selected_grouping = selected_grouping_buffer
+			var/first_item_name = src.selected_grouping.clothingbooth_items[1]
+			var/datum/clothingbooth_item/selected_item_buffer = src.selected_grouping.clothingbooth_items[first_item_name]
+			if (!selected_item_buffer)
+				src.selected_item = null
+				boutput(usr, SPAN_ALERT("Selected item returned nothing! Please call 1-800-CODER!"))
+				return
+			src.selected_item = selected_item_buffer
+			src.equip_and_preview()
+			. = TRUE
+		if ("select-item")
+			if (!src.selected_grouping)
+				src.selected_item = null
+				boutput(usr, SPAN_ALERT("Unable to select item without selecting a group! Please call 1-800-CODER!"))
+				return
+			var/datum/clothingbooth_item/selected_item_buffer = src.selected_grouping.clothingbooth_items[params["name"]]
+			if (!selected_item_buffer)
+				src.selected_item = null
+				boutput(usr, SPAN_ALERT("Selected item returned nothing! Please call 1-800-CODER!"))
+				return
+			src.selected_item = selected_item_buffer
+			src.equip_and_preview()
+			. = TRUE
+		if ("purchase")
+			if (src.selected_item)
+				var/price_to_pay = text2num_safe(src.selected_item.cost)
+				if (src.accessed_record)
+					var/money_on_card = src.accessed_record["current_money"]
+					var/difference = money_on_card - price_to_pay
+					if (difference < 0)
+						if (src.cash >= abs(difference))
+							src.accessed_record["current_money"] -= money_on_card
+							src.cash -= abs(difference)
+							src.purchase_item(usr)
+						else
+							src.insufficient_funds()
 					else
-						boutput(usr, "<span class='alert'>Insufficient funds!</span>")
-						animate_shake(src, 12, 3, 3)
-					. = TRUE
+						src.accessed_record["current_money"] -= price_to_pay
+						src.purchase_item(usr)
+				else if (price_to_pay <= src.cash)
+					src.cash -= price_to_pay
+					src.purchase_item(usr)
 				else
-					boutput(usr, "<span class='alert'>No item selected!</span>")
-			if ("rotate-cw")
-				src.current_preview_direction = turn(src.current_preview_direction, -90)
-				src.update_preview()
+					src.insufficient_funds()
 				. = TRUE
-			if ("rotate-ccw")
-				src.current_preview_direction = turn(src.current_preview_direction, 90)
-				src.update_preview()
-				. = TRUE
-			if ("toggle-clothing")
-				src.show_clothing = !src.show_clothing
-				src.equip_and_preview()
-				. = TRUE
-
-	/// open the booth
-	proc/open()
-		flick("clothingbooth-opening", src)
-		src.icon_state = "clothingbooth-open"
-		src.open = TRUE
-
-	/// close the booth
-	proc/close()
-		flick("clothingbooth-closing", src)
-		src.icon_state = "clothingbooth-closed"
-		src.open = FALSE
-
-	/// ejects occupant if any along with any contents
-	proc/eject(mob/occupant)
-		if (open) return
-		open()
-		// TODO: probably work out a way to do this without SPAWN?
-		SPAWN(2 SECONDS)
-			qdel(src.preview_item)
-			src.preview.remove_all_clients()
-			src.current_preview_direction = initial(src.current_preview_direction)
-			src.selected_grouping = null
-			src.selected_item = null
-			tgui_process.close_uis(src)
-			var/turf/T = get_turf(src)
-			if (!occupant)
-				occupant = locate(/mob/living/carbon/human) in src
-			if (occupant?.loc == src) //ensure mob wasn't otherwise removed during out spawn call
-				occupant.set_loc(T)
-				if(src.money > 0)
-					occupant.put_in_hand_or_drop(new /obj/item/currency/spacecash(T, src.money))
-				src.money = 0
-				for (var/obj/item/I in src.contents)
-					occupant.put_in_hand_or_drop(I)
-				for (var/atom/movable/AM in contents)
-					AM.set_loc(T) //dump anything that's left in there on out
 			else
-				if(src.money > 0)
-					new /obj/item/currency/spacecash(T, src.money)
-				src.money = 0
-				for (var/atom/movable/AM in contents)
-					AM.set_loc(T)
+				boutput(usr, SPAN_ALERT("No item selected! Please call 1-800-CODER!"))
+		if ("rotate-cw")
+			src.current_preview_direction = turn(src.current_preview_direction, -90)
+			src.update_preview()
+			. = TRUE
+		if ("rotate-ccw")
+			src.current_preview_direction = turn(src.current_preview_direction, 90)
+			src.update_preview()
+			. = TRUE
+		if ("toggle-clothing")
+			src.show_clothing = !src.show_clothing
+			src.equip_and_preview()
+			. = TRUE
 
-	proc/equip_and_preview()
-		var/mob/living/carbon/human/preview_mob = src.preview.preview_thing
-		if (src.preview_item)
-			preview_mob.u_equip(src.preview_item)
-			qdel(src.preview_item)
-			src.preview_item = null
-		if (src.selected_item?.item_path)
-			var/obj/item/clothing/clothing_item = new src.selected_item.item_path
-			src.preview_item = clothing_item
-		// src.reference_clothes(src.occupant, preview_mob)
-		// TODO: does this even work?
-		// var/slot_to_clear = preview_mob.get_slot(src.selected_grouping.slot)
-		// slot_to_clear = null
-		// ^^^^^
-		preview_mob.force_equip(src.preview_item, src.selected_grouping.slot)
-		src.update_preview()
+/obj/machinery/clothingbooth/proc/process_card(mob/user, obj/item/card/id/id_card)
+	if (src.scanned_id)
+		boutput(user, SPAN_ALERT("[src] already has an ID card loaded!"))
+		return
+	if (id_card.registered in global.FrozenAccounts)
+		boutput(user, SPAN_ALERT("This account cannot currently be liquidated due to active borrows."))
+		return
+	var/enter_pin = usr.enter_pin(src)
+	if (enter_pin == id_card.pin)
+		var/datum/db_record/record_to_access = data_core.bank.find_record("name", id_card.registered)
+		if (record_to_access)
+			src.scanned_id = id_card
+			src.accessed_record = record_to_access
+			user.visible_message(SPAN_NOTICE("[user.name] swipes [his_or_her(user)] ID card in [src]."))
+		else
+			boutput(usr, SPAN_ALERT("Cannot find a bank record for this card."))
+	else
+		boutput(usr, SPAN_ALERT("Incorrect pin number."))
+	tgui_process?.update_uis(src)
 
-	proc/reference_clothes(mob/living/carbon/human/to_copy, mob/living/carbon/human/to_paste)
-		src.clear_clothing(to_paste)
-		if (!src.show_clothing)
+/obj/machinery/clothingbooth/proc/eject_cash(turf/location, mob/target)
+	if (src.cash <= 0)
+		return
+	if (!location)
+		location = get_turf(src)
+	if (ismob(target))
+		target.put_in_hand_or_drop(new /obj/item/currency/spacecash(location, src.cash))
+	else
+		new /obj/item/currency/spacecash(location, src.cash)
+	src.cash = 0
+
+/// A shame this will rarely fire, since having insufficient funds will just disable the purchase button.
+/obj/machinery/clothingbooth/proc/insufficient_funds()
+	boutput(usr, SPAN_ALERT("Insufficient funds!"))
+	animate_shake(src, 12, 3, 3)
+	playsound(src, 'sound/impact_sounds/Metal_Hit_Heavy_1.ogg', 50, TRUE)
+
+/obj/machinery/clothingbooth/proc/purchase_item(mob/target)
+	var/purchased_item_path = src.selected_item.item_path
+	if (!purchased_item_path)
+		return
+	var/obj/item/clothing/purchased_item = new purchased_item_path(src)
+	if (src.dye)
+		purchased_item.color = src.dye
+	target.put_in_hand_or_drop(purchased_item)
+
+/obj/machinery/clothingbooth/proc/add_occupant(mob/target)
+	if (src.occupant)
+		return
+	target.set_loc(src.loc)
+	SPAWN(0.5 SECONDS)
+		if (src.occupant)
 			return
+		src.icon_state = "clothingbooth-close"
+		target.set_loc(src)
+		src.occupant = target
+		src.preview.add_client(target.client)
+		src.equip_and_preview()
+		src.ui_interact(target)
 
-		to_paste.wear_suit = to_copy.wear_suit
-		to_paste.w_uniform = to_copy.w_uniform
-		to_paste.shoes = to_copy.shoes
-		to_paste.belt = to_copy.belt
-		to_paste.gloves = to_copy.gloves
-		to_paste.glasses = to_copy.glasses
-		to_paste.head = to_copy.head
-		to_paste.wear_id = to_copy.wear_id
-		to_paste.back = to_copy.back
-		to_paste.wear_mask = to_copy.wear_mask
-		to_paste.ears = to_copy.ears
+/obj/machinery/clothingbooth/proc/remove_occupant(mob/target)
+	if (!src.occupant)
+		return
+	src.icon_state = "clothingbooth-open"
+	SPAWN(2 SECONDS)
+		src.eject_contents(target)
 
-	proc/clear_clothing(mob/living/carbon/human/to_paste)
-		to_paste.wear_suit = null
-		to_paste.w_uniform = null
-		to_paste.shoes = null
-		to_paste.belt = null
-		to_paste.gloves = null
-		to_paste.glasses = null
-		to_paste.head = null
-		to_paste.wear_id = null
-		to_paste.r_store = null
-		to_paste.l_store = null
-		to_paste.back = null
-		to_paste.wear_mask = null
-		to_paste.ears = null
+/obj/machinery/clothingbooth/proc/eject_contents(mob/target)
+	src.clear_preview_item()
+	src.preview.remove_all_clients()
+	tgui_process.close_uis(src)
+	src.reset_clothingbooth_parameters()
+	var/turf/T = get_turf(src)
+	if (!target && src.occupant)
+		target = src.occupant
+	if (target?.loc == src) // Ensure mob wasn't otherwise removed during out spawn call.
+		target.set_loc(T)
+		src.eject_cash(T, target)
+		for (var/obj/item/I in src.contents)
+			target.put_in_hand_or_drop(I)
+		for (var/atom/movable/AM in contents)
+			AM.set_loc(T)
+	else
+		src.eject_cash(T)
+		for (var/atom/movable/AM in contents)
+			AM.set_loc(T)
+	src.occupant = null
 
-	/// generates a preview of the current occupant
-	proc/update_preview()
-		src.preview.update_appearance(src.occupant.bioHolder.mobAppearance, src.occupant.mutantrace, src.current_preview_direction, src.occupant.real_name)
+// Blatantly stolen from `/datum/component/barber`.
+/obj/machinery/clothingbooth/proc/reference_clothes(mob/living/carbon/human/to_copy, mob/living/carbon/human/to_paste)
+	src.nullify_clothes(to_paste)
+	to_paste.wear_suit = SEMI_DEEP_COPY(to_copy.wear_suit)
+	to_paste.w_uniform = SEMI_DEEP_COPY(to_copy.w_uniform)
+	to_paste.shoes = SEMI_DEEP_COPY(to_copy.shoes)
+	to_paste.gloves = SEMI_DEEP_COPY(to_copy.gloves)
+	to_paste.glasses = SEMI_DEEP_COPY(to_copy.glasses)
+	to_paste.head = SEMI_DEEP_COPY(to_copy.head)
+	to_paste.wear_id = SEMI_DEEP_COPY(to_copy.wear_id)
+
+/obj/machinery/clothingbooth/proc/nullify_clothes(mob/living/carbon/human/to_nullify)
+	qdel(to_nullify.wear_suit)
+	qdel(to_nullify.w_uniform)
+	qdel(to_nullify.shoes)
+	qdel(to_nullify.gloves)
+	qdel(to_nullify.glasses)
+	qdel(to_nullify.head)
+	qdel(to_nullify.wear_id)
+	to_nullify.wear_suit = null
+	to_nullify.w_uniform = null
+	to_nullify.shoes = null
+	to_nullify.gloves = null
+	to_nullify.glasses = null
+	to_nullify.head = null
+	to_nullify.wear_id = null
+
+/obj/machinery/clothingbooth/proc/equip_and_preview()
+	var/mob/living/carbon/human/preview_mob = src.preview.preview_thing
+	if (src.preview_item)
+		preview_mob.u_equip(src.preview_item)
+		src.clear_preview_item()
+	if (src.selected_item?.item_path)
+		var/obj/item/clothing/clothing_item = new src.selected_item.item_path
+		src.preview_item = clothing_item
+	if (src.dye)
+		src.preview_item.color = src.dye
+	if (src.show_clothing)
+		src.reference_clothes(src.occupant, preview_mob)
+	else
+		src.nullify_clothes(preview_mob)
+	if (src.preview_item)
+		preview_mob.u_equip(preview_mob.get_slot(src.selected_grouping.slot))
+		preview_mob.force_equip(src.preview_item, src.selected_grouping.slot)
+	var/datum/human_limbs/preview_mob_limbs = preview_mob.limbs
+	// Get those limbs!
+	preview_mob_limbs.replace_with("l_arm", src.occupant.limbs.l_arm.type, src.occupant)
+	preview_mob_limbs.replace_with("r_arm", src.occupant.limbs.r_arm.type, src.occupant)
+	preview_mob_limbs.replace_with("l_leg", src.occupant.limbs.l_leg.type, src.occupant)
+	preview_mob_limbs.replace_with("r_leg", src.occupant.limbs.r_leg.type, src.occupant)
+	src.update_preview()
+
+/obj/machinery/clothingbooth/proc/reset_clothingbooth_parameters()
+	src.current_preview_direction = initial(src.current_preview_direction)
+	src.selected_grouping = null
+	src.selected_item = null
+
+/obj/machinery/clothingbooth/proc/clear_preview_item()
+	if (!isnull(src.preview_item))
+		qdel(src.preview_item)
+		src.preview_item = null
+
+/obj/machinery/clothingbooth/proc/update_preview()
+	src.preview.update_appearance(src.occupant.bioHolder.mobAppearance, src.occupant.mutantrace, src.current_preview_direction, src.occupant.real_name)
+
+/obj/machinery/clothingbooth/clothingboothgbr
+	name = "Strange Clothing Booth"
+	color = list(0,1,0,1,0,1,1,1,0)
+	dye = list(0,1,0,0,0,1,1,0,0)
+
+/obj/machinery/clothingbooth/clothingboothbrg
+	name = "Unusual Clothing Booth"
+	color = list(1,0,1,1,1,0,0,1,1)
+	dye = list(0,0,1,1,0,0,0,1,0)

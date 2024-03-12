@@ -1,7 +1,13 @@
+/*
+	If you are looking to add more items/groupings to the booth, please see `./clothingbooth_items.dm` and `./clothingbooth_groupings.dm`.
+*/
+
 /// Global list of `clothingbooth_grouping` datums, generated at runtime.
 var/list/datum/clothingbooth_grouping/clothingbooth_catalogue = list()
-/// Serialized version of `global.clothingbooth_catalogue` for sending to the `clothingbooth`'s interface.
+/// Serialized version of `global.clothingbooth_catalogue` for sending to the clothingbooth's interface.
 var/list/serialized_clothingbooth_catalogue = list()
+/// Serialized list of used `clothingbooth_tag`s for sending to the clothingbooth's interface.
+var/list/serialized_clothingbooth_tags = list()
 
 /// Executed at runtime to generate the catalogue of `clothingbooth_grouping`s for the clothing booth.
 /proc/build_clothingbooth_caches()
@@ -16,6 +22,7 @@ var/list/serialized_clothingbooth_catalogue = list()
 
 	// Build serialized list, to avoid regenerating nested structures.
 	var/list/serialized_catalogue_buffer = list()
+	var/list/serialized_clothingbooth_tags_buffer = list()
 	for (var/grouping_name as anything in global.clothingbooth_catalogue)
 		var/datum/clothingbooth_grouping/grouping = global.clothingbooth_catalogue[grouping_name]
 		// Serialize the items in each grouping.
@@ -25,18 +32,26 @@ var/list/serialized_clothingbooth_catalogue = list()
 			serialized_items[item.name] = list(
 				"name" = item.name,
 				"cost" = item.cost,
-				"swatch_background_colour" = item.swatch_background_colour
+				"swatch_background_colour" = item.swatch_background_colour,
+				"swatch_foreground_color" = item.swatch_foreground_colour,
+				"swatch_foreground_shape" = item.swatch_foreground_shape,
 			)
 
-		// Serialize the tags in each grouping.
-		var/list/serialized_tags = list()
-		for (var/tag_name as anything in grouping.clothingbooth_grouping_tags)
-			var/datum/clothingbooth_grouping_tag/tag = grouping.clothingbooth_grouping_tags[tag_name]
-			serialized_tags[tag.name] = list(
-				"name" = tag.name,
-				"colour" = tag.colour,
-				"display_order" = tag.display_order
-			)
+		// Serialize the tags in each grouping and send unique tags to the global list.
+		var/list/serialized_grouping_tags = list()
+		for (var/grouping_tag_name as anything in grouping.clothingbooth_grouping_tags)
+			var/datum/clothingbooth_grouping_tag/grouping_tag = grouping.clothingbooth_grouping_tags[grouping_tag_name]
+			serialized_grouping_tags += grouping_tag.name
+			var/tag_match_found = FALSE
+			for (var/serialized_clothingbooth_tag in serialized_clothingbooth_tags_buffer)
+				if (serialized_clothingbooth_tag == grouping_tag.name)
+					tag_match_found = TRUE
+			if (!tag_match_found)
+				serialized_clothingbooth_tags_buffer[grouping_tag.name] = list(
+					"name" = grouping_tag.name,
+					"colour" = grouping_tag.colour,
+					"display_order" = grouping_tag.display_order,
+				)
 		var/list/serialized_grouping = list(
 			"name" = grouping.name,
 			"slot" = grouping.slot,
@@ -44,13 +59,16 @@ var/list/serialized_clothingbooth_catalogue = list()
 			"cost_min" = grouping.cost_min,
 			"cost_max" = grouping.cost_max,
 			"clothingbooth_items" = serialized_items,
-			"grouping_tags" = serialized_tags,
+			"grouping_tags" = serialized_grouping_tags,
 		)
 		serialized_catalogue_buffer[grouping.name] = serialized_grouping
 
 	if (!length(serialized_catalogue_buffer))
 		CRASH("Tried to serialize the global clothing booth catalogue, but the resulting output is empty!")
+	if (!length(serialized_clothingbooth_tags_buffer))
+		CRASH("Tried to serialize the global clothing booth tags list, but the resulting output is empty!")
 	global.serialized_clothingbooth_catalogue = serialized_catalogue_buffer
+	global.serialized_clothingbooth_tags = serialized_clothingbooth_tags_buffer
 
 ABSTRACT_TYPE(/datum/clothingbooth_item)
 /**
@@ -73,11 +91,11 @@ ABSTRACT_TYPE(/datum/clothingbooth_item)
 	/// Hex representation of the swatch's primary swatch colour. This must be manually overridden by all items if you don't want the hideous
 	/// placeholder.
 	var/swatch_background_colour = "#ff00ff"
-	/// The name of the foreground shape to use, as per some list of CSS classes that I have yet to define. Only necessary if differentiating between
-	/// items within a parent `clothingbooth_grouping` cannot be done with background colours alone.
-	var/swatch_foreground_shape = null
 	/// This will be the colour of the `swatch_foreground_shape` specified. Manually override if a `swatch_foreground_shape` is defined.
 	var/swatch_foreground_colour = "#000000"
+	/// The name of the foreground shape to use, defined in `_std\defines\clothingbooth.dm`. Only necessary if differentiating between items within a
+	/// parent `clothingbooth_grouping` cannot be done with background colours alone.
+	var/swatch_foreground_shape = null
 
 	New()
 		..()

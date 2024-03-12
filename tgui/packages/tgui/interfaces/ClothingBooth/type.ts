@@ -2,13 +2,16 @@ import { BooleanLike } from "common/react";
 
 export interface ClothingBoothData {
   catalogue: Record<string, ClothingBoothGroupingData>;
-  money?: number;
+  scannedID?: string;
+  accountBalance?: number;
+  cash?: number;
   name: string;
   previewHeight: number;
   previewIcon: string;
   previewShowClothing: BooleanLike;
   selectedGroupingName: string | null;
   selectedItemName: string | null;
+  tags: Record<string, ClothingBoothGroupingTagsData>;
 }
 
 export interface ClothingBoothGroupingData {
@@ -17,7 +20,7 @@ export interface ClothingBoothGroupingData {
   cost_min: number;
   cost_max: number;
   clothingbooth_items: Record<string, ClothingBoothItemData>;
-  grouping_tags: Record<string, ClothingBoothGroupingTagsData>;
+  grouping_tags: string[];
   slot: ClothingBoothSlotKey;
 }
 
@@ -32,7 +35,7 @@ export interface ClothingBoothItemData {
 export interface ClothingBoothGroupingTagsData {
   name: string;
   colour?: string;
-  display_order: number;
+  display_order?: number | 1;
 }
 
 // Keep in sync with `\_std\defines\clothing.dm` `SLOT_` defines.
@@ -49,9 +52,16 @@ export enum ClothingBoothSlotKey {
 export enum ClothingBoothSortType {
   Name = "Name",
   Price = "Price",
+  Variants = "Variants",
 }
 
 export enum ClothingBoothSortComparatorType {
   String,
   Number,
+}
+
+export enum TagDisplayOrderType {
+  Season = 1,
+  Formality = 2,
+  Collection = 3,
 }

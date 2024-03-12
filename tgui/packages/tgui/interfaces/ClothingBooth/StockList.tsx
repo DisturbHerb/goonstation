@@ -3,46 +3,59 @@ import { useBackend, useLocalState } from '../../backend';
 import { Button, Divider, Dropdown, Input, Section, Stack } from '../../components';
 import { BoothGrouping } from './BoothGrouping';
 import { SlotFilters } from './SlotFilters';
-import { buildFieldComparator, numberComparator, stringComparator } from './utils/Comparator';
-import type { ComparatorFn } from './utils/Comparator';
+import { buildFieldComparator, numberComparator, stringComparator } from './utils/comparator';
+import type { ComparatorFn } from './utils/comparator';
 import type { ClothingBoothData, ClothingBoothGroupingData } from './type';
 import { ClothingBoothSlotKey, ClothingBoothSortType } from './type';
+import { LocalStateKey } from './utils/enum';
 
 const clothingBoothItemComparators: Record<ClothingBoothSortType, ComparatorFn<ClothingBoothGroupingData>> = {
   [ClothingBoothSortType.Name]: buildFieldComparator((itemGrouping) => itemGrouping.name, stringComparator),
   [ClothingBoothSortType.Price]: buildFieldComparator((itemGrouping) => itemGrouping.cost_min, numberComparator),
+  [ClothingBoothSortType.Variants]: buildFieldComparator(
+    (itemGrouping) => Object.values(itemGrouping.clothingbooth_items).length,
+    numberComparator
+  ),
 };
 
-const getSortComparator
+const getClothingBoothGroupingSortComparator
   = (usedSortType: ClothingBoothSortType, usedSortDirection: boolean) =>
     (a: ClothingBoothGroupingData, b: ClothingBoothGroupingData) =>
       clothingBoothItemComparators[usedSortType](a, b) * (usedSortDirection ? 1 : -1);
 
 export const StockList = (_props: unknown, context) => {
   const { act, data } = useBackend<ClothingBoothData>(context);
-  const { catalogue, money, selectedGroupingName } = data;
-  const [hideUnaffordable] = useLocalState(context, 'hideUnaffordable', false);
-  const [slotFilters] = useLocalState<Partial<Record<ClothingBoothSlotKey, boolean>>>(context, 'slotFilters', {}); // TODO: shared local state
-  const [searchText, setSearchText] = useLocalState(context, 'searchText', '');
-  const [sortType, setSortType] = useLocalState(context, 'sortType', ClothingBoothSortType.Name);
-  const [sortAscending, toggleSortAscending] = useLocalState(context, 'sortAscending', true);
-
-  const handleSelectGrouping = (name: string) => act('select-grouping', { name });
+  const { catalogue, accountBalance, cash, selectedGroupingName } = data;
   const catalogueItems = Object.values(catalogue);
 
+  const [hideUnaffordable] = useLocalState(context, LocalStateKey.HideUnaffordable, false);
+  const [slotFilters] = useLocalState<Partial<Record<ClothingBoothSlotKey, boolean>>>(
+    context,
+    LocalStateKey.SlotFilters,
+    {}
+  );
+  const [tagFilters] = useLocalState<Partial<Record<string, boolean>>>(context, LocalStateKey.TagFilters, {});
+  const [searchText, setSearchText] = useLocalState(context, LocalStateKey.SearchText, '');
+  const [sortType, setSortType] = useLocalState(context, LocalStateKey.SortType, ClothingBoothSortType.Name);
+  const [sortAscending, setSortAscending] = useLocalState(context, LocalStateKey.SortAscending, true);
+
+  const handleSelectGrouping = (name: string) => act('select-grouping', { name });
+
   const affordableItemGroupings = hideUnaffordable
-    ? catalogueItems.filter((catalogueGrouping) => money >= catalogueGrouping.cost_min)
+    ? catalogueItems.filter((catalogueGrouping) => cash + accountBalance >= catalogueGrouping.cost_min)
     : catalogueItems;
   const slotFilteredItemGroupings = Object.values(slotFilters).some((filter) => filter)
     ? affordableItemGroupings.filter((itemGrouping) => slotFilters[itemGrouping.slot])
     : affordableItemGroupings;
+  const tagFilteredItemGroupings = Object.keys(tagFilters).some((filter) => filter)
+    ? slotFilteredItemGroupings.filter((itemGrouping) =>
+      Object.keys(tagFilters).some(tagFilter => itemGrouping.grouping_tags.includes(tagFilter)))
+    : slotFilteredItemGroupings;
   const searchTextLower = searchText.toLocaleLowerCase();
   const searchFilteredItemGroupings = searchText
-    ? slotFilteredItemGroupings.filter((itemGrouping) =>
-      itemGrouping.name.toLocaleLowerCase().includes(searchTextLower)
-    )
-    : slotFilteredItemGroupings;
-  const sortComparator = getSortComparator(sortType, sortAscending);
+    ? tagFilteredItemGroupings.filter((itemGrouping) => itemGrouping.name.toLocaleLowerCase().includes(searchTextLower))
+    : tagFilteredItemGroupings;
+  const sortComparator = getClothingBoothGroupingSortComparator(sortType, sortAscending);
   const sortedStockInformationList = searchFilteredItemGroupings.sort(sortComparator);
 
   return (
@@ -68,7 +81,7 @@ export const StockList = (_props: unknown, context) => {
                     className="clothingbooth__dropdown"
                     displayText={`Sort: ${sortType}`}
                     onSelected={(value) => setSortType(value)}
-                    options={[ClothingBoothSortType.Name, ClothingBoothSortType.Price]}
+                    options={[ClothingBoothSortType.Name, ClothingBoothSortType.Price, ClothingBoothSortType.Variants]}
                     selected={sortType}
                     width="100%"
                   />
@@ -76,7 +89,7 @@ export const StockList = (_props: unknown, context) => {
                 <Stack.Item>
                   <Button
                     icon={sortAscending ? 'arrow-down-short-wide' : 'arrow-down-wide-short'}
-                    onClick={() => toggleSortAscending(!sortAscending)}
+                    onClick={() => setSortAscending(!sortAscending)}
                     tooltip={`Sort Direction: ${sortAscending ? 'Ascending' : 'Descending'}`}
                   />
                 </Stack.Item>

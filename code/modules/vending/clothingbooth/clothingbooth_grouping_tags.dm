@@ -23,6 +23,10 @@ ABSTRACT_TYPE(/datum/clothingbooth_grouping_tag/season)
 	name = "Spacemas"
 	colour = "#49db3c"
 
+/datum/clothingbooth_grouping_tag/season/halloween
+	name = "Halloween"
+	colour = "#f8861c"
+
 /* ----------------------- Formality --------------------- */
 ABSTRACT_TYPE(/datum/clothingbooth_grouping_tag/formality)
 /datum/clothingbooth_grouping_tag/formality
@@ -45,5 +49,11 @@ ABSTRACT_TYPE(/datum/clothingbooth_grouping_tag/group_set)
 /datum/clothingbooth_grouping_tag/group_set
 	display_order = 3
 
+/datum/clothingbooth_grouping_tag/group_set/diner
+	name = "Diner"
+
 /datum/clothingbooth_grouping_tag/group_set/masquerade
 	name = "Masquerade"
+
+/datum/clothingbooth_grouping_tag/group_set/western
+	name = "Western"
