@@ -494,6 +494,19 @@
 		/datum/clothingbooth_grouping_tag/formality/formal,
 	)
 
+/datum/clothingbooth_grouping/sweater_vest
+	name = "Sweater Vest"
+	item_paths = list(
+		/datum/clothingbooth_item/wear_suit/sweater_vest/tan,
+		/datum/clothingbooth_item/wear_suit/sweater_vest/red,
+		/datum/clothingbooth_item/wear_suit/sweater_vest/navy,
+		/datum/clothingbooth_item/wear_suit/sweater_vest/green,
+		/datum/clothingbooth_item/wear_suit/sweater_vest/grey,
+		/datum/clothingbooth_item/wear_suit/sweater_vest/black,
+	)
+	grouping_tags = list(
+		/datum/clothingbooth_grouping_tag/formality/casual,
+	)
 
 /* ---------------------- Jumpsuits ---------------------- */
 /datum/clothingbooth_grouping/bandshirt

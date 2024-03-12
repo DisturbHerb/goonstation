@@ -838,6 +838,35 @@ ABSTRACT_TYPE(/datum/clothingbooth_item/wear_suit/poncho)
 	cost = PAY_TRADESMAN/3
 	item_path = /obj/item/clothing/suit/wcoat
 
+ABSTRACT_TYPE(/datum/clothingbooth_item/wear_suit/sweater_vest)
+/datum/clothingbooth_item/wear_suit/sweater_vest
+
+	tan
+		name = "Tan"
+		swatch_background_colour = "#C9A46E"
+		item_path = /obj/item/clothing/suit/sweater_vest
+	red
+		name = "Red"
+		swatch_background_colour = "#8D1422"
+		item_path = /obj/item/clothing/suit/sweater_vest/red
+	navy
+		name = "Navy"
+		swatch_background_colour = "#37598D"
+		item_path = /obj/item/clothing/suit/sweater_vest/navy
+	green
+		name = "Green"
+		swatch_background_colour = "#5D8038"
+		item_path = /obj/item/clothing/suit/sweater_vest/green
+	grey
+		name = "Grey"
+		swatch_background_colour = "#747E84"
+		item_path = /obj/item/clothing/suit/sweater_vest/grey
+	black
+		name = "Black"
+		swatch_background_colour = "#343442"
+		item_path = /obj/item/clothing/suit/sweater_vest/black
+
+
 /* ---------------------- Jumpsuits ---------------------- */
 
 ABSTRACT_TYPE(/datum/clothingbooth_item/w_uniform)
