@@ -191,10 +191,12 @@ var/global/list/mapNames = list(
 			for(var/datum/job/J in job_controls.staple_jobs)
 				if(J.map_can_autooverride && (J.name in job_start_locations))
 					J.limit = length(job_start_locations[J.name])
+					J.upper_limit = J.limit
 
 		for(var/datum/job/J in job_controls.staple_jobs + job_controls.special_jobs)
 			if(J.type in src.job_limits_override)
 				J.limit = src.job_limits_override[J.type]
+				J.upper_limit = J.limit
 
 		SPAWN(5 SECONDS)
 			src.load_shuttle()
@@ -752,10 +754,10 @@ var/global/list/mapNames = list(
 		//"the EVA storage" = list(/area/station/ai_monitored/storage/eva),
 		"the artifact lab" = list(/area/station/science/artifact),
 		"the bridge" = list(/area/station/bridge),
-		"the community center (chapel)" = list(/area/station/chapel/sanctuary),
-		"the aviary" = list(/area/station/garden/aviary),
-		"the quartermaster's storage room" = list(/area/station/quartermaster/storage))
+		"the chapel" = list(/area/station/chapel/sanctuary),
+		"the aviary" = list(/area/station/garden/aviary)
 		//"the robotics lab" = list(/area/station/medical/robotics))
+	)
 
 /datum/map_settings/oshan
 	name = "OSHAN"

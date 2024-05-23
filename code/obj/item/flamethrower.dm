@@ -68,13 +68,14 @@ A Flamethrower in various states of assembly
 	move_triggered = 1
 	spread_angle = 0
 	shoot_delay = 1 SECOND
+	recoil_strength = 6
 
 	New()
 		..()
 		BLOCK_SETUP(BLOCK_LARGE)
 		setItemSpecial(null)
 		set_current_projectile(new/datum/projectile/special/shotchem)
-		AddComponent(/datum/component/holdertargeting/fullauto, src.shoot_delay, src.shoot_delay, 1)
+		AddComponent(/datum/component/holdertargeting/fullauto, src.shoot_delay)
 
 	/// Just check if there's a usable air and fuel tank
 	canshoot(mob/user)
@@ -308,6 +309,7 @@ A Flamethrower in various states of assembly
 	icon_state = "syndthrower_0"
 	item_state = "syndthrower_0"
 	force = 6
+	contraband = 7
 	two_handed = 1
 	swappable_tanks = 0 // Backpack or bust
 	spread_angle = 10
@@ -735,7 +737,7 @@ A Flamethrower in various states of assembly
 					src.shoot_delay = 2 DECI SECONDS
 					src.chem_divisor = 1 //hehehe
 
-			AddComponent(/datum/component/holdertargeting/fullauto, src.shoot_delay, src.shoot_delay, 1)
+			AddComponent(/datum/component/holdertargeting/fullauto, src.shoot_delay)
 			set_current_projectile(src.current_projectile)
 
 		if ("change_temperature")
