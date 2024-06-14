@@ -8,6 +8,7 @@
 	desc = "Somewhat protects your head from being bashed in."
 	protective_temperature = 500
 	duration_remove = 5 SECONDS
+	compatible_species = list("human", "cow", "werewolf", "flubber") // No helmets for martians / blobs
 
 	setupProperties()
 		..()
@@ -50,6 +51,7 @@
 	see_face = FALSE
 	item_state = "s_helmet"
 	var/on = 0
+	var/base_icon_state = "espace"
 
 	var/datum/component/loctargeting/medium_directional_light/light_dir
 
@@ -66,7 +68,7 @@
 
 	proc/flashlight_toggle(var/mob/user, var/force_on = 0, activated_inhand = FALSE)
 		on = !on
-		src.icon_state = "espace[on]"
+		src.icon_state = "[base_icon_state][on]"
 		if (on)
 			light_dir.update(1)
 		else
@@ -78,20 +80,8 @@
 		return
 
 /obj/item/clothing/head/helmet/space/engineer/april_fools
-	icon_state = "espace0-alt"
-
-	flashlight_toggle(var/mob/user, var/force_on = 0, activated_inhand = FALSE)
-		on = !on
-		src.icon_state = "espace[on]-alt"
-		if (on)
-			light_dir.update(1)
-		else
-			light_dir.update(0)
-		user.update_clothing()
-		if (activated_inhand)
-			var/obj/ability_button/flashlight_engiehelm/flashlight_button = locate(/obj/ability_button/flashlight_engiehelm) in src.ability_buttons
-			flashlight_button.icon_state = src.on ? "lighton" : "lightoff"
-		return
+	base_icon_state = "espace-alt"
+	icon_state = "espace-alt0"
 
 /obj/item/clothing/head/helmet/space/engineer/abilities = list(/obj/ability_button/flashlight_engiehelm)
 
@@ -282,6 +272,7 @@
 	hides_from_examine = C_EARS|C_MASK // Light space suit helms have transparent fronts
 	seal_hair = 1
 	path_prot = 0
+	acid_survival_time = 5 MINUTES
 
 	setupProperties()
 		..()
@@ -311,10 +302,10 @@
 	blocked_from_petasusaphilic = TRUE
 
 	New()
+		START_TRACKING_CAT(TR_CAT_NUKE_OP_STYLE)
 		..()
 		setProperty("chemprot",30)
 		setProperty("heatprot", 15)
-		START_TRACKING_CAT(TR_CAT_NUKE_OP_STYLE)
 
 	#ifdef MAP_OVERRIDE_POD_WARS
 	attack_hand(mob/user)
@@ -575,10 +566,10 @@
 		light_dir.update(0)
 
 	attack_self(mob/user)
-		src.flashlight_toggle(user)
+		src.flashlight_toggle(user, activated_inhand = TRUE)
 		return
 
-	proc/flashlight_toggle(var/mob/user, var/force_on = 0)
+	proc/flashlight_toggle(var/mob/user, var/force_on = 0, activated_inhand = FALSE)
 		on = !on
 		src.icon_state = "hardhat[on]"
 		src.item_state = "hardhat[on]"
@@ -587,6 +578,10 @@
 			light_dir.update(1)
 		else
 			light_dir.update(0)
+		if (activated_inhand)
+			var/obj/ability_button/flashlight_hardhat/flashlight_button = locate(/obj/ability_button/flashlight_hardhat) in src.ability_buttons
+			if(istype(flashlight_button))
+				flashlight_button.icon_state = src.on ? "lighton" : "lightoff"
 		return
 
 	attackby(var/obj/item/T, mob/user as mob)
@@ -614,8 +609,9 @@
 				light_dir.update(0)
 			user.update_clothing()
 			if (activated_inhand)
-				var/obj/ability_button/flashlight_engiehelm/flashlight_button = locate(/obj/ability_button/flashlight_engiehelm) in src.ability_buttons
-				flashlight_button.icon_state = src.on ? "lighton" : "lightoff"
+				var/obj/ability_button/flashlight_hardhat/flashlight_button = locate(/obj/ability_button/flashlight_hardhat) in src.ability_buttons
+				if (istype(flashlight_button))
+					flashlight_button.icon_state = src.on ? "lighton" : "lightoff"
 			return
 
 /obj/item/clothing/head/helmet/hardhat/security // Okay it's not actually a HARDHAT but why write extra code?
@@ -632,7 +628,7 @@
 		setProperty("heatprot", 10)
 		setProperty("meleeprot_head", 5)
 
-	flashlight_toggle(var/mob/user, var/force_on = 0)
+	flashlight_toggle(var/mob/user, var/force_on = 0, activated_inhand = FALSE)
 		on = !on
 		user.update_clothing()
 		if (on)
@@ -690,8 +686,9 @@ obj/item/clothing/head/helmet/hardhat/security/hos
 /obj/item/clothing/head/helmet/hardhat/abilities = list(/obj/ability_button/flashlight_hardhat)
 
 TYPEINFO(/obj/item/clothing/head/helmet/camera)
-	mats = list("MET-1"=4, "CRY-1"=2, "CON-1"=2)
-
+	mats = list("metal" = 4,
+				"crystal" = 2,
+				"conductive" = 2)
 /obj/item/clothing/head/helmet/camera
 	name = "camera helmet"
 	desc = "A helmet with a built in camera."
@@ -717,6 +714,11 @@ TYPEINFO(/obj/item/clothing/head/helmet/camera)
 		src.camera = null
 		..()
 
+/obj/item/clothing/head/helmet/camera/telesci
+	name = "telescience camera helmet"
+	desc = "A helmet with a built in camera. It has \"Telescience\" written on it in marker."
+	camera_tag = "Telescience Helmet Cam"
+	camera_network = "telesci"
 
 /obj/item/clothing/head/helmet/camera/security
 	name = "security camera helmet"
@@ -1061,8 +1063,10 @@ TYPEINFO(/obj/item/clothing/head/helmet/space/industrial)
 		setProperty("space_movespeed", 0)
 
 TYPEINFO(/obj/item/clothing/head/helmet/space/industrial/salvager)
-	mats = list("MET-3"=20, "uqil"=10, "CON-2" = 10, "POW-2" = 10)
-
+	mats = list("metal_superdense" = 20,
+				"uqill" = 10,
+				"conductive_high" = 10,
+				"energy_high" = 10)
 /obj/item/clothing/head/helmet/space/industrial/salvager
 	name = "\improper Salvager juggernaut combat helmet"
 	desc = "A heavily modified industrial mining helmet, it's been retrofitted for combat use."
@@ -1070,6 +1074,7 @@ TYPEINFO(/obj/item/clothing/head/helmet/space/industrial/salvager)
 	item_state = "salvager-heavy"
 	blocked_from_petasusaphilic = TRUE
 	has_visor = TRUE
+	item_function_flags = IMMUNE_TO_ACID
 	visor_color_lst = list(
 		"color_r" = 1.0,
 		"color_g" = 0.9,

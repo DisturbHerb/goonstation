@@ -164,7 +164,7 @@ proc/is_weak_rollable_contract(type)
 	src.playsound_local(C.loc,'sound/effects/screech.ogg', 50, 1)
 	if(C.mind)
 		shake_camera(C, 20, 16)
-		boutput(C, "<span class='alert'>[screamstring]</span>")
+		boutput(C, SPAN_ALERT("[screamstring]"))
 		boutput(C, "<span style=\"color:purple; font-size:150%\"><i><b><font face = Tempus Sans ITC>You have sold your soul and become a Faustian cluwne! Oh no!</font></b></i></span>")
 		logTheThing(LOG_ADMIN, src, "has signed a contract and turned into a Faustian cluwne at [log_loc(C)]!")
 		C.choose_name(3)
@@ -200,7 +200,7 @@ proc/is_weak_rollable_contract(type)
 			if (ismob(usr))
 				A:lastattacker = usr
 				A:lastattackertime = world.time
-			A.changeStatus("weakened", total_souls_value SECONDS) //scales with souls stolen, was capped, no longer capped, souls much harder to get without monkeys
+			A.changeStatus("knockdown", total_souls_value SECONDS) //scales with souls stolen, was capped, no longer capped, souls much harder to get without monkeys
 			take_bleeding_damage(A, null, total_souls_value, DAMAGE_STAB)
 		..()
 

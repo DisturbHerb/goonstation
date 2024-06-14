@@ -97,7 +97,6 @@
 "nx" = (
 /obj/machinery/atmospherics/binary/passive_gate{
 	dir = 8;
-	pixel_y = 1;
 	target_pressure = 1e+031
 	},
 /turf/simulated/floor/engine/caution/west,
@@ -298,13 +297,7 @@
 /turf/simulated/floor/engine/caution/south,
 /area/station/engine/inner)
 "OH" = (
-/obj/storage/secure/crate/eng,
-/obj/item/raw_material/cerenkite,
-/obj/item/raw_material/cerenkite,
-/obj/item/raw_material/cerenkite,
-/obj/item/raw_material/cerenkite,
-/obj/item/raw_material/cerenkite,
-/obj/item/raw_material/cerenkite,
+/obj/storage/secure/crate/eng/nuclearfuel,
 /turf/simulated/floor/engine/caution/east,
 /area/station/engine/inner)
 "PB" = (
@@ -319,7 +312,6 @@
 "PX" = (
 /obj/machinery/atmospherics/binary/passive_gate{
 	dir = 4;
-	pixel_y = 1;
 	target_pressure = 1e+031
 	},
 /turf/simulated/floor/engine/caution/east,

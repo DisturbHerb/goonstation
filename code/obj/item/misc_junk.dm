@@ -205,11 +205,17 @@ TYPEINFO(/obj/item/disk)
 	item_state = "brick"
 	force = 8
 	w_class = W_CLASS_TINY
-	throwforce = 10
+	throwforce = 15
 	rand_pos = 1
 	stamina_damage = 40
 	stamina_cost = 20
 	stamina_crit_chance = 5
+
+	throw_impact(obj/window/window)
+		if (istype(window) && window.health <= (/obj/window/auto::health * /obj/window/auto::health_multiplier))
+			window.smash()
+			return
+		..()
 
 /obj/item/emeter
 	name = "E-Meter"
@@ -642,6 +648,16 @@ TYPEINFO(/obj/item/reagent_containers/vape)
     The danger is unleashed only if you substantially disturb this place physically. This place is best shunned and left uninhabited.<br>
 	<br>
 	...spooky!"}
+
+	ex_act(severity)
+		// we look for the nearest floor because the jerks are probably gonna blow up a hole under the stone or something, rude
+		for(var/turf/simulated/floor/floor in range(3, get_turf(src)))
+			if(floor.parent?.spaced)
+				continue
+			var/datum/gas_mixture/gas = new
+			gas.radgas = 10 * 2 ** (3 - severity)
+			floor.assume_air(gas)
+			break // only the first floor we found
 
 /obj/item/boarvessel
 	name = "\improper Boar Vessel, 600-500 BC, Etruscan, ceramic"

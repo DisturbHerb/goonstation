@@ -2,6 +2,7 @@
 //       when you re-enable old credentials or add new ones.
 //       Also check proc/get_access_desc() (ID computer lookup) in access.dm
 
+/// This is useful for scenarios where login is required but no particular access is needed.
 #define access_fuck_all 0 // Because completely empty access lists can make things grump
 #define access_security 1
 #define access_brig 2
@@ -67,6 +68,8 @@
 #define access_centcom 57 // self-explanatory?  :v
 
 #define access_supply_console 58 // QM Console
+
+#define access_money 59 //bank computer, because having bridge door access should not let you empty the budget
 
 // skipping a few here to reserve a block
 // for terra 8 and syndicate security clearances

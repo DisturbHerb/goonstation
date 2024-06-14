@@ -238,7 +238,8 @@
 						inventory_bg -= H
 						break
 
-		health = create_screen("health","Health", src.icon_hud, "health0", "EAST, NORTH", HUD_LAYER, tooltipTheme = "healthDam healthDam0")
+		//Has to go over the mini health elements
+		health = create_screen("health","Health", src.icon_hud, "health0", "EAST, NORTH", HUD_LAYER+1, tooltipTheme = "healthDam healthDam0")
 		health.desc = "You feel fine."
 
 		health_brute = create_screen("mbrute","Brute Damage", src.icon_hud, "blank", "EAST, NORTH", HUD_LAYER, tooltipTheme = "healthDam healthDam0")
@@ -308,41 +309,20 @@
 					if (I.try_specific_equip(user))
 						return
 
-					// this doesnt unequip the original item because that'd cause all the items to drop if you swapped your jumpsuit, I expect this to cause problems though
-					// ^-- You don't say.
-					// you can write multiline macros with \, please god don't write 400 character macros on one line
-					#define autoequip_slot(slot, var_name)\
-						if (master.can_equip(I, slot) && !istype(I.loc, /obj/item/parts) && !(master.var_name && master.var_name.cant_self_remove))\
-						{\
-							master.u_equip(I);\
-							var/obj/item/C = master.var_name;\
-							if (C)\
-							{\
-								/*master.u_equip(C);*/\
-								C.unequipped(master);\
-								src.remove_item(C);\
-								master.var_name = null;\
-								if(!master.put_in_hand(C))\
-								{\
-									master.drop_from_slot(C, get_turf(C))\
-								}\
-							}\
-							master.force_equip(I, slot);\
-							return\
-						}
-					autoequip_slot(SLOT_SHOES, shoes)
-					autoequip_slot(SLOT_GLOVES, gloves)
-					autoequip_slot(SLOT_WEAR_ID, wear_id)
-					autoequip_slot(SLOT_W_UNIFORM, w_uniform)
-					autoequip_slot(SLOT_WEAR_SUIT, wear_suit)
-					autoequip_slot(SLOT_GLASSES, glasses)
-					autoequip_slot(SLOT_EARS, ears)
-					autoequip_slot(SLOT_WEAR_MASK, wear_mask)
-					autoequip_slot(SLOT_HEAD, head)
-					autoequip_slot(SLOT_BACK, back)
+					if(	master.autoequip_slot(I, SLOT_SHOES) || \
+						master.autoequip_slot(I, SLOT_GLOVES) || \
+						master.autoequip_slot(I, SLOT_WEAR_ID) || \
+						master.autoequip_slot(I, SLOT_W_UNIFORM) || \
+						master.autoequip_slot(I, SLOT_WEAR_SUIT) || \
+						master.autoequip_slot(I, SLOT_GLASSES) || \
+						master.autoequip_slot(I, SLOT_EARS) || \
+						master.autoequip_slot(I, SLOT_WEAR_MASK) || \
+						master.autoequip_slot(I, SLOT_HEAD) || \
+						master.autoequip_slot(I, SLOT_BACK))
+						return
 
 					if (!master.belt?.storage || I.storage) // belt BEFORE trying storages, and only swap if its not a storage swap
-						autoequip_slot(SLOT_BELT, belt)
+						master.autoequip_slot(I, SLOT_BELT)
 						if (master.equipped() != I)
 							return
 
@@ -353,13 +333,10 @@
 
 					//ONLY do these if theyre actually empty, we dont want to pocket swap.
 					if (!master.l_store)
-						autoequip_slot(SLOT_L_STORE, l_store)
+						master.autoequip_slot(I, SLOT_L_STORE)
 					if (!master.r_store)
-						autoequip_slot(SLOT_R_STORE, r_store)
-					#undef autoequip_slot
-
+						master.autoequip_slot(I, SLOT_R_STORE)
 					return
-
 				show_inventory = !show_inventory
 				if (show_inventory)
 					for (var/atom/movable/screen/hud/S in inventory_bg)
@@ -391,20 +368,20 @@
 					if (I.try_specific_equip(user))
 						return
 
-					#define autoequip_slot(slot, var_name) if (master.can_equip(I, slot) && !(master.var_name && master.var_name.cant_self_remove)) { master.u_equip(I); var/obj/item/C = master.var_name; if (C) { /*master.u_equip(C);*/ C.unequipped(master); master.var_name = null; if(!master.put_in_hand(C)){master.drop_from_slot(C, get_turf(C))} } master.force_equip(I, slot); return }
-					autoequip_slot(SLOT_SHOES, shoes)
-					autoequip_slot(SLOT_GLOVES, gloves)
-					autoequip_slot(SLOT_WEAR_ID, wear_id)
-					autoequip_slot(SLOT_W_UNIFORM, w_uniform)
-					autoequip_slot(SLOT_WEAR_SUIT, wear_suit)
-					autoequip_slot(SLOT_GLASSES, glasses)
-					autoequip_slot(SLOT_EARS, ears)
-					autoequip_slot(SLOT_WEAR_MASK, wear_mask)
-					autoequip_slot(SLOT_HEAD, head)
-					autoequip_slot(SLOT_BACK, back)
+					if(	master.autoequip_slot(I, SLOT_SHOES) || \
+						master.autoequip_slot(I, SLOT_GLOVES) || \
+						master.autoequip_slot(I, SLOT_WEAR_ID) || \
+						master.autoequip_slot(I, SLOT_W_UNIFORM) || \
+						master.autoequip_slot(I, SLOT_WEAR_SUIT) || \
+						master.autoequip_slot(I, SLOT_GLASSES) || \
+						master.autoequip_slot(I, SLOT_EARS) || \
+						master.autoequip_slot(I, SLOT_WEAR_MASK) || \
+						master.autoequip_slot(I, SLOT_HEAD) || \
+						master.autoequip_slot(I, SLOT_BACK))
+						return
 
 					if (!master.belt?.storage || I.storage) // belt BEFORE trying storages, and only swap if its not a storage swap
-						autoequip_slot(SLOT_BELT, belt)
+						master.autoequip_slot(I, SLOT_BELT)
 						if (master.equipped() != I)
 							return
 
@@ -415,10 +392,9 @@
 
 					//ONLY do these if theyre actually empty, we dont want to pocket swap.
 					if (!master.l_store)
-						autoequip_slot(SLOT_L_STORE, l_store)
+						master.autoequip_slot(I, SLOT_L_STORE)
 					if (!master.r_store)
-						autoequip_slot(SLOT_R_STORE, r_store)
-					#undef autoequip_slot
+						master.autoequip_slot(I, SLOT_R_STORE)
 					return
 
 			if ("throw")
@@ -795,7 +771,7 @@
 		newDesc += "<div><img src='[resource("images/tooltips/disease.png")]' alt='' class='icon' /><span>Total Resistance (Disease): [master.get_disease_protection()]%</span></div>"
 		newDesc += "<div><img src='[resource("images/tooltips/chemical.png")]' alt='' class='icon' /><span>Total Resistance (Chemical): [master.get_chem_protection()]%</span></div>"
 		newDesc += "<div><img src='[resource("images/tooltips/explosion.png")]' alt='' class='icon' /><span>Total Resistance (Explosion): [master.get_explosion_resistance() * 100]%</span></div>"
-		newDesc += "<div><img src='[resource("images/tooltips/bullet.png")]' alt='' class='icon' /><span>Total Ranged Protection: [master.get_ranged_protection()]</span></div>"
+		newDesc += "<div><img src='[resource("images/tooltips/bullet.png")]' alt='' class='icon' /><span>Total Ranged Protection: [master.get_ranged_protection()] ([round(100 - 100/master.get_ranged_protection())]%)</span></div>"
 		newDesc += "<div><img src='[resource("images/tooltips/melee.png")]' alt='' class='icon' /><span>Total Melee Armor (Body): [master.get_melee_protection("chest")]</span></div>"
 		newDesc += "<div><img src='[resource("images/tooltips/melee.png")]' alt='' class='icon' /><span>Total Melee Armor (Head): [master.get_melee_protection("head")]</span></div>"
 
@@ -876,14 +852,15 @@
 
 		if (istype(master.loc,/obj/vehicle/)) //so we always see vehicle buttons
 			var/obj/vehicle/V = master.loc
-			for(var/obj/ability_button/B2 in V.ability_buttons)
-				B2.screen_loc = "NORTH-[pos_y],[pos_x]"
-				master.client.screen += B2
-				B2.the_mob = master
-				pos_x++
-				if(pos_x > 15)
-					pos_x = 1
-					pos_y++
+			if (V.rider == src.master) //unless we're a passenger
+				for(var/obj/ability_button/B2 in V.ability_buttons)
+					B2.screen_loc = "NORTH-[pos_y],[pos_x]"
+					master.client.screen += B2
+					B2.the_mob = master
+					pos_x++
+					if(pos_x > 15)
+						pos_x = 1
+						pos_y++
 
 
 	proc/update_sprinting()
@@ -899,9 +876,10 @@
 		if (!health)
 			return
 
+		var/healthicon = "health"
 		var/stage = 0
 		if (master?.mini_health_hud)
-			health.icon_state = "blank"
+			healthicon = "healthpip"
 			if (isdead(master) || master.fakedead)
 				health_brute.icon_state = "mhealth7" // rip
 				health_brute.tooltipTheme = "healthDam healthDam7"
@@ -910,6 +888,7 @@
 				health_burn.icon_state = "blank"
 				health_tox.icon_state = "blank"
 				health_oxy.icon_state = "blank"
+				health.icon_state = "blank"
 				return
 
 			var/brutedam = master.get_brute_damage()
@@ -997,7 +976,6 @@
 			health_oxy.icon_state = "moxy[stage]"
 			health_oxy.tooltipTheme = "healthDam healthDam[stage]"
 
-			return
 
 		else
 			health_brute.icon_state = "blank"
@@ -1011,32 +989,33 @@
 				health.desc = "Seems like you've died. Bummer."
 				return
 
-			var/health_state = ((master.health - master.fakeloss) / (master.max_health != 0 ? master.max_health : 1)) * 100
-			switch(health_state)
-				if(100 to INFINITY)
-					stage = 0 // green with green marker
-					health.desc = "You feel fine."
-				if(80 to 100)
-					stage = 1 // green
-					health.desc = "You feel a little dinged up, but you're doing okay."
-				if(60 to 80)
-					stage = 2 // yellow
-					health.desc = "You feel a bit hurt. Seeking medical attention couldn't hurt."
-				if(40 to 60)
-					stage = 3 // orange
-					health.desc = "You feel pretty bad. You should seek medical attention."
-				if(20 to 40)
-					stage = 4 // dark orange
-					health.desc = "You feel horrible! You need medical attention as soon as possible."
-				if(0 to 20)
-					stage = 5 // red
-					health.desc = "You feel like you're on death's door... you need help <em>now!</em>"
-				else
-					stage = 6 // crit
-					health.desc = "You're pretty sure you're dying!"
+		//Overall health, either big or as a central pip
+		var/health_state = ((master.health - master.fakeloss) / (master.max_health != 0 ? master.max_health : 1)) * 100
+		switch(health_state)
+			if(100 to INFINITY)
+				stage = 0 // green with green marker
+				health.desc = "You feel fine."
+			if(80 to 100)
+				stage = 1 // green
+				health.desc = "You feel a little dinged up, but you're doing okay."
+			if(60 to 80)
+				stage = 2 // yellow
+				health.desc = "You feel a bit hurt. Seeking medical attention couldn't hurt."
+			if(40 to 60)
+				stage = 3 // orange
+				health.desc = "You feel pretty bad. You should seek medical attention."
+			if(20 to 40)
+				stage = 4 // dark orange
+				health.desc = "You feel horrible! You need medical attention as soon as possible."
+			if(0 to 20)
+				stage = 5 // red
+				health.desc = "You feel like you're on death's door... you need help <em>now!</em>"
+			else
+				stage = 6 // crit
+				health.desc = "You're pretty sure you're dying!"
 
-			health.icon_state = "health[stage]"
-			health.tooltipTheme = "healthDam healthDam[stage]"
+		health.icon_state = "[healthicon][stage]"
+		health.tooltipTheme = "healthDam healthDam[stage]"
 
 	proc/update_blood_indicator()
 		if (!src.bleeding) return //doesn't have a hud element to update
@@ -1119,7 +1098,7 @@
 		bodytemp.icon_state = "temp[state]"
 		bodytemp.tooltipTheme = "tempInd tempInd[state]"
 
-	proc/update_breathing_indicators(datum/organ/lung/status/status_updates)
+	proc/update_breathing_indicators(datum/organ_status/lung/status_updates)
 		src.update_oxy_indicator(status_updates.show_oxy_indicator)
 		src.update_tox_indicator(status_updates.show_tox_indicator)
 		src.update_fire_indicator(status_updates.show_fire_indicator)

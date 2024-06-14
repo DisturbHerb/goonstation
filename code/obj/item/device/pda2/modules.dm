@@ -201,6 +201,11 @@ TYPEINFO(/obj/item/device/pda_module)
 		if (src.host)
 			src.host.updateSelfDialog()
 
+	disposing() // Remove lightsources first upon deletion for no lingering light effects
+		if (src.on)
+			src.toggle_light()
+		..()
+
 /obj/item/device/pda_module/flashlight/dan
 	name = "Deluxe Dan's Fancy Flashlight Module"
 	desc = "What a name, what an experience."
@@ -311,7 +316,9 @@ TYPEINFO(/obj/item/device/pda_module)
 		signal.data["sender_name"] = src.host.owner
 		signal.data["group"] = mailgroups + MGA_CRISIS
 		var/area/A = get_area(src.host)
-		signal.data["message"]  = SPAN_ALERT("<b>***SECURITY BACKUP REQUESTED*** Location: [A ? A.name : "nowhere"]!</b>")
+		signal.data["message"]  = "***SECURITY BACKUP REQUESTED*** Location: [A ? A.name : "nowhere"]!"
+		signal.data["noreply"] = TRUE
+		signal.data["is_alert"] = TRUE
 		src.host.post_signal(signal)
 
 		if(isliving(user))

@@ -112,7 +112,7 @@
 	if (!src.emagged)
 		if (user)
 			boutput(user, SPAN_ALERT("You short out [src]'s target assessment circuits."))
-		src.audible_message(SPAN_ALERT("<B>[src] buzzes oddly!</B>"), 1)
+		src.audible_message(SPAN_ALERT("<B>[src] buzzes oddly!</B>"))
 		src.KillPathAndGiveUp(1)
 		src.emagged = 1
 		src.on = 1
@@ -357,7 +357,7 @@
 
 /obj/machinery/bot/floorbot/proc/do_the_thing()
 	// we are there, hooray
-	if (prob(80))
+	if(!ON_COOLDOWN(src, "floorbeep", 30 SECONDS))
 		src.visible_message("[src] makes an excited booping beeping sound!")
 	if (istype(src.target, /obj/item/tile))
 		src.eattile(src.target)
@@ -474,10 +474,7 @@
 	if(src.color_overlay)
 		A.UpdateOverlays(image(A.icon, icon_state = src.color_overlay), "coloroverlay")
 		A.color_overlay = src.color_overlay
-	if (user.r_hand == src || user.l_hand == src)
-		A.set_loc(user.loc)
-	else
-		A.set_loc(src.loc)
+	A.set_loc(get_turf(src))
 	A.on = 1 // let's just pretend they flipped the switch
 	A.update_power_overlay()
 	boutput(user, "You add the robot arm to the odd looking toolbox assembly! Boop beep!")
@@ -488,7 +485,7 @@
 	if(src.exploding) return
 	src.exploding = 1
 	src.on = 0
-	src.visible_message(SPAN_ALERT("<B>[src] blows apart!</B>"), 1)
+	src.visible_message(SPAN_ALERT("<B>[src] blows apart!</B>"))
 	playsound(src.loc, 'sound/impact_sounds/Machinery_Break_1.ogg', 40, 1)
 	elecflash(src, radius=1, power=3, exclude_center = 0)
 	new /obj/item/tile/steel(src.loc)
@@ -500,7 +497,6 @@
 /datum/action/bar/icon/floorbot_repair
 	duration = 10
 	interrupt_flags = INTERRUPT_STUNNED
-	id = "floorbot_build"
 	icon = 'icons/obj/metal.dmi'
 	icon_state = "tile"
 	var/obj/machinery/bot/floorbot/master
@@ -575,7 +571,6 @@
 /datum/action/bar/icon/floorbot_disrepair
 	duration = 10
 	interrupt_flags = INTERRUPT_STUNNED
-	id = "floorbot_ripup"
 	icon = 'icons/obj/metal.dmi'
 	icon_state = "tile"
 	var/obj/machinery/bot/floorbot/master

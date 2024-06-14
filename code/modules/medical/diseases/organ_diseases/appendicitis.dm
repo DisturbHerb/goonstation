@@ -60,7 +60,7 @@
 			if (probmult(5))
 				boutput(H, SPAN_ALERT("Your back aches terribly!"))
 			if (probmult(3))
-				boutput(H, SPAN_ALERT("You feel excruciating pain in your upper-right adbomen!"))
+				boutput(H, SPAN_ALERT("You feel excruciating pain in your upper-right abdomen!"))
 				// H.organHolder.takepancreas
 
 			if (probmult(5)) H.emote(pick("faint", "collapse", "groan"))
@@ -74,7 +74,7 @@
 					H.organHolder.appendix.take_damage(200,200,200)
 					// H.organHolder.drop_organ("appendix")
 					H.emote("collapse")
-					H.setStatus("weakened", 3 SECONDS)
+					H.setStatus("knockdown", 3 SECONDS)
 
 					if (prob(20))
 						H.reagents.add_reagent("toxin", 20)
