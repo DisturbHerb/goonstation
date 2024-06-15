@@ -80,7 +80,8 @@
 			var/datum/apiRoute/players/notes/get/getPlayerNotes = new
 			getPlayerNotes.queryParams = list(
 				"filters" = list(
-					"ckey" = key_to_check
+					"ckey" = key_to_check,
+					"exact" = TRUE
 				),
 				"page" = page,
 				"per_page" = 10
@@ -713,7 +714,7 @@
 		ircmsg["key"] = "Loggo"
 		ircmsg["name"] = "Lazy Admin Logs"
 		// ircmsg["msg"] = "Logs for this round can be found here: https://mini.xkeeper.net/ss13/admin/log-get.php?id=[config.server_id]&date=[roundLog_date]"
-		ircmsg["msg"] = "Logs for this round can be found here: https://mini.xkeeper.net/ss13/admin/log-viewer.php?server=[config.server_id]&redownload=1&view=[roundLog_date].html or here: https://goonhub.com/admin/logs/[roundId]"
+		ircmsg["msg"] = "Logs for this round can be found here: https://mini.xkeeper.net/ss13/admin/log-viewer.php?server=[config.server_id]&redownload=1&view=[roundLog_date].html or here: [goonhub_href("/admin/logs/[roundId]")]"
 		ircbot.export("help", ircmsg)
 
 /datum/spacebee_extension_command/state_based/confirmation/mob_targeting/rename
@@ -948,6 +949,7 @@
 		var/message = "**Profile name**: [prefs.profile_name]\n"
 		message += "**Character name:** [prefs.name_first] [prefs.name_last]\n"
 		message += "**Gender:** [prefs.gender]\n"
+		message += "**Age:** [prefs.age]\n"
 		message += "**Random name:** [prefs.be_random_name ? "true" : "false"]\n"
 		message += "**Random appearance:** [prefs.be_random_look ? "true" : "false"]\n"
 		message += "**Flavor text:** [prefs.flavor_text]\n"
