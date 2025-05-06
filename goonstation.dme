@@ -1174,6 +1174,7 @@
 #include "code\modules\economy\traders\pianzi_hundan.dm"
 #include "code\modules\economy\traders\trader.dm"
 #include "code\modules\economy\traders\vurdalak.dm"
+#include "code\modules\emote\emote.dm"
 #include "code\modules\events\antag_ghost_respawn.dm"
 #include "code\modules\events\antagonist_critter_ghost_respawn.dm"
 #include "code\modules\events\battle_storm.dm"
