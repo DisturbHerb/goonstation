@@ -76,19 +76,6 @@ TYPEINFO(/mob/living/carbon/human/virtual)
 			src.death()
 		return
 
-	emote(var/act, var/voluntary = 0, var/emoteTarget = null)
-		if(isghost)
-			if (findtext(act, " ", 1, null))
-				var/t1 = findtext(act, " ", 1, null)
-				act = copytext(act, 1, t1)
-			var/txt = lowertext(act)
-			if (txt == "custom" || txt == "customh" || txt == "customv" || txt == "me" || txt == "airquote" || txt == "airquotes")
-				boutput(usr, "You may not use that emote as a Virtual Spectre.")
-				return
-		..()
-
-
-
 /datum/abilityHolder/virtual
 	usesPoints = 0
 	regenRate = 0

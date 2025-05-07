@@ -629,32 +629,6 @@
 		..()
 		boutput(src, SPAN_NOTICE("Access special emotes through *neutral, *sad, *happy, *flip, *wave!"))
 
-
-	emote(var/act, var/voluntary = 1)
-		if (findtext(act, " ", 1, null))
-			var/t1 = findtext(act, " ", 1, null)
-			act = copytext(act, 1, t1)
-
-		switch(lowertext(act))
-			if ("sad")
-				src.icon_state = "robuddy-sad"
-
-			if ("happy")
-				src.icon_state = "robuddy-vibin"
-
-			if("flip")
-				FLICK("robuddy-speen", src)
-				..(act, voluntary) // to let the regular emote also occur
-
-			if("wave")
-				FLICK("robuddy-wave", src)
-				..(act, voluntary) // to let the regular wave(wave message, etc) also occur
-
-			if("neutral")
-				src.icon_state = "robuddy-idle"
-
-			else
-				..(act, voluntary)
 ////////////////////////////////////////////////// Guardbuddy stuff /////////////////////////////////////////////
 
 ////////////////////////////////////////////////// Mutation orb stuff ///////////////////////////////////////////////

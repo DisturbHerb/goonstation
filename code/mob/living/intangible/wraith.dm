@@ -441,12 +441,6 @@ TYPEINFO(/mob/living/intangible/wraith)
 			if (length(string))
 				boutput(src, string)
 
-	emote(act)
-		if (!src.density)
-			return
-
-		. = ..()
-
 	attack_hand(var/mob/user)
 		user.lastattacked = get_weakref(src)
 		if (user.a_intent != "harm")

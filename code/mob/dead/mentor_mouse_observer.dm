@@ -81,12 +81,6 @@ TYPEINFO(/mob/dead/target_observer/mentor_mouse_observer)
 		if(istype(A, /obj/machinery/computer3))
 			A.Attackhand(src)
 
-	emote(act, voluntary=0)
-		if (src.mentee)
-			src.my_mouse.emote(act, voluntary)
-		else
-			. = ..()
-
 	stop_observing()
 		boot()
 

@@ -273,11 +273,6 @@ TYPEINFO(/mob/living/intangible/aieye)
 	say_main_radio(msg as text)
 		src.mainframe.say_main_radio(msg)
 
-	emote(var/act, var/voluntary = 0)
-		..()
-		if (mainframe)
-			mainframe.emote(act, voluntary)
-
 	resist()
 		return 0 //can't actually resist anything because there's nothing to resist, but maybe the hot key could be used for something?
 

@@ -225,41 +225,6 @@ TYPEINFO(/mob/living/intangible/flock)
 /mob/living/intangible/flock/get_tracked_examine_atoms()
 	return ..() + src.flock.structures
 
-// why this isn't further up the tree i have no idea
-/mob/living/intangible/flock/emote(var/act, var/voluntary = 0)
-	..()
-	if (findtext(act, " ", 1, null))
-		var/t1 = findtext(act, " ", 1, null)
-		act = copytext(act, 1, t1)
-
-	var/message = ""
-	var/m_type = 0
-	switch (lowertext(act))
-		if ("flip")
-			if (src.emote_check(voluntary, 50))
-				message = SPAN_EMOTE("<b>[src]</B> does a flip!")
-				m_type = 1
-				animate_spin(src, pick("L", "R"), 1, 0)
-		if ("scream", "caw")
-			if (src.emote_check(voluntary, 50))
-				message = SPAN_EMOTE("<b>[src]</B> caws!")
-				m_type = 2
-				playsound(src, 'sound/misc/flockmind/flockmind_caw.ogg', 60, TRUE, channel=VOLUME_CHANNEL_EMOTE)
-
-	if (message)
-		logTheThing(LOG_SAY, src, "EMOTE: [message]")
-		if (m_type & 1)
-			for (var/mob/O in viewers(src, null))
-				O.show_message(message, m_type)
-		else if (m_type & 2)
-			for (var/mob/O in hearers(src, null))
-				O.show_message(message, m_type)
-		else if (!isturf(src.loc))
-			var/atom/A = src.loc
-			for (var/mob/O in A.contents)
-				O.show_message(message, m_type)
-
-
 /mob/living/intangible/flock/proc/createstructure(obj/flock_structure/structure_type, resources = 0)
 	new /obj/flock_structure/ghost(get_turf(src), src.flock, structure_type, resources)
 

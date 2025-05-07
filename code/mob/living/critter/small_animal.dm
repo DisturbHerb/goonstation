@@ -4957,28 +4957,6 @@ TYPEINFO(/mob/living/critter/small_animal/mouse/weak/mentor/admin)
 				return 2
 		return ..()
 
-	emote(act, voluntary)
-		if (act == "flip")
-			if (!emote_check(voluntary, 2 SECONDS))
-				return
-			for (var/obj/item/grab/G in src.equipped_list(check_for_magtractor = 0))
-				var/mob/living/M = G.affecting
-				if (M == src)
-					continue
-				if (!G.affecting)
-					continue
-				animate_spin(src, prob(50) ? "L" : "R", 1, 0)
-				if (G.state >= GRAB_STRONG && isturf(src.loc) && isturf(G.affecting.loc))
-					src.emote("scream")
-					logTheThing(LOG_COMBAT, src, "crunches [constructTarget(G.affecting,"combat")] [log_loc(src)]")
-					M.lastattacker = get_weakref(src)
-					M.lastattackertime = world.time
-					G.affecting.TakeDamage("head", rand(2,8), 0, 0, DAMAGE_BLUNT)
-					playsound(src.loc, 'sound/impact_sounds/Flesh_Break_1.ogg', 50, 1, pitch = 1.3)
-					src.visible_message(SPAN_ALERT("<B>[src] crunches [G.affecting]!</B>"))
-		else
-			return ..()
-
 	death(var/gibbed)
 		playsound(src, 'sound/misc/talk/blub.ogg', 80, TRUE, pitch = 0.6)
 		new /obj/item/reagent_containers/food/snacks/greengoo(get_turf(src))

@@ -336,17 +336,6 @@ var/list/snd_macho_idle = list('sound/voice/macho/macho_alert16.ogg', 'sound/voi
 			M.targeting_ability = macho_heartpunch
 			M.update_cursor()
 
-	emote(var/act, var/emoteTarget = null)
-		switch(act)
-			if ("scream")
-				if (src.pseudo)
-					..()
-				else
-					playsound(src.loc, pick(snd_macho_rage), 75, 0, 0, src.get_age_pitch())
-					src.visible_message(SPAN_ALERT("<b>[src] yells out a battle cry!</b>"))
-			else
-				..()
-
 /mob/living/critter/microman
 	name = "Micro Man"
 	desc = "All the macho madness you'd ever need, shrunk down to pocket size."

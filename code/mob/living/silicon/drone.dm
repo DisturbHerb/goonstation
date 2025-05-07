@@ -216,49 +216,6 @@
 			return
 		return
 
-	emote(var/act)
-		..()
-		//var/param = null
-		if (findtext(act, " ", 1, null))
-			var/t1 = findtext(act, " ", 1, null)
-			//param = copytext(act, t1 + 1, length(act) + 1)
-			act = copytext(act, 1, t1)
-
-		var/message
-		var/sound/emote_sound = null
-
-		switch(act)
-			if ("help")
-				boutput(src, "To use emotes, simply enter \"*(emote)\" as the entire content of a say message. Certain emotes can be targeted at other characters - to do this, enter \"*emote (name of character)\" without the brackets.")
-				boutput(src, "For a list of basic emotes, use *listbasic. For a list of emotes that can be targeted, use *listtarget.")
-			if ("listbasic")
-				boutput(src, "ping, chime, madbuzz, sadbuzz")
-			if ("listtarget")
-				boutput(src, "Drones do not currently have any targeted emotes.")
-			if ("ping")
-				emote_sound = beeps_n_boops[2]
-				message = "<B>[src]</B> pings!"
-			if ("chime")
-				emote_sound = beeps_n_boops[3]
-				message = "<B>[src]</B> emits a pleased chime."
-			if ("madbuzz")
-				emote_sound = beeps_n_boops[4]
-				message = "<B>[src]</B> buzzes angrily!"
-			if ("sadbuzz")
-				emote_sound = beeps_n_boops[5]
-				message = "<B>[src]</B> buzzes dejectedly."
-			if ("glitch","malfunction")
-				playsound(src.loc, pick(glitchy_noise), 50, 1, channel=VOLUME_CHANNEL_EMOTE)
-				src.visible_message(SPAN_ALERT("<B>[src]</B> freaks the fuck out! That's [pick(glitch_con)] [pick(glitch_adj)]!"))
-				animate_glitchy_freakout(src)
-				return
-
-		if (emote_sound)
-			playsound(src.loc, emote_sound, 50, 1, channel=VOLUME_CHANNEL_EMOTE)
-		if (message)
-			src.visible_message(message)
-		return
-
 	get_equipped_ore_scoop()
 		if(src.equipment_slots[1] && istype(src.equipment_slots[1],/obj/item/ore_scoop))
 			return equipment_slots[1]
