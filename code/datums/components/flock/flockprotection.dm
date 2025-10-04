@@ -2,7 +2,7 @@
 /// Mark a specific flock as interested in this
 /datum/component/flock_interest
 	/// The flock who is intently interested in this thing.
-	var/datum/flock/flock
+	var/tmp/datum/flock/flock //setting this to tmp because deep copy is duplicating flocks and aaaa
 
 /datum/component/flock_interest/Initialize(datum/flock/flock)
 	. = ..()
@@ -48,9 +48,11 @@
 		report_name = "the " + source.vars["flock_id"]
 
 	if (snitch.flock.isIgnored(attacker))
-		flock_speak(snitch, "Damage sighted on [report_name], [pick_string("flockmind.txt", "flockdrone_betrayal")] [attacker]", snitch.flock)
+		snitch.say("Damage sighted on [report_name], [pick_string("flockmind.txt", "flockdrone_betrayal")] [attacker]")
+
 	else if (!snitch.flock.isEnemy(attacker))
-		flock_speak(snitch, "Damage sighted on [report_name], [pick_string("flockmind.txt", "flockdrone_enemy")] [attacker]", snitch.flock)
+		snitch.say("Damage sighted on [report_name], [pick_string("flockmind.txt", "flockdrone_enemy")] [attacker]")
+
 	snitch.flock.updateEnemy(attacker)
 
 /// Raise COMSIG_FLOCK_ATTACK on common sources of damage (projectiles, items, fists, etc.)

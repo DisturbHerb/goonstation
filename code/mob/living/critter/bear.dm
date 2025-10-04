@@ -1,6 +1,5 @@
 /mob/living/critter/bear
 	name = "space bear"
-	real_name = "space bear"
 	desc = "WOORGHHH"
 	icon = 'icons/mob/critter/humanoid/bear.dmi'
 	icon_state = "abear"
@@ -58,7 +57,7 @@
 			if ("scream")
 				if (src.emote_check(voluntary, 50))
 					playsound(src, 'sound/voice/MEraaargh.ogg', 70, TRUE, channel=VOLUME_CHANNEL_EMOTE)
-					return "<b>[SPAN_ALERT("[src] roars!")]</b>"
+					return SPAN_ALERT("<b>[src] roars!</b>")
 		return null
 
 	specific_emote_type(var/act)
@@ -109,7 +108,7 @@
 
 	critter_basic_attack(mob/target)
 		if(!ON_COOLDOWN(src, "bear_scream", 3 SECONDS))
-			src.visible_message("<b>[SPAN_ALERT("[src] roars!")]</b>")
+			src.visible_message(SPAN_ALERT("<b>[src] roars!</b>"))
 			if(istype(src, /mob/living/critter/bear/care))
 				playsound(src.loc, 'sound/voice/babynoise.ogg', 40, 0)
 			else
@@ -134,7 +133,6 @@
 
 /mob/living/critter/bear/care
 	name = "space carebear"
-	real_name = "space carebear"
 	desc = "I love you!"
 	icon_state = "carebear"
 	icon_state_dead = "carebear-dead"
@@ -143,4 +141,5 @@
 	New()
 		..()
 		src.name = pick("Lovealot Bear", "Stuffums", "World Destroyer", "Pookie", "Colonel Sanders", "Hugbeast", "Lovely Bear", "HUG ME", "Empathy Bear", "Steve", "Mr. Pants", "wonk")
+		src.real_name = src.name
 

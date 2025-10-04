@@ -30,7 +30,7 @@ ABSTRACT_TYPE(/obj/item/plant/herb)
 	health = 4
 	burn_point = 330
 	burn_output = 800
-	burn_possible = 2
+	burn_possible = TRUE
 	item_function_flags = COLD_BURN
 	crop_suffix	= " leaf"
 
@@ -218,7 +218,7 @@ ABSTRACT_TYPE(/obj/item/plant/herb)
 	name = "steelwheat"
 	desc = "Never eat iron filings."
 	icon_state = "metalwheat"
-	brew_result = list("beer"=20, "iron"=20)
+	brew_result = list("ironbrew"=20)
 
 	make_reagents()
 		..()
@@ -309,19 +309,19 @@ ABSTRACT_TYPE(/obj/item/plant/herb)
 /obj/item/plant/herb/ipecacuanha
 	name = "ipecacuanha root"
 	crop_suffix	= " root"
-	desc = "This thick root is covered in abnormal ammounts of bark. A powerful emetic can be extracted from it."
+	desc = "This thick root is covered in abnormal amounts of bark. A powerful emetic can be extracted from it."
 	icon_state = "ipecacuanha"
 
 /obj/item/plant/herb/ipecacuanha/invigorating
 	name = "ipecacuanha root"
 	crop_suffix	= " root"
-	desc = "This thick root is covered in abnormal ammounts of bark. A powerful emetic can be extracted from it. This one is strangely veinous"
+	desc = "This thick root is covered in abnormal amounts of bark. A powerful emetic can be extracted from it. This one is strangely veinous"
 	icon_state = "ipecacuanhainvigorating"
 
 /obj/item/plant/herb/ipecacuanha/bilious
 	name = "ipecacuanha root"
 	crop_suffix = " root"
-	desc = "This thick root is covered in abnormal ammounts of bark. A powerful emetic can be extracted from it. This one looks particularly revolting"
+	desc = "This thick root is covered in abnormal amounts of bark. A powerful emetic can be extracted from it. This one looks particularly revolting"
 	icon_state = "ipecacuanhabilious"
 	brew_result = list("gvomit"=20)
 
@@ -381,7 +381,7 @@ ABSTRACT_TYPE(/obj/item/plant/herb)
 			return
 		boutput(user, SPAN_ALERT("Your hands itch from touching [src]!"))
 		random_brute_damage(user, 1)
-		H.changeStatus("weakened", 1 SECONDS)
+		H.changeStatus("knockdown", 1 SECONDS)
 
 /obj/item/plant/herb/nettle/smooth
 	name = "smooth nettle leaves"
@@ -402,6 +402,11 @@ ABSTRACT_TYPE(/obj/item/plant/herb)
 	desc = "A distinctive red flower."
 	icon_state = "poppy"
 
+/obj/item/plant/herb/poppy/spawnable
+	make_reagents()
+		src.create_reagents(85)
+		reagents.add_reagent("morphine", 40)
+
 /obj/item/plant/herb/tea
 	name = "tea leaves"
 	crop_suffix = " leaves"
@@ -418,8 +423,10 @@ ABSTRACT_TYPE(/obj/item/plant/herb)
 	// module_research_type = /obj/item/plant/herb/cannabis
 	attack_hand(var/mob/user)
 		if (iswerewolf(user))
-			user.changeStatus("weakened", 4 SECONDS)
+			user.changeStatus("knockdown", 4 SECONDS)
 			user.TakeDamage("All", 0, 10, 0, DAMAGE_BURN)
+			user.changeStatus("werewolf_bane", 20 SECONDS)
+
 			boutput(user, SPAN_ALERT("You try to pick up [src], but it hurts and you fall over!"))
 			return
 		else ..()
@@ -429,8 +436,10 @@ ABSTRACT_TYPE(/obj/item/plant/herb)
 		if(iswerewolf(M))
 			var/stun_duration
 			if (!GET_COOLDOWN(M, "aconite_stun"))
-				var/datum/statusEffect/stun_effect = M.changeStatus("weakened", 4 SECONDS)
+				var/datum/statusEffect/stun_effect = M.changeStatus("knockdown", 4 SECONDS)
 				M.TakeDamage("All", 0, 10, 0, DAMAGE_BURN)
+				M.changeStatus("werewolf_bane", 20 SECONDS)
+
 				M.visible_message(SPAN_ALERT("The [M] steps too close to [src] and falls down!"))
 				if (stun_effect)
 					stun_duration = stun_effect.duration //makes cooldown last the same as stun because the actual duration of applied effect is lower
@@ -456,10 +465,12 @@ ABSTRACT_TYPE(/obj/item/plant/herb)
 	//stolen from dagger, not much too it
 	throw_impact(atom/A, datum/thrown_thing/thr)
 		if(iswerewolf(A))
+			var/mob/living/carbon/human/H = A
+			H.changeStatus("staggered", 2 SECONDS)
+
 			if (istype(usr, /mob))
 				A:lastattacker = usr
 				A:lastattackertime = world.time
-			A:weakened += 15
 
 	pull(mob/user)
 		if (!istype(user))
@@ -477,123 +488,57 @@ ABSTRACT_TYPE(/obj/item/plant/flower)
 /obj/item/plant/flower
 	// PLACEHOLDER FOR FLOURISH'S PLANT PLOT STUFF
 
-/obj/item/plant/flower/rose
-	name = "rose"
-	desc = "By any other name, would smell just as sweet. This one likes to be called "
-	icon_state = "rose"
-	var/thorned = TRUE
-	var/backup_name_txt = "names/first.txt"
+/obj/item/plant/flower/sunflower
+	name = "sunflower"
+	desc = "A rather large sunflower.  Legends speak of the tasty seeds."
+	icon_state = "sunflower"
+	var/initial_seed_count = 0 //! how many seeds the flower started with
+	var/current_seed_count = 0 //! how many seeds the flower has left
 
-	proc/possible_rose_names()
-		var/list/possible_names = list()
-		for(var/mob/M in mobs)
-			if(!M.mind)
-				continue
-			if(ishuman(M))
-				if(iswizard(M))
-					continue
-				if(isnukeop(M))
-					continue
-				possible_names += M
-		return possible_names
-
-	New()
-		..()
-		var/list/possible_names = possible_rose_names()
-		var/rose_name
-		if(!length(possible_names))
-			rose_name = pick_string_autokey(backup_name_txt)
-		else
-			var/mob/chosen_mob = pick(possible_names)
-			rose_name = chosen_mob.real_name
-		desc = desc + rose_name + "."
-
-	attack_hand(mob/user)
-		var/mob/living/carbon/human/H = user
-		if(istype(H) && src.thorned)
-			if (src.thorns_protected(H))
-				..()
-				return
-			if(ON_COOLDOWN(src, "prick_hands", 1 SECOND))
-				return
-			src.prick(user)
-		else
-			..()
-
-	proc/thorns_protected(mob/living/carbon/human/H)
-		if (H.hand)//gets active arm - left arm is 1, right arm is 0
-			if (istype(H.limbs.l_arm,/obj/item/parts/robot_parts) || istype(H.limbs.l_arm,/obj/item/parts/human_parts/arm/left/synth))
-				return TRUE
-		else
-			if (istype(H.limbs.r_arm,/obj/item/parts/robot_parts) || istype(H.limbs.r_arm,/obj/item/parts/human_parts/arm/right/synth))
-				return TRUE
-		if(H.gloves)
-			return TRUE
-
-	proc/prick(mob/M)
-		boutput(M, SPAN_ALERT("You prick yourself on [src]'s thorns trying to pick it up!"))
-		random_brute_damage(M, 3)
-		take_bleeding_damage(M, null, 3, DAMAGE_STAB)
-
-	attackby(obj/item/W, mob/user)
-		if (issnippingtool(W) && src.thorned)
-			boutput(user, SPAN_NOTICE("You snip off [src]'s thorns."))
-			src.thorned = FALSE
-			src.desc += " Its thorns have been snipped off."
-			return
-		..()
-
-	attack(mob/living/carbon/human/target, mob/user, def_zone, is_special = FALSE, params = null)
-		if (istype(target) && !(target.head?.c_flags & BLOCKCHOKE) && def_zone == "head")
-			target.tri_message(user, SPAN_ALERT("[user] holds [src] to [target]'s nose, letting [him_or_her(target)] take in the fragrance."),
-				SPAN_ALERT("[user] holds [src] to your nose, letting you take in the fragrance."),
-				SPAN_ALERT("You hold [src] to [target]'s nose, letting [him_or_her(target)] take in the fragrance.")
-			)
-			return TRUE
-		..()
-
-	pickup(mob/user)
+	attack_self(mob/user)
 		. = ..()
-		if(ishuman(user) && src.thorned && !src.thorns_protected(user))
-			src.prick(user)
-			SPAWN(0.1 SECONDS)
-				user.drop_item(src, FALSE)
+		disperse_seeds(user,user)
 
-/obj/item/plant/flower/rose/poisoned
-	///Trick roses don't poison on attack, only on pickup
-	var/trick = FALSE
-	attack(mob/target, mob/user, def_zone, is_special = FALSE, params = null)
-		if (!..() || is_incapacitated(target) || src.trick)
-			return
-		src.poison(target)
+	attackby(var/obj/item/W, mob/user)
+		. = ..()
+		disperse_seeds(src,user)
 
-	prick(mob/user)
-		..()
-		src.poison(user)
+	afterattack(var/atom/target, var/mob/user)
+		. = ..()
+		disperse_seeds(target,user)
 
-	proc/poison(mob/M)
-		if (!M.reagents?.has_reagent("capulettium"))
-			if (M.mind?.assigned_role == "Mime")
-				//since this is used for faking your own death, have a little more reagent
-				M.reagents?.add_reagent("capulettium_plus", 20)
-				//mess with medics a little
-				M.bioHolder.AddEffect("dead_scan", timeleft = 40 SECONDS, do_stability = FALSE, magical = TRUE)
-			else
-				M.reagents?.add_reagent("capulettium", 13)
-		//DO NOT add the SECONDS define to this, bioHolders are cursed and don't believe in ticks
-		M.bioHolder?.AddEffect("mute", timeleft = 40, do_stability = FALSE, magical = TRUE)
+	proc/disperse_seeds(var/atom/target, var/mob/user)
+		var/obj/item/reagent_containers/food/snacks/plant/seeds = locate() in src
+		if(seeds)
+			boutput(user, SPAN_NOTICE("You notice some [seeds] fall out of [src]!"))
+			seeds.set_loc(get_turf(target))
+			// that's the result if you want to keep 50% of the initial chems in the sunflower at the end.
+			// This accomodates partially for chems injected in the sunflower if some seeds are already missing
+			var/chem_amount = src.reagents.total_volume / (current_seed_count + initial_seed_count)
+			seeds.reagents.maximum_volume = max(chem_amount, seeds.reagents.maximum_volume)
+			src.reagents.trans_to(seeds, chem_amount)
+			src.current_seed_count -= 1
 
-/obj/item/plant/flower/rose/holorose
-	name = "holo rose"
-	desc = "A holographic display of a Rose. This one likes to be called "
-	icon_state = "holorose"
-	backup_name_txt = "names/ai.txt"
 
-	possible_rose_names()
-		var/list/possible_names = list()
-		for(var/mob/living/silicon/M in mobs)
-			possible_names += M
-		return possible_names
+	HYPsetup_DNA(var/datum/plantgenes/passed_genes, var/obj/machinery/plantpot/harvested_plantpot, var/datum/plant/origin_plant, var/quality_status)
+		. = ..()
+		var/seed_count = 1
+		switch(quality_status)
+			if("jumbo")
+				seed_count += 3
+			if("rotten")
+				seed_count = rand(0,1)
+			if("malformed")
+				seed_count += rand(-1,2)
+		if(seed_count < 0)
+			seed_count = 0
+
+		for(var/seed_num in 1 to seed_count)
+			var/obj/item/reagent_containers/food/snacks/plant/sunflower/P = new(src)
+			P.HYPsetup_DNA(passed_genes, harvested_plantpot, origin_plant, quality_status)
+			P.reagents.clear_reagents() //no chem duping by getting seeds out of sunflowers. We will transfer the chems from the flower onto the seeds in disperse_seeds.
+			src.initial_seed_count += 1
+			src.current_seed_count += 1
 
 /obj/item/plant/herb/hcordata
 	name = "houttuynia cordata"

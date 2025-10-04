@@ -10,7 +10,7 @@ Obsidian Crown
 	name = "Hemera VII"
 	icon_state = "yellow"
 	sound_environment = 12
-	teleport_blocked = 1
+	teleport_blocked = AREA_TELEPORT_BLOCKED
 	skip_sims = 1
 	sims_score = 30
 
@@ -336,8 +336,12 @@ Obsidian Crown
 
 		hear_voidSpeak("Hello, friend.")
 		hear_voidSpeak("Your world is so dangerous! Let me help you.")
-		if (user)
-			user.speech_void = 1
+
+		user.bioHolder?.AddEffect("accent_void")
+
+	unequipped(mob/user) //idk if this can even happen but :iiam:
+		user.bioHolder?.RemoveEffect("accent_void")
+		. = ..()
 
 	process()
 		var/mob/living/host = src.loc
@@ -397,11 +401,11 @@ Obsidian Crown
 			hear_voidSpeak( pick("Be spry, Friend, be nimble! We shall visit all there is to visit and do all there is to do!","Let no ache delay you, for pain is transient! Luminous beings are not held back by such mortal things!","How fantastic this space is! I had grown so tired of immaterial things.") )
 
 		//The crown takes retribution on attackers -- while slowly killing the host.
-		if (host.lastattacker && (host.lastattackertime + 40) >= world.time)
-			if(host.lastattacker != host)
+		if (host.lastattacker?.deref() && (host.lastattackertime + 40) >= world.time)
+			if(host.lastattacker.deref() != host)
 				hear_voidSpeak( pick("I shall aid, Friend!","No fear, Friend, no fear! I shall assist!","No need to raise your hand, I shall defend!") )
 
-				var/mob/M = host.lastattacker
+				var/mob/M = host.lastattacker.deref()
 				if (!istype(M))
 					return
 
@@ -440,9 +444,7 @@ Obsidian Crown
 			//Away with ye, all hope of healing.
 			//random_brute_damage(host, 1)
 
-		host.delStatus("stunned")
-		host.delStatus("weakened")
-		host.delStatus("paralysis")
+		host.remove_stuns()
 		host.dizziness = max(0,host.dizziness-10)
 		host.changeStatus("drowsy", -20 SECONDS)
 		host.sleeping = 0
@@ -469,6 +471,7 @@ Obsidian Crown
 		if (armor_paired != 0 && ishuman(host))
 			if (armor_paired != -1)
 				armor_paired = -1
+				host.is_npc = TRUE
 				host.ghostize()
 				if (istype(host.ghost))
 					var/mob/dead/observer/theGhost = host.ghost
@@ -480,9 +483,7 @@ Obsidian Crown
 			humHost.HealDamage("All", 1000, 1000)
 			humHost.take_toxin_damage(-INFINITY)
 			humHost.take_oxygen_deprivation(-INFINITY)
-			humHost.delStatus("paralysis")
-			humHost.delStatus("stunned")
-			humHost.delStatus("weakened")
+			humHost.remove_stuns()
 			humHost.delStatus("radiation")
 			humHost.take_radiation_dose(-INFINITY)
 			humHost.take_eye_damage(-INFINITY)
@@ -501,9 +502,7 @@ Obsidian Crown
 			humHost.set_body_icon_dirty()
 			humHost.set_face_icon_dirty()
 
-			if (!humHost.is_npc)
-				humHost.is_npc = 1
-				humHost.ai_init()
+			humHost.ai_init()
 
 			return
 

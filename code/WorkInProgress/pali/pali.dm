@@ -40,7 +40,7 @@
 	max_ammo_capacity = 100
 	auto_eject = 0
 
-	flags =  FPRINT | TABLEPASS | CONDUCT | USEDELAY | EXTRADELAY
+	flags =  TABLEPASS | CONDUCT | USEDELAY | EXTRADELAY
 
 	spread_angle = 25
 	can_dual_wield = 0
@@ -88,7 +88,6 @@
 	harm(atom/target, var/mob/living/user)
 		if(istype(target, /mob/living/carbon/human))
 			var/mob/living/carbon/human/M = target
-			var/list/all_slots = list(SLOT_BACK, SLOT_WEAR_MASK, SLOT_L_HAND, SLOT_R_HAND, SLOT_BELT, SLOT_WEAR_ID, SLOT_EARS, SLOT_GLASSES, SLOT_GLOVES, SLOT_HEAD, SLOT_SHOES, SLOT_WEAR_SUIT, SLOT_L_STORE, SLOT_R_STORE)
 			var/list/slots = list()
 			for(var/slot in all_slots)
 				if(M.get_slot(slot))
@@ -105,11 +104,11 @@
 	desc = "An offshoot species of <i>branta canadensis</i> adapted for being a jerk."
 	icon_state = "untitled"
 	icon_state_dead = "untitled-dead"
-	speechverb_say = "honks"
-	speechverb_exclaim = "calls"
-	speechverb_ask = "warbles"
-	speechverb_gasp = "mumbles"
-	speechverb_stammer = "cackles"
+	speech_verb_say = "honks"
+	speech_verb_exclaim = "calls"
+	speech_verb_ask = "warbles"
+	speech_verb_gasp = "mumbles"
+	speech_verb_stammer = "cackles"
 	death_text = "%src% lets out a final weak honk and keels over."
 	feather_color = list("#f2ebd5","#ffffff")
 	flags = null
@@ -122,6 +121,7 @@
 	add_abilities = list(/datum/targetable/critter/peck,
 						/datum/targetable/critter/tackle)
 	blood_id = "crime"
+	player_can_spawn_with_pet = FALSE
 
 	New(loc, nspecies)
 		..()
@@ -173,12 +173,13 @@
 	var/loc_maptext_y = 0
 	New()
 		..()
-		loc.maptext = loc_maptext
-		loc.maptext_width = loc_maptext_width
-		loc.maptext_height = loc_maptext_height
-		loc.maptext_x = loc_maptext_x
-		loc.maptext_y = loc_maptext_y
-		qdel(src)
+		SPAWN(0)
+			loc.maptext = loc_maptext
+			loc.maptext_width = loc_maptext_width
+			loc.maptext_height = loc_maptext_height
+			loc.maptext_x = loc_maptext_x
+			loc.maptext_y = loc_maptext_y
+			qdel(src)
 
 
 // I'm archiving a slightly improved version of the hell portal which is now gone
@@ -286,9 +287,9 @@
 	can_throw = 0
 	can_grab = 0
 	can_disarm = 0
-	speechverb_say = "rattles"
-	speechverb_exclaim = "rattles"
-	speechverb_ask = "rattles"
+	speech_verb_say = "rattles"
+	speech_verb_exclaim = "rattles"
+	speech_verb_ask = "rattles"
 	flags = TABLEPASS
 	fits_under_table = 1
 	blood_id = "iron"
@@ -429,7 +430,7 @@
 			list("#296C3F", "#CDCDD6", "#BC9800"),
 			list("#5ea2a8", suit_color, boots_color)
 		)
-		var/obj/item/clothing/suit/bio_suit/suit = new(src.loc)
+		var/obj/item/clothing/suit/hazard/bio_suit/suit = new(src.loc)
 		var/obj/item/clothing/head/bio_hood/hood = new(src.loc)
 		suit.color = col
 		hood.color = col
@@ -575,7 +576,7 @@ ADMIN_INTERACT_PROCS(/obj/portal/to_space, proc/give_counter)
 				if (M == L)
 					boutput(M, SPAN_ALERT("You are sucked into \the [src]!"))
 				else if (isadmin(M) && !M.client.player_mode)
-					boutput(M, SPAN_ALERT("[L] ([key_name(L, admins=FALSE, user=M)]) is sucked into \the [src], landing <a href='?src=\ref[M.client.holder];action=jumptocoords;target=[target.x],[target.y],[target.z]' title='Jump to Coords'>here</a>"))
+					boutput(M, SPAN_ALERT("[L] ([key_name(L, admins=FALSE, user=M)]) is sucked into \the [src], landing <a href='byond://?src=\ref[M.client.holder];action=jumptocoords;target=[target.x],[target.y],[target.z]' title='Jump to Coords'>here</a>"))
 				else
 					boutput(M, SPAN_ALERT("[L] is sucked into \the [src]!"))
 
@@ -807,7 +808,7 @@ ADMIN_INTERACT_PROCS(/obj/item/kitchen/utensil/knife/tracker, proc/set_target, p
 	light_g = 0.6
 	light_b = 0.2
 
-	create_products()
+	create_products(restocked)
 		..()
 		product_list += new/datum/data/vending_product(/obj/item/letter/scrabble_odds, amount=1, infinite=TRUE, cost=5)
 		product_list += new/datum/data/vending_product(/obj/item/letter/vowel, amount=1, infinite=TRUE, cost=50)

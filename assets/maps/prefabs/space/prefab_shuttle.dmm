@@ -23,7 +23,7 @@
 /turf/simulated/floor/airless/scorched,
 /area/prefab/crashed_shuttle)
 "aD" = (
-/obj/decal/fakeobjects/skeleton{
+/obj/fakeobject/skeleton{
 	name = "decomposed corpse";
 	desc = "Eugh, the stench is horrible!";
 	icon = 'icons/misc/hstation.dmi';
@@ -170,7 +170,7 @@
 /obj/decal/cleanable/blood/splatter{
 	icon_state = "gibbl2"
 	},
-/obj/decal/fakeobjects/shuttleengine{
+/obj/fakeobject/shuttleengine{
 	icon_state = "alt_heater";
 	dir = 8
 	},
@@ -216,7 +216,7 @@
 /area/prefab/crashed_shuttle)
 "iq" = (
 /obj/decal/cleanable/dirt,
-/obj/decal/fakeobjects{
+/obj/fakeobject{
 	name = "motor";
 	desc = "It appears to be a part of a very old robotic arm.";
 	icon = 'icons/obj/machines/nuclear.dmi';
@@ -225,8 +225,9 @@
 /turf/simulated/floor/plating/airless,
 /area/prefab/crashed_shuttle)
 "iW" = (
-/obj/decal/fakeobjects/pipe{
-	dir = 4
+/obj/fakeobject/pipe{
+	dir = 4;
+	color = "b4b4b4"
 	},
 /obj/decal/cleanable/molten_item,
 /obj/item/raw_material/rock,
@@ -246,14 +247,15 @@
 /area/prefab/crashed_shuttle)
 "kz" = (
 /obj/lattice,
-/obj/decal/fakeobjects/pipe{
-	dir = 4
+/obj/fakeobject/pipe{
+	dir = 4;
+	color = "b4b4b4"
 	},
 /obj/decal/floatingtiles{
 	icon_state = "floattiles1";
 	dir = 1
 	},
-/obj/decal/fakeobjects/skeleton{
+/obj/fakeobject/skeleton{
 	desc = "Eugh, the stench is horrible!";
 	icon = 'icons/misc/hstation.dmi';
 	icon_state = "body6";
@@ -277,9 +279,9 @@
 	},
 /area/prefab/crashed_shuttle)
 "mH" = (
-/obj/decal/fakeobjects/pipe{
+/obj/fakeobject/pipe{
 	icon = 'icons/obj/atmospherics/pipe_vent.dmi';
-	icon_state = "intact"
+	icon_state = "vent-map"
 	},
 /obj/decal/cleanable/blood/gibs/core,
 /turf/simulated/floor/plating/airless,
@@ -325,14 +327,14 @@
 "tz" = (
 /obj/lattice,
 /obj/decal/cleanable/machine_debris,
-/obj/decal/fakeobjects/pipe{
+/obj/fakeobject/pipe{
 	icon = 'icons/obj/atmospherics/pipes/manifold_pipe.dmi';
-	icon_state = "manifold"
+	icon_state = "manifold-map"
 	},
 /turf/variableTurf/clear,
 /area/prefab/crashed_shuttle)
 "tM" = (
-/obj/decal/fakeobjects/apc_broken,
+/obj/fakeobject/apc_broken,
 /turf/simulated/wall/auto/shuttle,
 /area/prefab/crashed_shuttle)
 "ui" = (
@@ -355,16 +357,16 @@
 /turf/variableTurf/clear,
 /area/allowGenerate)
 "vj" = (
-/obj/decal/fakeobjects/pipe/heat{
+/obj/fakeobject/pipe/heat{
 	icon_state = "9-b"
 	},
 /obj/item/reagent_containers/patch/synthflesh,
 /turf/simulated/floor/plating/airless,
 /area/prefab/crashed_shuttle)
 "vy" = (
-/obj/decal/fakeobjects/pipe{
-	icon_state = "intact";
-	dir = 10
+/obj/fakeobject/pipe{
+	dir = 10;
+	color = "b4b4b4"
 	},
 /obj/item/reagent_containers/pill/crank,
 /turf/simulated/floor/plating/airless,
@@ -380,7 +382,7 @@
 /turf/simulated/wall/auto/shuttle,
 /area/prefab/crashed_shuttle)
 "xa" = (
-/obj/decal/fakeobjects/shuttlethruster{
+/obj/fakeobject/shuttlethruster{
 	icon_state = "alt_propulsion";
 	dir = 8
 	},
@@ -404,7 +406,7 @@
 /turf/variableTurf/clear,
 /area/prefab/crashed_shuttle)
 "zm" = (
-/obj/decal/fakeobjects/shuttlethruster{
+/obj/fakeobject/shuttlethruster{
 	icon_state = "alt_propulsion";
 	dir = 8
 	},
@@ -413,13 +415,13 @@
 "zp" = (
 /obj/item/cable_coil/cut,
 /mob/living/critter/zombie/radiation,
-/obj/decal/fakeobjects/pipe/heat{
+/obj/fakeobject/pipe/heat{
 	icon_state = "10-b"
 	},
 /turf/simulated/floor/plating/airless,
 /area/prefab/crashed_shuttle)
 "zv" = (
-/obj/decal/fakeobjects/shuttleengine{
+/obj/fakeobject/shuttleengine{
 	icon_state = "alt_heater";
 	dir = 8
 	},
@@ -477,7 +479,7 @@
 /area/prefab/crashed_shuttle)
 "Ga" = (
 /obj/decal/cleanable/dirt,
-/obj/decal/fakeobjects/skeleton{
+/obj/fakeobject/skeleton{
 	desc = "The head seems to be gone.";
 	icon = 'icons/misc/hstation.dmi';
 	icon_state = "body2";
@@ -557,8 +559,9 @@
 /area/prefab/crashed_shuttle)
 "Nw" = (
 /obj/decal/cleanable/machine_debris,
-/obj/decal/fakeobjects/pipe{
-	dir = 4
+/obj/fakeobject/pipe{
+	dir = 4;
+	color = "b4b4b4"
 	},
 /obj/decal/cleanable/oil/streak,
 /turf/simulated/floor/plating/airless,
@@ -569,7 +572,7 @@
 /area/prefab/crashed_shuttle)
 "OQ" = (
 /obj/item/device/analyzer/atmosanalyzer_upgrade,
-/obj/decal/fakeobjects/skeleton{
+/obj/fakeobject/skeleton{
 	name = "decomposed corpse";
 	desc = "Eugh, the stench is horrible!";
 	icon = 'icons/misc/hstation.dmi';
@@ -591,7 +594,7 @@
 /turf/simulated/floor/plating/airless,
 /area/prefab/crashed_shuttle)
 "Qf" = (
-/obj/decal/fakeobjects{
+/obj/fakeobject{
 	name = "motor";
 	desc = "It appears to be a part of a very old robotic arm.";
 	icon = 'icons/obj/machines/nuclear.dmi';
@@ -613,8 +616,9 @@
 /area/prefab/crashed_shuttle)
 "Rx" = (
 /obj/lattice,
-/obj/decal/fakeobjects/pipe{
-	dir = 4
+/obj/fakeobject/pipe{
+	dir = 4;
+	color = "b4b4b4"
 	},
 /obj/decal/floatingtiles{
 	icon_state = "floattiles4";
@@ -665,7 +669,7 @@
 /turf/variableTurf/floor,
 /area/prefab/crashed_shuttle)
 "Xl" = (
-/obj/decal/fakeobjects{
+/obj/fakeobject{
 	anchored = 1;
 	density = 1;
 	desc = "It is still kinda warm.";

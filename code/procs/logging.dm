@@ -26,6 +26,9 @@ var/global/logLength = 0
 	var/forceNonDiaryLoggingToo = FALSE
 	var/area/A
 
+	if (length(trimtext(text)) == 0)
+		CRASH("Attempted to log without text with type \[[type]\] and source \[[source]\].")
+
 	if(istype(source, /mob/living/carbon/human/preview) && type == LOG_COMBAT)
 		return //we don't give a flying fuck about the preview mobs maving mutations - but maybe we care about debug etc.?
 
@@ -74,7 +77,6 @@ var/global/logLength = 0
 			if (LOG_PDAMSG) logs[LOG_PDAMSG] += ingameLog
 			if (LOG_SIGNALERS) logs[LOG_SIGNALERS] += ingameLog
 			if (LOG_BOMBING) logs[LOG_BOMBING] += ingameLog
-			if (LOG_PATHOLOGY) logs[LOG_PATHOLOGY] += ingameLog
 			if (LOG_VEHICLE) logs[LOG_VEHICLE] += ingameLog
 			if (LOG_GAMEMODE) logs[LOG_GAMEMODE] += ingameLog
 			if (LOG_TOPIC) logs[LOG_TOPIC] += ingameLog
@@ -89,7 +91,10 @@ var/global/logLength = 0
 		if ((!diaryLogging || forceNonDiaryLoggingToo) && config.allowRotatingFullLogs)
 			WRITE_LOG(roundLog_name, "\[[type]] [source && source != "<span class='blank'>(blank)</span>" ? "[source]: ": ""][text]<br>")
 			logLength++
-	return
+
+		if (!diaryLogging)
+			var/datum/eventRecord/Log/logEvent = new()
+			logEvent.send(type, source && source != "<span class='blank'>(blank)</span>" ? source : null, text)
 
 ///Check config for whether a message should be logged to the diary
 /proc/should_diary_log(diaryType)
@@ -121,16 +126,17 @@ var/global/logLength = 0
 /proc/log_tgui(user, message, context,
 		datum/tgui_window/window,
 		datum/src_object)
-	var/entry = "\[tgui\] " // |GOONSTATION-CHANGE| (tgui:->\[tgui\])
+	var/entry = "" // |GOONSTATION-CHANGE| (tgui:->)
 	// Insert user info
+	var/source = null // |GOONSTATION-CHANGE| -> split source out of entry to send to logTheThing
 	if(!user)
-		entry += "(nobody)" // |GOONSTATION-CHANGE| (<nobody>->(nobody))
+		source = "(nobody)" // |GOONSTATION-CHANGE| (entry +->source ) (<nobody>->(nobody))
 	else if(istype(user, /mob))
 		var/mob/mob = user
-		entry += "[mob.ckey] (as [mob] at [mob.x],[mob.y],[mob.z])"
+		source = "[mob.ckey] (as [mob] at [mob.x],[mob.y],[mob.z])" // |GOONSTATION-CHANGE| (entry +->source )
 	else if(istype(user, /client))
 		var/client/client = user
-		entry += "[client.ckey]"
+		source = "[client.ckey]" // |GOONSTATION-CHANGE| (entry +->source )
 	// Insert context
 	if(context)
 		entry += " in [context]"
@@ -146,7 +152,7 @@ var/global/logLength = 0
 	if(message)
 		entry += "<br>[message]" // |GOONSTATION-CHANGE| (\n->br)
 	entry += "<br>" // |GOONSTATION-CHANGE| (br)
-	WRITE_LOG(roundLog_name, entry)
+	logTheThing(LOG_TGUI, source, entry) // |GOONSTATION-CHANGE| (WRITE_LOG(roundLog_name, entry)->logTheThing(LOG_TGUI, source, entry))
 	logLength++
 
 /* Close open log handles. This should be called as late as possible, and no logging should hapen after. */
@@ -161,7 +167,7 @@ var/global/logLength = 0
 	var/name
 	var/ckey
 	var/key
-	var/traitor
+	var/traitor_roles
 	var/online
 	var/dead = 1
 	var/mobType = null
@@ -170,7 +176,7 @@ var/global/logLength = 0
 	var/mob/mobRef
 	if (ismob(ref))
 		mobRef = ref
-		traitor = mobRef.mind?.is_antagonist()
+		traitor_roles = mobRef.mind?.list_antagonist_roles()
 		if (mobRef.name)
 			if (ishuman(mobRef))
 				var/mob/living/carbon/human/humanRef = mobRef
@@ -209,7 +215,7 @@ var/global/logLength = 0
 		online = 1
 		if (clientRef.mob)
 			mobRef = clientRef.mob
-			traitor = mobRef.mind?.is_antagonist()
+			traitor_roles = mobRef.mind?.list_antagonist_roles()
 			if (mobRef.name)
 				if (ishuman(clientRef.mob))
 					var/mob/living/carbon/human/humanRef = clientRef.mob
@@ -294,17 +300,29 @@ var/global/logLength = 0
 		if (type == "diary")
 			data += "[name ? " (" : ""][key][name ? ")" : ""]"
 		else
-			data += "[name ? " (" : ""]<a href='?src=%admin_ref%;action=adminplayeropts;targetckey=[ckey]' title='Player Options'>[key]</a>[name ? ")" : ""]"
+			data += "[name ? " (" : ""]<a href='byond://?src=%admin_ref%;action=adminplayeropts;targetckey=[ckey]' title='Player Options'>[key]</a>[name ? ")" : ""]"
 	else if(mobRef.last_ckey)
 		if (type == "diary")
 			data += "[name ? " (" : ""]last: [ckey][name ? ")" : ""]"
 		else
-			data += "[name ? " (" : ""]last: <a href='?src=%admin_ref%;action=adminplayeropts;targetckey=[ckey]' title='Player Options'>[ckey]</a>[name ? ")" : ""]"
-	if (traitor)
+			data += "[name ? " (" : ""]last: <a href='byond://?src=%admin_ref%;action=adminplayeropts;targetckey=[ckey]' title='Player Options'>[ckey]</a>[name ? ")" : ""]"
+	if (traitor_roles)
 		if (type == "diary")
 			data += " \[TRAITOR\]"
 		else
-			data += " \[<span class='traitorTag'>T</span>\]"
+			data += "<a class='traitorTag' href=\"#\" 						\
+				onMouseOver=\"this.children\[0\].style.display = 'block'\"	\
+				onMouseOut=\"this.children\[0\].style.display = 'none';\"	\
+				>T															\
+				<span id=\"innerContent\" style=\"							\
+					display: none;											\
+					background: #ffffff;									\
+					margin-left: 28px;										\
+					padding: 10px;											\
+					position: absolute;										\
+					z-index: 1000;											\
+				\">[traitor_roles]</span>									\
+				</a>"
 	if (type != "diary" && !online && ckey)
 		data += " \[<span class='offline'>OFF</span>\]"
 	if (dead && ticker && current_state > GAME_STATE_PREGAME)

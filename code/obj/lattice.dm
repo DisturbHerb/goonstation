@@ -84,7 +84,7 @@
 	src.dirmask = dirmask
 	switch (src.dirmask)
 		if (0)
-			CRASH("Lattice at [src.x], [src.y], [src.z] has no bitmask")
+			src.icon_state = "lattice-single"
 		if (NORTH | SOUTH | EAST | WEST)
 			src.icon_state = "lattice"
 		if (SOUTH | EAST | WEST)
@@ -236,7 +236,7 @@
 				return
 		else
 			if (W.force > 8)
-				user.lastattacked = src
+				user.lastattacked = get_weakref(src)
 				src.barricade_damage(W.force / 8)
 				playsound(src.loc, 'sound/impact_sounds/Metal_Hit_Light_1.ogg', 50, 1)
 			..()

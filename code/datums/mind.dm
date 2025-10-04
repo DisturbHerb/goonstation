@@ -5,12 +5,14 @@ datum/mind
 	var/mob/current
 	var/mob/virtual
 
+	/// stores valuable things about the mind's memory
 	var/memory
+	/// stores custom notes set by the player
+	var/cust_notes
 	var/list/datum/dynamic_player_memory/dynamic_memories = list()
 	var/remembered_pin = null
 	var/last_memory_time = 0 //Give a small delay when adding memories to prevent spam. It could happen!
-	var/miranda // sec's miranda rights thingy.
-	var/last_miranda_time = 0 // this is different than last_memory_time, this is when the rights were last SAID, not last CHANGED
+	var/miranda = null // sec's miranda rights thingy.
 
 	var/violated_hippocratic_oath = 0
 	var/soul = 100 // how much soul we have left
@@ -29,6 +31,9 @@ datum/mind
 	/// A list of every antagonist datum subordinate to this mind.
 	var/list/datum/antagonist/subordinate/subordinate_antagonists = list()
 
+	//Gang variables
+	var/obj/item/device/pda2/originalPDA //! The PDA that this crewmember started with - for gang PDA messages
+
 	// This used for dead/released/etc mindhacks and rogue robots we still want them to show up
 	// in the game over stats. It's a list because former mindhacks could also end up as an emagged
 	// cyborg or something. Use strings here, just like special_role (Convair880).
@@ -40,7 +45,7 @@ datum/mind
 	var/list/intrinsic_verbs = list()
 
 	var/handwriting = null
-	var/color = null
+	var/datum/forensic_id/color = null // What color this player smells like to pugs.
 
 	var/obj/item/organ/brain/brain
 
@@ -52,6 +57,8 @@ datum/mind
 	var/const/karma_max = 69
 	var/damned = 0 //! If 1, they go to hell when are die
 
+	var/datum/personal_summary/personal_summary
+
 	var/show_respawn_prompts = TRUE
 
 	New(mob/M)
@@ -62,7 +69,8 @@ datum/mind
 			ckey = M.ckey
 			displayed_key = M.key
 			src.handwriting = pick(handwriting_styles)
-			src.color = pick_string("colors.txt", "colors")
+			var/color_string = pick_string("colors.txt", "colors")
+			src.color = register_id(color_string)
 			SEND_SIGNAL(src, COMSIG_MIND_ATTACH_TO_MOB, M)
 
 	proc/transfer_to(mob/new_character)
@@ -99,7 +107,7 @@ datum/mind
 			old_mob = current
 			if(current.client)
 				current.removeOverlaysClient(current.client)
-				tgui_process.on_transfer(current, new_character)
+				tgui_process?.on_transfer(current, new_character)
 				new_character.lastKnownIP = current.client.address
 			current.oldmind = src
 			current.mind = null
@@ -174,7 +182,10 @@ datum/mind
 	proc/get_player()
 		RETURN_TYPE(/datum/player)
 		if(ckey)
-			. = make_player(ckey)
+			. = find_player(ckey)
+			if (!.)
+				stack_trace("find_player for mind with ckey [ckey] returned null, making a new player datum. This probably shouldn't happen!")
+				. = make_player(ckey)
 
 	proc/store_memory(new_text)
 		memory += "[new_text]<BR>"
@@ -185,8 +196,12 @@ datum/mind
 				src.dynamic_memories -= dynamic_memory
 
 	proc/show_memory(mob/recipient)
-		var/output = "<B>[current.real_name]'s Memory</B><HR>"
+		var/output = "<B>[current.real_name]'s Memory</B><br>"
 		output += memory
+
+		if (src.cust_notes)
+			output += "<HR><B>Notes:</B><br>"
+			output += replacetext(src.cust_notes, "\n", "<br>")
 
 		for (var/datum/dynamic_player_memory/dynamic_memory in src.dynamic_memories)
 			output += dynamic_memory.memory_text
@@ -204,14 +219,15 @@ datum/mind
 		if (master?.current)
 			output += "<br><b>Your master:</b> [master.current.real_name]"
 
-		recipient.Browse(output,"window=memory;title=Memory")
+		tgui_message(recipient, output, "Notes")
 
 	proc/set_miranda(new_text)
 		miranda = new_text
 
 	proc/get_miranda()
-		if (isproc(src.miranda)) //imfunctionalprogrammer
-			return call(src.miranda)()
+		if (isnull(src.miranda)) //isproc machine broke, so uh just wrap your procs in a list when you pass them here to distinguish them from strings :)
+			var/datum/job/job = find_job_in_controller_by_string(src.assigned_role)
+			return job.get_default_miranda()
 		return src.miranda
 
 	proc/show_miranda(mob/recipient)
@@ -244,6 +260,17 @@ datum/mind
 			if (A.id == role_id)
 				return A
 		return null
+
+	///Returns a human readable english list of all antagonsit roles this person has
+	proc/list_antagonist_roles(include_pseudo = FALSE)
+		var/list/valid_antags = list()
+		for (var/datum/antagonist/antag as anything in src.antagonists)
+			if (!include_pseudo && antag.pseudo)
+				continue
+			valid_antags += antag.display_name
+		if (!length(valid_antags))
+			return null
+		return english_list(valid_antags)
 
 	/// Attempts to add the antagonist datum of ID role_id to this mind.
 	proc/add_antagonist(role_id, do_equip = TRUE, do_objectives = TRUE, do_relocate = TRUE, silent = FALSE, source = ANTAGONIST_SOURCE_OTHER, respect_mutual_exclusives = TRUE, do_pseudo = FALSE, do_vr = FALSE, late_setup = FALSE)
@@ -304,7 +331,7 @@ datum/mind
 		return FALSE
 
 	/// Attempts to remove existing antagonist datums of ID `role` from this mind, or if provided, a specific instance of an antagonist datum.
-	proc/remove_antagonist(role, source = null)
+	proc/remove_antagonist(role, source = null, take_gear = TRUE)
 		var/datum/antagonist/antagonist_role
 		if (istype(role, /datum/antagonist))
 			antagonist_role = role
@@ -318,9 +345,12 @@ datum/mind
 		if (!antagonist_role)
 			return FALSE
 		if (antagonist_role.faction)
-			antagonist_role.owner.current.faction &= ~antagonist_role.faction
-		antagonist_role.remove_self(TRUE, source)
+			LAZYLISTREMOVE(antagonist_role.owner.current.faction, antagonist_role.faction)
+		antagonist_role.remove_self(take_gear, source)
 		src.antagonists.Remove(antagonist_role)
+		var/mob/living/carbon/human/H = src.current
+		if (istype(H))
+			H.update_arrest_icon() // for derevving
 		if (!length(src.antagonists) && src.special_role == antagonist_role.id)
 			src.special_role = null
 			ticker.mode.traitors.Remove(src)

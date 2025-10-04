@@ -9,6 +9,10 @@
 #define DISPOSAL_CHUTE_CHARGING 1
 #define DISPOSAL_CHUTE_CHARGED 2
 
+#define DISPOSAL_REPAIR_STEP_FIXED 0
+#define DISPOSAL_REPAIR_STEP_SCREWDRIVER 1
+#define DISPOSAL_REPAIR_STEP_CROWBAR 2
+
 TYPEINFO(/obj/machinery/disposal)
 	mats = 20			// whats the point of letting people build trunk pipes if they cant build new disposals?
 ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
@@ -19,19 +23,24 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 	icon_state = "disposal"
 	anchored = ANCHORED
 	density = 1
-	flags = NOSPLASH | TGUI_INTERACTIVE | FPRINT
+	flags = NOSPLASH | TGUI_INTERACTIVE
 	var/datum/gas_mixture/air_contents	// internal reservoir
 	var/mode = DISPOSAL_CHUTE_CHARGING	// item mode 0=off 1=charging 2=charged
 	var/flush = 0	// true if flush handle is pulled
 	var/obj/disposalpipe/trunk/trunk = null // the attached pipe trunk
-	var/flushing = 0	// true if flushing in progress
+	var/flushing = FALSE	// true if flushing in progress
 	var/icon_style = "disposal"
 	var/handle_normal_state = null // this is the overlay added when the handle is in the non-flushing position (for the small chutes, mainly this can be ignored otherwise)
 	var/light_style = "disposal" // for the lights and stuff
 	var/image/handle_image = null
 	var/destination_tag = null
+	var/repair_step = DISPOSAL_REPAIR_STEP_FIXED
+	///How fast do we repressurize
+	var/repressure_speed = 0.1
 	deconstruct_flags = DECON_WRENCH | DECON_CROWBAR | DECON_WELDER | DECON_SCREWDRIVER
 	power_usage = 100
+	_health = LOCKER_HEALTH_AVERAGE // TODO: balance health
+	_max_health = LOCKER_HEALTH_AVERAGE
 
 	var/is_processing = 1 //optimization thingy. kind of dumb. mbc fault. only process chute when flushed or recharging.
 
@@ -39,6 +48,12 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 	// find the attached trunk (if present) and init gas resvr.
 	New()
 		..()
+		if((src.pixel_x == 0) && (src.dir == WEST))
+			src.pixel_x += 5
+		if((src.pixel_x == 0) && (src.dir == EAST))
+			src.pixel_x += -5
+
+		START_TRACKING
 		src.AddComponent(/datum/component/obj_projectile_damage)
 		SPAWN(0.5 SECONDS)
 			if (src)
@@ -64,6 +79,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 		if(air_contents)
 			qdel(air_contents)
 			air_contents = null
+		STOP_TRACKING
 		..()
 
 	was_deconstructed_to_frame(mob/user)
@@ -99,6 +115,18 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 		playsound(src.loc, 'sound/impact_sounds/Machinery_Break_1.ogg', 50, 1)
 		. = ..()
 
+	HELP_MESSAGE_OVERRIDE("Place held boxes and bags by clicking with the <b>Disarm</b>, <b>Grab</b>, or <b>Harm</b> intent. \n \
+							Dump satchel contents by click-dragging onto this.")
+
+	get_help_message(dist, mob/user)
+		. = ..()
+		if (src.status & BROKEN)
+			switch(src.repair_step)
+				if(DISPOSAL_REPAIR_STEP_SCREWDRIVER)
+					return "[src] is broken. You can begin repairing by using a <b>screwdriver</b>."
+				if(DISPOSAL_REPAIR_STEP_CROWBAR)
+					return "[src] is broken. You can finish repairing by using a <b>crowbar</b>."
+
 	proc/initair()
 		air_contents = new /datum/gas_mixture
 		air_contents.volume = 255
@@ -109,33 +137,61 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 	proc/fits_in(atom/movable/AM)
 		return TRUE
 
+	proc/bash(obj/item/I, mob/user)
+		user.lastattacked = get_weakref(src)
+		var/damage
+		var/damage_text
+		if (I.force < 10)
+			damage = round(I.force * 0.6)
+			damage_text = " It's not very effective."
+		else
+			damage = I.force
+		user.visible_message(SPAN_ALERT("<b>[user]</b> hits [src]! [damage_text]"))
+		attack_particle(user,src)
+		hit_twitch(src)
+		src.take_damage(clamp(damage, 1, 20), user, I, null)
+		playsound(src.loc, 'sound/impact_sounds/locker_hit.ogg', 90, 1)
+
+	proc/take_damage(amount, mob/user, obj/item/I, obj/projectile/P)
+		if (!isnum(amount) || amount <= 0)
+			return
+		src._health -= amount
+		if(_health <= 0)
+			_health = 0
+			src.set_broken()
+
 	// attack by item places it in to disposal
 	attackby(var/obj/item/I, var/mob/user)
 		var/obj/item/storage/mechanics/mechitem = null
 		if(status & BROKEN)
+			switch(src.repair_step)
+				if(DISPOSAL_REPAIR_STEP_SCREWDRIVER)
+					if(isscrewingtool(I))
+						playsound(src.loc, 'sound/items/Screwdriver.ogg', 50, TRUE)
+						src.visible_message("[user] loosens the jammed retaining screws.")
+						src.repair_step = DISPOSAL_REPAIR_STEP_CROWBAR
+					else
+						boutput(user, SPAN_HINT("You need to <b>loosen</b> the retaining screws."))
+
+				if(DISPOSAL_REPAIR_STEP_CROWBAR)
+					if(ispryingtool(I))
+						playsound(src.loc, 'sound/machines/airlock_pry.ogg', 35, TRUE)
+						src.visible_message("[user] pries the chute locking panels back in place")
+						src.repair_step = DISPOSAL_REPAIR_STEP_FIXED
+						src.status &= ~BROKEN
+						src.mode = DISPOSAL_CHUTE_CHARGING
+						src.icon_state = initial(icon_state)
+						src.update()
+					else
+						boutput(user, SPAN_HINT("You need to <b>pry</b> the locking panels."))
 			return
-		if (istype(I,/obj/item/deconstructor))
-			user.visible_message(SPAN_ALERT("<B>[user] hits [src] with [I]!</B>"))
+		// snowest of snowflake
+		if (islivingobject(user) && I.force > 0)
+			src.bash(I, user)
+			update()
 			return
 		if (istype(I, /obj/item/handheld_vacuum))
 			return
-		if (istype(I,/obj/item/satchel/) && I.contents.len)
-			var/action = input(user, "What do you want to do with the satchel?") in list("Place it in the Chute","Empty it into the Chute","Never Mind")
-			if (!action || action == "Never Mind")
-				return
-			if (!in_interact_range(src, user))
-				boutput(user, SPAN_ALERT("You need to be closer to the chute to do that."))
-				return
-			if (action == "Empty it into the Chute")
-				var/obj/item/satchel/S = I
-				for(var/obj/item/O in S.contents)
-					if (src.fits_in(O))
-						O.set_loc(src)
-				S.UpdateIcon()
-				S.tooltip_rebuild = 1
-				user.visible_message("<b>[user.name]</b> dumps out [S] into [src].")
-				src.update()
-				return
 		if(istype(I, /obj/item/storage/mechanics))
 			mechitem = I
 		//first time they click with a storage, it gets dumped. second time container itself is added
@@ -157,6 +213,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 					I.storage.transfer_stored_item(O, src, user = user)
 			user.visible_message("<b>[user.name]</b> dumps out [I] into [src].")
 			actions.interrupt(user, INTERRUPT_ACT)
+			src.play_item_insert_sound(I)
 			src.update()
 			return
 
@@ -175,13 +232,16 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 					boutput(user, SPAN_ALERT("That won't fit!"))
 					return
 				actions.start(new/datum/action/bar/icon/shoveMobIntoChute(src, GM, user), user)
-				qdel(G)
 		else
+			if (src._health < src._max_health && iswrenchingtool(I))
+				src.visible_message("[user] uses [I] to tighten the retaining screws on [src], repairing it.")
+				src._health = src._max_health // TODO: balance, actionbar
 			if (istype(mag))
-				actions.stopId("magpickerhold", user)
+				actions.stopId(/datum/action/magPickerHold, user)
 			else if (!src.fits_in(I) || !user.drop_item())
 				return
 			I.set_loc(src)
+			src.play_item_insert_sound(I, user)
 			user.visible_message("[user.name] places \the [I] into \the [src].",\
 			"You place \the [I] into \the [src].")
 			actions.interrupt(user, INTERRUPT_ACT)
@@ -194,9 +254,14 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 		//jesus fucking christ
 		if (BOUNDS_DIST(user, src) > 0 || BOUNDS_DIST(target, src) > 0 || isAI(user) || is_incapacitated(user) || isghostcritter(user) || !src.fits_in(target))
 			return
+		if (src.status & BROKEN)
+			return
+		if(user.restrained() && (user.pulled_by || length(user.grabbed_by)))
+			return
 		if (istype(target, /obj/machinery/bot))
 			var/obj/machinery/bot/bot = target
 			bot.set_loc(src)
+			src.play_item_insert_sound(bot, user)
 			return
 		if (iscritter(target))
 			var/obj/critter/corpse = target
@@ -204,6 +269,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 				corpse.set_loc(src)
 				user.visible_message("[user.name] places \the [corpse] into \the [src].")
 				actions.interrupt(user, INTERRUPT_ACT)
+				src.play_item_insert_sound(corpse)
 			return
 
 		if (isliving(target))
@@ -227,15 +293,27 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 		if (GET_COOLDOWN(MO, "PipeEject"))
 			return
 
+		if (isliving(MO))
+			var/mob/living/mobtarget = MO
+			if  (mobtarget.buckled || isAI(mobtarget))
+				return
+
+			if (istype(src, /obj/machinery/disposal/mail))
+				//Is this mob allowed to ride mailchutes?
+				if (!mobtarget.canRideMailchutes())
+					return
+
 		if(isitem(MO))
 			var/obj/item/I = MO
 			I.set_loc(src)
 			update()
+			src.play_item_insert_sound(I)
 			src.visible_message(SPAN_ALERT("\The [I] lands cleanly in \the [src]!"))
 
 		else if (istype(MO, /mob/living))
 			var/mob/living/H = MO
 			H.visible_message(SPAN_ALERT("<B>[H] falls into the disposal outlet!</B>"))
+			src.play_item_insert_sound(H)
 			logTheThing(LOG_COMBAT, H, "is thrown into a [src.name] at [log_loc(src)].")
 			H.set_loc(src)
 			if(prob(10) || H.bioHolder?.HasEffect("clumsy"))
@@ -249,6 +327,20 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 		else
 			return ..()
 
+	attack_hand(mob/user)
+		. = ..()
+		if (src.status & (BROKEN | NOPOWER))
+			src.eject() //don't let people hide in depowered disposal chutes indefinitely
+
+	set_broken()
+		. = ..()
+		if (.) return
+		src.eject()
+		src.loc.assume_air(src.air_contents)
+		playsound(src, 'sound/impact_sounds/locker_break.ogg', 50, TRUE)
+		src.status |= BROKEN
+		src.repair_step = DISPOSAL_REPAIR_STEP_SCREWDRIVER
+		src.update()
 
 	// can breath normally in the disposal
 	alter_health()
@@ -265,11 +357,33 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 	// leave the disposal
 	proc/go_out(mob/user)
 		user.set_loc(src.loc)
-		if (!user.hasStatus("weakened"))
-			user.changeStatus("weakened", 1 SECOND)
+		if (!user.hasStatus("knockdown"))
+			user.changeStatus("knockdown", 1 SECOND)
 			user.force_laydown_standup()
 		update()
 		return
+
+	ex_act(severity)
+		switch(severity)
+			if(1)
+				qdel(src)
+			if(2)
+				if (prob(50))
+					src.set_broken()
+			if(3)
+				if (prob(25))
+					src.set_broken()
+
+	bullet_act(obj/projectile/P)
+		. = ..()
+		switch (P.proj_data.damage_type)
+			if (D_KINETIC, D_PIERCING, D_SLASHING)
+				if (prob(P.power))
+					if (!(status & BROKEN))
+						src.set_broken()
+
+	overload_act()
+		return !src.set_broken()
 
 	ui_interact(mob/user, datum/tgui/ui)
 		ui = tgui_process.try_update_ui(user, src, ui)
@@ -325,7 +439,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 	// update the icon & overlays to reflect mode & status
 	proc/update()
 		if (status & BROKEN)
-			icon_state = "disposal-broken"
+			icon_state = "[icon_style]-broken"
 			ClearAllOverlays()
 			mode = DISPOSAL_CHUTE_OFF
 			flush = 0
@@ -412,7 +526,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 		var/pressure_delta = (3.5 * ONE_ATMOSPHERE) - MIXTURE_PRESSURE(air_contents) // purposefully trying to overshoot the target of 2 atmospheres to make it faster
 
 		if(env.temperature > 0)
-			var/transfer_moles = 0.1 * pressure_delta*air_contents.volume/(env.temperature * R_IDEAL_GAS_EQUATION)
+			var/transfer_moles = src.repressure_speed * pressure_delta*air_contents.volume/(env.temperature * R_IDEAL_GAS_EQUATION)
 
 			//Actually transfer the gas
 			var/datum/gas_mixture/removed = env.remove(transfer_moles)
@@ -424,7 +538,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 			mode = DISPOSAL_CHUTE_CHARGED
 			power_usage = 100
 			update()
-			if (is_processing)
+			if (is_processing && !flush)
 				UnsubscribeProcess()
 				is_processing = 0
 		return
@@ -433,7 +547,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 	proc/flush()
 
 		flushing = 1
-		flick("[icon_style]-flush", src)
+		FLICK("[icon_style]-flush", src)
 
 		var/obj/disposalholder/H = new /obj/disposalholder	// virtual holder object which actually
 																// travels through the pipes.
@@ -503,6 +617,47 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 			if (user && !isdead(user))
 				user.suiciding = 0
 		return 1
+
+	return_air(direct = FALSE)
+		if (!direct)
+			return src.loc?.return_air()
+
+	/// Plays the item insert sound with variations depending on item. If user is given, plays localised and with a lower volume, to imply sneakyness
+	proc/play_item_insert_sound(var/thing, var/mob/user = null)
+		var/pitch = 1
+		var/volume = 50
+		if (isitem(thing))
+			var/obj/item/itm = thing
+			switch(itm.w_class)
+				if (W_CLASS_TINY)
+					pitch = 1.4
+					volume = 25
+				if (W_CLASS_SMALL)
+					pitch = 1.1
+					volume = 40
+				if (W_CLASS_BULKY)
+					pitch = 0.8
+					volume = 100
+				if (W_CLASS_HUGE)
+					pitch = 0.5
+					volume = 300
+				if (W_CLASS_GIGANTIC)
+					pitch = 0.3
+					volume = 300
+				if (W_CLASS_BUBSIAN)
+					pitch = 0.1
+					volume = 400
+		else if (iscritter(thing) || ismobcritter(thing))
+			pitch = 0.7
+			volume = 100
+		else if (ismob(thing))
+			pitch = 0.4
+			volume = 300
+		if (user)
+			volume = min(volume * 0.5, 20)
+			user.playsound_local(src.loc, "chute_insert", volume, 1, 0, pitch)
+		else
+			playsound(src, "chute_insert", volume, 1, 0, pitch)
 
 /obj/machinery/disposal/small
 	icon = 'icons/obj/disposal_small.dmi'
@@ -587,7 +742,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 		..()
 		if(!src.net_id)
 			src.net_id = generate_net_id(src)
-		MAKE_SENDER_RADIO_PACKET_COMPONENT(null, frequency)
+		MAKE_SENDER_RADIO_PACKET_COMPONENT(src.net_id, null, frequency)
 
 	expel(var/obj/disposalholder/H)
 		..(H)
@@ -646,13 +801,37 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 		return
 
 	attackby(var/obj/item/I, var/mob/user)
-		return
+		if(status & BROKEN)
+			switch(src.repair_step)
+				if(DISPOSAL_REPAIR_STEP_SCREWDRIVER)
+					if(isscrewingtool(I))
+						playsound(src.loc, 'sound/items/Screwdriver.ogg', 50, TRUE)
+						src.visible_message("[user] loosens the jammed retaining screws.")
+						src.repair_step = DISPOSAL_REPAIR_STEP_CROWBAR
+					else
+						boutput(user, SPAN_HINT("You need to <b>loosen</b> the retaining screws."))
+
+				if(DISPOSAL_REPAIR_STEP_CROWBAR)
+					if(ispryingtool(I))
+						playsound(src.loc, 'sound/machines/airlock_pry.ogg', 35, TRUE)
+						src.visible_message("[user] pries the chute locking panels back in place")
+						src.repair_step = DISPOSAL_REPAIR_STEP_FIXED
+						src.status &= ~BROKEN
+						src.mode = DISPOSAL_CHUTE_CHARGING
+						src.icon_state = initial(icon_state)
+						src.update()
+					else
+						boutput(user, SPAN_HINT("You need to <b>pry</b> the locking panels."))
+			return
+
+	Entered()
+		. = ..()
+		flush = 1
 
 	MouseDrop_T(mob/target, mob/user)
 		if (!istype(target) || target.buckled || BOUNDS_DIST(user, src) > 0 || BOUNDS_DIST(user, target) > 0 || is_incapacitated(user) || isAI(user) || isAI(target) || isghostcritter(user))
 			return
 		..()
-		flush = 1
 
 		if (!is_processing)
 			SubscribeToProcess()
@@ -671,7 +850,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 	attack_ai(mob/user as mob)
 		return
 
-	attack_hand(mob/user)
+	ui_interact(mob/user, datum/tgui/ui)
 		return
 
 
@@ -680,10 +859,11 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 	desc = "A small chute designed to send chemical supplies to medbay. An attached monitoring console shows the levels of supplies present."
 	icon_state = "chemlink_on"
 	destination_tag = "chemlink"
+	icon_style = "chemlink"
 	//stuff to emulate computer look
 	var/datum/light/light
 	var/image/screen_image
-	///A dummy object in vis_contents so we can use flick() to animate the flush overlay
+	///A dummy object in vis_contents so we can use FLICK() to animate the flush overlay
 	var/obj/dummy/flush_dummy = null
 	///The vendor at the other end
 	var/obj/machinery/vending/player/chemicals/linked = null
@@ -748,7 +928,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 		if (!isnull(src.destination_tag))
 			H.mail_tag = src.destination_tag
 		H.start(src)
-		flick("chemlink_flush", src.flush_dummy)
+		FLICK("chemlink_flush", src.flush_dummy)
 		playsound(src, 'sound/misc/handle_click.ogg', 50, TRUE)
 
 	ui_interact(mob/user, datum/tgui/ui)
@@ -776,18 +956,20 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 
 	//no overlays
 	update()
-		return
+		if(src.status & BROKEN)
+			icon_state = "[icon_style]-broken"
+			mode = DISPOSAL_CHUTE_OFF
+			flush = 0
+			power_usage = 0
 
 	process()
 		if (src.static_data_invalid)
 			src.static_data_invalid = FALSE
-			for (var/datum/tgui/ui as anything in tgui_process.get_uis(src))
-				src.update_static_data(null, ui)
+			src.update_static_data_for_all_viewers()
 
 /datum/action/bar/icon/shoveMobIntoChute
 	duration = 0.2 SECONDS
 	interrupt_flags =  INTERRUPT_STUNNED | INTERRUPT_ACT
-	id = "shoveMobIntoChute"
 	icon = 'icons/obj/disposal.dmi'
 	icon_state = "shoveself-disposal" //varies, see below
 	var/obj/machinery/disposal/chute
@@ -821,10 +1003,17 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 			if(target == user)
 				msg = "[user.name] climbs into the [chute]."
 				boutput(user, "You climb into the [chute].")
+
 			else if(target != user && !user.restrained())
+				chute.play_item_insert_sound(target)
 				msg = "[user.name] stuffs [target.name] into the [chute]!"
 				boutput(user, "You stuff [target.name] into the [chute]!")
+				if(istype(chute, /obj/machinery/disposal/brig))
+					user.unlock_medal("Suitable? How about the Oubliette?!", 1)
 				logTheThing(LOG_COMBAT, user, "places [constructTarget(target,"combat")] into [chute] at [log_loc(chute)].")
+				if (length(target.grabbed_by))
+					for (var/obj/item/grab/grab in target.grabbed_by)
+						qdel(grab)
 			else
 				..()
 				return
@@ -846,6 +1035,10 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 			interrupt(INTERRUPT_ALWAYS)
 			return FALSE
 		return TRUE
+
+#undef DISPOSAL_REPAIR_STEP_FIXED
+#undef DISPOSAL_REPAIR_STEP_SCREWDRIVER
+#undef DISPOSAL_REPAIR_STEP_CROWBAR
 
 #undef DISPOSAL_CHUTE_OFF
 #undef DISPOSAL_CHUTE_CHARGING

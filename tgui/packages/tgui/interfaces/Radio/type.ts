@@ -5,12 +5,14 @@
  * @license MIT
  */
 
-import { BooleanLike } from 'common/react';
+import { BooleanLike } from 'tgui-core/react';
 
 export interface RadioData {
   name: string;
-  broadcasting: BooleanLike;
-  listening: BooleanLike;
+  hasMicrophone: BooleanLike;
+  microphoneEnabled: BooleanLike;
+  hasSpeaker: BooleanLike;
+  speakerEnabled: BooleanLike;
   frequency: number;
   frequencyFormatted: string;
   lockedFrequency: BooleanLike;
@@ -22,8 +24,9 @@ export interface RadioData {
   wires: number;
   modifiable: BooleanLike;
   code: number;
-  hasMicrophone: BooleanLike;
   sendButton: BooleanLike;
+  hasToggleButton: BooleanLike;
+  power: BooleanLike;
 }
 
 export enum RadioWires {

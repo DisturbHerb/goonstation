@@ -1,20 +1,21 @@
 /obj/item/raw_material/
 	name = "construction materials"
 	desc = "placeholder item!"
-	icon = 'icons/obj/materials.dmi'
-	icon_state = "ore"
+	icon = 'icons/obj/items/materials/materials.dmi'
+	icon_state = "ore1_"
 	force = 4
 	throwforce = 6
 	var/material_name = "Ore" //text to display for this ore in manufacturers
 	var/initial_material_name = null // used to store what the ore is
+	var/icon_stack_value = 0 // Number used for updating icon_state as stack size changes
 	var/metal = 0  // what grade of metal is it?
 	var/conductor = 0
 	var/dense = 0
 	var/crystal = 0
 	var/powersource = 0
 	var/scoopable = 1
-	burn_type = 1
-	var/wiggle = 6 // how much we want the sprite to be deviated fron center
+	burn_remains = BURN_REMAINS_MELT
+	var/wiggle = 6 // how much we want the sprite to be deviated from center
 	max_stack = 50
 	event_handler_flags = USE_FLUID_ENTER
 	/// Does the raw material item get its name set?
@@ -29,15 +30,45 @@
 		setup_material()
 		if(src.material?.getName())
 			initial_material_name = src.material.getName()
+		_update_stack_appearance()
 
-	proc/setup_material() // Overwrite for ore specific setup
+	proc/setup_material() //! Overwrite for ore specific setup
 		return
 
 	_update_stack_appearance()
-		if(material)
-			UpdateName(src) // get the name in order so it has whatever it needs
-			name = "[amount] [src.name][amount > 1 ? "s":""]"
-		return
+		if(!material)
+			return
+		update_stack_name()
+		var/icon_stack_new = get_stack_value()
+		if(icon_stack_new && icon_stack_new != src.icon_stack_value) // Only update icon_state if it needs updating (0 to ignore)
+			src.icon_stack_value = icon_stack_new
+			UpdateIcon()
+
+	update_icon()
+		src.icon_state = "ore[src.icon_stack_value]_$$[src.material.getName()]"
+
+	proc/update_stack_name() //! How the material should be named at different stack sizes
+		UpdateName(src) // get the name in order so it has whatever it needs
+		if(src.amount == 1)
+			name = "[src.name]"
+		else
+			name = "[amount] [src.name]s"
+
+	proc/get_stack_value() //! Determines at what stack sizes the icon_state changes
+		// example: src.icon_state = "ore[x]_$$gold"
+		switch(src.amount)
+			if(1)
+				return 1
+			if(2 to 4)
+				return 2
+			if(5 to 9)
+				return 3
+			if(10 to 24)
+				return 4
+			if(25 to 49)
+				return 5
+			else
+				return 6
 
 	attackby(obj/item/W, mob/user)
 		if(check_valid_stack(W))
@@ -66,7 +97,7 @@
 					src.dropped(user)
 				if (length(manipulated_satchel.contents) == manipulated_satchel.maxitems)
 					boutput(user, SPAN_NOTICE("[W] is now full!"))
-				manipulated_satchel.tooltip_rebuild = 1
+				manipulated_satchel.tooltip_rebuild = TRUE
 				manipulated_satchel.UpdateIcon()
 			else
 				boutput(user, SPAN_ALERT("[manipulated_satchel] is full!"))
@@ -76,7 +107,7 @@
 	attack_hand(mob/user)
 		if(user.is_in_hands(src) && src.amount > 1)
 			var/splitnum = round(input("How many ores do you want to take from the stack?","Stack of [src.amount]",1) as num)
-			if (splitnum >= amount || splitnum < 1 || !isnum_safe(splitnum))
+			if (splitnum >= amount || splitnum < 1 || !isnum_safe(splitnum) || QDELETED(src))
 				boutput(user, SPAN_ALERT("Invalid entry, try again."))
 				return
 			var/obj/item/raw_material/new_stack = split_stack(splitnum)
@@ -111,8 +142,9 @@
 					playsound(H, 'sound/machines/chime.ogg', 20, TRUE)
 		else if (istype(AM,/obj/machinery/vehicle/))
 			var/obj/machinery/vehicle/V = AM
-			if (istype(V.sec_system,/obj/item/shipcomponent/secondary_system/orescoop))
-				var/obj/item/shipcomponent/secondary_system/orescoop/SCOOP = V.sec_system
+			var/obj/item/shipcomponent/secondary_system/sec_part = V.get_part(POD_PART_SECONDARY)
+			if (istype(sec_part, /obj/item/shipcomponent/secondary_system/orescoop))
+				var/obj/item/shipcomponent/secondary_system/orescoop/SCOOP = sec_part
 				if (length(SCOOP.contents) >= SCOOP.capacity || !src.scoopable)
 					return
 				var/max_stack_reached = FALSE
@@ -130,9 +162,6 @@
 				if (length(SCOOP.contents) >= SCOOP.capacity)
 					boutput(V.pilot, SPAN_ALERT("Your pod's ore scoop hold is full!"))
 					playsound(V.loc, 'sound/machines/chime.ogg', 20, 1)
-			return
-		else
-			return
 
 	mouse_drop(atom/over_object, src_location, over_location) //src dragged onto over_object
 		if (isobserver(usr))
@@ -210,22 +239,42 @@
 			..()
 
 /obj/item/raw_material/rock
-	name = "rock"
+	name = "stone"
 	desc = "It's plain old space rock. Pretty worthless!"
+	icon = 'icons/obj/items/materials/rocks.dmi'
 	icon_state = "rock1"
 	force = 8
 	throwforce = 10
 	scoopable = 0
-	material_name = "Rock"
+	material_name = "Stone"
 	default_material = "rock"
 
-	setup_material()
-		..()
-		src.icon_state = pick("rock1","rock2","rock3")
+	get_stack_value()
+		// Rocks are plantiful enough to have a more even stack distribution
+		switch(src.amount)
+			if(1)
+				return 1
+			if(2 to 9)
+				return 2
+			if(10 to 19)
+				return 3
+			if(20 to 31)
+				return 4
+			if(32 to 49)
+				return 5
+			else
+				return 6
+
+	update_icon()
+		if(src.icon_stack_value == 1)
+			src.icon_state = "[pick("rock1", "rock1b", "rock1c", "rock1d")]"
+		else
+			src.icon_state = "rock[src.icon_stack_value]"
 
 /obj/item/raw_material/mauxite
 	name = "mauxite ore"
 	desc = "A chunk of Mauxite, a sturdy common metal."
+	icon = 'icons/obj/items/materials/mauxite.dmi'
 	material_name = "Mauxite"
 	default_material = "mauxite"
 	metal = 2
@@ -233,13 +282,22 @@
 /obj/item/raw_material/molitz
 	name = "molitz crystal"
 	desc = "A crystal of Molitz, a common crystalline substance."
+	icon = 'icons/obj/items/materials/molitz.dmi'
 	material_name = "Molitz"
 	default_material = "molitz"
 	crystal = 1
 
+	update_icon()
+		if(src.icon_stack_value == 1)
+			var/ore_state = pick("ore1", "ore1b")
+			src.icon_state = "[ore_state]_$$[src.material.getName()]"
+		else
+			src.icon_state = "ore[src.icon_stack_value]_$$[src.material.getName()]"
+
 /obj/item/raw_material/molitz_beta
 	name = "molitz crystal"
 	desc = "An unusual crystal of Molitz."
+	icon = 'icons/obj/items/materials/molitz.dmi'
 	icon_state = "ore$$molitz_b"
 	material_name = "Molitz Beta"
 	default_material = "molitz_b"
@@ -249,17 +307,33 @@
 		. = ..()
 		src.pressure_resistance = INFINITY //has to be after material setup. REASONS
 
+	update_icon()
+		if(src.icon_stack_value == 1)
+			var/ore_state = pick("ore1", "ore1b")
+			src.icon_state = "[ore_state]_$$[src.material.getName()]"
+		else
+			src.icon_state = "ore[src.icon_stack_value]_$$[src.material.getName()]"
+
 /obj/item/raw_material/pharosium
 	name = "pharosium ore"
 	desc = "A chunk of Pharosium, a conductive metal."
+	icon = 'icons/obj/items/materials/pharosium.dmi'
 	material_name = "Pharosium"
 	default_material = "pharosium"
 	metal = 1
 	conductor = 1
 
+	update_icon()
+		if(src.icon_stack_value == 1)
+			var/ore_state = pick("ore1", "ore1b", "ore1c")
+			src.icon_state = "[ore_state]_$$[src.material.getName()]"
+		else
+			src.icon_state = "ore[src.icon_stack_value]_$$[src.material.getName()]"
+
 /obj/item/raw_material/cobryl // relate this to precursors
 	name = "cobryl ore"
 	desc = "A chunk of Cobryl, a somewhat valuable metal."
+	icon = 'icons/obj/items/materials/cobryl.dmi'
 	material_name = "Cobryl"
 	default_material = "cobryl"
 	metal = 1
@@ -267,32 +341,50 @@
 /obj/item/raw_material/char
 	name = "char ore"
 	desc = "A heap of Char, a fossil energy source similar to coal."
+	icon = 'icons/obj/items/materials/char.dmi'
 	material_name = "Char"
 	default_material = "char"
 	//cogwerks - burn vars
 	burn_point = 450
 	burn_output = 1600
-	burn_possible = 2
+	burn_possible = TRUE
 	health = 20
 
 /obj/item/raw_material/claretine // relate this to wizardry somehow
 	name = "claretine ore"
 	desc = "A heap of Claretine, a highly conductive salt."
+	icon = 'icons/obj/items/materials/claretine.dmi'
 	material_name = "Claretine"
 	default_material = "claretine"
 	conductor = 2
 
+	update_stack_name()
+		UpdateName(src)
+		if(src.amount == 1)
+			name = "[src.name]"
+		else
+			name = "[amount] scoops of [src.name]"
+
 /obj/item/raw_material/bohrum
 	name = "bohrum ore"
 	desc = "A chunk of Bohrum, a heavy and highly durable metal."
+	icon = 'icons/obj/items/materials/bohrum.dmi'
 	material_name = "Bohrum"
 	default_material = "bohrum"
 	metal = 3
 	dense = 1
 
+	update_icon()
+		if(src.icon_stack_value == 1)
+			var/ore_state = pick("ore1", "ore1b")
+			src.icon_state = "[ore_state]_$$[src.material.getName()]"
+		else
+			src.icon_state = "ore[src.icon_stack_value]_$$[src.material.getName()]"
+
 /obj/item/raw_material/syreline
 	name = "syreline ore"
 	desc = "A chunk of Syreline, an extremely valuable and coveted metal."
+	icon = 'icons/obj/items/materials/syreline.dmi'
 	material_name = "Syreline"
 	default_material = "syreline"
 	metal = 1
@@ -300,10 +392,18 @@
 /obj/item/raw_material/erebite
 	name = "erebite ore"
 	desc = "A chunk of Erebite, an extremely volatile high-energy mineral."
+	icon = 'icons/obj/items/materials/erebite.dmi'
 	var/exploded = 0
 	material_name = "Erebite"
 	default_material = "erebite"
 	powersource = 2
+
+	update_icon()
+		if(src.icon_stack_value == 1)
+			var/ore_state = pick("ore1", "ore1b")
+			src.icon_state = "[ore_state]_$$[src.material.getName()]"
+		else
+			src.icon_state = "ore[src.icon_stack_value]_$$[src.material.getName()]"
 
 	ex_act(severity)
 		if(exploded)
@@ -355,6 +455,7 @@
 /obj/item/raw_material/cerenkite
 	name = "cerenkite ore"
 	desc = "A chunk of Cerenkite, a highly radioactive mineral."
+	icon = 'icons/obj/items/materials/cerenkite.dmi'
 	material_name = "Cerenkite"
 	default_material = "cerenkite"
 	metal = 1
@@ -363,24 +464,26 @@
 /obj/item/raw_material/plasmastone
 	name = "plasmastone"
 	desc = "A piece of plasma in its solid state."
+	icon = 'icons/obj/items/materials/plasmastone.dmi'
 	material_name = "Plasmastone"
 	default_material = "plasmastone"
 	//cogwerks - burn vars
 	burn_point = 1000
 	burn_output = 10000
-	burn_possible = 2
+	burn_possible = TRUE
 	health = 40
 	powersource = 1
 	crystal = 1
 
-
 /obj/item/raw_material/gemstone
 	name = "gem"
 	desc = "A gemstone. It's probably pretty valuable!"
+	icon = 'icons/obj/items/materials/materials.dmi'
 	icon_state = "gem1"
 	material_name = "Gem"
 	default_material = null
 	mat_changename = TRUE
+	w_class = W_CLASS_POCKET_SIZED
 	force = 1
 	throwforce = 3
 	crystal = 1
@@ -402,22 +505,29 @@
 		src.setMaterial(M)
 		src.icon_state = pick("gem1","gem2","gem3")
 
+	get_stack_value()
+		return 0
+
 /obj/item/raw_material/uqill // relate this to ancients
 	name = "uqill nugget"
 	desc = "A nugget of Uqill, a rare and very dense stone."
+	icon = 'icons/obj/items/materials/uqill.dmi'
 	material_name = "Uqill"
 	default_material = "uqill"
+	w_class = W_CLASS_POCKET_SIZED // Should fit in your pocket, since it is so dense.
 	dense = 2
 
 /obj/item/raw_material/fibrilith
 	name = "fibrilith chunk"
 	desc = "A compressed chunk of Fibrilith, an odd mineral known for its high tensile strength."
+	icon = 'icons/obj/items/materials/fibrilith.dmi'
 	material_name = "Fibrilith"
 	default_material = "fibrilith"
 
 /obj/item/raw_material/telecrystal
 	name = "telecrystal"
 	desc = "A large unprocessed telecrystal, a gemstone with space-warping properties."
+	icon = 'icons/obj/items/materials/telecrystal.dmi'
 	material_name = "Telecrystal"
 	default_material = "telecrystal"
 	crystal = 1
@@ -449,12 +559,31 @@
 /obj/item/raw_material/miracle
 	name = "miracle matter"
 	desc = "Miracle Matter is a bizarre substance known to metamorphosise into other minerals when processed."
+	icon = 'icons/obj/items/materials/miracle.dmi'
 	material_name = "Miracle"
 	default_material = "miracle"
+	var/static/shape = pick("ore","sphere","torus") // This round's randomized miracle matter shape
+
+	update_icon()
+		src.icon_state = "[src.shape][src.icon_stack_value]_$$[src.material.getName()]"
+
+	get_stack_value()
+		switch(src.amount)
+			if(1)
+				return 1
+			if(2 to 6)
+				return 2
+			if(7 to 24)
+				return 3
+			if(25 to 49)
+				return 4
+			else
+				return 5
 
 /obj/item/raw_material/starstone
 	name = "starstone"
 	desc = "An extremely rare jewel. Highly prized by collectors and lithovores."
+	icon = 'icons/obj/items/materials/starstone.dmi'
 	material_name = "Starstone"
 	default_material = "starstone"
 	crystal = 1
@@ -462,6 +591,7 @@
 /obj/item/raw_material/eldritch
 	name = "koshmarite ore"
 	desc = "An unusual dense pulsating stone. You feel uneasy just looking at it."
+	icon = 'icons/obj/items/materials/koshmarite.dmi'
 	material_name = "Koshmarite"
 	default_material = "koshmarite"
 	crystal = 1
@@ -470,6 +600,7 @@
 /obj/item/raw_material/martian
 	name = "viscerite lump"
 	desc = "A disgusting flesh-like material. Ugh. What the hell is this?"
+	icon = 'icons/obj/items/materials/viscerite.dmi'
 	material_name = "Viscerite"
 	default_material = "viscerite"
 	dense = 2
@@ -479,33 +610,64 @@
 		src.reagents.add_reagent("synthflesh", 25)
 		return ..()
 
+	update_icon()
+		if(src.icon_stack_value == 1)
+			var/ore_state = pick("ore1", "ore1b")
+			src.icon_state = "[ore_state]_$$[src.material.getName()]"
+		else
+			src.icon_state = "ore[src.icon_stack_value]_$$[src.material.getName()]"
+
 /obj/item/raw_material/gold
 	name = "gold nugget"
 	desc = "A chunk of pure gold. Damn son."
+	icon = 'icons/obj/items/materials/gold.dmi'
 	material_name = "Gold"
 	default_material = "gold"
 	dense = 2
 
-// Misc building material
+/obj/item/raw_material/veranium
+	name = "veranium crystal"
+	desc = "A sparking crystal of veranium."
+	icon = 'icons/obj/items/materials/materials.dmi'
+	material_name = "Veranium"
+	default_material = "veranium"
 
-/// This has no material, why does it exist???? Someone replace it
-/obj/item/raw_material/fabric
-	name = "fabric sheet"
-	desc = "Some spun cloth. Useful if you want to make clothing."
-	icon_state = "fabric"
-	material_name = "Fabric"
-	scoopable = 0
+	update_icon()
+		src.icon_state = "ore$$veranium"
+
+	get_stack_value()
+		return 1
+
+/obj/item/raw_material/yuranite
+	name = "yuranite"
+	desc = "Yuranite, an ore of uranium. Best to stay away from it without proper radiactive protection."
+	icon = 'icons/obj/items/materials/materials.dmi'
+	material_name = "Yuranite"
+	default_material = "yuranite"
+
+	update_icon()
+		src.icon_state = "ore$$yuranite"
+
+	get_stack_value()
+		return 1
+
+// Misc building material
 
 /obj/item/raw_material/cotton
 	name = "cotton wad"
 	desc = "It's a big puffy white thing. Most likely not a cloud though."
+	icon = 'icons/obj/items/materials/materials.dmi'
 	icon_state = "cotton"
 	material_name = "Cotton"
 	default_material = "cotton"
 
+	get_stack_value()
+		return 0
+
 /obj/item/raw_material/ice
 	name = "ice chunk"
 	desc = "A chunk of ice. It's pretty cold."
+	icon = 'icons/obj/items/materials/ice.dmi'
 	material_name = "Ice"
 	default_material = "ice"
 	crystal = 1
@@ -515,9 +677,10 @@
 	// this should only be spawned by the game, spawning it otherwise would just be dumb
 	name = "scrap"
 	desc = "Some twisted and ruined metal. It could probably be smelted down into something more useful."
+	icon = 'icons/obj/items/materials/materials.dmi'
 	icon_state = "scrap"
 	stack_type = /obj/item/raw_material/scrap_metal
-	burn_possible = 0
+	burn_possible = FALSE
 	mat_changename = TRUE
 	material_name = "Steel"
 	default_material = "steel"
@@ -526,15 +689,18 @@
 		..()
 		icon_state += "[rand(1,5)]"
 
+	get_stack_value()
+		return 0
+
 /obj/item/raw_material/shard
 	// same deal here
 	name = "shard"
 	desc = "A jagged piece of broken crystal or glass. It could probably be smelted down into something more useful."
+	icon = 'icons/obj/items/materials/materials.dmi'
 	icon_state = "shard"
 	inhand_image_icon = 'icons/mob/inhand/hand_tools.dmi'
 	item_state = "shard-glass"
 	stack_type = /obj/item/raw_material/shard
-	flags = TABLEPASS | FPRINT
 	object_flags = NO_GHOSTCRITTER
 	tool_flags = TOOL_CUTTING
 	w_class = W_CLASS_NORMAL
@@ -543,11 +709,11 @@
 	force = 5
 	throwforce = 5
 	g_amt = 3750
-	burn_type = 1
+	burn_remains = BURN_REMAINS_MELT
 	stamina_damage = 5
 	stamina_cost = 5
 	stamina_crit_chance = 35
-	burn_possible = 0
+	burn_possible = FALSE
 	event_handler_flags = USE_FLUID_ENTER
 	material_amt = 0.1
 	material_name = "Glass"
@@ -561,7 +727,7 @@
 		src.setItemSpecial(/datum/item_special/double)
 
 	attack(mob/target, mob/user, def_zone, is_special = FALSE, params = null)
-		if(!scalpel_surgery(target,user)) return ..()
+		if(is_special || !scalpel_surgery(target, user)) return ..()
 		else return
 
 	Crossed(atom/movable/AM as mob|obj)
@@ -581,6 +747,9 @@
 				user.suiciding = 0
 		return 1
 
+	get_stack_value()
+		return 0
+
 	glass
 		material_name = "Glass"
 		default_material = "glass"
@@ -590,7 +759,7 @@
 		default_material = "plasmaglass"
 
 /obj/item/raw_material/shard/proc/walked_over(mob/living/carbon/human/H as mob)
-	if(ON_COOLDOWN(H, "shard_Crossed", 7 SECONDS) || H.getStatusDuration("stunned") || H.getStatusDuration("weakened")) // nerf for dragging a person and a shard to damage them absurdly fast - drsingh
+	if(ON_COOLDOWN(H, "shard_Crossed", 7 SECONDS) || H.getStatusDuration("stunned") || H.getStatusDuration("knockdown")) // nerf for dragging a person and a shard to damage them absurdly fast - drsingh
 		return
 	if(isabomination(H))
 		return
@@ -609,14 +778,15 @@
 
 /obj/item/raw_material/shard/proc/step_on(mob/living/carbon/human/H as mob)
 	playsound(src.loc, src.sound_stepped, 50, 1)
-	H.changeStatus("weakened", 3 SECONDS)
+	H.changeStatus("knockdown", 3 SECONDS)
 	H.force_laydown_standup()
 	var/zone = pick("l_leg", "r_leg")
 	H.TakeDamage(zone, force, 0, 0, DAMAGE_CUT)
 
 /obj/item/raw_material/chitin
-	name = "chitin chunk"
-	desc = "A chunk of chitin."
+	name = "chitin sample"
+	desc = "Hard exoskeletal remains."
+	icon = 'icons/obj/items/materials/chitin.dmi'
 	material_name = "Chitin"
 	default_material = "chitin"
 	metal = 3
@@ -726,7 +896,7 @@
 	var/sound/sound_process = sound('sound/effects/pop.ogg')
 	var/sound/sound_grump = sound('sound/machines/buzz-two.ogg')
 	var/atom/output_location = null
-	var/list/atom/leftovers = null
+	var/list/atom/leftovers = list()
 
 	attack_hand(var/mob/user)
 		if (active)
@@ -735,7 +905,6 @@
 		if (length(src.contents) < 1)
 			boutput(user, SPAN_ALERT("There's nothing inside to reclaim."))
 			return
-		leftovers = list()
 		user.visible_message("<b>[user.name]</b> switches on [src].")
 		active = 1
 		anchored = ANCHORED
@@ -767,14 +936,6 @@
 			src.visible_message("<b>[src]</b> emits an angry buzz and rejects some unsuitable materials!")
 			playsound(src.loc, sound_grump, 40, 1)
 
-		var/waste = 0
-		for(var/matID in leftovers)
-			if(leftovers[matID] > 0)
-				waste = 1
-		if (waste)
-			src.visible_message("<b>[src]</b> emits a grumpy buzz and disintegrates some leftovers.")
-			playsound(src.loc, sound_grump, 40, 1)
-
 		active = 0
 		anchored = UNANCHORED
 		icon_state = "reclaimer"
@@ -794,7 +955,7 @@
 			if (output_amount != num_bars)
 				leftovers[O.material.getID()] = num_bars - output_amount
 
-		output_bar(O.material, output_amount, O.quality)
+		output_bar(O.material, output_amount)
 
 		if (extra_mat) // i hate this
 			output_amount = O.amount
@@ -807,9 +968,9 @@
 				if (output_amount != num_bars)
 					leftovers[extra_mat] = num_bars - output_amount
 
-			output_bar(extra_mat, output_amount, O.quality)
+			output_bar(extra_mat, output_amount)
 
-	proc/output_bar(material, amount, quality)
+	proc/output_bar(material, amount)
 
 		if(amount <= 0)
 			return
@@ -820,26 +981,30 @@
 			if (!MAT)
 				return
 
-		var/output_location = src.get_output_location()
+		var/atom/output_location = src.get_output_location()
 
 		var/bar_type = getProcessedMaterialForm(MAT)
 		var/obj/item/material_piece/BAR = new bar_type
-		BAR.quality = quality
-		BAR.name += getQualityName(quality)
 		BAR.setMaterial(MAT)
 		BAR.change_stack_amount(amount - 1)
 
 		if (istype(output_location, /obj/machinery/manufacturer))
 			var/obj/machinery/manufacturer/M = output_location
-			M.load_item(BAR)
+			M.add_contents(BAR)
 		else
 			BAR.set_loc(output_location)
+			for (var/obj/item/material_piece/other_bar in output_location.contents)
+				if (other_bar == BAR)
+					continue
+				if (BAR.material.isSameMaterial(other_bar.material))
+					if (other_bar.stack_item(BAR))
+						break
 
 		playsound(src.loc, sound_process, 40, 1)
 
 	proc/load_reclaim(obj/item/W as obj, mob/user as mob)
 		. = FALSE
-		if (src.is_valid(W))
+		if (src.is_valid(W) && brain_check(W, user, TRUE))
 			if (W.stored)
 				W.stored.transfer_stored_item(W, src, user = user)
 			else
@@ -867,12 +1032,14 @@
 			if (.)
 				user.visible_message("<b>[user.name]</b> loads [W] into [src].")
 				playsound(src, sound_load, 40, TRUE)
+				logTheThing(LOG_STATION, user, "loads [W] into \the [src] at [log_loc(src)].")
 		else if (W?.cant_drop)
 			boutput(user, SPAN_ALERT("You can't put that in [src] when it's attached to you!"))
 			return ..()
 		else if (load_reclaim(W, user))
 			boutput(user, "You load [W] into [src].")
 			playsound(src, sound_load, 40, TRUE)
+			logTheThing(LOG_STATION, user, "loads [W] into \the [src] at [log_loc(src)].")
 		else
 			. = ..()
 
@@ -971,7 +1138,7 @@
 				continue
 			if (M.name != O.name)
 				continue
-			if(!src.is_valid(M))
+			if(!(src.is_valid(M) && brain_check(M, user, FALSE)))
 				continue
 			M.set_loc(src)
 			playsound(src, sound_load, 40, TRUE)
@@ -1006,3 +1173,23 @@
 		if (!istype(I))
 			return
 		return (I.material && !istype(I,/obj/item/material_piece) && !istype(I,/obj/item/nuclear_waste)) || istype(I,/obj/item/wizard_crystal)
+
+	proc/brain_check(var/obj/item/I, var/mob/user, var/ask)
+		if (!istype(I))
+			return
+		var/obj/item/organ/brain/brain = null
+		if (istype(I, /obj/item/parts/robot_parts/head))
+			var/obj/item/parts/robot_parts/head/head = I
+			brain = head.brain
+		else if (istype(I, /obj/item/organ/brain))
+			brain = I
+
+		if (brain)
+			if (!ask)
+				boutput(user, SPAN_ALERT("[I] turned the intelligence detection light on! You decide to not load it for now."))
+				return FALSE
+			var/accept = tgui_alert(user, "Possible intelligence detected. Are you sure you want to reclaim [I]?", "Incinerate brain?", list("Yes", "No")) == "Yes" && can_reach(user, src) && user.equipped() == I
+			if (accept)
+				logTheThing(LOG_COMBAT, user, "loads [brain] (owner's ckey [brain.owner ? brain.owner.ckey : null]) into a portable reclaimer.")
+			return accept
+		return TRUE

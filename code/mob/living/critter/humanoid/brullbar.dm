@@ -1,6 +1,5 @@
 /mob/living/critter/brullbar
 	name = "brullbar"
-	real_name = "brullbar"
 	desc = "Oh god."
 	density = 1
 	icon = 'icons/mob/critter/humanoid/brullbar.dmi'
@@ -32,7 +31,7 @@
 	var/limbpath = /datum/limb/brullbar
 	var/frenzypath = /datum/targetable/critter/frenzy
 
-	faction = FACTION_ICEMOON
+	faction = list(FACTION_ICEMOON)
 
 	attackby(obj/item/W, mob/living/user)
 		if (!isdead(src))
@@ -58,14 +57,14 @@
 			return TRUE
 		if (prob(20) && !ON_COOLDOWN(src, "playsound", 3 SECONDS))
 			playsound(src.loc, 'sound/voice/animal/brullbar_laugh.ogg', 60, 1)
-			src.visible_message(SPAN_ALERT("<b>[src] laughs!</b>"), 1)
+			src.visible_message(SPAN_ALERT("<b>[src] laughs!</b>"))
 
 	specific_emotes(var/act, var/param = null, var/voluntary = 0)
 		switch (act)
 			if ("scream")
 				if (src.emote_check(voluntary, 50))
 					playsound(src, 'sound/voice/animal/brullbar_roar.ogg', 80, TRUE, channel=VOLUME_CHANNEL_EMOTE)
-					return "<b>[SPAN_ALERT("[src] howls!")]</b>"
+					return SPAN_ALERT("<b>[src] howls!</b>")
 		return null
 
 	specific_emote_type(var/act)
@@ -163,7 +162,7 @@
 		if (prob(30))
 			src.visible_message(SPAN_ALERT("<b>[src] devours [target]! Holy shit!</b>"))
 			playsound(src.loc, 'sound/impact_sounds/Flesh_Break_1.ogg', 50, 1)
-			if (ishuman(target)) new /obj/decal/fakeobjects/skeleton(target.loc)
+			if (ishuman(target)) new /obj/fakeobject/skeleton(target.loc)
 			target.ghostize()
 			target.gib()
 			return
@@ -218,7 +217,6 @@
 
 /mob/living/critter/brullbar/king
 	name = "brullbar king"
-	real_name = "brullbar king"
 	desc = "You should run."
 	icon_state = "brullbarking"
 	icon_state_dead = "brullbarking-dead"

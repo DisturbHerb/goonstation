@@ -1,4 +1,4 @@
-/obj/item/clothing/suit/bio_suit/paramedic/armored/prenerf
+/obj/item/clothing/suit/hazard/paramedic/armored/prenerf
 	name = "pre-nerf armored paramedic suit"
 	desc = "<i style='color:pink'>My beloved...</i>"
 
@@ -45,12 +45,17 @@
 	desc = "Very fuzzy, likes to roll over."
 	death_text = "%src% rolls over!"
 	icon_state = "catbrix"
+	icon_state_dead = "catbrix-dead"
 	butcherable = BUTCHER_NOT_ALLOWED
 	health = 30
-	randomize_name = 0
-	randomize_look = 0
+	random_name = 0
+	random_look = 0
 	health_brute = 30
 	health_burn = 30
+	bow_type = /obj/item/clothing/head/hairbow/purple
+
+	bow_icon_state()
+		return "bowtie-brix[isdead(src) ? "-dead" : ""]"
 
 /obj/item/clothing/mask/gas/swat/blue
 	name = "SWAT Mask?"
@@ -80,7 +85,7 @@
 	New()
 		..()
 		src.occupant = new /mob/living/critter/small_animal/cat/brixley(src)
-		src.build_icon()
+		src.UpdateIcon()
 
 /obj/table/wood/auto/desk/aloe
 	has_drawer = TRUE
@@ -180,7 +185,7 @@
 	src.vis_contents = null
 
 /obj/machinery/vending/kitchen/organ_stealing
-	create_products()
+	create_products(restocked)
 		..()
 		for(var/datum/data/vending_product/product in src.product_list)
 			if(ispath(product.product_path, /obj/item/plate))
@@ -212,7 +217,7 @@
 		blood_overlay.blend_mode = BLEND_INSET_OVERLAY
 		src.UpdateOverlays(blood_overlay, "blood_splatter")
 
-	create_products()
+	create_products(restocked)
 		..()
 		product_list += new/datum/data/vending_product(/obj/item/plate/organ_stealing, 20)
 		product_list += new/datum/data/vending_product(/obj/item/plate/pizza_box/organ_stealing, 5)
@@ -228,7 +233,7 @@
 			to_buckle.setStatus("chair_heal_brute", INFINITE_STATUS)
 
 	unbuckle()
-		src.buckled_guy.delStatus("chair_heal_brute")
+		src.buckled_guy?.delStatus("chair_heal_brute")
 		. = ..()
 
 /datum/statusEffect/simplehot/chair_brute

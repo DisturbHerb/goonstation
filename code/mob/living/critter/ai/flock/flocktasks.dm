@@ -167,7 +167,7 @@ stare
 		return TRUE
 
 /datum/aiTask/succeedable/replicate/succeeded()
-	. = (!actions.hasAction(holder.owner, "flock_egg")) // for whatever reason, the required action has stopped
+	. = (!actions.hasAction(holder.owner, /datum/action/bar/flock_egg)) // for whatever reason, the required action has stopped
 
 /datum/aiTask/succeedable/replicate/on_tick()
 	if(!has_started)
@@ -275,6 +275,7 @@ stare
 			continue // this tile's been claimed by someone else
 		. += T
 
+/datum/aiTask/sequence/goalbased/flock/build/score_by_distance_only = FALSE
 /datum/aiTask/sequence/goalbased/flock/build/score_target(atom/target)
 	. = ..()
 	var/mob/living/critter/flock/F = holder.owner
@@ -300,7 +301,7 @@ stare
 		return TRUE
 
 /datum/aiTask/succeedable/build/succeeded()
-	. = isfeathertile(holder.target) || (has_started && !actions.hasAction(holder.owner, "flock_convert"))
+	. = isfeathertile(holder.target) || (has_started && !actions.hasAction(holder.owner, /datum/action/bar/flock_convert))
 
 /datum/aiTask/succeedable/build/on_tick()
 	if(!has_started && !failed() && !succeeded())
@@ -374,6 +375,7 @@ stare
 					continue
 				. += T
 
+/datum/aiTask/sequence/goalbased/flock/build/drone/score_by_distance_only = FALSE
 /datum/aiTask/sequence/goalbased/flock/build/drone/score_target(atom/target)
 	. = ..()
 	var/mob/living/critter/flock/F = holder.owner
@@ -439,7 +441,7 @@ stare
 		return TRUE
 
 /datum/aiTask/succeedable/repair/succeeded()
-	. = (!actions.hasAction(holder.owner, "flock_repair")) // for whatever reason, the required action has stopped
+	. = (!actions.hasAction(holder.owner, /datum/action/bar/flock_repair)) // for whatever reason, the required action has stopped
 
 /datum/aiTask/succeedable/repair/on_tick()
 	if(!has_started)
@@ -510,7 +512,7 @@ stare
 		return TRUE
 
 /datum/aiTask/succeedable/deposit/succeeded()
-	. = (!actions.hasAction(holder.owner, "flock_repair")) // for whatever reason, the required action has stopped
+	. = (!actions.hasAction(holder.owner, /datum/action/bar/flock_deposit)) // for whatever reason, the required action has stopped
 
 /datum/aiTask/succeedable/deposit/on_tick()
 	if(!has_started)
@@ -624,7 +626,7 @@ stare
 /datum/aiTask/succeedable/rummage/succeeded()
 	var/obj/item/storage/container_target = holder.target
 	var/mob/living/critter/flock/drone/F = holder.owner
-	if(container_target) // fix runtime Cannot read null.contents
+	if(container_target && container_target.storage) // fix runtime Cannot read null.contents
 		return !length(container_target.storage.get_contents()) || (F.absorber.item == container_target)
 
 	else
@@ -835,27 +837,31 @@ stare
 /datum/aiTask/timed/targeted/flockdrone_shoot/get_targets()
 	. = list()
 	var/mob/living/critter/flock/drone/F = holder.owner
-	if(!F?.flock)
+	if(!F?.flock || !length(F.flock.enemies))
 		return
 
-	var/list/surroundings = view(holder.owner, target_range)
+	// We need to check if any enemies are in range (or hiding in a car)
+	var/list/obj/machinery/vehicle/nearby_vehicles = list()
+	for (var/obj/machinery/vehicle/car in view(target_range - 2, holder.owner)) // view() expensive
+		nearby_vehicles += car
 
-	for(var/atom/A as anything in F.flock.enemies)
-		if(istype(A.loc, /obj/flock_structure/cage))
+	var/list/atom/movable/nearby_mobs_and_cars = viewers(target_range, holder.owner) | nearby_vehicles
+
+	for(var/atom/movable/AM as anything in F.flock.enemies)
+		if (istype(AM?.loc, /obj/flock_structure/cage))
 			continue
-		if (isvehicle(A.loc))
-			if(A.loc in surroundings)
-				F.flock.updateEnemy(A)
-				F.flock.updateEnemy(A.loc)
-				. += A.loc
-		else if(A in surroundings)
-			F.flock.updateEnemy(A)
-			if(isliving(A))
-				var/mob/living/M = A
-				if(is_incapacitated(M))
+		if (isvehicle(AM.loc))
+			if(AM.loc in nearby_vehicles)
+				F.flock.updateEnemy(AM)
+				F.flock.updateEnemy(AM.loc)
+				. += AM.loc
+		else if(AM in nearby_mobs_and_cars)
+			F.flock.updateEnemy(AM)
+			if(isliving(AM))
+				var/mob/living/L = AM
+				if(is_incapacitated(L))
 					continue
-			. += A
-
+			. += AM
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FLOCKDRONE-SPECIFIC CAPTURE TASK
@@ -899,11 +905,11 @@ stare
 	. = list()
 	var/mob/living/critter/flock/drone/F = holder.owner
 	if(F?.flock)
-		for(var/atom/T in F.flock.enemies)
-			if(IN_RANGE(T,holder.owner,max_dist))
-				if (valid_target(T))
-					. += T
-					F.flock.updateEnemy(T)
+		for(var/mob/M in F.flock.enemies) // we don't capture pods
+			if(IN_RANGE(M, holder.owner,max_dist))
+				if (valid_target(M))
+					. += M
+					F.flock.updateEnemy(M)
 
 /datum/aiTask/succeedable/capture
 	name = "capture subtask"
@@ -917,7 +923,7 @@ stare
 		return TRUE
 
 /datum/aiTask/succeedable/capture/succeeded()
-	. = istype(holder?.target?.loc, /obj/flock_structure/cage) || (has_started && !actions.hasAction(holder.owner, "flock_entomb"))
+	. = istype(holder?.target?.loc, /obj/flock_structure/cage) || (has_started && !actions.hasAction(holder.owner, /datum/action/bar/flock_entomb))
 
 /datum/aiTask/succeedable/capture/on_tick()
 	if(!has_started && !failed() && !succeeded())
@@ -932,7 +938,7 @@ stare
 			if(!in_interact_range(owncritter, holder.target) || !istype(T.loc, /turf))
 				holder.interrupt() //this should basically never happen, but sanity check just in case
 				return
-			else if(!actions.hasAction(owncritter, "flock_entomb")) // let's not keep interrupting our own action
+			else if(!actions.hasAction(owncritter, /datum/action/bar/flock_entomb)) // let's not keep interrupting our own action
 				if(owncritter.floorrunning)
 					owncritter.end_floorrunning(TRUE)
 				owncritter.set_dir(get_dir(owncritter, holder.target))
@@ -997,7 +1003,7 @@ stare
 		return TRUE
 
 /datum/aiTask/succeedable/butcher/succeeded()
-	. = (!actions.hasAction(holder.owner, "butcherlivingcritter")) // for whatever reason, the required action has stopped
+	. = (!actions.hasAction(holder.owner, /datum/action/bar/icon/butcher_living_critter)) // for whatever reason, the required action has stopped
 
 /datum/aiTask/succeedable/butcher/on_tick()
 	if(!has_started)
@@ -1047,7 +1053,7 @@ stare
 		return TRUE
 
 /datum/aiTask/succeedable/barricade/succeeded()
-	return is_blocked_turf(target) || (has_started && !actions.hasAction(holder.owner, "flock_construct"))
+	return is_blocked_turf(target) || (has_started && !actions.hasAction(holder.owner, /datum/action/bar/flock_construct))
 
 /datum/aiTask/succeedable/barricade/on_tick()
 	if (!has_started && !failed() && !succeeded())
@@ -1058,7 +1064,7 @@ stare
 		if(dist > 1)
 			holder.interrupt() //this should basically never happen, but sanity check just in case
 			return
-		else if(!actions.hasAction(drone, "flock_convert")) // let's not keep interrupting our own action
+		else if(!actions.hasAction(drone, /datum/action/bar/flock_convert)) // let's not keep interrupting our own action
 			drone.set_dir(get_dir(drone, holder.target))
 			drone.hand_attack(holder.target)
 			has_started = TRUE
@@ -1114,7 +1120,7 @@ stare
 		return TRUE
 
 /datum/aiTask/succeedable/deconstruct/succeeded()
-	. = (!actions.hasAction(holder.owner, "flock_decon")) // for whatever reason, the required action has stopped
+	. = (!actions.hasAction(holder.owner, /datum/action/bar/flock_decon)) // for whatever reason, the required action has stopped
 	if(.)
 		var/mob/living/critter/flock/drone/F = holder.owner
 		F?.flock?.toggleDeconstructionFlag(holder.target)
@@ -1231,7 +1237,7 @@ stare
 		on_reset()
 		if (!valid_target(holder.target))
 			var/mob/living/critter/flock/drone/drone = holder.owner
-			flock_speak(drone, "Invalid conversion target provided by sentient level instruction.", drone.flock)
+			drone.say("Invalid conversion target provided by sentient level instruction.")
 			holder.interrupt()
 
 	on_reset()
@@ -1250,7 +1256,7 @@ stare
 		on_reset()
 		if (!valid_target(holder.target))
 			var/mob/living/critter/flock/drone/drone = holder.owner
-			flock_speak(drone, "Invalid capture target provided by sentient level instruction.", drone.flock)
+			drone.say("Invalid capture target provided by sentient level instruction.")
 			holder.interrupt()
 
 	on_reset()
@@ -1280,7 +1286,7 @@ stare
 		on_reset()
 		if (!valid_target(holder.target))
 			var/mob/living/critter/flock/drone/drone = holder.owner
-			flock_speak(drone, "Invalid construction target provided by sentient level instruction.", drone.flock)
+			drone.say("Invalid construction target provided by sentient level instruction.")
 			holder.interrupt()
 
 	on_reset()
@@ -1299,7 +1305,7 @@ stare
 		on_reset()
 		if (!src.valid_target(holder.target))
 			var/mob/living/critter/flock/drone/drone = holder.owner
-			flock_speak(drone, "Invalid deposit target provided by sentient level instruction.", drone.flock)
+			drone.say("Invalid deposit target provided by sentient level instruction.")
 			holder.interrupt()
 
 	on_reset()
@@ -1318,7 +1324,7 @@ stare
 		on_reset()
 		if (!src.valid_target(holder.target))
 			var/mob/living/critter/flock/drone/drone = holder.owner
-			flock_speak(drone, "Invalid repair target provided by sentient level instruction.", drone.flock)
+			drone.say("Invalid repair target provided by sentient level instruction.")
 			holder.interrupt()
 
 	on_reset()
@@ -1337,7 +1343,7 @@ stare
 		on_reset()
 		if (!src.valid_target(holder.target))
 			var/mob/living/critter/flock/drone/drone = holder.owner
-			flock_speak(drone, "Invalid harvest target provided by sentient level instruction.", drone.flock)
+			drone.say("Invalid harvest target provided by sentient level instruction.")
 			holder.interrupt()
 
 	on_reset()
@@ -1351,7 +1357,7 @@ stare
 		on_reset()
 		if (!isflockvalidenemy(src.target))
 			var/mob/living/critter/flock/drone/drone = holder.owner
-			flock_speak(drone, "Invalid elimination target provided by sentient level instruction.", drone.flock)
+			drone.say("Invalid elimination target provided by sentient level instruction.")
 			holder.interrupt()
 			return
 		var/mob/living/critter/flock/drone/drone = holder.owner
@@ -1373,7 +1379,7 @@ stare
 		on_reset()
 		if (!src.valid_target(src.target))
 			var/mob/living/critter/flock/drone/drone = holder.owner
-			flock_speak(drone, "Invalid recycling target provided by sentient level instruction.", drone.flock)
+			drone.say("Invalid recycling target provided by sentient level instruction.")
 			holder.interrupt()
 
 	on_reset()
@@ -1401,7 +1407,7 @@ stare
 		startpos = get_turf(holder.owner)
 	if(targetpos && GET_DIST(holder.owner,targetpos) > 0) //if we have a target and we're not already there
 		if(!path || !length(path))
-			path = get_path_to(holder.owner, targetpos, 5, 1) //short search, we don't want this to be expensive
+			path = get_path_to(holder.owner, targetpos, max_distance=5, mintargetdist=1) //short search, we don't want this to be expensive
 		if(length(path))
 			holder.move_to_with_path(targetpos, path, 0)
 			return

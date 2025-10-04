@@ -4,7 +4,7 @@
 
 /datum/artifact/borgifier
 	associated_object = /obj/artifact/borgifier
-	type_name = "Cyborg converter"
+	type_name = "Cyborg Converter"
 	type_size = ARTIFACT_SIZE_LARGE
 	rarity_weight = 200
 	validtypes = list("ancient")
@@ -39,7 +39,7 @@
 				return
 			O.visible_message(SPAN_ALERT("<b>[O]</b> suddenly pulls [user.name] inside[escapable ? "!" : " and slams shut!"]"))
 			user.emote("scream")
-			user.changeStatus("paralysis", 5 SECONDS)
+			user.changeStatus("unconscious", 5 SECONDS)
 			user.force_laydown_standup()
 			if (!escapable)
 				user.set_loc(O)
@@ -93,7 +93,7 @@
 			ArtifactLogs(user, null, O, "touched", "robotizing user", 0) // Added (Convair880).
 
 			user.set_loc(get_turf(O.loc))
-			if (isnpcmonkey(user) || jobban_isbanned(user, "Cyborg"))
+			if (isnpcmonkey(user) || jobban_isbanned(user, "Cyborg") || user.traitHolder?.hasTrait("cyber_incompatible"))
 				user.death()
 				user.ghostize()
 				var/robopath = pick(/obj/machinery/bot/guardbot,/obj/machinery/bot/secbot,

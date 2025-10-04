@@ -4,6 +4,12 @@
 #define MAP_SYNDICATE				(1<<1)
 #define MAP_POD_WARS_NANOTRASEN		(1<<2)
 #define MAP_POD_WARS_SYNDICATE		(1<<3)
+#define	MAP_INFO 					(1<<4) //! Map that just shows station rooms
+#define MAP_ALERTS					(1<<5) //! Station General Alerts
+#define MAP_OBSERVER				(1<<6) // observer map
+#define MAP_SPACE_PHOENIX			(1<<7)
+#define MAP_CAMERA_STATION			(1<<8) //! Station camera networks for security camera viewer computer
+#define MAP_HTR_TEAM 				(1<<20)
 
 // Area groups, which will be treated as one atom/movable by the renderer, allowing for efficient recolouring across minimaps.
 #define GROUP_NSV_RELIANT "nsv_reliant"
@@ -31,6 +37,7 @@
 #define MAPC_MEDICAL "#1ba7e9"
 #define MAPC_MEDLOBBY "#78c5e9"
 #define MAPC_ROBOTICS "#5b6eb1"
+#define MAPC_MORGUE "#2b6a92"
 #define MAPC_MEDRESEARCH "#3fb583"
 #define MAPC_PATHOLOGY "#167970"
 

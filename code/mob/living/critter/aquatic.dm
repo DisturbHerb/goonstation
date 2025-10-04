@@ -8,7 +8,6 @@
 ABSTRACT_TYPE(/mob/living/critter/aquatic)
 /mob/living/critter/aquatic
 	name = "aquatic mobcritter"
-	real_name = "aquatic mobcritter"
 	desc = "No, you should not be seeing this!"
 	icon = 'icons/misc/sea_critter.dmi'
 	density = 0
@@ -24,7 +23,7 @@ ABSTRACT_TYPE(/mob/living/critter/aquatic)
 	health_burn = 10
 	health_burn_vuln = 2
 
-	faction = FACTION_AQUATIC
+	faction = list(FACTION_AQUATIC)
 
 	var/out_of_water_debuff = 1 // debuff amount for being out of water
 	var/in_water_buff = 1 // buff amount for being in water
@@ -40,9 +39,15 @@ ABSTRACT_TYPE(/mob/living/critter/aquatic)
 		src.is_pet = 0
 	if(src.is_pet)
 		START_TRACKING_CAT(TR_CAT_PETS)
+	#ifdef MAP_OVERRIDE_NEON // plasma coral, neon uniqueness, strange wildlife happenings
+	APPLY_ATOM_PROPERTY(src, PROP_MOB_RADPROT_INT, src, 100)
+	#endif
 	..()
-	aquabreath_process = add_lifeprocess(/datum/lifeprocess/aquatic_breathing,src.in_water_buff,src.out_of_water_debuff)
 	remove_lifeprocess(/datum/lifeprocess/blood) // caused lag, not sure why exactly
+
+/mob/living/critter/aquatic/restore_life_processes()
+	. = ..()
+	src.aquabreath_process = add_lifeprocess(/datum/lifeprocess/aquatic_breathing,src.in_water_buff,src.out_of_water_debuff)
 
 /mob/living/critter/aquatic/disposing()
 	ai?.dispose()
@@ -176,12 +181,11 @@ ABSTRACT_TYPE(/mob/living/critter/aquatic)
 
 /mob/living/critter/aquatic/fish
 	name = "fish"
-	real_name = "fish"
 	desc = "Goes well with chips."
 	icon_state = "clownfish"
 	base_move_delay = 3
-	speechverb_say = "blubs"
-	speechverb_exclaim = "glubs"
+	speech_verb_say = "blubs"
+	speech_verb_exclaim = "glubs"
 	death_text = "%src% flops belly up!"
 	meat_type = /obj/item/reagent_containers/food/snacks/ingredient/meat/fish/fillet/small
 	// todo: skinresult of scales, custom_brain_type of fish egg item (caviar?)
@@ -380,7 +384,6 @@ ABSTRACT_TYPE(/mob/living/critter/aquatic)
 
 /mob/living/critter/aquatic/king_crab
 	name = "king crab"
-	real_name = "king crab"
 	desc = "This doesn't look tasty at all. It probably has spectacular levels of mercury and lead and who knows what else."
 	icon = 'icons/obj/large/64x96.dmi'
 	icon_state = "king_crab"
@@ -393,8 +396,8 @@ ABSTRACT_TYPE(/mob/living/critter/aquatic)
 	can_throw = 1
 	can_choke = 1
 	pet_text = "pokes"
-	speechverb_say = "demands"
-	speechverb_exclaim = "bellows"
+	speech_verb_say = "demands"
+	speech_verb_exclaim = "bellows"
 	death_text = "%src% collapses in on itself!"
 	meat_type = /obj/item/reagent_containers/food/snacks/ingredient/meat/fish/fillet
 	// todo: meat_type of something cool, skinresult of especially hard crustacean plates?
@@ -458,8 +461,8 @@ ABSTRACT_TYPE(/mob/living/critter/aquatic)
 			var/obj/window/W = AM
 			W.health = 0
 			W.smash()
-		else if(istype(AM, /obj/grille))
-			var/obj/grille/G = AM
+		else if(istype(AM, /obj/mesh/grille))
+			var/obj/mesh/grille/G = AM
 			G.damage_blunt(30)
 		else if(istype(AM, /obj/machinery/vehicle/tank) || istype(AM, /obj/table))
 			AM.meteorhit()
@@ -493,13 +496,13 @@ ABSTRACT_TYPE(/mob/living/critter/aquatic)
 					sleep(0.2 SECONDS)
 				SPAWN(5 SECONDS)
 				for (var/mob/living/M in oview(src, 7))
-					M.reagents.add_reagent(pick("cyanide","neurotoxin","venom","histamine","jenkem","lsd"), 5)
+					M.reagents.add_reagent(pick("cyanide","neurotoxin","cytotoxin","histamine","lsd"), 5)
 				return SPAN_ALERT("<b>[src]</b> does a sinister dance.")
 		if ("snap")
 			if (src.emote_check(voluntary, 300))
-				src.changeStatus("paralysis", -30 SECONDS)
+				src.changeStatus("unconscious", -30 SECONDS)
 				src.changeStatus("stunned", -30 SECONDS)
-				src.changeStatus("weakened", -30 SECONDS)
+				src.changeStatus("knockdown", -30 SECONDS)
 				return SPAN_ALERT("<b>[src]</b> clacks menacingly.")
 		if ("flex")
 			if (src.emote_check(voluntary, 300))
@@ -518,15 +521,15 @@ ABSTRACT_TYPE(/mob/living/critter/aquatic)
 
 /mob/living/critter/aquatic/fish/jellyfish
 	name = "jellyfish"
-	real_name = "jellyfish"
 	desc = "Squishy"
 	icon = 'icons/misc/sea_critter.dmi'
 	icon_state = "jellyfish"
 	base_move_delay = 2
 	hand_count = 2
 	pet_text = "pokes"
-	speechverb_say = "quibbles"
-	speechverb_exclaim = "shudders"
+	speech_verb_say = "quibbles"
+	speech_verb_exclaim = "shudders"
+	blood_id = "hemolymph"
 	death_text = "%src% collapses in a heap on the ground!"
 	meat_type = /obj/item/device/light/glowstick/green_on //Until I think of something else. Also it's kinda funny
 	add_abilities = list(/datum/targetable/critter/sting)
@@ -564,7 +567,6 @@ ABSTRACT_TYPE(/mob/living/critter/aquatic)
 
 /mob/living/critter/aquatic/shark
 	name = "space shark"
-	real_name = "space shark"
 	desc = "This is the third most terrifying thing you've ever laid eyes on."
 	icon = 'icons/misc/banshark.dmi'
 	icon_state = "banshark1"
@@ -600,7 +602,8 @@ ABSTRACT_TYPE(/mob/living/critter/aquatic)
 		. = ..()
 
 		if (length(.) && prob(10))
-			playsound(src.loc, 'sound/misc/jaws.ogg', 50, 0)
+			if (!ON_COOLDOWN(src, "jaws_sound", 50 SECONDS))
+				playsound(src.loc, 'sound/misc/jaws.ogg', 50, 0, 0, 1)
 
 	critter_scavenge(var/mob/target)
 		src.visible_message(SPAN_COMBAT("<B>[src]</B> gibs [target] in one bite!"))
@@ -709,7 +712,7 @@ ABSTRACT_TYPE(/mob/living/critter/aquatic)
 	var/datum/attackResults/msgs = user.calculate_melee_attack(target, 10, 20, 0, 2, can_punch = 0, can_kick = 0)
 	user.attack_effects(target, user.zone_sel?.selecting)
 	var/action = pick("slashes", "tears into", "gouges", "rips into", "lacerates", "mutilates")
-	msgs.base_attack_message = "<b>[SPAN_ALERT("[user] [action] [target] with their [src.holder]!")]</b>"
+	msgs.base_attack_message = SPAN_ALERT("<b>[user] [action] [target] with their [src.holder]!</b>")
 	msgs.played_sound = 'sound/impact_sounds/Glub_1.ogg'
 	msgs.damage_type = DAMAGE_CUT
 	msgs.flush(SUPPRESS_LOGS)

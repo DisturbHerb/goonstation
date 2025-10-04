@@ -21,6 +21,8 @@ ABSTRACT_TYPE(/datum/antagonist)
 	var/remove_on_death = FALSE
 	/// If TRUE, the antag status will be removed when the person is cloned (zombies etc.)
 	var/remove_on_clone = FALSE
+	/// If TRUE, the equipment is not removed on death. Only works if remove_on_death is TRUE.
+	var/keep_equipment_on_death = FALSE
 
 
 	/// The mind of the player that that this antagonist is assigned to.
@@ -38,7 +40,13 @@ ABSTRACT_TYPE(/datum/antagonist)
 	/// The objectives assigned to the player by this specific antagonist role.
 	var/list/datum/objective/objectives = list()
 	/// The faction given to the player by this antagonist role for AI targeting purposes.
-	var/faction = 0
+	var/faction = list()
+	/// Used in lieu of the id for antag_popups.dm
+	var/popup_name_override
+	/// Set when the antagonist is in the process of being removed, to prevent double removals.
+	var/removing = FALSE
+	/// Link to this antagonist's wiki page
+	var/wiki_link = null
 
 	New(datum/mind/new_owner, do_equip, do_objectives, do_relocate, silent, source, do_pseudo, do_vr, late_setup)
 		. = ..()
@@ -76,13 +84,29 @@ ABSTRACT_TYPE(/datum/antagonist)
 		RegisterSignal(src.owner, COMSIG_MIND_DETACH_FROM_MOB, PROC_REF(mind_detach))
 		src.owner.antagonists.Add(src)
 
+	proc/transfer_to(datum/mind/target, take_gear, source, silent = FALSE)
+		remove_self(take_gear, source)
+		owner.former_antagonist_roles.Add(owner.special_role)
+
+		owner.special_role = null // this isn't ideal, since the system should support multiple antagonists. once special_role is worked around, this won't be an issue
+		UnregisterSignal(src.owner, COMSIG_MIND_ATTACH_TO_MOB)
+		UnregisterSignal(src.owner, COMSIG_MIND_DETACH_FROM_MOB)
+
+		src.owner = target
+		src.owner.special_role = id
+		src.setup_antagonist(FALSE, FALSE, FALSE, silent, source, FALSE)
+		src.owner.antagonists.Add(src)
+		RegisterSignal(src.owner, COMSIG_MIND_ATTACH_TO_MOB, PROC_REF(mind_attach))
+		RegisterSignal(src.owner, COMSIG_MIND_DETACH_FROM_MOB, PROC_REF(mind_detach))
+
+
 	disposing()
 		if (owner && !src.pseudo)
 			LAZYLISTREMOVE(antagonists["[src.id]"], src)
 			if (isnull(antagonists["[src.id]"]))
 				antagonists -= "[src.id]"
 
-			owner.former_antagonist_roles.Add(owner.special_role)
+			owner.former_antagonist_roles.Add(src.id)
 			owner.special_role = null // this isn't ideal, since the system should support multiple antagonists. once special_role is worked around, this won't be an issue
 			if (src.assigned_by == ANTAGONIST_SOURCE_ADMIN)
 				ticker.mode.Agimmicks.Remove(src.owner)
@@ -92,6 +116,7 @@ ABSTRACT_TYPE(/datum/antagonist)
 
 	/// Calls removal procs to soft-remove this antagonist from its owner. Actual movement or deletion of the datum still needs to happen elsewhere.
 	proc/remove_self(take_gear = TRUE, source)
+		src.removing = TRUE
 		if (take_gear)
 			src.remove_equipment()
 
@@ -132,6 +157,8 @@ ABSTRACT_TYPE(/datum/antagonist)
 
 		if (do_equip)
 			src.give_equipment()
+			if (!src.uses_pref_name)
+				src.owner.current.bioHolder.mobAppearance.flavor_text = null
 		else
 			src.alt_equipment()
 
@@ -141,7 +168,7 @@ ABSTRACT_TYPE(/datum/antagonist)
 		src.add_to_image_groups()
 
 		if (src.faction)
-			src.owner.current?.faction |= src.faction
+			LAZYLISTADDUNIQUE(src.owner.current?.faction, src.faction)
 
 		if (!src.silent)
 			src.announce()
@@ -161,14 +188,19 @@ ABSTRACT_TYPE(/datum/antagonist)
 			src.announce()
 			src.do_popup()
 
+	proc/get_antag_icon_image()
+		RETURN_TYPE(/image)
+		var/image/image = image('icons/mob/antag_overlays.dmi', icon_state = src.antagonist_icon)
+		image.appearance_flags = PIXEL_SCALE | RESET_ALPHA | RESET_COLOR | RESET_TRANSFORM | KEEP_APART
+		image.plane = PLANE_ANTAG_ICONS
+		. = image
+
 	proc/add_to_image_groups()
 		if (!src.antagonist_icon)
 			return
 
-		var/image/image = image('icons/mob/antag_overlays.dmi', icon_state = src.antagonist_icon)
-		image.appearance_flags = PIXEL_SCALE | RESET_ALPHA | RESET_COLOR | RESET_TRANSFORM
 		var/datum/client_image_group/antagonist_image_group = get_image_group(CLIENT_IMAGE_GROUP_ALL_ANTAGONISTS)
-		antagonist_image_group.add_mind_mob_overlay(src.owner, image)
+		antagonist_image_group.add_mind_mob_overlay(src.owner, get_antag_icon_image())
 
 		if (antagonists_see_each_other)
 			antagonist_image_group.add_mind(src.owner)
@@ -200,6 +232,13 @@ ABSTRACT_TYPE(/datum/antagonist)
 	proc/assign_objectives()
 		return
 
+	/// Handle this antagonist entering cryogenic storage, possibly temporarily.
+	proc/handle_cryo()
+		return
+	/// Handle this antagonist entering cryogenic storage permanently
+	proc/handle_perma_cryo()
+		return
+
 	/// Remove objectives from the antagonist and the mind.
 	proc/remove_objectives()
 		for (var/datum/objective/objective in src.objectives)
@@ -216,16 +255,16 @@ ABSTRACT_TYPE(/datum/antagonist)
 
 	/// Display a greeting to the player to inform that they're an antagonist. This can be anything, but by default it's just the name.
 	proc/announce()
-		boutput(owner.current, "<h3>[SPAN_ALERT("You are \a [src.display_name]!")]</h3>")
+		boutput(owner.current, SPAN_ALERT("<h1 class='system'>You are \a [src.display_name]!</h1>"))
 
 	/// Display something when this antagonist is removed.
 	proc/announce_removal(source)
-		boutput(owner.current, "<h3>[SPAN_ALERT("You are no longer \a [src.display_name]!")]</h3>")
+		boutput(owner.current, SPAN_ALERT("<h1 class='system'>You are no longer \a [src.display_name]!</h1>"))
 
 	/// Show a popup window for this antagonist. Defaults to using the same ID as the antagonist itself.
-	proc/do_popup(override)
-		if (has_info_popup || override)
-			owner.current.show_antag_popup(!override ? id : override)
+	proc/do_popup()
+		if (has_info_popup || popup_name_override)
+			owner.current.show_antag_popup(popup_name_override ? popup_name_override : id)
 
 	/// Returns whether or not this antagonist is considered to have succeeded. By default, this checks all antagonist-specific objectives.
 	proc/check_success()
@@ -255,7 +294,7 @@ ABSTRACT_TYPE(/datum/antagonist)
 
 	proc/on_death()
 		if (src.remove_on_death)
-			src.owner.remove_antagonist(src, ANTAGONIST_REMOVAL_SOURCE_DEATH)
+			src.owner.remove_antagonist(src, ANTAGONIST_REMOVAL_SOURCE_DEATH, !keep_equipment_on_death)
 
 	proc/mind_attach(source, mob/new_mob, mob/old_mob)
 		if ((issilicon(new_mob) || isAI(new_mob)) && !(issilicon(old_mob) || isAI(old_mob)))

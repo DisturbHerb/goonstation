@@ -1,17 +1,17 @@
 
 /mob/living/critter/spider
 	name = "space spider"
-	real_name = "space spider"
 	desc = "A big ol' spider, from space. In space. A space spider."
 	icon_state = "big_spide"
 	density = 1
 	hand_count = 8 // spiders!!!
-	add_abilities = list(/datum/targetable/critter/spider_bite,
+	add_abilities = list(/datum/targetable/spider/lay_spider_web,
+						/datum/targetable/critter/spider_bite,
 						/datum/targetable/critter/spider_flail,
 						/datum/targetable/critter/spider_drain)
 	var/flailing = 0
 	var/feeding = 0
-	var/venom1 = "venom"  // making these modular so i don't have to rewrite this gigantic goddamn section for all the subtypes
+	var/venom1 = "cytotoxin"  // making these modular so i don't have to rewrite this gigantic goddamn section for all the subtypes
 	var/venom2 = "spiders"
 	var/babyspider = 0
 	var/adultpath = null
@@ -54,6 +54,9 @@
 			src.icon_state = "big_spide[pick("", "-red", "-green", "-blue")]"
 			src.icon_state_alive = src.icon_state
 			src.icon_state_dead = "[src.icon_state]-dead"
+
+		src.changeStatus("webwalk", INFINITE_STATUS)
+		APPLY_ATOM_PROPERTY(src, PROP_MOB_NIGHTVISION, src)
 
 	setup_hands()
 		..()
@@ -141,6 +144,9 @@
 		SPAN_NOTICE("<b>You grow up!</b>"))
 		SPAWN(0)
 			var/mob/living/critter/spider/new_mob = src.make_critter(src.adultpath)
+			var/datum/component/drop_loot_on_death/loot_component = src.GetComponent(/datum/component/drop_loot_on_death)
+			if (loot_component)
+				new_mob.TakeComponent(loot_component)
 			if (has_implant)
 				new /obj/item/implant/access/infinite/assistant(new_mob)
 			new_mob.ai_retaliate_patience = src.ai_retaliate_patience
@@ -176,7 +182,7 @@
 
 	can_critter_scavenge()
 		var/datum/targetable/critter/spider_drain/drain = src.abilityHolder.getAbility(/datum/targetable/critter/spider_drain)
-		return can_act(src,TRUE) && (!drain.disabled && drain.cooldowncheck())
+		return can_act(src,TRUE) && drain && (!drain.disabled && drain.cooldowncheck())
 
 	can_critter_attack()
 		var/datum/targetable/critter/spider_flail/flail = src.abilityHolder.getAbility(/datum/targetable/critter/spider_flail)
@@ -185,7 +191,6 @@
 
 /mob/living/critter/spider/nice
 	name = "bumblespider"
-	real_name = "bumblespider"
 	desc = "It seems pretty friendly. D'aww."
 	icon_state = "bumblespider"
 	icon_state_dead = "bumblespider-dead"
@@ -259,7 +264,7 @@
 	max_skins = 4
 	reacting = 0
 	no_stamina_stuns = TRUE
-	faction = FACTION_ICEMOON
+	faction = list(FACTION_ICEMOON)
 
 /mob/living/critter/spider/ice/nice
 	ai_type = /datum/aiHolder/spider_peaceful
@@ -307,8 +312,8 @@
 	icon_state_dead = "spider-dead"
 	health_brute = 20
 	health_burn = 20
-	venom1 = "venom"
-	venom2 = "venom"
+	venom1 = "cytotoxin"
+	venom2 = "cytotoxin"
 	death_text = "%src% is squashed!"
 
 
@@ -333,18 +338,18 @@
 	babyspider = 1
 	flags = TABLEPASS
 	fits_under_table = 1
-	venom1 = "venom"
+	venom1 = "cytotoxin"
 	venom2 = "rainbow fluid"
 	death_text = "%src% is squashed!"
 	stepsound = "clownstep"
 	adultpath = /mob/living/critter/spider/clownqueen
 	add_abilities = list(/datum/targetable/critter/clownspider_kick,
 						/datum/targetable/critter/spider_bite,
-						/datum/targetable/critter/spider_drain)
+						/datum/targetable/critter/spider_drain/clown)
 	var/item_shoes = /obj/item/clothing/shoes/clown_shoes
 	var/item_mask = /obj/item/clothing/mask/clown_hat
 
-	faction = FACTION_CLOWN
+	faction = list(FACTION_CLOWN)
 
 	New()
 		..()
@@ -427,7 +432,7 @@
 	health_brute = 100
 	health_burn = 100
 	custom_gib_handler = /proc/funnygibs
-	venom1 = "venom"
+	venom1 = "cytotoxin"
 	venom2 = "rainbow fluid"
 	good_grip = 1
 	encase_in_web = 2
@@ -444,7 +449,11 @@
 	var/max_defensive_babies = 100
 	ai_type = /datum/aiHolder/clown_spider_queen
 
-	faction = FACTION_CLOWN
+	faction = list(FACTION_CLOWN)
+
+	// stop spewing eggs and blocking yourself in the tutorial
+	tutorial
+		ai_type = /datum/aiHolder/tutorial_clown_spider_queen
 
 	cluwne
 		name = "queen cluwnespider"
@@ -537,9 +546,9 @@
 				continue
 			// IMMEDIATE INTERRUPT
 			var/datum/aiTask/task = CS.ai.get_instance(/datum/aiTask/sequence/goalbased/critter/attack, list(CS.ai, CS.ai.default_task))
-			task.target = T
 			CS.ai.priority_tasks += task
 			CS.ai.interrupt()
+			CS.ai.target = T
 			defenders++
 
 	critter_ability_attack(mob/target)

@@ -3,13 +3,12 @@
 	icon = 'icons/obj/stationobjs.dmi'
 	icon_state = "nboard00"
 	pixel_y = 32
-	flags = FPRINT
-	plane = PLANE_NOSHADOW_BELOW
 	desc = "A board for pinning important notices upon."
 	density = 0
 	anchored = ANCHORED
 	var/notices = 0
 
+SET_UP_DIRECTIONALS(/obj/noticeboard, OFFSETS_NOTICEBOARD)
 
 /obj/noticeboard/ex_act()
 	qdel(src)
@@ -38,12 +37,12 @@
 	var/dat = "<B>Noticeboard</B><BR>"
 	for(var/obj/item/item in src)
 		if(istype(item, /obj/item/paper) || istype(item, /obj/item/canvas))
-			dat += "<A href='?src=\ref[src];read=\ref[item]'>[item]</A> <A href='?src=\ref[src];remove=\ref[item]'>Remove</A><BR>"
+			dat += "<A href='byond://?src=\ref[src];read=\ref[item]'>[item]</A> <A href='byond://?src=\ref[src];remove=\ref[item]'>Remove</A><BR>"
 	user.Browse("<HEAD><TITLE>Notices</TITLE></HEAD>[dat]","window=noticeboard")
 	onclose(user, "noticeboard")
 
 /obj/noticeboard/attack_ai(mob/user)
-	src.attack_hand(user)
+	src.Attackhand(user)
 
 /obj/noticeboard/Topic(href, href_list)
 	if (BOUNDS_DIST(src, usr) > 0 || !isliving(usr) || iswraith(usr) || isintangible(usr))
@@ -82,6 +81,8 @@
 	var/static/file_name = "data/persistent_noticeboards.json"
 	var/static/data = null
 	var/persistent_id = null
+
+SET_UP_DIRECTIONALS(/obj/noticeboard/persistent, OFFSETS_NOTICEBOARD)
 
 /obj/noticeboard/persistent/New()
 	. = ..()
@@ -167,4 +168,124 @@ proc/save_noticeboards()
 		return
 	rustg_file_write(json_encode(some_board.data), some_board.file_name)
 
+
 #undef PERSISTENT_NOTICEBOARD_VERSION
+
+
+/obj/noticeboard/persistent/bar
+	name = "Bar persistent notice board"
+	persistent_id = "bar"
+
+SET_UP_DIRECTIONALS(/obj/noticeboard/persistent/bar, OFFSETS_NOTICEBOARD)
+
+
+/obj/noticeboard/persistent/botany
+	name = "Botany persistent notice board"
+	persistent_id = "botany"
+
+SET_UP_DIRECTIONALS(/obj/noticeboard/persistent/botany, OFFSETS_NOTICEBOARD)
+
+
+/obj/noticeboard/persistent/brig
+	name = "Brig persistent notice board"
+	persistent_id = "brig"
+
+SET_UP_DIRECTIONALS(/obj/noticeboard/persistent/brig, OFFSETS_NOTICEBOARD)
+
+
+/obj/noticeboard/persistent/cargo
+	name = "Cargo persistent notice board"
+	persistent_id = "cargo"
+
+SET_UP_DIRECTIONALS(/obj/noticeboard/persistent/cargo, OFFSETS_NOTICEBOARD)
+
+
+/obj/noticeboard/persistent/chapel
+	name = "Chapel persistent notice board"
+	persistent_id = "chapel"
+
+SET_UP_DIRECTIONALS(/obj/noticeboard/persistent/chapel, OFFSETS_NOTICEBOARD)
+
+
+/obj/noticeboard/persistent/crew_quarters
+	name = "Crew Quarters persistent notice board"
+	persistent_id = "crew quarters"
+
+SET_UP_DIRECTIONALS(/obj/noticeboard/persistent/crew_quarters, OFFSETS_NOTICEBOARD)
+
+
+/obj/noticeboard/persistent/customs
+	name = "Customs persistent notice board"
+	persistent_id = "customs"
+
+SET_UP_DIRECTIONALS(/obj/noticeboard/persistent/customs, OFFSETS_NOTICEBOARD)
+
+
+/obj/noticeboard/persistent/detectives_office
+	name = "Detective's Office persistent notice board"
+	persistent_id = "detectives office"
+
+SET_UP_DIRECTIONALS(/obj/noticeboard/persistent/detectives_office, OFFSETS_NOTICEBOARD)
+
+
+/obj/noticeboard/persistent/engineering
+	name = "Engineering persistent notice board"
+	persistent_id = "engineering"
+
+SET_UP_DIRECTIONALS(/obj/noticeboard/persistent/engineering, OFFSETS_NOTICEBOARD)
+
+
+/obj/noticeboard/persistent/information_office
+	name = "Information Office persistent notice board"
+	persistent_id = "information office"
+
+SET_UP_DIRECTIONALS(/obj/noticeboard/persistent/information_office, OFFSETS_NOTICEBOARD)
+
+
+/obj/noticeboard/persistent/kitchen
+	name = "Kitchen persistent notice board"
+	persistent_id = "kitchen"
+
+SET_UP_DIRECTIONALS(/obj/noticeboard/persistent/kitchen, OFFSETS_NOTICEBOARD)
+
+
+/obj/noticeboard/persistent/mechanics
+	name = "Mechanics Workshop persistent notice board"
+	persistent_id = "mechanics"
+
+SET_UP_DIRECTIONALS(/obj/noticeboard/persistent/mechanics, OFFSETS_NOTICEBOARD)
+
+
+/obj/noticeboard/persistent/medbay
+	name = "Medbay persistent notice board"
+	persistent_id = "medbay"
+
+SET_UP_DIRECTIONALS(/obj/noticeboard/persistent/medbay, OFFSETS_NOTICEBOARD)
+
+
+/obj/noticeboard/persistent/research
+	name = "Research persistent notice board"
+	persistent_id = "research"
+
+SET_UP_DIRECTIONALS(/obj/noticeboard/persistent/research, OFFSETS_NOTICEBOARD)
+
+
+/obj/noticeboard/persistent/security
+	name = "Security persistent notice board"
+	persistent_id = "security"
+
+SET_UP_DIRECTIONALS(/obj/noticeboard/persistent/security, OFFSETS_NOTICEBOARD)
+
+
+/obj/noticeboard/persistent/security_foyer
+	name = "Security Foyer persistent notice board"
+	persistent_id = "security foyer"
+
+SET_UP_DIRECTIONALS(/obj/noticeboard/persistent/security_foyer, OFFSETS_NOTICEBOARD)
+
+
+/obj/noticeboard/persistent/wizard
+	name = "Wizard's Den persistent notice board"
+	persistent_id = "wizard"
+
+SET_UP_DIRECTIONALS(/obj/noticeboard/persistent/wizard, OFFSETS_NOTICEBOARD)

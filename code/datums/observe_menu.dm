@@ -78,13 +78,13 @@
 			if(isAIeye(M))
 				obs_data["name"] += "'s eye"
 				obs_data["real_name"] += "'s eye"
-			obs_data["dead"] = isdead(M)
+			obs_data["dead"] = isdead(M) || inafterlife(M) || isVRghost(M)
 			obs_data["job"] = M.job
 			obs_data["npc"] = (M.client == null && M.ghost == null) //dead players have no client, but should have a ghost
 			obs_data["player"] = (M.client != null || M.ghost != null) //okay, I know this is just !npc, but it won't ever get set for objects, so it's needed
 			if(DNRSet)
 				for(var/datum/antagonist/antagdatum in M.mind?.antagonists)
-					if(!antagdatum.vr) //if we have one valid antag, that counts
+					if(!(antagdatum.vr || antagdatum.pseudo)) //if we have one valid antag, that counts
 						obs_data["antag"] = antagdatum.display_name
 						break
 

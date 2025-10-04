@@ -150,7 +150,7 @@ triggerOnEntered(var/atom/owner, var/atom/entering)
 			return
 		if(ON_COOLDOWN(owner, "generic_mat_fireflash", 120 SECONDS))
 			return
-		fireflash(get_turf(owner), 1)
+		fireflash(get_turf(owner), 1, chemfire = CHEM_FIRE_RED)
 		return
 
 /datum/materialProc/generic_itchy_onlife
@@ -173,7 +173,7 @@ triggerOnEntered(var/atom/owner, var/atom/entering)
 		if(probmult(1))
 			boutput(M, SPAN_ALERT("<b><font size='[rand(2,5)]'>AHHHHHH!</font></b>"))
 			random_brute_damage(M,5)
-			M.changeStatus("weakened", 5 SECONDS)
+			M.changeStatus("knockdown", 5 SECONDS)
 			M.make_jittery(6)
 			M.visible_message(SPAN_ALERT("<b>[M.name]</b> falls to the floor, scratching themselves violently!"))
 			M.emote("scream")
@@ -285,11 +285,18 @@ triggerOnEntered(var/atom/owner, var/atom/entering)
 		for(var/turf/T in view(1, attacked))
 			harmless_smoke_puff(get_turf(T))
 
-/datum/materialProc/gold_add
+/datum/materialProc/sparkles_add
 	desc = "It's very shiny."
-	execute(var/location)
+	execute(var/atom/location)
 		if(!particleMaster.CheckSystemExists(/datum/particleSystem/sparkles, location))
 			particleMaster.SpawnSystem(new /datum/particleSystem/sparkles(location))
+		return
+
+/datum/materialProc/sparkles_remove
+	desc = "All that glitters is not gold."
+	execute(var/atom/location)
+		if(particleMaster.CheckSystemExists(/datum/particleSystem/sparkles, location))
+			particleMaster.RemoveSystem(/datum/particleSystem/sparkles, location)
 		return
 
 /datum/materialProc/telecrystal_entered
@@ -302,8 +309,9 @@ triggerOnEntered(var/atom/owner, var/atom/entering)
 		if(prob(50) && owner && isturf(owner) && !isrestrictedz(T.z))
 			. = get_offset_target_turf(get_turf(entering), rand(-2, 2), rand(-2, 2))
 			entering.visible_message(SPAN_ALERT("[entering] is warped away!"))
-			playsound(owner.loc, "warp", 50)
-			boutput(entering, SPAN_ALERT("You suddenly teleport..."))
+			playsound(T, "warp", 50)
+			if(ismob(entering))
+				boutput(entering, SPAN_ALERT("You suddenly teleport..."))
 			entering.set_loc(.)
 		return
 
@@ -373,10 +381,6 @@ triggerOnEntered(var/atom/owner, var/atom/entering)
 			target.air.merge(payload)
 			location.material.setProperty("plasma_offgas", total_plasma)
 
-/datum/materialProc/plasmastone_on_hit
-	execute(var/atom/owner)
-		owner.material.triggerTemp(locate(owner))
-
 /datum/materialProc/molitz_temp
 	max_generations = 1
 
@@ -394,13 +398,11 @@ triggerOnEntered(var/atom/owner, var/atom/entering)
 		if (!istype(molitz))
 			CRASH("Molitz_temp material proc applied to non-molitz thing") //somehow applied to non-molitz
 		var/iterations = owner.material.getProperty("molitz_bubbles")
-		if(iterations <= 0) return
+		if(iterations <= 0)
+			owner.setMaterial(getMaterial("molitz_expended"))
+			return
 
-		var/datum/gas_mixture/air
-		if(hasvar(owner, "air_contents"))
-			air = owner:air_contents
-		if(!istype(air) && hasvar(owner.loc, "air_contents"))
-			air = owner.loc:air_contents
+		var/datum/gas_mixture/air = owner.return_air() || owner.loc.return_air()
 		if(!istype(air))
 			var/turf/target = get_turf(owner)
 			air = target?.return_air()
@@ -435,7 +437,7 @@ triggerOnEntered(var/atom/owner, var/atom/entering)
 			playsound(owner, 'sound/effects/leakoxygen.ogg', 50, TRUE, 5)
 
 
-		molitz.setProperty("molitz_bubbles", iterations-1)
+		owner.material.setProperty("molitz_bubbles", iterations-1)
 
 
 /datum/materialProc/molitz_temp/agent_b
@@ -475,26 +477,28 @@ triggerOnEntered(var/atom/owner, var/atom/entering)
 
 /datum/materialProc/radioactive_add
 	execute(var/atom/location)
-		animate_flash_color_fill_inherit(location, "#1122EE", -1, 40)
-		location.AddComponent(/datum/component/radioactive, location.material.getProperty("radioactive")*10, FALSE, FALSE, isitem(location) ? 0 : 1)
+		location.AddComponent(/datum/component/radioactive, location.material.getProperty("radioactive")*10, FALSE, FALSE, 1)
 		return
 
 /datum/materialProc/radioactive_remove
 	execute(var/atom/location)
-		animate_flash_color_fill_inherit(location, "#1122EE", -1, 40)
+		if (!isturf(location))
+			animate(location)
 		var/datum/component/radioactive/R = location.GetComponent(/datum/component/radioactive)
 		R?.RemoveComponent()
 		return
 
 /datum/materialProc/n_radioactive_add
 	execute(var/atom/location)
-		animate_flash_color_fill_inherit(location, "#1122EE", -1, 40)
-		location.AddComponent(/datum/component/radioactive, location.material.getProperty("n_radioactive")*10, FALSE, TRUE, isitem(location) ? 0 : 1)
+		if (!isturf(location))
+			animate_flash_color_fill_inherit(location, "#1122EE", -1, 40)
+		location.AddComponent(/datum/component/radioactive, location.material.getProperty("n_radioactive")*10, FALSE, TRUE, 1)
 		return
 
 /datum/materialProc/n_radioactive_remove
 	execute(var/atom/location)
-		animate_flash_color_fill_inherit(location, "#1122EE", -1, 40)
+		if (!isturf(location))
+			animate(location)
 		var/datum/component/radioactive/R = location.GetComponent(/datum/component/radioactive)
 		R?.RemoveComponent()
 		return
@@ -534,7 +538,7 @@ triggerOnEntered(var/atom/owner, var/atom/entering)
 
 /datum/materialProc/slippery_attack
 	execute(var/atom/owner, var/mob/attacker, var/atom/attacked)
-		if (isitem(owner) && prob(20))
+		if (isitem(owner) && prob(20) && (owner in attacker.equipped_list()))
 			var/obj/item/handled_item = owner
 			boutput(attacker, SPAN_ALERT("[handled_item] slips right out of your hand!"))
 			handled_item.set_loc(attacker.loc)
@@ -556,12 +560,29 @@ triggerOnEntered(var/atom/owner, var/atom/entering)
 	execute(var/mob/M, var/obj/item/I, mult)
 		if (iscarbon(M))
 			var/mob/living/carbon/C = M
-			if (C.bodytemperature > 0)
-				C.bodytemperature -= 2
+			C.changeBodyTemp(-2 KELVIN)
 			if (C.bodytemperature > T0C && probmult(4))
 				boutput(C, "Your [I] melts from your body heat!")
 				qdel(I)
 		return
+
+/datum/materialProc/ice_melt
+	desc = "It would melt when exposed to heat."
+
+	execute(var/atom/owner, var/temp)
+		if(temp < T0C) return // less than reaction temp
+
+		var/turf/T = get_turf(owner)
+
+		// Make a water puddle and chunks
+		if (istype(T))
+			if (!istype(owner, /obj/item/raw_material))
+				var/obj/item/raw_material/ice/cube = new /obj/item/raw_material/ice(T)
+				cube.set_loc(T)
+			make_cleanable(/obj/decal/cleanable/water, T)
+			owner.visible_message(SPAN_NOTICE("[owner] melts, dissolving into water."))
+			playsound(owner, 'sound/misc/drain_glug.ogg', 50, TRUE, 5)
+			qdel(owner)
 
 /datum/materialProc/soulsteel_entered
 	execute(var/obj/item/owner, var/atom/movable/entering)
@@ -578,7 +599,7 @@ triggerOnEntered(var/atom/owner, var/atom/entering)
 				var/mob/living/object/OB = new/mob/living/object(owner.loc, owner, mobenter)
 				OB.health = 8
 				OB.max_health = 8
-				OB.canspeak = 0
+				OB.can_use_say = FALSE
 				OB.show_antag_popup("soulsteel")
 
 /datum/materialProc/reflective_onbullet
@@ -598,10 +619,102 @@ triggerOnEntered(var/atom/owner, var/atom/entering)
 			animate_levitate(owner)
 		return
 
+// Apply HSL colorspace filter. Typically used for turning everything into a single color while still having some grayscale remaining.
+/datum/materialProc/add_color_hsl
+	max_generations = 0 // No need to apply the same single-color visuals to the subtypes
+	var/list/color_matrix = null
+
+	execute(var/atom/owner)
+		var/added_mat_id = owner.material.getID()
+		if(!owner.mat_changeappearance)
+			return
+		if(endswith(owner.icon_state, "$$[added_mat_id]")) // Ignore if it is a material version of a sprite
+			return
+		if(owner.default_material == added_mat_id && !owner.uses_default_material_appearance)
+			return
+		var/color_filter = color_matrix_filter(color_matrix, FILTER_COLOR_HSL)
+		owner.add_filter("[added_mat_id]_color", 5, color_filter)
+		return
+
+	bohrum
+		color_matrix = list(0.00, 0.00, 0.00, 0.00,\
+							0.00, 0.60, 0.00, 0.00,\
+							0.00, 0.00, 1.00, 0.00,\
+							0.00, 0.00, 0.00, 1.00,\
+							0.33, 0.10, 0.00, 0.00)
+
+	claretine
+		color_matrix = list(0.00, 0.00, 0.00, 0.00,\
+							0.00, 0.60, 0.00, 0.00,\
+							0.00, 0.00, 1.00, 0.00,\
+							0.00, 0.00, 0.00, 1.00,\
+							0.00, 0.10, 0.00, 0.00)
+
+	cerenkite
+		color_matrix = list(0.00, 0.00, 0.00, 0.00,\
+							0.00, 0.40, 0.00, 0.00,\
+							0.00, 0.00, 1.00, 0.00,\
+							0.00, 0.00, 0.00, 1.00,\
+							0.60, 0.10, 0.00, 0.00)
+
+	mauxite
+		color_matrix = list(0.00, 0.00, 0.00, 0.00,\
+							0.00, 0.35, 0.00, 0.00,\
+							0.00, 0.00, 0.90, 0.00,\
+							0.00, 0.00, 0.00, 1.00,\
+							0.00, 0.05, -0.10, 0.00)
+
+	soulsteel
+		color_matrix = list(0.00, 0.00, 0.00, 0.00,\
+							0.00, 0.80, 0.00, 0.00,\
+							0.00, 0.00, 1.00, 0.00,\
+							0.00, 0.00, 0.00, 1.00,\
+							0.00, 0.20, 0.00, 0.00)
+
+/datum/materialProc/remove_color_hsl
+	execute(atom/owner)
+		var/removed_mat_id = owner.material.getID()
+		owner.remove_filter("[removed_mat_id]_color")
+
 /datum/materialProc/spacelag_add
 	execute(atom/owner)
+		if(endswith(owner.icon_state, "$$spacelag"))
+			return
 		if (!isturf(owner))
 			animate_lag(owner)
+			var/outline_filter = outline_filter(1, "#003800", OUTLINE_SHARP) // Outline color gets changed by material color
+			owner.add_filter("spacelag_outline", 20, outline_filter)
+		return
+
+/datum/materialProc/spacelag_remove
+	execute(var/atom/location)
+		location.remove_filter("spacelag_outline")
+		return
+
+/datum/materialProc/honey_add
+	execute(var/atom/location)
+		if(endswith(location.icon_state, "$$honey") || ("honey" in location.get_typeinfo().mat_appearances_to_ignore))
+			return
+		var/offset = 0
+		if(!isturf(location))
+			offset = rand()
+		var/wave_filter = wave_filter(16, 16, 1, offset, flags = WAVE_SIDEWAYS | WAVE_BOUNDED)
+		location.add_filter("honey_wave", 20, wave_filter)
+
+		var/list/honey_matrix = list(0.00, 0.00, 0.00, 0.00,\
+									0.00, 0.30, 0.00, 0.00,\
+									0.00, 0.00, 1.00, 0.00,\
+									0.00, 0.00, 0.00, 1.00,\
+									0.10, 0.70, 0.00, 0.00)
+		var/color_filter = color_matrix_filter(honey_matrix, FILTER_COLOR_HSL)
+		location.add_filter("honey_color", 21, color_filter)
+		return
+
+/datum/materialProc/honey_remove
+	execute(var/atom/location)
+		location.remove_filter("honey_color")
+		location.remove_filter("honey_wave")
+		return
 
 /datum/materialProc/temp_miraclium
 	execute(var/atom/location, var/temp)
@@ -742,3 +855,79 @@ triggerOnEntered(var/atom/owner, var/atom/entering)
 		var/list/color = rgb2num(owner.material.getColor())
 		light_c = owner.AddComponent(/datum/component/loctargeting/sm_light, color[1], color[2], color[3], 255 * 0.33)
 		light_c.update(1)
+
+/datum/materialProc/radioactive_temp
+	max_generations = -1
+
+	execute(var/atom/owner, var/temp)
+		if(ON_COOLDOWN(owner, "radioactive_material_decay_fallout", 5 SECONDS)) return
+		// Just sanity checks with ordering to not init what we don't need
+		if (temp < 500 KELVIN || !isitem(owner)) return
+		if (!issimulatedturf(owner.loc)) return
+		var/turf/simulated/T = owner.loc
+		if (!T.gas_cross(T)) return
+		var/obj/item/I = owner
+		if (I.amount < 1) return
+		/// Init a property to 1 if it doesn't exist, its real value if it does, and if it does exist, delete it if the value is 0
+		var/radioactive = I.material.getProperty("radioactive")
+		var/n_radioactive = I.material.getProperty("n_radioactive")
+		if (!radioactive && !n_radioactive)
+			I.material.removeTrigger(TRIGGERS_ON_TEMP, /datum/materialProc/radioactive_temp)
+			return
+		var/datum/gas_mixture/air = T.return_air()
+		if (!air || air.toxins < MINIMUM_REACT_QUANTITY) return
+		if(T.parent?.group_processing)
+			T.parent.suspend_group_processing()
+		/// Mostly bullshit magic because I don't know how radiation works and plasma isn't real, but is how many moles to convert of existing plasma
+		var/moles_to_convert = min(((I.amount * I.material_amt) * (1 + radioactive) * (1 + n_radioactive) * sqrt(temp) / 1000), air.toxins)
+		air.radgas += moles_to_convert
+		air.toxins -= moles_to_convert
+		// Force mutability
+		if (!I.material.isMutable())
+			I.material = I.material.getMutable()
+		if (radioactive)
+			I.material.setProperty("radioactive", radioactive - min(radioactive, moles_to_convert/(10*I.amount)))
+		else
+			I.material.removeProperty("radioactive")
+		if (n_radioactive)
+			I.material.setProperty("n_radioactive", n_radioactive - min(n_radioactive, moles_to_convert/(50*I.amount)))
+		else
+			I.material.removeProperty("n_radioactive")
+
+/datum/materialProc/shock_life
+	var/cd_min
+	var/cd_max
+	var/wattage
+
+	New(cd_min, cd_max, wattage)
+		..()
+		src.cd_min = cd_min
+		src.cd_max = cd_max
+		src.wattage = wattage
+
+	execute(mob/living/L, obj/item/I, mult)
+		if (ON_COOLDOWN(I, "material_shock", rand(src.cd_min, src.cd_max)))
+			return
+		if (istype(L))
+			L.shock(I, src.wattage, "All", 1, FALSE)
+
+/datum/materialProc/arcflash_life
+	var/cd_min
+	var/cd_max
+	var/wattage
+
+	New(cd_min, cd_max, wattage)
+		..()
+		src.cd_min = cd_min
+		src.cd_max = cd_max
+		src.wattage = wattage
+
+	execute(mob/living/L, obj/item/I, mult)
+		if (ON_COOLDOWN(I, "material_arcflash", rand(cd_min, cd_max)))
+			return
+		if (!istype(L))
+			return
+		if (!isturf(L.loc) || prob(10))
+			L.shock(I, src.wattage, "All", 1.5, TRUE)
+		else
+			arcFlashTurf(L, pick(block(L.x - 5, L.y - 5, L.z, L.x + 5, L.y + 5, L.z)), src.wattage, 100)

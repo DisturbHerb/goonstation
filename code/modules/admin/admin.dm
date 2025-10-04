@@ -93,9 +93,9 @@ var/global/noir = 0
 		return
 
 	if (usr.client != src.owner)
-		message_admins(SPAN_INTERNAL("[key_name(usr)] has attempted to override the admin panel!"))
-		logTheThing(LOG_ADMIN, usr, "tried to use the admin panel without authorization.")
-		logTheThing(LOG_DIARY, usr, "tried to use the admin panel without authorization.", "admin")
+		message_admins(SPAN_INTERNAL("[key_name(usr)] has attempted to override the admin panel with URL '[href]'!"))
+		logTheThing(LOG_ADMIN, usr, "tried to use the admin panel without authorization with URL '[href]'.")
+		logTheThing(LOG_DIARY, usr, "tried to use the admin panel without authorization with URL '[href]'.", "admin")
 		return
 
 	var/client/targetClient = null
@@ -125,37 +125,37 @@ var/global/noir = 0
 			if (src.level >= LEVEL_PA)
 				var/client/C = locate(href_list["target"])
 				if(istype(C))
-					C.cloud_put("adminhelp_banner", usr.client.key)
+					C.player?.cloudSaves.putData("adminhelp_banner", usr.client.key)
 					src.show_chatbans(C)
 		if ("ah_unmute")//guHGUHGUGHGUHG
 			if (src.level >= LEVEL_PA)
 				var/client/C = locate(href_list["target"])
 				if(istype(C))
-					C.cloud_put("adminhelp_banner", "")
+					C.player?.cloudSaves.deleteData("adminhelp_banner")
 					src.show_chatbans(C)
 		if ("mh_mute")//AHDUASHDUHWUDHWDUHWDUWDH
 			if (src.level >= LEVEL_PA)
 				var/client/C = locate(href_list["target"])
 				if(istype(C))
-					C.cloud_put("mentorhelp_banner", usr.client.key)
+					C.player?.cloudSaves.putData("mentorhelp_banner", usr.client.key)
 					src.show_chatbans(C)
 		if ("mh_unmute")//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 			if (src.level >= LEVEL_PA)
 				var/client/C = locate(href_list["target"])
 				if(istype(C))
-					C.cloud_put("mentorhelp_banner", "")
+					C.player?.cloudSaves.deleteData("mentorhelp_banner")
 					src.show_chatbans(C)
 		if ("pr_mute")
 			if (src.level >= LEVEL_PA)
 				var/client/C = locate(href_list["target"])
 				if(istype(C))
-					C.cloud_put("prayer_banner", usr.client.key)
+					C.player?.cloudSaves.putData("prayer_banner", usr.client.key)
 					src.show_chatbans(C)
 		if ("pr_unmute")
 			if (src.level >= LEVEL_PA)
 				var/client/C = locate(href_list["target"])
 				if(istype(C))
-					C.cloud_put("prayer_banner", "")
+					C.player?.cloudSaves.deleteData("prayer_banner")
 					src.show_chatbans(C)
 
 		if ("load_admin_prefs")
@@ -243,6 +243,18 @@ var/global/noir = 0
 		if ("toggle_topic_log")
 			if (src.level >= LEVEL_MOD)
 				src.show_topic_log = !show_topic_log
+				src.show_pref_window(usr)
+		if ("toggle_skip_manifest")
+			if (src.level >= LEVEL_MOD)
+				src.skip_manifest = !skip_manifest
+				src.show_pref_window(usr)
+		if ("toggle_hide_offline")
+			if (src.level >= LEVEL_MOD)
+				src.hide_offline_indicators = !hide_offline_indicators
+				src.show_pref_window(usr)
+		if ("toggle_slow_stat")
+			if (src.level >= LEVEL_MOD)
+				src.slow_stat = !slow_stat
 				src.show_pref_window(usr)
 		if ("toggle_auto_stealth")
 			if (src.level >= LEVEL_SA)
@@ -341,7 +353,7 @@ var/global/noir = 0
 						if(!call_reason)
 							return
 						if (emergency_shuttle.incall())
-							command_announcement(call_reason + "<br><b>[SPAN_ALERT("It will arrive in [round(emergency_shuttle.timeleft()/60)] minutes.")]</b>", "The Emergency Shuttle Has Been Called", css_class = "notice")
+							command_announcement(call_reason + "<br><b>[SPAN_ALERT("It will arrive in [round(emergency_shuttle.timeleft()/60)] minutes.")]</b>", "The Emergency Shuttle Has Been Called", alert_origin=ALERT_COMMAND)
 							logTheThing(LOG_ADMIN, usr,  "called the Emergency Shuttle (reason: [call_reason])")
 							logTheThing(LOG_DIARY, usr, "called the Emergency Shuttle (reason: [call_reason])", "admin")
 							message_admins(SPAN_INTERNAL("[key_name(usr)] called the Emergency Shuttle to the station."))
@@ -356,13 +368,13 @@ var/global/noir = 0
 								if(!call_reason)
 									call_reason = "No reason given."
 								if (emergency_shuttle.incall())
-									command_announcement(call_reason + "<br><b>[SPAN_ALERT("It will arrive in [round(emergency_shuttle.timeleft()/60)] minutes.")]</b>", "The Emergency Shuttle Has Been Called", css_class = "notice")
+									command_announcement(call_reason + "<br><b>[SPAN_ALERT("It will arrive in [round(emergency_shuttle.timeleft()/60)] minutes.")]</b>", "The Emergency Shuttle Has Been Called", alert_origin=ALERT_COMMAND)
 									logTheThing(LOG_ADMIN, usr, "called the Emergency Shuttle (reason: [call_reason])")
 									logTheThing(LOG_DIARY, usr, "called the Emergency Shuttle (reason: [call_reason])", "admin")
 									message_admins(SPAN_INTERNAL("[key_name(usr)] called the Emergency Shuttle to the station"))
 							if(1)
 								emergency_shuttle.recall()
-								boutput(world, SPAN_NOTICE("<B>Alert: The shuttle is going back!</B>"))
+								command_announcement("[SPAN_ALERT("Alert: The shuttle is going back!")]", "Emergency Shuttle Recall", alert_origin=ALERT_COMMAND)
 								logTheThing(LOG_ADMIN, usr, "sent the Emergency Shuttle back")
 								logTheThing(LOG_DIARY, usr, "sent the Emergency Shuttle back", "admin")
 								message_admins(SPAN_INTERNAL("[key_name(usr)] recalled the Emergency Shuttle"))
@@ -449,7 +461,7 @@ var/global/noir = 0
 
 							logTheThing(LOG_ADMIN, usr, "deleted note [noteId] belonging to [player].")
 							logTheThing(LOG_DIARY, usr, "deleted note [noteId] belonging to [player].", "admin")
-							message_admins(SPAN_INTERNAL("[key_name(usr)] deleted note [noteId] belonging to <A href='?src=%admin_ref%;action=notes&target=[player]'>[player]</A>."))
+							message_admins(SPAN_INTERNAL("[key_name(usr)] deleted note [noteId] belonging to <A href='byond://?src=%admin_ref%;action=notes&target=[player]'>[player]</A>."))
 
 							var/ircmsg[] = new()
 							ircmsg["key"] = src.owner:key
@@ -471,7 +483,7 @@ var/global/noir = 0
 
 					logTheThing(LOG_ADMIN, usr, "added a note for [player]: [the_note]")
 					logTheThing(LOG_DIARY, usr, "added a note for [player]: [the_note]", "admin")
-					message_admins(SPAN_INTERNAL("[key_name(usr)] added a note for <A href='?src=%admin_ref%;action=notes&target=[player]'>[player]</A>: [the_note]"))
+					message_admins(SPAN_INTERNAL("[key_name(usr)] added a note for <A href='byond://?src=%admin_ref%;action=notes&target=[player]'>[player]</A>: [the_note]"))
 
 					var/ircmsg[] = new()
 					ircmsg["key"] = src.owner:key
@@ -516,41 +528,16 @@ var/global/noir = 0
 		/////////////////////////////////////ban stuff
 		if ("addban") //Add ban
 			var/mob/M = (href_list["target"] ? locate(href_list["target"]) : null)
-			usr.client.addBanDialog(M)
+			usr.client.addBanTemp(M)
 
 		if ("sharkban") //Add ban
 			var/mob/M = (href_list["target"] ? locate(href_list["target"]) : null)
 			usr.client.sharkban(M)
-
-		if("unbane") //Edit ban
-			if (src.level >= LEVEL_SA)
-				var/id = html_decode(href_list["id"])
-				var/ckey = html_decode(href_list["target"])
-				var/compID = html_decode(href_list["compID"])
-				var/ip = html_decode(href_list["ip"])
-				var/reason = html_decode(href_list["reason"])
-				var/timestamp = html_decode(href_list["timestamp"])
-
-				usr.client.editBanDialog(id, ckey, compID, ip, reason, timestamp)
-			else
-				tgui_alert(usr,"You need to be at least a Secondary Administrator to edit bans.")
-
-		if("unbanf") //Delete ban
-			if (src.level >= LEVEL_SA)
-				var/id = html_decode(href_list["id"])
-				var/ckey = html_decode(href_list["target"])
-				var/compID = html_decode(href_list["compID"])
-				var/ip = html_decode(href_list["ip"])
-				var/akey = usr.client.ckey
-
-				usr.client.deleteBanDialog(id, ckey, compID, ip, akey)
-			else
-				tgui_alert(usr,"You need to be at least a Secondary Administrator to remove bans.")
 		/////////////////////////////////////end ban stuff
 
 		if("jobbanpanel")
 			var/dat = ""
-			var/header = "<b>Pick Job to ban this guy from | <a href='?src=\ref[src];action=jobbanpanel;target=[href_list["target"]]'>Refresh</a><br>"
+			var/header = "<b>Pick Job to ban this guy from | <a href='byond://?src=\ref[src];action=jobbanpanel;target=[href_list["target"]]'>Refresh</a><br>"
 			var/body
 			var/jobs = ""
 			var/target
@@ -564,7 +551,7 @@ var/global/noir = 0
 			else //It's a key. We need to cache it's ban history to not make 300 requests to the API.
 				target = M
 				action = "jobban_offline"
-				M = apiHandler.queryAPI("jobbans/get/player", list("ckey"=M), 1)[M]
+				M = jobban_get_for_player(M)
 			if (!M)
 				return
 
@@ -574,59 +561,59 @@ var/global/noir = 0
 				if(job in list("Tourist","Mining Supervisor","Atmospheric Technician","Vice Officer"))
 					continue
 				if(jobban_isbanned(M, job))
-					jobs += "<a href='?src=\ref[src];action=[action];type=[job];target=[target]'><font color=red>[replacetext(job, " ", "&nbsp")]</font></a> "
+					jobs += "<a href='byond://?src=\ref[src];action=[action];type=[job];target=[target]'><font color=red>[replacetext(job, " ", "&nbsp")]</font></a> "
 				else
-					jobs += "<a href='?src=\ref[src];action=[action];type=[job];target=[target]'>[replacetext(job, " ", "&nbsp")]</a> " //why doesn't this work
+					jobs += "<a href='byond://?src=\ref[src];action=[action];type=[job];target=[target]'>[replacetext(job, " ", "&nbsp")]</a> " //why doesn't this work
 
 			if(jobban_isbanned(M, "Captain"))
-				jobs += "<a href='?src=\ref[src];action=[action];type=Captain;target=[target]'><font color=red>Captain</font></a> "
+				jobs += "<a href='byond://?src=\ref[src];action=[action];type=Captain;target=[target]'><font color=red>Captain</font></a> "
 			else
-				jobs += "<a href='?src=\ref[src];action=[action];type=Captain;target=[target]'>Captain</a> " //why doesn't this work
+				jobs += "<a href='byond://?src=\ref[src];action=[action];type=Captain;target=[target]'>Captain</a> " //why doesn't this work
 
 			if(jobban_isbanned(M, "Head of Security"))
-				jobs += "<a href='?src=\ref[src];action=[action];type=Head of Security;target=[target]'><font color=red>Head of Security</font></a> "
+				jobs += "<a href='byond://?src=\ref[src];action=[action];type=Head of Security;target=[target]'><font color=red>Head of Security</font></a> "
 			else
-				jobs += "<a href='?src=\ref[src];action=[action];type=Head of Security;target=[target]'>Head of Security</a> "
+				jobs += "<a href='byond://?src=\ref[src];action=[action];type=Head of Security;target=[target]'>Head of Security</a> "
 
 			if(jobban_isbanned(M, "Syndicate"))
-				jobs += "<BR><a href='?src=\ref[src];action=[action];type=Syndicate;target=[target]'><font color=red>[replacetext("Syndicate", " ", "&nbsp")]</font></a> "
+				jobs += "<BR><a href='byond://?src=\ref[src];action=[action];type=Syndicate;target=[target]'><font color=red>[replacetext("Syndicate", " ", "&nbsp")]</font></a> "
 			else
-				jobs += "<BR><a href='?src=\ref[src];action=[action];type=Syndicate;target=[target]'>[replacetext("Syndicate", " ", "&nbsp")]</a> " //why doesn't this work
+				jobs += "<BR><a href='byond://?src=\ref[src];action=[action];type=Syndicate;target=[target]'>[replacetext("Syndicate", " ", "&nbsp")]</a> " //why doesn't this work
 
 			if(jobban_isbanned(M, "Special Respawn"))
-				jobs += " <a href='?src=\ref[src];action=[action];type=Special Respawn;target=[target]'><font color=red>[replacetext("Special Respawn", " ", "&nbsp")]</font></a> "
+				jobs += " <a href='byond://?src=\ref[src];action=[action];type=Special Respawn;target=[target]'><font color=red>[replacetext("Special Respawn", " ", "&nbsp")]</font></a> "
 			else
-				jobs += " <a href='?src=\ref[src];action=[action];type=Special Respawn;target=[target]'>[replacetext("Special Respawn", " ", "&nbsp")]</a> "
+				jobs += " <a href='byond://?src=\ref[src];action=[action];type=Special Respawn;target=[target]'>[replacetext("Special Respawn", " ", "&nbsp")]</a> "
 
 			if(jobban_isbanned(M, "Engineering Department"))
-				jobs += "<BR><a href='?src=\ref[src];action=[action];type=Engineering Department;target=[target]'><font color=red>[replacetext("Engineering Department", " ", "&nbsp")]</font></a> "
+				jobs += "<BR><a href='byond://?src=\ref[src];action=[action];type=Engineering Department;target=[target]'><font color=red>[replacetext("Engineering Department", " ", "&nbsp")]</font></a> "
 			else
-				jobs += "<BR><a href='?src=\ref[src];action=[action];type=Engineering Department;target=[target]'>[replacetext("Engineering Department", " ", "&nbsp")]</a> "
+				jobs += "<BR><a href='byond://?src=\ref[src];action=[action];type=Engineering Department;target=[target]'>[replacetext("Engineering Department", " ", "&nbsp")]</a> "
 
 			if(jobban_isbanned(M, "Security Department"))
-				jobs += "<BR><a href='?src=\ref[src];action=[action];type=Security Department;target=[target]'><font color=red>[replacetext("Security Department", " ", "&nbsp")]</font></a> "
+				jobs += "<BR><a href='byond://?src=\ref[src];action=[action];type=Security Department;target=[target]'><font color=red>[replacetext("Security Department", " ", "&nbsp")]</font></a> "
 			else
-				jobs += "<BR><a href='?src=\ref[src];action=[action];type=Security Department;target=[target]'>[replacetext("Security Department", " ", "&nbsp")]</a> "
+				jobs += "<BR><a href='byond://?src=\ref[src];action=[action];type=Security Department;target=[target]'>[replacetext("Security Department", " ", "&nbsp")]</a> "
 
 			if(jobban_isbanned(M, "Heads of Staff"))
-				jobs += "<BR><a href='?src=\ref[src];action=[action];type=Heads of Staff;target=[target]'><font color=red>[replacetext("Heads of Staff", " ", "&nbsp")]</font></a> "
+				jobs += "<BR><a href='byond://?src=\ref[src];action=[action];type=Heads of Staff;target=[target]'><font color=red>[replacetext("Heads of Staff", " ", "&nbsp")]</font></a> "
 			else
-				jobs += "<BR><a href='?src=\ref[src];action=[action];type=Heads of Staff;target=[target]'>[replacetext("Heads of Staff", " ", "&nbsp")]</a> "
+				jobs += "<BR><a href='byond://?src=\ref[src];action=[action];type=Heads of Staff;target=[target]'>[replacetext("Heads of Staff", " ", "&nbsp")]</a> "
 
 			if(jobban_isbanned(M, "Everything Except Assistant"))
-				jobs += "<BR><a href='?src=\ref[src];action=[action];type=Everything Except Assistant;target=[target]'><font color=red>[replacetext("Everything Except Assistant", " ", "&nbsp")]</font></a> "
+				jobs += "<BR><a href='byond://?src=\ref[src];action=[action];type=Everything Except Assistant;target=[target]'><font color=red>[replacetext("Everything Except Assistant", " ", "&nbsp")]</font></a> "
 			else
-				jobs += "<BR><a href='?src=\ref[src];action=[action];type=Everything Except Assistant;target=[target]'>[replacetext("Everything Except Assistant", " ", "&nbsp")]</a> "
+				jobs += "<BR><a href='byond://?src=\ref[src];action=[action];type=Everything Except Assistant;target=[target]'>[replacetext("Everything Except Assistant", " ", "&nbsp")]</a> "
 
 			if(jobban_isbanned(M, "Ghostdrone"))
-				jobs += "<BR><a href='?src=\ref[src];action=[action];type=Ghostdrone;target=[target]'><font color=red>Ghostdrone</font></a> "
+				jobs += "<BR><a href='byond://?src=\ref[src];action=[action];type=Ghostdrone;target=[target]'><font color=red>Ghostdrone</font></a> "
 			else
-				jobs += "<BR><a href='?src=\ref[src];action=[action];type=Ghostdrone;target=[target]'>Ghostdrone</a> "
+				jobs += "<BR><a href='byond://?src=\ref[src];action=[action];type=Ghostdrone;target=[target]'>Ghostdrone</a> "
 
 			if(jobban_isbanned(M, "Custom Names"))
-				jobs += "<BR><a href='?src=\ref[src];action=[action];type=Custom Names;target=[target]'><font color=red>[replacetext("Having a Custom Name", " ", "&nbsp")]</font></a> "
+				jobs += "<BR><a href='byond://?src=\ref[src];action=[action];type=Custom Names;target=[target]'><font color=red>[replacetext("Having a Custom Name", " ", "&nbsp")]</font></a> "
 			else
-				jobs += "<BR><a href='?src=\ref[src];action=[action];type=Custom Names;target=[target]'>[replacetext("Having a Custom Name", " ", "&nbsp")]</a> "
+				jobs += "<BR><a href='byond://?src=\ref[src];action=[action];type=Custom Names;target=[target]'>[replacetext("Having a Custom Name", " ", "&nbsp")]</a> "
 
 
 			body = "<br>[jobs]<br><br>"
@@ -700,7 +687,7 @@ var/global/noir = 0
 			if (src.level >= LEVEL_SA)
 				var/M = href_list["target"]
 				var/job = href_list["type"]
-				var/list/cache = apiHandler.queryAPI("jobbans/get/player", list("ckey"=M), 1)[M]
+				var/list/cache = jobban_get_for_player(M)
 				if (!M) return
 				if (jobban_isbanned(cache, job))
 					if(cache.Find("Everything Except Assistant") && job != "Everything Except Assistant")
@@ -835,18 +822,17 @@ var/global/noir = 0
 							<html><body><title>Select Round Mode</title>
 							<B>What mode do you wish to play[addltext]?</B><br>
 							Current mode is: <i>[master_mode]</i><br>
-							Mode is <A href='?src=\ref[src];action=toggle_hide_mode'>[ticker.hide_mode ? "hidden" : "not hidden"]</a><br/>
+							Mode is <A href='byond://?src=\ref[src];action=toggle_hide_mode'>[ticker.hide_mode ? "hidden" : "not hidden"]</a><br/>
 							<HR>
 							<b>Regular Modes:</b><br>
-							<A href='?src=\ref[src];action=[cmd];type=secret'>Secret</A><br>
-							<A href='?src=\ref[src];action=[cmd];type=action'>Secret: Action</A><br>
-							<A href='?src=\ref[src];action=[cmd];type=intrigue'>Secret: Intrigue</A><br>
+							<A href='byond://?src=\ref[src];action=[cmd];type=secret'>Secret</A><br>
+							<A href='byond://?src=\ref[src];action=[cmd];type=action'>Secret: Action</A><br>
 							"})
 				for(var/item in regular_modes)
-					dat += "<A href='?src=\ref[src];action=[cmd];type=[regular_modes[item]]'>[item]</A><br>"
+					dat += "<A href='byond://?src=\ref[src];action=[cmd];type=[regular_modes[item]]'>[item]</A><br>"
 				dat += "<b>Other Modes</b><br>"
 				for(var/item in other_modes)
-					dat += "<A href='?src=\ref[src];action=[cmd];type=[other_modes[item]]'>[item]</A><br>"
+					dat += "<A href='byond://?src=\ref[src];action=[cmd];type=[other_modes[item]]'>[item]</A><br>"
 				dat += "</body></html>"
 				usr.Browse(dat.Join(), "window=c_mode")
 			else
@@ -919,16 +905,7 @@ var/global/noir = 0
 		if ("forcespeech")
 			var/mob/M = locate(href_list["target"])
 			if (src.level >= LEVEL_PA || isnull(M.client) && src.level >= LEVEL_SA)
-				if (ismob(M))
-					var/speech = input("What will [M] say?", "Force speech", null) as text|null
-					if(!speech)
-						return
-					M.say(speech)
-					speech = copytext(sanitize(speech), 1, MAX_MESSAGE_LEN)
-					logTheThing(LOG_ADMIN, usr, "forced [constructTarget(M,"admin")] to say: [speech]")
-					logTheThing(LOG_DIARY, usr, "forced [constructTarget(M,"diary")] to say: [speech]", "admin")
-					if(M.client)
-						message_admins(SPAN_INTERNAL("[key_name(usr)] forced [key_name(M)] to say: [speech]"))
+				usr.client.cmd_say(M)
 			else
 				tgui_alert(usr,"You need to be at least a Primary Administrator to force players to say things.")
 
@@ -947,6 +924,14 @@ var/global/noir = 0
 						REMOVE_ATOM_PROPERTY(M, PROP_MOB_CANTMOVE, "adminstop\ref[src][id]")
 			else
 				tgui_alert(usr,"You need to be at least a Secondary Administrator to stop players.")
+
+		if ("animate")
+			if (src.level >= LEVEL_BABBY)
+				var/mob/M = locate(href_list["target"])
+				if (ismob(M))
+					var/animationpick = tgui_input_list(usr, "Select animation.", "Animation", global.animations)
+					if (animationpick)
+						call(animationpick)(M)
 
 		if ("prison")
 			if (src.level >= LEVEL_MOD)
@@ -1003,6 +988,24 @@ var/global/noir = 0
 						tgui_alert(usr,"Reviving is currently disabled.")
 			else
 				tgui_alert(usr,"You need to be at least a Primary Adminstrator to revive players.")
+
+		if ("stabilize")
+			if (src.level >= LEVEL_SA)
+				var/mob/M = locate(href_list["target"])
+				if (ismob(M))
+					if(isobserver(M))
+						tgui_alert(usr,"You can't stabilize a ghost! How does that even work?!")
+						return
+
+					if(isdead(M))
+						tgui_alert("Cannot stabilize a dead mob")
+						return
+
+					M.stabilize()
+
+					logTheThing(LOG_ADMIN, usr, "stabilized [constructTarget(M,"admin")]")
+					logTheThing(LOG_DIARY, usr, "stabilized [constructTarget(M,"diary")]", "admin")
+					message_admins(SPAN_ALERT("Admin [key_name(usr)] stabilized [key_name(M)]!"))
 
 		if ("makeai")
 			if (src.level >= LEVEL_SA)
@@ -1145,7 +1148,7 @@ var/global/noir = 0
 			if(src.level >= LEVEL_SA)
 				var/mob/M = locate(href_list["target"])
 				if (!M) return
-				var/datum/viewport/viewport = usr.create_viewport("Admin: Viewport", title = "Following: [M.name]", size=9)
+				var/datum/viewport/viewport = usr.create_viewport(VIEWPORT_ID_ADMIN, title = "Following: [M.name]", size=9)
 				viewport.handler.listens = TRUE
 				viewport.start_following(M)
 			else
@@ -1406,6 +1409,10 @@ var/global/noir = 0
 				if (length(picklist))
 					var/string_version
 					for(pick in picklist)
+						M.onProcCalled("addBioEffect", list("idToAdd" = pick, "magical" = 1))
+						if(!bioEffectList[pick])
+							boutput(usr, SPAN_ALERT("Invalid bioEffect ID [pick]"))
+							continue
 						if(M.bioHolder.AddEffect(pick, magical = 1))
 							successes++
 
@@ -1419,7 +1426,7 @@ var/global/noir = 0
 					else if(successes > 0)
 						message_admins("[key_name(usr)] tried to dd the [string_version] bio-effect[length(picklist) > 1 ? "s" : ""] but only [successes] succeeded to [key_name(M)].")
 					else
-						boutput(usr, "<b>[SPAN_ALERT("Failed to add [string_version] bio-effect[length(picklist) > 1 ? "s" : ""] to [key_name(M)].")]</b>")
+						boutput(usr, SPAN_ALERT("<b>Failed to add [string_version] bio-effect[length(picklist) > 1 ? "s" : ""] to [key_name(M)].</b>"))
 			else
 				tgui_alert(usr,"If you are below the rank of Primary Admin, you need to be observing and at least a Secondary Administrator to bioeffect a player.")
 
@@ -1459,6 +1466,23 @@ var/global/noir = 0
 				if (A)
 					usr.client.cmd_admin_check_health(A)
 					return
+		if ("max_health")
+			if (src.level >= LEVEL_SA)
+				var/mob/M = locate(href_list["target"])
+				if (ismob(M))
+					if(isobserver(M))
+						tgui_alert(usr,"You can't revive a ghost! How does that even work?!")
+						return
+					if(config.allow_admin_rev)
+						var/amount = input(usr,"Amount:","Amount",100) as null|num
+						if(!amount) return
+						M.max_health = amount
+						M.full_heal()
+						message_admins(SPAN_ALERT("Admin [key_name(usr)] set max health of [key_name(M)] to [amount]!"))
+						logTheThing(LOG_ADMIN, usr, "set max health of [constructTarget(M,"admin")] to [amount]")
+						logTheThing(LOG_DIARY, usr, "set max health of [constructTarget(M,"diary")] to [amount]", "admin")
+					else
+						tgui_alert(usr,"Reviving is currently disabled, which is tied to changing max health.")
 
 		if ("kill")
 			if (src.level >= LEVEL_SA)
@@ -1469,6 +1493,20 @@ var/global/noir = 0
 					logTheThing(LOG_ADMIN, usr, "killed [constructTarget(M,"admin")]")
 					logTheThing(LOG_DIARY, usr, "killed [constructTarget(M,"diary")]", "admin")
 				return
+
+		if ("accessspeechtree")
+			if (src.level < LEVEL_PA)
+				return
+
+			var/mob/M = locate(href_list["target"])
+			M.ensure_speech_tree().ui_interact(usr)
+
+		if ("accesslistentree")
+			if (src.level < LEVEL_PA)
+				return
+
+			var/atom/A = locate(href_list["target"])
+			A.ensure_listen_tree().ui_interact(usr)
 
 		if ("addreagent")
 			if(( src.level >= LEVEL_PA ) || ((src.level >= LEVEL_SA) ))
@@ -1510,24 +1548,47 @@ var/global/noir = 0
 				if (A)
 					usr.client.check_reagents_internal(A, refresh = 1)
 
+		if ("checkreagent_add")
+			if (src.level >= LEVEL_SA)
+				var/atom/A = locate(href_list["target"])
+				if (A)
+					usr.client.addreagents(A)
+					usr.client.check_reagents_internal(A, refresh = 1)
+
+		if ("checkreagent_flush")
+			if (src.level >= LEVEL_SA)
+				var/atom/A = locate(href_list["target"])
+				if (A)
+					usr.client.flushreagents(A)
+					usr.client.check_reagents_internal(A, refresh = 1)
+
 		if ("removereagent")
-			if(( src.level >= LEVEL_PA ) || ((src.level >= LEVEL_SA) ))
-				var/mob/M = locate(href_list["target"])
+			// similar to /client/proc/addreagents, but in a different place.
+			// originally limited to mobs, but i made it any atoms
+			if (src.level < LEVEL_SA)
+				tgui_alert(usr, "You need to be at least a Secondary Administrator to remove reagents.")
+				return
 
-				if (!M.reagents) // || !target.reagents.total_volume)
-					boutput(usr, SPAN_NOTICE("<b>[M] contains no reagents.</b>"))
-					return
-				var/datum/reagents/reagents = M.reagents
+			var/atom/A = locate(href_list["target"])
 
+			if (!A.reagents) // || !target.reagents.total_volume)
+				boutput(usr, SPAN_NOTICE("<b>[A] contains no reagents.</b>"))
+				return
+			var/datum/reagents/reagents = A.reagents
+
+			var/pick_id
+			var/pick
+			if (href_list["skip_pick"])
+				pick_id = href_list["skip_pick"]
+				pick = href_list["skip_pick"]
+			else
 				var/list/target_reagents = list()
-				var/pick
 				for (var/current_id in reagents.reagent_list)
 					var/datum/reagent/current_reagent = reagents.reagent_list[current_id]
 					target_reagents += current_reagent.name
 				pick = tgui_input_list(usr, "Select Reagent:", "Select", target_reagents)
 				if (!pick)
 					return
-				var/pick_id
 				if(!isnull(reagents.reagent_list[pick]))
 					pick_id = pick
 				else
@@ -1537,24 +1598,24 @@ var/global/noir = 0
 							pick_id = current_reagent.id
 							break
 
-				if (pick_id)
-					var/string_version
+			if (!pick_id)
+				return
 
-					var/amt = input("How much of [pick]?","Remove Reagent") as null|num
-					if(!amt || amt < 0)
-						return
+			var/amt = input("How much of [pick]?", "Remove Reagent") as null|num
+			if (!amt || amt < 0)
+				return
 
-					if (M.reagents)
-						M.reagents.remove_reagent(pick_id,amt)
+			if (A.reagents)
+				if (!A.reagents.remove_reagent(pick_id,amt))
+					boutput(usr, SPAN_ALERT("Failed to remove [amt] units of [pick_id] from [A.name]."))
+					return
 
-					if (string_version)
-						string_version = "[string_version], [amt] \"[pick]\""
-					else
-						string_version = "[amt] \"[pick]\""
+			boutput(usr, SPAN_SUCCESS("Removed [amt] units of [pick_id] from [A]."))
 
-					message_admins("[key_name(usr)] removed [string_version] from [M.real_name].")
-			else
-				tgui_alert(usr,"If you are below the rank of Primary Admin, you need to be observing and at least a Secondary Administrator to affect player reagents.")
+			// Brought in line with adding reagents via the player panel (Convair880).
+			logTheThing(LOG_ADMIN, usr, "removed [amt] units of [pick_id] from [A] at [log_loc(A)].")
+			if (ismob(A))
+				message_admins("[key_name(usr)] removed [amt] units of [pick_id] from [A] (Key: [key_name(A) || "NULL"]) at [log_loc(A)].")
 
 		if ("possessmob")
 			if( src.level >= LEVEL_PA )
@@ -1598,6 +1659,7 @@ var/global/noir = 0
 				var/ab_to_add = tgui_input_list(usr, "Add an Ability:", "Select", L)
 				if (!ab_to_add)
 					return // user canceled
+				M.onProcCalled("addAbility", list(ab_to_add))
 				M.abilityHolder.addAbility(ab_to_add)
 				M.abilityHolder.updateButtons()
 				message_admins("[key_name(usr)] added ability [ab_to_add] to [key_name(M)].")
@@ -1621,13 +1683,13 @@ var/global/noir = 0
 						for (var/datum/abilityHolder/AH in CH.holders)
 							abils += AH.abilities //get a list of all the different abilities in each holder
 					else
-						boutput(usr, "<b>[SPAN_ALERT("[M]'s composite holder lacks any ability holders to remove from!")]</b>")
+						boutput(usr, SPAN_ALERT("<b>[M]'s composite holder lacks any ability holders to remove from!</b>"))
 						return //no ability holders in composite holder
 				else
 					abils += M.abilityHolder.abilities
 
 				if(!abils.len)
-					boutput(usr, "<b>[SPAN_ALERT("[M] doesn't have any abilities!")]</b>")
+					boutput(usr, SPAN_ALERT("<b>[M] doesn't have any abilities!</b>"))
 					return //nothing to remove
 
 				sortList(abils, /proc/cmp_text_asc)
@@ -1706,7 +1768,8 @@ var/global/noir = 0
 				var/trait_to_add_name = tgui_input_list(usr, "Add a Trait:", "Select", traits_by_name)
 				if (!trait_to_add_name)
 					return // user canceled
-				M.traitHolder.addTrait(all_traits[trait_to_add_name])
+				M.onProcCalled("addTrait", list(all_traits[trait_to_add_name]))
+				M.traitHolder.addTrait(all_traits[trait_to_add_name], force_trait=TRUE)
 				message_admins("[key_name(usr)] added the trait [trait_to_add_name] to [key_name(M)].")
 				logTheThing(LOG_ADMIN, usr, "added the trait [trait_to_add_name] to [constructTarget(M,"admin")].")
 				if (origin == "managetraits")//called via trait management panel
@@ -1730,7 +1793,7 @@ var/global/noir = 0
 					traits.Add(trait_obj.name)
 
 				if(length(traits) == 0)
-					boutput(usr, "<b>[SPAN_ALERT("[M] doesn't have any traits!")]</b>")
+					boutput(usr, SPAN_ALERT("<b>[M] doesn't have any traits!</b>"))
 					return //nothing to remove
 
 				sortList(traits, /proc/cmp_text_asc)
@@ -1893,9 +1956,12 @@ var/global/noir = 0
 			if (tgui_alert(usr, "[M.real_name] (ckey [M.ckey]) will immediately become \a [selected_keyvalue]. Equipment and abilities will[do_equipment == "Yes" ? "" : " NOT"] be added. [do_objectives_text]. Is this what you want?", "Add Antagonist", list("Make it so.", "Cancel.")) != "Make it so.") // This is definitely not ideal, but it's what we have for now
 				return
 			boutput(usr, SPAN_NOTICE("Adding antagonist of type \"[selected_keyvalue]\" to mob [M.real_name] (ckey [M.ckey])..."))
+			M.onProcCalled("add_antagonist", list(antag_options[selected_keyvalue], do_equipment == "Yes", do_objectives == "Yes", source = ANTAGONIST_SOURCE_ADMIN, respect_mutual_exclusives = FALSE))
 			var/success = M.mind.add_antagonist(antag_options[selected_keyvalue], do_equipment == "Yes", do_objectives == "Yes", source = ANTAGONIST_SOURCE_ADMIN, respect_mutual_exclusives = FALSE)
 			if (success)
 				boutput(usr, SPAN_NOTICE("Addition successful. [M.real_name] (ckey [M.ckey]) is now \a [selected_keyvalue]."))
+				logTheThing(LOG_ADMIN, usr, "made [key_name(M)] \a [selected_keyvalue]")
+				message_admins("[key_name(usr)] made [key_name(M)] \a [selected_keyvalue]")
 				if (length(custom_objective))
 					new /datum/objective/regular(custom_objective, M.mind, M.mind.get_antagonist(antag_options[selected_keyvalue]))
 					tgui_alert(M, "Your objective is: [custom_objective]", "Objective")
@@ -1945,6 +2011,8 @@ var/global/noir = 0
 			boutput(usr, SPAN_NOTICE("Adding antagonist of type \"[selected_keyvalue]\" to mob [M.real_name] (ckey [M.ckey])..."))
 			var/success = M.mind.add_subordinate_antagonist(antag_options[selected_keyvalue], do_equipment == "Yes", do_objectives == "Yes", source = ANTAGONIST_SOURCE_ADMIN, master = master.mind)
 			if (success)
+				logTheThing(LOG_ADMIN, usr, "made [key_name(M)] \a [selected_keyvalue] antagonist")
+				message_admins("[key_name(usr)] made [key_name(M)] \a [selected_keyvalue] antagonist")
 				boutput(usr, SPAN_NOTICE("Addition successful. [M.real_name] (ckey [M.ckey]) is now \a [selected_keyvalue]."))
 			else
 				boutput(usr, SPAN_ALERT("Addition failed with return code [success]. The mob may be incompatible. Report this to a coder."))
@@ -1962,6 +2030,8 @@ var/global/noir = 0
 			boutput(usr, SPAN_NOTICE("Removing antagonist of type \"[antag.id]\" from mob [M.real_name] (ckey [M.ckey])..."))
 			var/success = M.mind.remove_antagonist(antag)
 			if (success)
+				logTheThing(LOG_ADMIN, usr, "removed [antag.id] antagonist from [key_name(M)]")
+				message_admins("[key_name(usr)] removed [antag.id] antagonist from [key_name(M)]")
 				boutput(usr, SPAN_NOTICE("Removal successful.[length(M.mind.antagonists) ? "" : " As this was [M.real_name] (ckey [M.ckey])'s only antagonist role, their antagonist status is now fully removed."]"))
 			else
 				boutput(usr, SPAN_ALERT("Removal failed with return code [success]; report this to a coder."))
@@ -1978,6 +2048,8 @@ var/global/noir = 0
 			boutput(usr, SPAN_NOTICE("Removing all antagonist statuses from [M.real_name] (ckey [M.ckey])..."))
 			var/success = M.mind.wipe_antagonists()
 			if (success)
+				logTheThing(LOG_ADMIN, usr, "removed all antagonists from [key_name(M)]")
+				message_admins("[key_name(usr)] removed all antagonists from [key_name(M)]")
 				boutput(usr, SPAN_NOTICE("Removal successful. [M.real_name] (ckey [M.ckey]) is no longer an antagonist."))
 			else
 				boutput(usr, SPAN_ALERT("Removal failed with return code [success]; report this to a coder."))
@@ -2013,19 +2085,19 @@ var/global/noir = 0
 					dat += "<strong>IF YOU DEMOTE YOURSELF YOU CANNOT UNDO IT FOR THE REST OF THE ROUND!!!</strong><br>"
 				if (src.level >= LEVEL_CODER)
 					dat += {"
-							<A href='?src=\ref[src];action=chgadlvl;type=Coder;target=\ref[C]'>Coder</A><BR>
+							<A href='byond://?src=\ref[src];action=chgadlvl;type=Coder;target=\ref[C]'>Coder</A><BR>
 							"}
 				if (src.level >= LEVEL_ADMIN)
-					dat += "<A href='?src=\ref[src];action=chgadlvl;type=Administrator;target=\ref[C]'>Administrator</A><BR>"
-					dat += "<A href='?src=\ref[src];action=chgadlvl;type=Primary Administrator;target=\ref[C]'>Primary Administrator</A><BR>"
+					dat += "<A href='byond://?src=\ref[src];action=chgadlvl;type=Administrator;target=\ref[C]'>Administrator</A><BR>"
+					dat += "<A href='byond://?src=\ref[src];action=chgadlvl;type=Primary Administrator;target=\ref[C]'>Primary Administrator</A><BR>"
 				if (src.level >= LEVEL_PA)
 					dat += {"
-							<A href='?src=\ref[src];action=chgadlvl;type=Intermediate Administrator;target=\ref[C]'>Intermediate Administrator</A><BR>
-							<A href='?src=\ref[src];action=chgadlvl;type=Secondary Administrator;target=\ref[C]'>Secondary Administrator</A><BR>
-							<A href='?src=\ref[src];action=chgadlvl;type=Moderator;target=\ref[C]'>Moderator</A><BR>
-							<A href='?src=\ref[src];action=chgadlvl;type=Ayn Rand%27s Armpit;target=\ref[C]'>Ayn Rand's Armpit</A><BR>
-							<A href='?src=\ref[src];action=chgadlvl;type=Goat Fart;target=\ref[C]'>Goat Fart</A><BR>
-							<A href='?src=\ref[src];action=chgadlvl;type=Remove;target=\ref[C]'>Remove Admin</A><BR>
+							<A href='byond://?src=\ref[src];action=chgadlvl;type=Intermediate Administrator;target=\ref[C]'>Intermediate Administrator</A><BR>
+							<A href='byond://?src=\ref[src];action=chgadlvl;type=Secondary Administrator;target=\ref[C]'>Secondary Administrator</A><BR>
+							<A href='byond://?src=\ref[src];action=chgadlvl;type=Moderator;target=\ref[C]'>Moderator</A><BR>
+							<A href='byond://?src=\ref[src];action=chgadlvl;type=Ayn Rand%27s Armpit;target=\ref[C]'>Ayn Rand's Armpit</A><BR>
+							<A href='byond://?src=\ref[src];action=chgadlvl;type=Goat Fart;target=\ref[C]'>Goat Fart</A><BR>
+							<A href='byond://?src=\ref[src];action=chgadlvl;type=Remove;target=\ref[C]'>Remove Admin</A><BR>
 							"}
 				usr.Browse(dat, "window=prom_demot;size=480x300")
 			else
@@ -2078,100 +2150,6 @@ var/global/noir = 0
 			else
 				tgui_alert(usr,"You need to be at least a Primary Adminstrator to promote or demote.")
 
-		if ("object_list")
-			if (src.level >= LEVEL_SA)
-				if (config.allow_admin_spawning && (src.state == 2 || src.level >= LEVEL_SA))
-					var/atom/loc = usr.loc
-
-					var/type = href_list["type"]
-					var/dirty_paths
-					if (istext(type))
-						dirty_paths = list(type)
-					else if (islist(type))
-						dirty_paths = type
-
-					var/paths = list()
-					var/removed_paths = list()
-					for (var/dirty_path in dirty_paths)
-						var/path = text2path(dirty_path)
-						if (!path)
-							removed_paths += dirty_path
-						else if (!ispath(path, /obj) && !ispath(path, /turf) && !ispath(path, /mob))
-							removed_paths += dirty_path
-						else if (ispath(path, /mob) && src.level < LEVEL_SA)
-							removed_paths += dirty_path
-						else
-							paths += path
-						LAGCHECK(LAG_LOW)
-
-					if (!paths)
-						return
-					else if (length(paths) > 5)
-						tgui_alert(usr,"Select five or less object types only, you colossal ass!")
-						return
-					else if (length(removed_paths))
-						tgui_alert(usr,"Spawning of these objects is blocked:\n" + jointext(removed_paths, "\n"))
-						return
-
-					var/list/offset = splittext(href_list["offset"],",")
-					var/number = clamp(text2num(href_list["object_count"]), 1, 100)
-					var/X = length(offset) > 0 ? text2num(offset[1]) : 0
-					var/Y = length(offset) > 1 ? text2num(offset[2]) : 0
-					var/Z = length(offset) > 2 ? text2num(offset[3]) : 0
-					var/direction = text2num(href_list["one_direction"]) // forgive me
-
-					for (var/i = 1 to number)
-						switch (href_list["offset_type"])
-							if ("absolute")
-								for (var/path in paths)
-									var/atom/thing
-									if(ispath(path, /turf))
-										var/turf/T = locate(0 + X,0 + Y,0 + Z)
-										thing = T.ReplaceWith(path, FALSE, TRUE, FALSE, TRUE)
-									else
-										thing = new path(locate(0 + X,0 + Y,0 + Z))
-									thing.set_dir(direction ? direction : SOUTH)
-									LAGCHECK(LAG_LOW)
-
-							if ("relative")
-								if (loc)
-									for (var/path in paths)
-										var/atom/thing
-										if(ispath(path, /turf))
-											var/turf/T = locate(loc.x + X,loc.y + Y,loc.z + Z)
-											thing = T.ReplaceWith(path, FALSE, TRUE, FALSE, TRUE)
-										else
-											thing = new path(locate(loc.x + X,loc.y + Y,loc.z + Z))
-										thing.set_dir(direction ? direction : SOUTH)
-										LAGCHECK(LAG_LOW)
-								else
-									return
-
-						sleep(-1)
-
-					if (number == 1)
-						logTheThing(LOG_ADMIN, usr, "created a [english_list(paths)]")
-						logTheThing(LOG_DIARY, usr, "created a [english_list(paths)]", "admin")
-						for(var/path in paths)
-							if(ispath(path, /mob))
-								message_admins("[key_name(usr)] created a [english_list(paths, 1)]")
-								break
-							LAGCHECK(LAG_LOW)
-					else
-						logTheThing(LOG_ADMIN, usr, "created [number] [english_list(paths)]")
-						logTheThing(LOG_DIARY, usr, "created [number] [english_list(paths)]", "admin")
-						for(var/path in paths)
-							if(ispath(path, /mob))
-								message_admins("[key_name(usr)] created [number] [english_list(paths, 1)]")
-								break
-							LAGCHECK(LAG_LOW)
-					return
-				else
-					tgui_alert(usr,"Object spawning is currently disabled for anyone below the rank of Administrator.")
-					return
-			else
-				tgui_alert(usr,"You need to be at least an Adminstrator to spawn objects.")
-
 		if ("polymorph")
 			if (src.level >= LEVEL_SA) //gave SA+ restricted polymorph
 				var/mob/M = locate(href_list["target"])
@@ -2193,9 +2171,10 @@ var/global/noir = 0
 				var/mob/M = locate(href_list["target"])
 				if (!M)
 					return
-				if (M.ckey && M.ckey == usr.ckey)
-					tgui_alert(usr, "You cannot modify your own antag tokens.")
-					return
+				//frick u im literally an admin
+				// if (M.ckey && M.ckey == usr.ckey)
+				// 	tgui_alert(usr, "You cannot modify your own antag tokens.")
+				// 	return
 				var/tokens = input(usr, "Current Tokens: [M.client.antag_tokens]","Set Antag Tokens to...") as null|num
 				if (isnull(tokens))
 					return
@@ -2313,10 +2292,10 @@ var/global/noir = 0
 							qdel(O)
 							LAGCHECK(LAG_LOW)
 					if("sec_classic1")
-						for(var/obj/item/clothing/suit/fire/O in world)
+						for(var/obj/item/clothing/suit/hazard/fire/O in world)
 							qdel(O)
 							LAGCHECK(LAG_LOW)
-						for(var/obj/grille/O in world)
+						for(var/obj/mesh/grille/O in world)
 							qdel(O)
 							LAGCHECK(LAG_LOW)
 						for(var/obj/machinery/vehicle/pod/O in all_processing_machines())
@@ -2386,7 +2365,7 @@ var/global/noir = 0
 							if(loc.z > 1 || prisonwarped.Find(H))
 								//don't warp them if they aren't ready or are already there
 								continue
-							H.changeStatus("paralysis", 7 SECONDS)
+							H.changeStatus("unconscious", 7 SECONDS)
 							if(H.wear_id)
 								for(var/A in H.wear_id:access)
 									if(A == access_security)
@@ -2513,10 +2492,10 @@ var/global/noir = 0
 							if (tgui_alert(usr,"Do you wish to give everyone brain damage?", "Confirmation", list("Yes", "No")) != "Yes")
 								return
 							for (var/mob/living/carbon/human/H in mobs)
-								if (H.get_brain_damage() < 60)
+								if (H.get_brain_damage() < BRAIN_DAMAGE_MAJOR)
 									if (H.client)
 										H.show_text("<B>You suddenly feel stupid.</B>","red")
-									H.take_brain_damage(min(60 - H.get_brain_damage(), 60)) // 100+ brain damage is lethal.
+									H.take_brain_damage(min(BRAIN_DAMAGE_MAJOR - H.get_brain_damage(), BRAIN_DAMAGE_MAJOR)) // 100+ brain damage is lethal.
 									LAGCHECK(LAG_LOW)
 								else
 									continue
@@ -2529,13 +2508,23 @@ var/global/noir = 0
 					// FUN SECRETS CODE
 					if ("randomguns")
 						if (src.level >= LEVEL_PA)
-							if (tgui_alert(usr,"Do you want to give everyone a gun?", "Confirmation", list("Yes", "No")) != "Yes")
-								return
-							for (var/mob/living/L in mobs)
-								new /obj/random_item_spawner/kineticgun(get_turf(L))
-							message_admins("[key_name(usr)] gave everyone a random firearm.")
-							logTheThing(LOG_ADMIN, usr, "gave everyone a random firearm.")
-							logTheThing(LOG_DIARY, usr, "gave everyone a random firearm.", "admin")
+							switch(tgui_alert(usr, "What kind of guns do you want to give everyone?", "Guns2Give", list("Safe-ish Guns", "ANY GUN", "Cancel")))
+								if("Cancel")
+									return
+								if("Safe-ish Guns")
+									message_admins("[key_name(usr)] gave everyone a random safe firearm.")
+									logTheThing(LOG_ADMIN, usr, "gave everyone a random safe firearm.")
+									logTheThing(LOG_DIARY, usr, "gave everyone a random safe firearm.", "admin")
+									for (var/mob/living/L in mobs)
+										new /obj/random_item_spawner/kineticgun/safer/one(get_turf(L))
+								if("ANY GUN")
+									message_admins("[key_name(usr)] gave everyone a completely random firearm.")
+									logTheThing(LOG_ADMIN, usr, "gave everyone a completely random firearm.")
+									logTheThing(LOG_DIARY, usr, "gave everyone a completely random firearm.", "admin")
+									for (var/mob/living/L in mobs)
+										new /obj/random_item_spawner/kineticgun/fullrandom(get_turf(L))
+
+
 						else
 							tgui_alert(usr,"You must be at least a Primary Administrator")
 							return
@@ -2561,6 +2550,42 @@ var/global/noir = 0
 							boutput(usr, SPAN_ALERT("<B>Time warped!</B>"))
 							logTheThing(LOG_ADMIN, usr, "triggered a time warp.")
 							logTheThing(LOG_DIARY, usr, "triggered a time warp.", "admin")
+						else
+							tgui_alert(usr,"You must be at least a Primary Administrator")
+							return
+					if ("brick_radios")
+						if (src.level >= LEVEL_PA)
+							if (tgui_alert(usr, "Really brick all radios for all time?", "Are you sure?", list("Yes", "Oops misclick")) == "Yes")
+								no_more_radio()
+								message_admins("[key_name(usr)] bricked all radios forever")
+								logTheThing(LOG_ADMIN, usr, "bricked all radios forever")
+								logTheThing(LOG_DIARY, usr, "bricked all radios forever", "admin")
+						else
+							tgui_alert(usr,"You must be at least a Primary Administrator")
+							return
+					if ("airlock_safety")
+						if (src.level >= LEVEL_PA)
+							if (tgui_alert(usr, "Disable all station airlocks safeties?", "Cronch?", list("Yes", "Oops misclick")) == "Yes")
+								for (var/obj/machinery/door/airlock/D in by_type[/obj/machinery/door/airlock])
+									if (D.z != 1)
+										break
+									D.safety = 0
+									LAGCHECK(LAG_LOW)
+								message_admins("[key_name(usr)] disabled the safeties on all station airlocks.")
+								logTheThing(LOG_ADMIN, usr, "disabled the safeties on all station airlocks.")
+								logTheThing(LOG_DIARY, usr, "disabled the safeties on all station airlocks.", "admin")
+						else
+							tgui_alert(usr,"You must be at least a Primary Administrator")
+							return
+
+					if ("detonate_all_pdas")
+						if (src.level >= LEVEL_PA)
+							if (antagonists[ROLE_SPY_THIEF] && length(antagonists[ROLE_SPY_THIEF]))
+								if(tgui_alert(usr, "There are active spy-thieves!", "Antagonist Warning", list("OK", "Oops misclick")) != "OK")
+									return
+							if (tgui_alert(usr, "Really blow up everyone's PDAs?", "BOOM BOOM BOOM BOOM?", list("Yes", "Oops misclick")) == "Yes")
+								for_by_tcl(pda, /obj/item/device/pda2)
+									pda.explode()
 						else
 							tgui_alert(usr,"You must be at least a Primary Administrator")
 							return
@@ -2641,6 +2666,7 @@ var/global/noir = 0
 
 							var/ab_to_do = tgui_input_list(owner, "Which ability?", "[adding ? "Give" : "Remove"] Ability", childrentypesof(/datum/targetable))
 							if (adding)
+								M.onProcCalled("addAbility", list(ab_to_do))
 								M.abilityHolder.addAbility(ab_to_do)
 							else
 								M.abilityHolder.removeAbility(ab_to_do)
@@ -2652,6 +2678,35 @@ var/global/noir = 0
 						else
 							tgui_alert(usr,"You must be at least a Primary Administrator to change player abilities.")
 							return
+					if ("setstatuseffect_one")
+						if(( src.level >= LEVEL_PA ) || ((src.level >= LEVEL_SA) ))
+							var/mob/M = tgui_input_list(owner, "Which player?","Set StatusEffect", sortNames(mobs))
+							//this doesn't seem to work I give up.
+							if (!istype(M))
+								return
+
+							var/list/L = list()
+							for(var/R in concrete_typesof(/datum/statusEffect))
+								L += R
+							sortList(L, /proc/cmp_text_asc)
+							var/datum/statusEffect/effect = tgui_input_list(usr, "Which Status Effect?", "Give Status Effect", L)
+
+							if (!effect)
+								return
+
+							var/duration = input("Duration (in seconds)?","Status Effect Duration") as null|num
+							if (isnull(duration))
+								return
+
+							if (duration <= 0)
+								M.delStatus(initial(effect.id))
+								message_admins("[key_name(usr)] removed the [initial(effect.id)] status-effect from [key_name(M)].")
+							else
+								M.setStatus(initial(effect.id), duration SECONDS)
+								message_admins("[key_name(usr)] added the [initial(effect.id)] status-effect on [key_name(M)] for [duration] seconds.")
+
+						else
+							tgui_alert(usr,"If you are below the rank of Primary Admin, you need to be observing and at least a Secondary Administrator to statuseffect a player.")
 
 					if ("add_reagent_one","remove_reagent_one")
 						if (src.level >= LEVEL_PA)
@@ -2754,6 +2809,34 @@ var/global/noir = 0
 						else
 							tgui_alert(usr,"You must be at least a Primary Administrator to change player abilities.")
 							return
+					if ("setstatuseffect_all")
+						if(( src.level >= LEVEL_PA ) || ((src.level >= LEVEL_SA) ))
+							var/list/L = list()
+							for(var/R in concrete_typesof(/datum/statusEffect))
+								L += R
+							sortList(L, /proc/cmp_text_asc)
+							var/datum/statusEffect/effect = tgui_input_list(usr, "Which Status Effect?", "Give Status Effect", L)
+
+							if (!effect)
+								return
+
+							var/duration = input("Duration (in seconds)?","Status Effect Duration") as null|num
+							if (isnull(duration))
+								return
+
+
+							if (duration <= 0)
+								for(var/mob/living/carbon/human/M in mobs)
+									M.delStatus(initial(effect.id))
+								message_admins("[key_name(usr)] removed the [initial(effect.id)] status-effect from everyone.")
+							else
+								for(var/mob/living/carbon/human/M in mobs)
+									M.setStatus(initial(effect.id), duration SECONDS)
+
+								message_admins("[key_name(usr)] added the [initial(effect.id)] status-effect on everyone for [duration] seconds.")
+
+						else
+							tgui_alert(usr,"If you are below the rank of Primary Admin, you need to be observing and at least a Secondary Administrator to statuseffect a player.")
 
 					if ("add_reagent_all","remove_reagent_all")
 						if (src.level >= LEVEL_PA)
@@ -2797,6 +2880,42 @@ var/global/noir = 0
 
 						else
 							tgui_alert(usr,"You must be at least a Primary Administrator to affect player reagents.")
+							return
+
+					if ("animate_one")
+						if (src.level >= LEVEL_PA)
+							var/mob/M = input("Which mob?","Adding animation") as null|mob in world
+							if (!M)
+								return
+
+							var/animationpick = tgui_input_list(usr, "Select animation.", "Animation", global.animations)
+							if (!animationpick)
+								return
+							call(animationpick)(M)
+
+							message_admins("[key_name(usr)] added animation [animationpick] to [M].")
+							logTheThing(LOG_ADMIN, usr, "added animation [animationpick] to [M].")
+							logTheThing(LOG_DIARY, usr, "added animation [animationpick] to [M].", "admin")
+						else
+							tgui_alert(usr,"You must be at least a Primary Administrator to animate mobs.")
+							return
+
+					if ("animate_all")
+						if (src.level >= LEVEL_PA)
+
+							var/animationpick = tgui_input_list(usr, "Select animation.", "Animation", global.animations)
+							if (!animationpick)
+								return
+
+							for(var/mob/living/carbon/human/M in mobs)
+								SPAWN(0)
+									call(animationpick)(M)
+
+							message_admins("[key_name(usr)] added animation [animationpick] to everyone.")
+							logTheThing(LOG_ADMIN, usr, "added animation [animationpick] to everyone.")
+							logTheThing(LOG_DIARY, usr, "added animation [animationpick] to everyone.", "admin")
+						else
+							tgui_alert(usr,"You must be at least a Primary Administrator to animate mobs.")
 							return
 
 					if ("ballpit")
@@ -2925,8 +3044,8 @@ var/global/noir = 0
 								M.client?.dir = setdir
 								LAGCHECK(LAG_LOW)
 							message_admins("[key_name(usr)] set station direction to [direction].")
-							logTheThing(LOG_ADMIN, src, "set station direction to [direction].")
-							logTheThing(LOG_DIARY, src, "set station direction to [direction]", "admin")
+							logTheThing(LOG_ADMIN, usr, "set station direction to [direction].")
+							logTheThing(LOG_DIARY, usr, "set station direction to [direction]", "admin")
 						else
 							tgui_alert(usr,"You cannot perform this action. You must be of a higher administrative rank!")
 							return
@@ -3046,14 +3165,14 @@ var/global/noir = 0
 							if (!intensity)
 								return
 							var/time = input("Enter length of the shaking effect in seconds.", "length of shaking effect", 1) as num
-							logTheThing(LOG_ADMIN, src, "created a shake effect (intensity [intensity], length [time])")
-							logTheThing(LOG_DIARY, src, "created a shake effect (intensity [intensity], length [time])", "admin")
+							logTheThing(LOG_ADMIN, usr, "created a shake effect (intensity [intensity], length [time])")
+							logTheThing(LOG_DIARY, usr, "created a shake effect (intensity [intensity], length [time])", "admin")
 							message_admins("[key_name(usr)] has created a shake effect (intensity [intensity], length [time]).")
 							for (var/mob/M in mobs)
 								SPAWN(0)
 									shake_camera(M, time * 10, intensity)
 								if (intensity >= 64)
-									M.changeStatus("weakened", 2 SECONDS)
+									M.changeStatus("knockdown", 2 SECONDS)
 
 						else
 							tgui_alert(usr,"You need to be at least a Administrator to shake the camera.")
@@ -3224,8 +3343,6 @@ var/global/noir = 0
 						src.owner:debug_variables(mining_controls)
 					if("mapsettings")
 						src.owner:debug_variables(map_settings)
-					if("ghostnotifications")
-						src.owner:debug_variables(ghost_notifier)
 					if("overlays")
 						overlaytest()
 					if("overlaysrem")
@@ -3265,15 +3382,15 @@ var/global/noir = 0
 							dat += "Round Duration: <B>[round(world.time / 36000)]:[add_zero(world.time / 600 % 60, 2)]:[world.time / 100 % 6][world.time / 100 % 10]</B><BR>"
 							dat += "<B>Emergency shuttle:</B><BR>"
 							if (!emergency_shuttle.online)
-								dat += "<a href='?src=\ref[src];action=call_shuttle&type=1'>Call Shuttle</a><br>"
+								dat += "<a href='byond://?src=\ref[src];action=call_shuttle&type=1'>Call Shuttle</a><br>"
 							else
 								var/timeleft = emergency_shuttle.timeleft()
 								switch(emergency_shuttle.location)
 									if(0)
-										dat += "ETA: <a href='?src=\ref[src];action=edit_shuttle_time'>[(timeleft / 60) % 60]:[add_zero(num2text(timeleft % 60), 2)]</a><BR>"
-										dat += "<a href='?src=\ref[src];action=call_shuttle&type=2'>Send Back</a><br>"
+										dat += "ETA: <a href='byond://?src=\ref[src];action=edit_shuttle_time'>[(timeleft / 60) % 60]:[add_zero(num2text(timeleft % 60), 2)]</a><BR>"
+										dat += "<a href='byond://?src=\ref[src];action=call_shuttle&type=2'>Send Back</a><br>"
 									if(1)
-										dat += "ETA: <a href='?src=\ref[src];action=edit_shuttle_time'>[(timeleft / 60) % 60]:[add_zero(num2text(timeleft % 60), 2)]</a><BR>"
+										dat += "ETA: <a href='byond://?src=\ref[src];action=edit_shuttle_time'>[(timeleft / 60) % 60]:[add_zero(num2text(timeleft % 60), 2)]</a><BR>"
 							dat += "</body></html>"
 							usr.Browse(dat, "window=roundstatus;size=400x500")
 					if("manifest")
@@ -3287,26 +3404,18 @@ var/global/noir = 0
 						dat += "</table>"
 						usr.Browse(dat, "window=manifest;size=440x410")
 					if("jobcaps")
-						job_controls.job_config()
+						usr.client.cmd_job_controls()
 					if("respawn_panel")
 						usr.client.cmd_custom_spawn_event()
 					if("randomevents")
+						//random_events.ui_interact(src.owner.mob)
 						random_events.event_config()
-					if("pathology")
-						pathogen_controller.cdc_main(src)
 					if("motives")
 						simsController.showControls(usr)
+					if("regionallocator")
+						usr.client.region_allocator_panel()
 					if("artifacts")
 						artifact_controls.config()
-					if("ghostnotifier")
-						ghost_notifier.config()
-					if("unelectrify_all")
-						for(var/obj/machinery/door/airlock/D)
-							D.secondsElectrified = 0
-							LAGCHECK(LAG_LOW)
-						message_admins("Admin [key_name(usr)] de-electrified all airlocks.")
-						logTheThing(LOG_ADMIN, usr, "de-electrified all airlocks.")
-						logTheThing(LOG_DIARY, usr, "de-electrified all airlocks.", "admin")
 					if("DNA")
 						var/dat = "<B>Showing DNA from blood.</B><HR>"
 						dat += "<table cellspacing=5><tr><th>Name</th><th>DNA</th><th>Blood Type</th></tr>"
@@ -3343,7 +3452,7 @@ var/global/noir = 0
 
 		if ("view_logs_web")
 			if ((src.level >= LEVEL_MOD) && !src.tempmin)
-				usr << link("http://mini.xkeeper.net/ss13/admin/log-viewer.php?server=[config.server_id]&redownload=1&view=[roundLog_date].html")
+				usr << link("[goonhub_href("/admin/logs/[roundId]")]")
 
 		if ("view_logs")
 			if ((src.level >= LEVEL_MOD) && !src.tempmin)
@@ -3363,17 +3472,6 @@ var/global/noir = 0
 				usr.Browse(adminLogHtml, "window=[logType]_log_[gettxt];size=750x500")
 			else
 				tgui_alert(usr,"You cannot perform this action. You must be of a higher administrative rank!")
-
-		if ("view_logs_pathology_strain")
-			if (src.level >= LEVEL_MOD)
-				var/gettxt
-				if (href_list["presearch"])
-					gettxt = href_list["presearch"]
-				else
-					gettxt = input("Which pathogen tree?", "Pathogen tree") in pathogen_controller.pathogen_trees
-
-				var/adminLogHtml = get_log_data_html(LOG_PATHOLOGY, gettxt, src)
-				usr.Browse(adminLogHtml, "window=pathology_log;size=750x500")
 
 		if ("respawntarget")
 			if (src.level >= LEVEL_SA)
@@ -3509,11 +3607,11 @@ var/global/noir = 0
 
 			usr.client.cmd_view_runtimes()
 
-		if ("viewantaghistory")
-			if (src.level < LEVEL_SA)
-				return tgui_alert(usr,"You must be at least a Secondary Admin to view antag history.")
+		// if ("viewantaghistory")
+		// 	if (src.level < LEVEL_SA)
+		// 		return tgui_alert(usr,"You must be at least a Secondary Admin to view antag history.")
 
-			usr.client.cmd_antag_history(href_list["targetckey"])
+		// 	usr.client.cmd_antag_history(href_list["targetckey"])
 
 		if ("show_player_stats")
 			if (src.level < LEVEL_SA)
@@ -3640,17 +3738,17 @@ var/global/noir = 0
 	dat += "<div class='optionGroup' style='border-color:#AEC6CF'><b class='title' style='background:#AEC6CF'>Game Info</b>"
 
 	//Map name
-	dat += "Current map: <A href='?src=\ref[src];action=switch_map'>[getMapNameFromID(map_setting)]</A>"
+	dat += "Current map: <A href='byond://?src=\ref[src];action=switch_map'>[getMapNameFromID(map_setting)]</A>"
 	if (mapSwitcher.next)
 		dat += " (Next map: [mapSwitcher.next])"
 
 	if (mapSwitcher.votingAllowed)
-		dat += " (Vote: <A href='?src=\ref[src];action=start_map_vote'>Start</A> | <A href='?src=\ref[src];action=end_map_vote'>End</A> | <A href='?src=\ref[src];action=cancel_map_vote'>Cancel</A>)"
+		dat += " (Vote: <A href='byond://?src=\ref[src];action=start_map_vote'>Start</A> | <A href='byond://?src=\ref[src];action=end_map_vote'>End</A> | <A href='byond://?src=\ref[src];action=cancel_map_vote'>Cancel</A>)"
 
 	dat += "<br>"
 
 	//Station name
-	dat += "Station Name: <A href='?src=\ref[src];action=change_station_name'>[station_name()]</A><br>"
+	dat += "Station Name: <A href='byond://?src=\ref[src];action=change_station_name'>[station_name()]</A><br>"
 
 	var/shuttletext = " " //setup shuttle message
 	if(!emergency_shuttle) return // runtime error fix
@@ -3658,11 +3756,11 @@ var/global/noir = 0
 		switch(emergency_shuttle.location)
 			if(0)// centcom
 				if (emergency_shuttle.direction == 1)
-					shuttletext = "Coming to Station (ETA: [round(emergency_shuttle.timeleft()/60)])"
+					shuttletext = "Coming to Station (ETA: [round(emergency_shuttle.timeleft())] sec)"
 				if (emergency_shuttle.direction == -1)
-					shuttletext = "Returning to Centcom (ETA: [round(emergency_shuttle.timeleft()/60)])"
+					shuttletext = "Returning to Centcom (ETA: [round(emergency_shuttle.timeleft())] sec)"
 			if(1)// ss13
-				shuttletext = "Arrived at Station (ETD: [round(emergency_shuttle.timeleft()/60)])"
+				shuttletext = "Arrived at Station (ETD: [round(emergency_shuttle.timeleft())] sec)"
 			if(2)// evacuated
 				shuttletext = "Evacuated to Centcom"
 			else
@@ -3675,119 +3773,113 @@ var/global/noir = 0
 		if (current_state >= GAME_STATE_PLAYING)
 			dat += "Current Mode: [ticker.mode.name], Timer at [round(world.time / 36000)]:[add_zero(world.time / 600 % 60, 2)]:[world.time / 100 % 6][world.time / 100 % 10]<br>"
 			if (src.level >= LEVEL_MOD)
-				dat += "<A href='?src=\ref[src];action=c_mode_panel'>Change Next Round's Game Mode</A> - Next: [next_round_mode]<br>"
+				dat += "<A href='byond://?src=\ref[src];action=c_mode_panel'>Change Next Round's Game Mode</A> - Next: [next_round_mode]<br>"
 			if (emergency_shuttle.online)
-				dat += "<a href='?src=\ref[src];action=call_shuttle&type=2'><b>Shuttle Status:</b></a> <a href='?src=\ref[src];action=edit_shuttle_time'>[shuttletext]</a>"
+				dat += "<a href='byond://?src=\ref[src];action=call_shuttle&type=2'><b>Shuttle Status:</b></a> <a href='byond://?src=\ref[src];action=edit_shuttle_time'>[shuttletext]</a>"
 			else
-				dat += "<a href='?src=\ref[src];action=call_shuttle&type=1'><b>Shuttle Status:</b></a> <a href='?src=\ref[src];action=edit_shuttle_time'>[shuttletext]</a>"
-			dat += "<br>Players Can Call: [src.level >= LEVEL_PA ? "<a href='?src=\ref[src];action=toggle_shuttle_calling'>" : null][emergency_shuttle.disabled ? "No" : "Yes"][src.level >= LEVEL_PA ? "</a>" : null]"
-			dat += " | Players Can Recall: [src.level >= LEVEL_PA ? "<a href='?src=\ref[src];action=toggle_shuttle_recalling'>" : null][emergency_shuttle.can_recall ? "Yes" : "No"][src.level >= LEVEL_PA ? "</a>" : null]"
+				dat += "<a href='byond://?src=\ref[src];action=call_shuttle&type=1'><b>Shuttle Status:</b></a> <a href='byond://?src=\ref[src];action=edit_shuttle_time'>[shuttletext]</a>"
+			dat += "<br>Players Can Call: [src.level >= LEVEL_PA ? "<a href='byond://?src=\ref[src];action=toggle_shuttle_calling'>" : null][emergency_shuttle.disabled ? "No" : "Yes"][src.level >= LEVEL_PA ? "</a>" : null]"
+			dat += " | Players Can Recall: [src.level >= LEVEL_PA ? "<a href='byond://?src=\ref[src];action=toggle_shuttle_recalling'>" : null][emergency_shuttle.can_recall ? "Yes" : "No"][src.level >= LEVEL_PA ? "</a>" : null]"
 		else if (current_state <= GAME_STATE_PREGAME)
 			dat += "Current Mode: [master_mode], Game has not started yet.<br>"
 			if (src.level >= LEVEL_MOD)
-				dat += "<A href='?src=\ref[src];action=c_mode_panel'>Change Game Mode</A><br>"
-			dat += "<b>Force players to use random names:</b> <A href='?src=\ref[src];action=secretsfun;type=forcerandomnames'>[force_random_names ? "Yes" : "No"]</a><br>"
-			dat += "<b>Force players to use random appearances:</b> <A href='?src=\ref[src];action=secretsfun;type=forcerandomlooks'>[force_random_looks ? "Yes" : "No"]</a><br>"
-			//dat += "<A href='?src=\ref[src];action=secretsfun;type=forcerandomnames'>Politely suggest all players use random names</a>" // lol
+				dat += "<A href='byond://?src=\ref[src];action=c_mode_panel'>Change Game Mode</A><br>"
+			dat += "<b>Force players to use random names:</b> <A href='byond://?src=\ref[src];action=secretsfun;type=forcerandomnames'>[force_random_names ? "Yes" : "No"]</a><br>"
+			dat += "<b>Force players to use random appearances:</b> <A href='byond://?src=\ref[src];action=secretsfun;type=forcerandomlooks'>[force_random_looks ? "Yes" : "No"]</a><br>"
+			//dat += "<A href='byond://?src=\ref[src];action=secretsfun;type=forcerandomnames'>Politely suggest all players use random names</a>" // lol
 	if (src.level >= LEVEL_SA)
 		dat += "<hr>"
-		dat += "<A href='?src=\ref[src];action=create_object'>Create Object</A><br>"
-		dat += "<A href='?src=\ref[src];action=create_turf'>Create Turf</A><br>"
-		dat += "<A href='?src=\ref[src];action=create_mob'>Create Mob</A>"
+		dat += "<A href='byond://?src=\ref[src];action=create_object'>Create Object</A><br>"
+		dat += "<A href='byond://?src=\ref[src];action=create_turf'>Create Turf</A><br>"
+		dat += "<A href='byond://?src=\ref[src];action=create_mob'>Create Mob</A>"
 		// Moved from SG to PA. They can do this through build mode anyway (Convair880).
 
 	dat += "</div>"
 
 	dat += {"<hr><div class='optionGroup' style='border-color:#FF6961'><b class='title' style='background:#FF6961'>Admin Tools</b>
-				<A href='?src=\ref[src];action=secretsadmin;type=check_antagonist'>Antagonists</A><BR>
-				<A href='?src=\ref[src];action=secretsadmin;type=jobcaps'>Job Controls</A><BR>
-				<A href='?src=\ref[src];action=secretsadmin;type=respawn_panel'>Ghost Spawn Panel</A><BR>
-				<A href='?src=\ref[src];action=secretsadmin;type=randomevents'>Random Event Controls</A><BR>
-				<A href='?src=\ref[src];action=secretsadmin;type=artifacts'>Artifact Controls</A><BR>
-				<A href='?src=\ref[src];action=secretsadmin;type=pathology'>CDC</A><BR>
-				<A href='?src=\ref[src];action=secretsadmin;type=motives'>Motive Control</A><BR>
-				<A href='?src=\ref[src];action=secretsadmin;type=ghostnotifier'>Ghost Notification Controls</A><BR>
-				<A href='?src=\ref[src];action=secretsadmin;type=unelectrify_all'>De-electrify all Airlocks</A><BR>
-				<A href='?src=\ref[src];action=secretsadmin;type=manifest'>Crew Manifest</A> |
-				<A href='?src=\ref[src];action=secretsadmin;type=DNA'>Blood DNA</A> |
-				<A href='?src=\ref[src];action=secretsadmin;type=fingerprints'>Fingerprints</A><BR>
+				<A href='byond://?src=\ref[src];action=secretsadmin;type=check_antagonist'>Antagonists</A><BR>
+				<A href='byond://?src=\ref[src];action=secretsadmin;type=jobcaps'>Job Controls</A><BR>
+				<A href='byond://?src=\ref[src];action=secretsadmin;type=respawn_panel'>Ghost Spawn Panel</A><BR>
+				<A href='byond://?src=\ref[src];action=secretsadmin;type=randomevents'>Random Event Controls</A><BR>
+				<A href='byond://?src=\ref[src];action=secretsadmin;type=regionallocator'>Region Allocator</A><BR>
+				<A href='byond://?src=\ref[src];action=secretsadmin;type=artifacts'>Artifact Controls</A><BR>
+				<A href='byond://?src=\ref[src];action=secretsadmin;type=motives'>Motive Control</A><BR>
+				<A href='byond://?src=\ref[src];action=secretsadmin;type=manifest'>Crew Manifest</A> |
+				<A href='byond://?src=\ref[src];action=secretsadmin;type=DNA'>Blood DNA</A> |
+				<A href='byond://?src=\ref[src];action=secretsadmin;type=fingerprints'>Fingerprints</A><BR>
 			"}
 #ifdef SECRETS_ENABLED
-	dat += {"<A href='?src=\ref[src];action=secretsadmin;type=ideas'>Fun Admin Ideas</A>"}
+	dat += {"<A href='byond://?src=\ref[src];action=secretsadmin;type=ideas'>Fun Admin Ideas</A>"}
 #endif
 
 	dat += "</div>"
 
 	if (src.level >= LEVEL_ADMIN)
 		dat += {"<hr><div class='optionGroup' style='border-color:#FFB347'><b class='title' style='background:#FFB347'>Coder Tools</b>
-					<A href='?src=\ref[src];action=secretsdebug;type=budget'>Wages/Money</A> |
-					<A href='?src=\ref[src];action=secretsdebug;type=market'>Shipping Market</A> |
-					<A href='?src=\ref[src];action=secretsdebug;type=genetics'>Genetics Research</A> |
-					<A href='?src=\ref[src];action=secretsdebug;type=jobs'>Jobs</A> |
-					<A href='?src=\ref[src];action=secretsdebug;type=hydro'>Hydroponics</A> |
-					<A href='?src=\ref[src];action=secretsdebug;type=manuf'>Manufacturing</A> |
-					<A href='?src=\ref[src];action=secretsdebug;type=radio'>Communications</A> |
-					<A href='?src=\ref[src];action=secretsdebug;type=randevent'>Random Events</A> |
-					<A href='?src=\ref[src];action=secretsdebug;type=disease'>Diseases</A> |
-					<A href='?src=\ref[src];action=secretsdebug;type=mechanic'>Mechanics</A> |
-					<A href='?src=\ref[src];action=secretsdebug;type=artifact'>Artifacts</A> |
-					<A href='?src=\ref[src];action=secretsdebug;type=gauntlet'>Gauntlet</A> |
-					<A href='?src=\ref[src];action=secretsdebug;type=stock'>Stock Market</A> |
-					<A href='?src=\ref[src];action=secretsdebug;type=emshuttle'>Emergency Shuttle</A> |
-					<A href='?src=\ref[src];action=secretsdebug;type=datacore'>Data Core</A> |
-					<A href='?src=\ref[src];action=secretsdebug;type=miningcontrols'>Mining Controls</A> |
-					<A href='?src=\ref[src];action=secretsdebug;type=mapsettings'>Map Settings</A> |
-					<A href='?src=\ref[src];action=secretsdebug;type=ghostnotifications'>Ghost Notifications</A> |
-					<A href='?src=\ref[src];action=secretsdebug;type=overlays'>Overlays</A>
-					<A href='?src=\ref[src];action=secretsdebug;type=overlaysrem'>(Remove)</A> |
-					<A href='?src=\ref[src];action=secretsdebug;type=world'>World</A> |
-					<A href='?src=\ref[src];action=secretsdebug;type=globals'>Global Variables</A> |
-					<A href='?src=\ref[src];action=secretsdebug;type=globalprocs'>Global Procs</A> |
-					<A href='?src=\ref[src];action=secretsdebug;type=testmerges'>Testmerges</A>
+					<A href='byond://?src=\ref[src];action=secretsdebug;type=budget'>Wages/Money</A> |
+					<A href='byond://?src=\ref[src];action=secretsdebug;type=market'>Shipping Market</A> |
+					<A href='byond://?src=\ref[src];action=secretsdebug;type=genetics'>Genetics Research</A> |
+					<A href='byond://?src=\ref[src];action=secretsdebug;type=jobs'>Jobs</A> |
+					<A href='byond://?src=\ref[src];action=secretsdebug;type=hydro'>Hydroponics</A> |
+					<A href='byond://?src=\ref[src];action=secretsdebug;type=manuf'>Manufacturing</A> |
+					<A href='byond://?src=\ref[src];action=secretsdebug;type=radio'>Communications</A> |
+					<A href='byond://?src=\ref[src];action=secretsdebug;type=randevent'>Random Events</A> |
+					<A href='byond://?src=\ref[src];action=secretsdebug;type=disease'>Diseases</A> |
+					<A href='byond://?src=\ref[src];action=secretsdebug;type=mechanic'>Mechanics</A> |
+					<A href='byond://?src=\ref[src];action=secretsdebug;type=artifact'>Artifacts</A> |
+					<A href='byond://?src=\ref[src];action=secretsdebug;type=gauntlet'>Gauntlet</A> |
+					<A href='byond://?src=\ref[src];action=secretsdebug;type=stock'>Stock Market</A> |
+					<A href='byond://?src=\ref[src];action=secretsdebug;type=emshuttle'>Emergency Shuttle</A> |
+					<A href='byond://?src=\ref[src];action=secretsdebug;type=datacore'>Data Core</A> |
+					<A href='byond://?src=\ref[src];action=secretsdebug;type=miningcontrols'>Mining Controls</A> |
+					<A href='byond://?src=\ref[src];action=secretsdebug;type=mapsettings'>Map Settings</A> |
+					<A href='byond://?src=\ref[src];action=secretsdebug;type=overlays'>Overlays</A>
+					<A href='byond://?src=\ref[src];action=secretsdebug;type=overlaysrem'>(Remove)</A> |
+					<A href='byond://?src=\ref[src];action=secretsdebug;type=world'>World</A> |
+					<A href='byond://?src=\ref[src];action=secretsdebug;type=globals'>Global Variables</A> |
+					<A href='byond://?src=\ref[src];action=secretsdebug;type=globalprocs'>Global Procs</A> |
+					<A href='byond://?src=\ref[src];action=secretsdebug;type=testmerges'>Testmerges</A>
 				"}
 
 		dat += "</div>"
 
 	dat += {"<hr><div class='optionGroup' style='border-color:#77DD77'><b class='title' style='background:#77DD77'>Logs</b>
-				<b><A href='?src=\ref[src];action=view_logs_web'>View all logs - web version</A></b><BR>
-				<A href='?src=\ref[src];action=view_logs;type=all_logs_string'>Search all Logs</A><BR>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_SPEECH]_log'>Speech Log </A>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_SPEECH]_log_string'><small>(Search)</small></A><BR>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_COMBAT]_log'>Combat Log </A>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_COMBAT]_log_string'><small>(Search)</small></A><BR>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_OOC]_log'>OOC Log </A>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_OOC]_log_string'><small>(Search)</small></A><BR>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_STATION]_log'>Station Log </A>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_STATION]_log_string'><small>(Search)</small></A><BR>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_PDAMSG]_log'>PDA Message Log </A>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_PDAMSG]_log_string'><small>(Search)</small></A><BR>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_TELEPATHY]_log'>Telepathy Log </A>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_TELEPATHY]_log_string'><small>(Search)</small></A><BR>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_ADMIN]_log'>Admin Log</A>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_ADMIN]_log_string'><small>(Search)</small></A><BR>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_GAMEMODE]_log'>Gamemode Log</A>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_GAMEMODE]_log_string'><small>(Search)</small></A><BR>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_DEBUG]_log'>Debug Log</A>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_DEBUG]_log_string'><small>(Search)</small></A><BR>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_AHELP]_log'>Adminhelp Log</A>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_AHELP]_log_string'><small>(Search)</small></A><BR>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_MHELP]_log'>Mentorhelp Log</A>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_MHELP]_log_string'><small>(Search)</small></A><BR>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_BOMBING]_log'>Bombing Log</A>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_BOMBING]_log_string'><small>(Search)</small></A><BR>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_SIGNALERS]_log'>Signaler Log</A>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_SIGNALERS]_log_string'><small>(Search)</small></A><BR>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_PATHOLOGY]_log'>Pathology Log</A>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_PATHOLOGY]_log_string'><small>(Search)</small></A>
-				<A href='?src=\ref[src];action=view_logs_pathology_strain'><small>(Find pathogen)</small></A><BR>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_VEHICLE]_log'>Vehicle Log</A>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_VEHICLE]_log_string'><small>(Search)</small></A><br>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_CHEMISTRY]_log'>Chemistry Log</A>
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_CHEMISTRY]_log_string'><small>(Search)</small></A><br>
+				<b><A href='byond://?src=\ref[src];action=view_logs_web'>View all logs - web version</A></b><BR>
+				<A href='byond://?src=\ref[src];action=view_logs;type=all_logs_string'>Search all Logs</A><BR>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_SPEECH]_log'>Speech Log </A>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_SPEECH]_log_string'><small>(Search)</small></A><BR>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_COMBAT]_log'>Combat Log </A>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_COMBAT]_log_string'><small>(Search)</small></A><BR>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_OOC]_log'>OOC Log </A>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_OOC]_log_string'><small>(Search)</small></A><BR>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_STATION]_log'>Station Log </A>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_STATION]_log_string'><small>(Search)</small></A><BR>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_PDAMSG]_log'>PDA Message Log </A>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_PDAMSG]_log_string'><small>(Search)</small></A><BR>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_TELEPATHY]_log'>Telepathy Log </A>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_TELEPATHY]_log_string'><small>(Search)</small></A><BR>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_ADMIN]_log'>Admin Log</A>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_ADMIN]_log_string'><small>(Search)</small></A><BR>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_GAMEMODE]_log'>Gamemode Log</A>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_GAMEMODE]_log_string'><small>(Search)</small></A><BR>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_DEBUG]_log'>Debug Log</A>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_DEBUG]_log_string'><small>(Search)</small></A><BR>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_AHELP]_log'>Adminhelp Log</A>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_AHELP]_log_string'><small>(Search)</small></A><BR>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_MHELP]_log'>Mentorhelp Log</A>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_MHELP]_log_string'><small>(Search)</small></A><BR>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_BOMBING]_log'>Bombing Log</A>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_BOMBING]_log_string'><small>(Search)</small></A><BR>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_SIGNALERS]_log'>Signaler Log</A>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_SIGNALERS]_log_string'><small>(Search)</small></A><BR>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_VEHICLE]_log'>Vehicle Log</A>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_VEHICLE]_log_string'><small>(Search)</small></A><br>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_CHEMISTRY]_log'>Chemistry Log</A>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_CHEMISTRY]_log_string'><small>(Search)</small></A><br>
 				Topic Log <!-- Viewing the entire log will usually just crash the admin's client, so let's not allow that -->
-				<A href='?src=\ref[src];action=view_logs;type=[LOG_TOPIC]_log_string'><small>(Search)</small></A><br>
+				<A href='byond://?src=\ref[src];action=view_logs;type=[LOG_TOPIC]_log_string'><small>(Search)</small></A><br>
 				<hr>
-				<A href='?src=\ref[src];action=view_runtimes'>View Runtimes</A>
+				<A href='byond://?src=\ref[src];action=view_runtimes'>View Runtimes</A>
 			"}
 
 	dat += "</div>"
@@ -3796,54 +3888,63 @@ var/global/noir = 0
 	if (src.level >= LEVEL_PA || (src.level == LEVEL_SA && usr.client.holder.state == 2))
 		dat += {"<hr><div class='optionGroup' style='border-color:#B57EDC'><b class='title' style='background:#B57EDC'>Fun Secrets</b>
 					<b>Transformation:</b>
-						<A href='?src=\ref[src];action=secretsfun;type=transform_one'>One</A> *
-						<A href='?src=\ref[src];action=secretsfun;type=transform_all'>All</A><BR>
-					<b>Add Bio-Effect<A href='?src=\ref[src];action=secretsfun;type=bioeffect_help'>*</a>:</b>
-						<A href='?src=\ref[src];action=secretsfun;type=add_bioeffect_one'>One</A> *
-						<A href='?src=\ref[src];action=secretsfun;type=add_bioeffect_all'>All</A><BR>
+						<A href='byond://?src=\ref[src];action=secretsfun;type=transform_one'>One</A> *
+						<A href='byond://?src=\ref[src];action=secretsfun;type=transform_all'>All</A><BR>
+					<b>Add Bio-Effect<A href='byond://?src=\ref[src];action=secretsfun;type=bioeffect_help'>*</a>:</b>
+						<A href='byond://?src=\ref[src];action=secretsfun;type=add_bioeffect_one'>One</A> *
+						<A href='byond://?src=\ref[src];action=secretsfun;type=add_bioeffect_all'>All</A><BR>
 					<b>Remove Bio-Effect:</b>
-						<A href='?src=\ref[src];action=secretsfun;type=remove_bioeffect_one'>One</A> *
-						<A href='?src=\ref[src];action=secretsfun;type=remove_bioeffect_all'>All</A><BR>
+						<A href='byond://?src=\ref[src];action=secretsfun;type=remove_bioeffect_one'>One</A> *
+						<A href='byond://?src=\ref[src];action=secretsfun;type=remove_bioeffect_all'>All</A><BR>
 					<b>Add Ability:</b>
-						<A href='?src=\ref[src];action=secretsfun;type=add_ability_one'>One</A> *
-						<A href='?src=\ref[src];action=secretsfun;type=add_ability_all'>All</A><BR>
+						<A href='byond://?src=\ref[src];action=secretsfun;type=add_ability_one'>One</A> *
+						<A href='byond://?src=\ref[src];action=secretsfun;type=add_ability_all'>All</A><BR>
 					<b>Remove Ability:</b>
-						<A href='?src=\ref[src];action=secretsfun;type=remove_ability_one'>One</A> *
-						<A href='?src=\ref[src];action=secretsfun;type=remove_ability_all'>All</A><BR>
-					<b>Add Reagent<A href='?src=\ref[src];action=secretsfun;type=reagent_help'>*</a>:</b>
-						<A href='?src=\ref[src];action=secretsfun;type=add_reagent_one'>One</A> *
-						<A href='?src=\ref[src];action=secretsfun;type=add_reagent_all'>All</A><BR>
+						<A href='byond://?src=\ref[src];action=secretsfun;type=remove_ability_one'>One</A> *
+						<A href='byond://?src=\ref[src];action=secretsfun;type=remove_ability_all'>All</A><BR>
+					<b>Set StatusEffect:</b>
+						*
+						<A href='byond://?src=\ref[src];action=secretsfun;type=setstatuseffect_all'>All</A><BR>
+					<b>Add Reagent<A href='byond://?src=\ref[src];action=secretsfun;type=reagent_help'>*</a>:</b>
+						<A href='byond://?src=\ref[src];action=secretsfun;type=add_reagent_one'>One</A> *
+						<A href='byond://?src=\ref[src];action=secretsfun;type=add_reagent_all'>All</A><BR>
 					<b>Remove Reagent:</b>
-						<A href='?src=\ref[src];action=secretsfun;type=remove_reagent_one'>One</A> *
-						<A href='?src=\ref[src];action=secretsfun;type=remove_reagent_all'>All</A><BR>
-					<A href='?src=\ref[src];action=secretsfun;type=traitor_all'>Make everyone an Antagonist</A><BR>
-					<A href='?src=\ref[src];action=secretsfun;type=critterize_all'>Critterize everyone</A><BR>
-					<A href='?src=\ref[src];action=secretsfun;type=stupify'>Give everyone severe brain damage</A><BR>
-					<A href='?src=\ref[src];action=secretsfun;type=flipstation'>Set station direction</A><BR>
-					<A href='?src=\ref[src];action=secretsfun;type=yeolde'>Replace all airlocks with doors</A><BR>
-					<A href='?src=\ref[src];action=secretsfun;type=woodstation'>Replace all floors and walls with wood</A><BR>
-					<A href='?src=\ref[src];action=secretsfun;type=ballpit'>Replace all pools with ballpits</A><BR>
-					<A href='?src=\ref[src];action=secretsfun;type=raiseundead'>Raise all human corpses as undead</A><BR>
-					<A href='?src=\ref[src];action=secretsfun;type=swaprooms'>Swap station rooms around</A><BR>
-					<A href='?src=\ref[src];action=secretsfun;type=randomguns'>Give everyone a random firearm</A><BR>
-					<A href='?src=\ref[src];action=secretsfun;type=timewarp'>Set up a time warp</A><BR>
+						<A href='byond://?src=\ref[src];action=secretsfun;type=remove_reagent_one'>One</A> *
+						<A href='byond://?src=\ref[src];action=secretsfun;type=remove_reagent_all'>All</A><BR>
+					<b>Add Mob Animation:</b>
+						<A href='byond://?src=\ref[src];action=secretsfun;type=animate_one'>One</A> *
+						<A href='byond://?src=\ref[src];action=secretsfun;type=animate_all'>All</A><BR>
+					<A href='byond://?src=\ref[src];action=secretsfun;type=traitor_all'>Make everyone an Antagonist</A><BR>
+					<A href='byond://?src=\ref[src];action=secretsfun;type=critterize_all'>Critterize everyone</A><BR>
+					<A href='byond://?src=\ref[src];action=secretsfun;type=stupify'>Give everyone severe brain damage</A><BR>
+					<A href='byond://?src=\ref[src];action=secretsfun;type=flipstation'>Set station direction</A><BR>
+					<A href='byond://?src=\ref[src];action=secretsfun;type=yeolde'>Replace all airlocks with doors</A><BR>
+					<A href='byond://?src=\ref[src];action=secretsfun;type=woodstation'>Replace all floors and walls with wood</A><BR>
+					<A href='byond://?src=\ref[src];action=secretsfun;type=ballpit'>Replace all pools with ballpits</A><BR>
+					<A href='byond://?src=\ref[src];action=secretsfun;type=raiseundead'>Raise all human corpses as undead</A><BR>
+					<A href='byond://?src=\ref[src];action=secretsfun;type=swaprooms'>Swap station rooms around</A><BR>
+					<A href='byond://?src=\ref[src];action=secretsfun;type=randomguns'>Give everyone a random firearm</A><BR>
+					<A href='byond://?src=\ref[src];action=secretsfun;type=timewarp'>Set up a time warp</A><BR>
+					<A href='byond://?src=\ref[src];action=secretsfun;type=brick_radios'>Completely disable all radios ever</A><BR>
+					<A href='byond://?src=\ref[src];action=secretsfun;type=airlock_safety'>Disable all airlock's safeties.</A><BR>
+					<A href='byond://?src=\ref[src];action=secretsfun;type=detonate_all_pdas'>Detonate all PDAs</A><BR>
 				"}
 	if (src.level >= LEVEL_ADMIN)
-		dat += {"<A href='?src=\ref[src];action=secretsfun;type=sawarms'>Give everyone saws for arms</A><BR>
-				<A href='?src=\ref[src];action=secretsfun;type=emag_all_things'>Emag everything</A><BR>
-				<A href='?src=\ref[src];action=secretsfun;type=noir'>Noir</A><BR>
-				<A href='?src=\ref[src];action=secretsfun;type=the_great_switcharoo'>The Great Switcharoo</A><BR>
-				<A href='?src=\ref[src];action=secretsfun;type=fartyparty'>Farty Party All The Time</A><BR>
+		dat += {"<A href='byond://?src=\ref[src];action=secretsfun;type=sawarms'>Give everyone saws for arms</A><BR>
+				<A href='byond://?src=\ref[src];action=secretsfun;type=emag_all_things'>Emag everything</A><BR>
+				<A href='byond://?src=\ref[src];action=secretsfun;type=noir'>Noir</A><BR>
+				<A href='byond://?src=\ref[src];action=secretsfun;type=the_great_switcharoo'>The Great Switcharoo</A><BR>
+				<A href='byond://?src=\ref[src];action=secretsfun;type=fartyparty'>Farty Party All The Time</A><BR>
 		"}
 
 	dat += "</div>"
 
 	if (src.level >= LEVEL_ADMIN || (src.level == LEVEL_SA && usr.client.holder.state == 2))
 		dat += {"<hr><div class='optionGroup' style='border-color:#92BB78'><b class='title' style='background:#92BB78'>Roleplaying Panel</b>
-					<A href='?src=\ref[src];action=secretsfun;type=shakecamera'>Apply camera shake</A><BR>
-					<A href='?src=\ref[src];action=secretsfun;type=creepifystation'>Creepify station</A><BR>
-					<A href='?src=\ref[src];action=secretsfun;type=command_report_zalgo'>Command Report (Zalgo)</A><BR>
-					<A href='?src=\ref[src];action=secretsfun;type=command_report_void'>Command Report (Void)</A><BR>
+					<A href='byond://?src=\ref[src];action=secretsfun;type=shakecamera'>Apply camera shake</A><BR>
+					<A href='byond://?src=\ref[src];action=secretsfun;type=creepifystation'>Creepify station</A><BR>
+					<A href='byond://?src=\ref[src];action=secretsfun;type=command_report_zalgo'>Command Report (Zalgo)</A><BR>
+					<A href='byond://?src=\ref[src];action=secretsfun;type=command_report_void'>Command Report (Void)</A><BR>
 				"}
 
 	dat += "</div>"
@@ -3855,6 +3956,8 @@ var/global/noir = 0
 	SET_ADMIN_CAT(ADMIN_CAT_SERVER)
 	set name = "Restart"
 	set desc= "Restarts the world"
+	USR_ADMIN_ONLY
+	SHOW_VERB_DESC
 
 	var/confirm = alert("Restart the game world?", "Restart", "Yes", "Cancel")
 	if(confirm == "Cancel")
@@ -3870,7 +3973,7 @@ var/global/noir = 0
 		ircmsg["msg"] = "manually restarted the server."
 		ircbot.export_async("admin", ircmsg)
 
-		round_end_data(2) //Wire: export_async round end packet (manual restart)
+		roundManagement.recordEnd(crashed = TRUE)
 
 		sleep(3 SECONDS)
 		Reboot_server()
@@ -3879,6 +3982,8 @@ var/global/noir = 0
 	SET_ADMIN_CAT(ADMIN_CAT_FUN)
 	set name = "Announce"
 	set desc="Announce your desires to the world"
+	USR_ADMIN_ONLY
+	SHOW_VERB_DESC
 	var/message = input("Global message to send:", "Admin Announce", null, null)  as message
 	if (message)
 		if(usr.client.holder.rank != "Coder" && usr.client.holder.rank != "Host")
@@ -3891,10 +3996,13 @@ var/global/noir = 0
 	SET_ADMIN_CAT(ADMIN_CAT_SERVER)
 	set desc="Start the round RIGHT NOW"
 	set name="Start Now"
+	USR_ADMIN_ONLY
+	SHOW_VERB_DESC
 	if(!ticker)
 		tgui_alert(usr,"Unable to start the game as it is not set up.")
 		return
 	if(current_state <= GAME_STATE_PREGAME)
+		global.game_force_started = TRUE
 		current_state = GAME_STATE_SETTING_UP
 		logTheThing(LOG_ADMIN, usr, "has started the game.")
 		logTheThing(LOG_DIARY, usr, "has started the game.", "admin")
@@ -3909,7 +4017,8 @@ var/global/noir = 0
 	SET_ADMIN_CAT(ADMIN_CAT_SERVER)
 	set desc="Delay the game start"
 	set name="Delay Round Start"
-
+	USR_ADMIN_ONLY
+	SHOW_VERB_DESC
 	if (current_state > GAME_STATE_PREGAME)
 		return tgui_alert(usr,"Too late... The game has already started!")
 	game_start_delayed = !(game_start_delayed)
@@ -3929,7 +4038,8 @@ var/global/noir = 0
 	SET_ADMIN_CAT(ADMIN_CAT_SERVER)
 	set desc="Delay the server restart"
 	set name="Delay Round End"
-
+	USR_ADMIN_ONLY
+	SHOW_VERB_DESC
 	// If the game end is delayed AT ALL, confirm removing the delay
 	// so that mutiple admins don't end up cancelling their own delays
 	if (game_end_delayed)
@@ -3992,6 +4102,11 @@ var/global/noir = 0
 
 	return chosen
 
+/// Filter proc for admin_spawnable types
+/proc/filter_admin_spawnable(type)
+	var/typeinfo/datum/typeinfo = get_type_typeinfo(type)
+	return typeinfo.admin_spawnable
+
 /proc/get_matches(var/object, var/base = /atom, use_concrete_types=TRUE, only_admin_spawnable=TRUE)
 	var/list/types
 	if(use_concrete_types)
@@ -4003,8 +4118,7 @@ var/global/noir = 0
 
 	for(var/path in types)
 		if(only_admin_spawnable)
-			var/typeinfo/atom/typeinfo = get_type_typeinfo(path)
-			if(!typeinfo.admin_spawnable)
+			if(!filter_admin_spawnable(path))
 				continue
 		if(findtext("[path]$", object))
 			matches += "[path]"
@@ -4088,6 +4202,9 @@ var/global/noir = 0
 					A = new chosen(usr.loc)
 				else
 					A = new chosen(get_turf(usr))
+				if(isobj(A))
+					var/obj/O = A
+					O.initialize(TRUE)
 				if (client.flourish)
 					spawn_animation1(A)
 			logTheThing(LOG_ADMIN, usr, "spawned [chosen] at ([log_loc(usr)])")
@@ -4187,39 +4304,37 @@ var/global/noir = 0
 		return
 
 /datum/admins/proc/show_chatbans(var/client/C)//do not use this as an example of how to write DM please.
-	if( !C.cloud_available() )
-		tgui_alert( "Failed to communicate to Goonhub." )
-		return
 	var/built = {"<title>Chat Bans (todo: prettify)</title>"}
-	if(C.cloud_get( "adminhelp_banner" ))
-		built += "<a href='?src=\ref[src];target=\ref[C];action=ah_unmute' class='alert'>Adminhelp Mute</a> (Last by [C.cloud_get( "adminhelp_banner" )])<br/>"
-		logTheThing(LOG_ADMIN, src, "unmuted [constructTarget(C,"admin")] from adminhelping.")
+	if(C.player?.cloudSaves.getData( "adminhelp_banner" ))
+		built += "<a href='byond://?src=\ref[src];target=\ref[C];action=ah_unmute' class='alert'>Adminhelp Mute</a> (Last by [C.player?.cloudSaves.getData( "adminhelp_banner" )])<br/>"
+		logTheThing(LOG_ADMIN, usr, "unmuted [constructTarget(C,"admin")] from adminhelping.")
 	else
-		built += "<a href='?src=\ref[src];target=\ref[C];action=ah_mute'>Adminhelp Mute</a><br/>"
-		logTheThing(LOG_ADMIN, src, "muted [constructTarget(C,"admin")] from adminhelping.")
+		built += "<a href='byond://?src=\ref[src];target=\ref[C];action=ah_mute'>Adminhelp Mute</a><br/>"
+		logTheThing(LOG_ADMIN, usr, "muted [constructTarget(C,"admin")] from adminhelping.")
 
-	if(C.cloud_get( "mentorhelp_banner" ))
-		built += "<a href='?src=\ref[src];target=\ref[C];action=mh_unmute' class='alert'>Mentorhelp Mute</a> (Last by [C.cloud_get( "mentorhelp_banner" )])<br/>"
-		logTheThing(LOG_ADMIN, src, "unmuted [constructTarget(C,"admin")] from mentorhelping.")
+	if(C.player?.cloudSaves.getData( "mentorhelp_banner" ))
+		built += "<a href='byond://?src=\ref[src];target=\ref[C];action=mh_unmute' class='alert'>Mentorhelp Mute</a> (Last by [C.player?.cloudSaves.getData( "mentorhelp_banner" )])<br/>"
+		logTheThing(LOG_ADMIN, usr, "unmuted [constructTarget(C,"admin")] from mentorhelping.")
 	else
-		built += "<a href='?src=\ref[src];target=\ref[C];action=mh_mute'>Mentorhelp Mute</a><br/>"
-		logTheThing(LOG_ADMIN, src, "muted [constructTarget(C,"admin")] from mentorhelping.")
+		built += "<a href='byond://?src=\ref[src];target=\ref[C];action=mh_mute'>Mentorhelp Mute</a><br/>"
+		logTheThing(LOG_ADMIN, usr, "muted [constructTarget(C,"admin")] from mentorhelping.")
 
-	if(C.cloud_get( "prayer_banner" ))
-		built += "<a href='?src=\ref[src];target=\ref[C];action=pr_unmute' class='alert'>Prayer Mute</a> (Last by [C.cloud_get( "prayer_banner" )])<br/>"
-		logTheThing(LOG_ADMIN, src, "unmuted [constructTarget(C,"admin")] from praying.")
+	if(C.player?.cloudSaves.getData( "prayer_banner" ))
+		built += "<a href='byond://?src=\ref[src];target=\ref[C];action=pr_unmute' class='alert'>Prayer Mute</a> (Last by [C.player?.cloudSaves.getData( "prayer_banner" )])<br/>"
+		logTheThing(LOG_ADMIN, usr, "unmuted [constructTarget(C,"admin")] from praying.")
 	else
-		built += "<a href='?src=\ref[src];target=\ref[C];action=pr_mute'>Prayer Mute</a><br/>"
-		logTheThing(LOG_ADMIN, src, "muted [constructTarget(C,"admin")] from praying.")
+		built += "<a href='byond://?src=\ref[src];target=\ref[C];action=pr_mute'>Prayer Mute</a><br/>"
+		logTheThing(LOG_ADMIN, usr, "muted [constructTarget(C,"admin")] from praying.")
 
 	usr.Browse(built, "window=chatban;size=500x100")
 
 /client/proc/cmd_admin_managebioeffect(var/mob/M in mobs)
-	SET_ADMIN_CAT(ADMIN_CAT_FUN)
+	SET_ADMIN_CAT(ADMIN_CAT_NONE)
 	set name = "Manage Bioeffects"
 	set desc = "Select a mob to manage its bioeffects."
 	set popup_menu = 0
 	ADMIN_ONLY
+	SHOW_VERB_DESC
 
 	if (isnull(holder.bioeffectmanager))
 		holder.bioeffectmanager = new
@@ -4227,11 +4342,12 @@ var/global/noir = 0
 	holder.bioeffectmanager.ui_interact(src.mob)
 
 /client/proc/cmd_admin_manageabils(var/mob/M in mobs)
-	SET_ADMIN_CAT(ADMIN_CAT_FUN)
+	SET_ADMIN_CAT(ADMIN_CAT_NONE)
 	set name = "Manage Abilities"
 	set desc = "Select a mob to manage its abilities."
 	set popup_menu = 0
 	ADMIN_ONLY
+	SHOW_VERB_DESC
 
 	if (isnull(holder.abilitymanager))
 		holder.abilitymanager = new
@@ -4239,12 +4355,12 @@ var/global/noir = 0
 	holder.abilitymanager.ui_interact(src.mob)
 
 /client/proc/cmd_admin_managetraits(var/mob/M in mobs)
-	SET_ADMIN_CAT(ADMIN_CAT_FUN)
+	SET_ADMIN_CAT(ADMIN_CAT_NONE)
 	set name = "Manage Traits"
 	set desc = "Select a mob to manage its traits."
 	set popup_menu = 0
 	ADMIN_ONLY
-
+	SHOW_VERB_DESC
 	var/list/dat = list()
 	dat += {"
 		<html>
@@ -4292,8 +4408,8 @@ var/global/noir = 0
 		<body>
 		<h1>
 			Traits of [M.name]
-			<a href='?src=\ref[src.holder];action=managetraits;target=\ref[M];origin=managetraits' class="button">&#x1F504;</a>
-			<a href='?src=\ref[src.holder];action=addtrait;target=\ref[M];origin=managetraits' class="button">&#x2795;</a>
+			<a href='byond://?src=\ref[src.holder];action=managetraits;target=\ref[M];origin=managetraits' class="button">&#x1F504;</a>
+			<a href='byond://?src=\ref[src.holder];action=addtrait;target=\ref[M];origin=managetraits' class="button">&#x2795;</a>
 		</h1>
 		<table>
 			<tr>
@@ -4313,8 +4429,8 @@ var/global/noir = 0
 	for (var/datum/trait/trait as anything in traits)
 		dat += {"
 			<tr>
-				<td><a href='?src=\ref[src.holder];action=managetraits_remove;target=\ref[M];trait=\ref[trait];origin=managetraits'>remove</a></td>
-				<td><a href='?src=\ref[src.holder];action=managetraits_debug_vars;trait=\ref[trait];origin=managetraits'>[trait.name]</a></td>
+				<td><a href='byond://?src=\ref[src.holder];action=managetraits_remove;target=\ref[M];trait=\ref[trait];origin=managetraits'>remove</a></td>
+				<td><a href='byond://?src=\ref[src.holder];action=managetraits_debug_vars;trait=\ref[trait];origin=managetraits'>[trait.name]</a></td>
 				<td>[trait.type]
 			</tr>"}
 	dat += "</table></body></html>"
@@ -4327,6 +4443,7 @@ var/global/noir = 0
 	set desc = "Select a mob to manage its mind's objectives."
 	set popup_menu = 0
 	ADMIN_ONLY
+	SHOW_VERB_DESC
 
 	var/list/dat = list()
 	dat += {"
@@ -4375,8 +4492,8 @@ var/global/noir = 0
 		<body>
 		<h1>
 			Objectives of [M.name]
-			<a href='?src=\ref[src.holder];action=manageobjectives;target=\ref[M];origin=manageobjectives' class="button">&#x1F504;</a>
-			<a href='?src=\ref[src.holder];action=addobjective;target=\ref[M];origin=manageobjectives' class="button">&#x2795;</a>
+			<a href='byond://?src=\ref[src.holder];action=manageobjectives;target=\ref[M];origin=manageobjectives' class="button">&#x1F504;</a>
+			<a href='byond://?src=\ref[src.holder];action=addobjective;target=\ref[M];origin=manageobjectives' class="button">&#x2795;</a>
 		</h1>
 		<table>
 			<tr>
@@ -4391,8 +4508,8 @@ var/global/noir = 0
 	for (var/datum/objective/objective as anything in M.mind.objectives)
 		dat += {"
 			<tr>
-				<td><a href='?src=\ref[src.holder];action=manageobjectives_remove;target=\ref[M];objective=\ref[objective];origin=manageobjectives'>remove</a></td>
-				<td><a href='?src=\ref[src.holder];action=manageobjectives_debug_vars;objective=\ref[objective];origin=manageobjectives'>[objective.explanation_text]</a></td>
+				<td><a href='byond://?src=\ref[src.holder];action=manageobjectives_remove;target=\ref[M];objective=\ref[objective];origin=manageobjectives'>remove</a></td>
+				<td><a href='byond://?src=\ref[src.holder];action=manageobjectives_debug_vars;objective=\ref[objective];origin=manageobjectives'>[objective.explanation_text]</a></td>
 				<td>[objective.type]
 			</tr>"}
 	dat += "</table></body></html>"
@@ -4403,13 +4520,15 @@ var/global/noir = 0
 	SET_ADMIN_CAT(ADMIN_CAT_UNUSED)
 	set desc = "Respawn a mob"
 	set popup_menu = 0
+	ADMIN_ONLY
+	SHOW_VERB_DESC
 	if (!M) return
 
 	if (!forced && tgui_alert(src, "Respawn [M]?", "Confirmation", list("Yes", "No")) != "Yes")
 		return
 
-	logTheThing(LOG_ADMIN, src, "respawned [constructTarget(M,"admin")]")
-	logTheThing(LOG_DIARY, src, "respawned [constructTarget(M,"diary")].", "admin")
+	logTheThing(LOG_ADMIN, usr, "respawned [constructTarget(M,"admin")]")
+	logTheThing(LOG_DIARY, usr, "respawned [constructTarget(M,"diary")].", "admin")
 	message_admins("[key_name(src)] respawned [key_name(M)].")
 
 	var/mob/new_player/newM = new()
@@ -4431,9 +4550,10 @@ var/global/noir = 0
 	set name = "Respawn Self"
 	SET_ADMIN_CAT(ADMIN_CAT_SELF)
 	set desc = "Respawn yourself"
-
-	logTheThing(LOG_ADMIN, src, "respawned themselves.")
-	logTheThing(LOG_DIARY, src, "respawned themselves.", "admin")
+	ADMIN_ONLY
+	SHOW_VERB_DESC
+	logTheThing(LOG_ADMIN, usr, "respawned themselves.")
+	logTheThing(LOG_DIARY, usr, "respawned themselves.", "admin")
 	message_admins("[key_name(src)] respawned themselves.")
 
 	var/mob/new_player/M = new()

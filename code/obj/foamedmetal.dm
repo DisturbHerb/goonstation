@@ -9,7 +9,7 @@
 	anchored = ANCHORED
 	name = "foamed metal"
 	desc = "A lightweight foamed metal wall."
-	flags = FPRINT | CONDUCT | USEDELAY
+	flags = CONDUCT | USEDELAY
 	event_handler_flags = USE_FLUID_ENTER
 	var/metal = 1		// 1=aluminium, 2=iron
 	gas_impermeable = TRUE
@@ -43,9 +43,10 @@
 	blob_act(var/power)
 		dispose()
 
-	bullet_act()
+	bullet_act(obj/projectile/P)
 		if(metal==1 || prob(50))
-			dispose()
+			SPAWN(0)
+				dispose()
 
 	attack_hand(var/mob/user)
 		if (user.is_hulk() || (prob(75 - metal*25)))

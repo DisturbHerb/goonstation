@@ -20,34 +20,41 @@ var/global/datum/ircbot/ircbot = new /datum/ircbot()
 					src.load()
 
 	proc
-		//Load the config variables necessary for connections
+		/// Load the config variables necessary for connections
+		/// Successful load indicated by a TRUE return
 		load()
-			if (config)
-				src.interface = config.irclog_url
-				src.loaded = 1
+			. = FALSE
+			if (loadTries >= 5)
+				logTheThing(LOG_DEBUG, null, "<b>IRCBOT:</b> Reached 5 failed config load attempts")
+				logTheThing(LOG_DIARY, null, "<b>IRCBOT:</b> Reached 5 failed config load attempts", "debug")
+				return FALSE
+			src.loadTries++
 
-				if (src.queue && length(src.queue) > 0)
-					if (src.debugging)
-						src.logDebug("Load success, flushing queue: [json_encode(src.queue)]")
-					for (var/x = 1, x <= src.queue.len, x++) //Flush queue
-						src.export(src.queue[x]["iface"], src.queue[x]["args"])
+			if (isnull(config)) // Is there a config?
+				return FALSE
 
-				src.queue = null
-				return 1
-			else
-				loadTries++
-				if (loadTries >= 5)
-					logTheThing(LOG_DEBUG, null, "<b>IRCBOT:</b> Reached 5 failed config load attempts")
-					logTheThing(LOG_DIARY, null, "<b>IRCBOT:</b> Reached 5 failed config load attempts", "debug")
-				return 0
+			src.interface = config.irclog_url
 
+			if (isnull(src.interface)) // Was there no actual URL set?
+				return FALSE
 
-		//Shortcut proc for event-type exports
+			src.loaded = 1
+			if (src.queue && length(src.queue) > 0)
+				if (src.debugging)
+					src.logDebug("Load success, flushing queue: [json_encode(src.queue)]")
+				for (var/i in 1 to length(src.queue)) // Flush queue
+					src.export(src.queue[i]["iface"], src.queue[i]["args"])
+			src.queue = null
+			return TRUE
+
+		/// Shortcut proc for event-type exports
 		event(type, data)
 			set waitfor = FALSE // events async by default because who cares about the result really, we are just notifying the bot about something
-			if (!type) return 0
+			if (!type)
+				return 0
 			var/list/eventArgs = list("type" = type)
-			if (data) eventArgs |= data
+			if (data)
+				eventArgs |= data
 			return src.export("event", eventArgs)
 
 		apikey_scrub(text)
@@ -59,17 +66,17 @@ var/global/datum/ircbot/ircbot = new /datum/ircbot()
 		text_args(list/arguments)
 			return src.apikey_scrub(list2params(arguments))
 
-		export_async(iface, args)
+		export_async(iface, api_args)
 			set waitfor = FALSE
-			export(iface, args)
+			export(iface, api_args)
 
-		//Send a message to an irc bot! Yay!
-		export(iface, args)
+		/// Send a message to an irc bot! Yay!
+		export(iface, api_args)
 			if (src.debugging)
-				src.logDebug("Export called with <b>iface:</b> [iface]. <b>args:</b> [text_args(args)]. <b>src.interface:</b> [src.interface]. <b>src.loaded:</b> [src.loaded]")
+				src.logDebug("Export called with <b>iface:</b> [iface]. <b>args:</b> [text_args(api_args)]. <b>src.interface:</b> [src.interface]. <b>src.loaded:</b> [src.loaded]")
 
 			if (!config || !src.loaded)
-				src.queue += list(list("iface" = iface, "args" = args))
+				src.queue += list(list("iface" = iface, "args" = api_args))
 
 				if (src.debugging)
 					src.logDebug("Export, message queued due to unloaded config")
@@ -82,26 +89,26 @@ var/global/datum/ircbot/ircbot = new /datum/ircbot()
 				if (config.env == "dev" || !config.ircbot_api) // If we have no API key, why even bother
 					return null
 
-				args = (args == null ? list() : args)
-				args["server_name"] = (config.server_name ? replacetext(config.server_name, "#", "") : null)
-				args["server"] = serverKey
-				args["api_key"] = (config.ircbot_api ? config.ircbot_api : null)
+				api_args = (api_args == null ? list() : api_args)
+				api_args["server_name"] = (config.server_name ? replacetext(config.server_name, "#", "") : null)
+				api_args["server"] = serverKey
+				api_args["api_key"] = (config.ircbot_api ? config.ircbot_api : null)
 
 				if (src.debugging)
-					src.logDebug("Export, final args: [text_args(args)]. Final route: [src.interface]/[iface]?[text_args(args)]")
+					src.logDebug("Export, final args: [text_args(api_args)]. Final route: [src.interface]/[iface]?[text_args(api_args)]")
 
 				var/n_tries = 3
 				var/datum/http_response/response = null
 				while(--n_tries > 0 && (isnull(response) || response.errored))
 					// Via rust-g HTTP
 					var/datum/http_request/request = new()
-					request.prepare(RUSTG_HTTP_METHOD_GET, "[src.interface]/[iface]?[list2params(args)]", "", "")
+					request.prepare(RUSTG_HTTP_METHOD_GET, "[src.interface]/[iface]?[list2params(api_args)]", "", "")
 					request.begin_async()
-					UNTIL(request.is_complete())
+					UNTIL(request.is_complete(), 10 SECONDS)
 					response = request.into_response()
 
 				if (response.errored || !response.body)
-					logTheThing(LOG_DEBUG, null, "<b>IRCBOT:</b> No return data from export. <b>errored:</b> [response.errored] <b>status_code:</b> [response.status_code] <b>iface:</b> [iface]. <b>args:</b> [text_args(args)] <br> <b>error:</b> [response.error]")
+					logTheThing(LOG_DEBUG, null, "<b>IRCBOT:</b> No return data from export. <b>errored:</b> [response.errored] <b>status_code:</b> [response.status_code] <b>iface:</b> [iface]. <b>args:</b> [text_args(api_args)] <br> <b>error:</b> [response.error]")
 					return null
 
 				var/content = response.body
@@ -124,27 +131,27 @@ var/global/datum/ircbot/ircbot = new /datum/ircbot()
 				return contentJson
 
 
-		//Format the response to an irc request juuuuust right
-		response(args)
+		/// Format the response to an irc request juuuuust right
+		response(api_args)
 			if (src.debugging)
-				src.logDebug("Response called with args: [text_args(args)]")
+				src.logDebug("Response called with args: [text_args(api_args)]")
 
-			args = (args == null ? list() : args)
+			api_args = (api_args == null ? list() : api_args)
 
 			if (config?.server_name)
-				args["server_name"] = replacetext(config.server_name, "#", "")
-				args["server"] = replacetext(config.server_name, "#", "") //TEMP FOR BACKWARD COMPAT WITH SHITFORMANT
+				api_args["server_name"] = replacetext(config.server_name, "#", "")
+				api_args["server"] = replacetext(config.server_name, "#", "") //TEMP FOR BACKWARD COMPAT WITH SHITFORMANT
 
 			if (src.debugging)
-				src.logDebug("Response, final args: [text_args(args)]")
+				src.logDebug("Response, final args: [text_args(api_args)]")
 
-			return text_args(args)
+			return text_args(api_args)
 
 
 		toggleDebug(client/C)
 			if (!C) return 0
 			src.debugging = !src.debugging
-			out(C, "IRCBot Debugging [(src.debugging ? "Enabled" : "Disabled")]")
+			boutput(C, "IRCBot Debugging [(src.debugging ? "Enabled" : "Disabled")]")
 			if (src.debugging)
 				var/log = "Debugging Enabled. Datum variables are: "
 				for (var/x = 1, x <= src.vars.len, x++)
@@ -172,6 +179,7 @@ var/global/datum/ircbot/ircbot = new /datum/ircbot()
 	SET_ADMIN_CAT(ADMIN_CAT_SERVER_TOGGLES)
 
 	ADMIN_ONLY
+	SHOW_VERB_DESC
 
 	ircbot.toggleDebug(src)
 	return 1

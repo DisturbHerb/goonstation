@@ -1,6 +1,5 @@
-@use '../colors.scss';
-@use '../components/Button.scss';
-@use '../base.scss';
+@use '../colors';
+@use '../base';
 
 .chem-dispenser {
   &__buttons {
@@ -15,9 +14,5 @@
     text-overflow: ellipsis;
     text-transform: capitalize;
     white-space: nowrap;
-  }
-
-  &-dispense:hover {
-    overflow: visible;
   }
 }

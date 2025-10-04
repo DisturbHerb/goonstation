@@ -85,7 +85,7 @@
 	update_health()
 		..()
 		var/pct = round(100 * master.health/master.max_health, 1)
-		health.maptext = "<span class='ol vga r' style='color: [rgb(255 * clamp((100 - pct) / 50, 0, 1), 255 * clamp(pct / 50, 1, 0), 0)];'>[add_lspace(pct, 3)]%</span>"
+		health.maptext = "<span class='ol vga r' style='color: [rgb(255 * clamp((100 - pct) / 50, 0, 1), 255 * clamp(pct / 50, 1, 0), 0)];'>[pad_leading(pct, 3)]%</span>"
 		if (pct > 25)
 			core.invisibility = INVIS_NONE
 			coreatk.invisibility = INVIS_ALWAYS
@@ -111,7 +111,7 @@
 							powertext = "<span style='color: yellow;'>↑</span> "
 
 				var/pct = round(100 * master.cell.charge/master.cell.maxcharge, 1)
-				cell.maptext = "<span class='ol vga r' style='color: [rgb(255 * clamp((100 - pct) / 50, 0, 1), 255 * clamp(pct / 50, 1, 0), 0)];'>[powertext][add_lspace(pct,3)]%</span>"
+				cell.maptext = "<span class='ol vga r' style='color: [rgb(255 * clamp((100 - pct) / 50, 0, 1), 255 * clamp(pct / 50, 1, 0), 0)];'>[powertext][pad_leading(pct,3)]%</span>"
 
 		update_tracking()
 			if (master.tracker.tracking)
@@ -169,7 +169,7 @@
 
 			if ("viewport")
 				if(master.deployed_to_eyecam)
-					master.eyecam.create_viewport()
+					master.eyecam.create_viewport(VIEWPORT_ID_AI)
 				else
 					boutput(master, SPAN_ALERT("Deploy to an AI Eye first to create a viewport."))
 			if ("hologram")

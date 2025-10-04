@@ -25,12 +25,6 @@
 	return test == uppertext(test)
 
 /**
-  * Shows the calling client admins.txt
-  */
-/proc/showadminlist()
-	usr.client.Export("##action=browse_file","config/admins.txt")
-
-/**
   * Returns the line matrix from a start atom to an end atom, used in creating line objects
   */
 /proc/getLineMatrix(var/atom/start, var/atom/end)
@@ -100,7 +94,7 @@ var/global/obj/fuckyou/flashDummy
 	O.set_loc(target)
 	playsound(target, 'sound/effects/elec_bigzap.ogg', volume, 1)
 
-	var/list/affected = DrawLine(from, O, /obj/line_obj/elec ,'icons/obj/projectiles.dmi',"WholeLghtn",1,1,"HalfStartLghtn","HalfEndLghtn",OBJ_LAYER,1,PreloadedIcon='icons/effects/LghtLine.dmi')
+	var/list/affected = drawLineObj(from, O, /obj/line_obj/elec ,'icons/obj/projectiles.dmi',"WholeLghtn",1,1,"HalfStartLghtn","HalfEndLghtn",OBJ_LAYER,1,PreloadedIcon='icons/effects/LghtLine.dmi')
 
 	for(var/obj/Q in affected)
 		SPAWN(0.6 SECONDS) qdel(Q)
@@ -130,7 +124,7 @@ var/global/obj/fuckyou/flashDummy
 		O.set_loc(target)
 		target_r = O
 	if(wattage && isliving(target)) //Grilles can reroute arcflashes
-		for(var/obj/grille/L in range(target,1)) // check for nearby grilles
+		for(var/obj/mesh/grille/L in range(target,1)) // check for nearby grilles
 			var/arcprob = L.material?.getProperty("electrical") >= 6 ? 60 : 30
 			if(!L.ruined && L.anchored)
 				if (prob(arcprob) && L.get_connection()) // hopefully half the default is low enough
@@ -140,7 +134,7 @@ var/global/obj/fuckyou/flashDummy
 
 	playsound(target, 'sound/effects/elec_bigzap.ogg', 30, TRUE)
 
-	var/list/affected = DrawLine(from, target_r, /obj/line_obj/elec ,'icons/obj/projectiles.dmi',"WholeLghtn",1,1,"HalfStartLghtn","HalfEndLghtn",OBJ_LAYER,1,PreloadedIcon='icons/effects/LghtLine.dmi')
+	var/list/affected = drawLineObj(from, target_r, /obj/line_obj/elec ,'icons/obj/projectiles.dmi',"WholeLghtn",1,1,"HalfStartLghtn","HalfEndLghtn",OBJ_LAYER,1,PreloadedIcon='icons/effects/LghtLine.dmi')
 
 	for(var/obj/O in affected)
 		SPAWN(0.6 SECONDS) qdel(O)
@@ -148,9 +142,9 @@ var/global/obj/fuckyou/flashDummy
 	if(wattage && isliving(target)) //Probably unsafe.
 		target:shock(from, wattage, "chest", stun_coeff, 1)
 	if (isobj(target))
-		if(wattage && istype(target, /obj/grille))
-			var/obj/grille/G = target
-			G.lightningrod(wattage)
+		if(wattage && istype(target, /obj/mesh/grille))
+			var/obj/mesh/grille/G = target
+			G.on_arcflash(wattage)
 	var/elecflashpower = 0
 	if (wattage > 12000)
 		elecflashpower = 6
@@ -184,10 +178,8 @@ proc/castRay(var/atom/A, var/Angle, var/Distance) //Adapted from some forum stuf
 			if(!(T in crossed)) crossed.Add(T)
 	return crossed
 
-/**
-	* Returns the angle between two given atoms
-	*/
-proc/get_angle(atom/a, atom/b)
+/// Returns the angle between two given atoms
+/proc/get_angle(atom/a, atom/b)
 	var/turf/a_turf = get_turf(a)
 	var/turf/b_turf = get_turf(b)
 	if (isnull(a_turf) || isnull(b_turf))
@@ -260,13 +252,14 @@ proc/get_angle(atom/a, atom/b)
 		return 1
 
 /proc/is_blocked_turf(var/turf/T)
-	// drsingh for cannot read null.density
-	if (!T) return 0
-	if(T.density) return 1
+	. = FALSE
+	if (!T)
+		return FALSE
+	if (T.density)
+		return TRUE
 	for(var/atom/A in T)
-		if(A?.density)//&&A.anchored
-			return 1
-	return 0
+		if(A?.density) // && A.anchored
+			return TRUE
 
 //is_blocked_turf for flock
 /proc/flock_is_blocked_turf(var/turf/T)
@@ -366,6 +359,11 @@ proc/get_angle(atom/a, atom/b)
 	// 	index = findtext(t, ">")
 	. = html_encode(t)
 
+///Strip out weird illegal characters that TGUI discards anyway, see `\improper` and other Byond lunacy
+/proc/strip_illegal_characters(text)
+	var/static/regex/whitelistedWords = regex(@{"([^\u0020-\u8000]+)"})
+	return whitelistedWords.Replace("[text]", "")
+
 ///Cleans up data passed in from network packets for display so it doesn't mess with formatting
 /proc/tidy_net_data(var/t)
 	. = isnum(t) ? t : strip_html(t)
@@ -373,29 +371,26 @@ proc/get_angle(atom/a, atom/b)
 /proc/map_numbers(var/x, var/in_min, var/in_max, var/out_min, var/out_max)
 	. = ((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
 
+/// Adds zeroes to the beginning of a string until it reaches the desired length
 /proc/add_zero(text, desired_length)
-	text = "[text]" // ensure it's a string
-	if ((desired_length - length(text)) <= 0)
-		return text
-	return (num2text(0, desired_length - length(text), 10) + text)
+	. = "[text]" // We stringify this because the input might be a number
+	if ((desired_length - length(.)) <= 0)
+		return .
+	return (num2text(0, desired_length - length(.), 10) + .)
 
-/proc/add_lspace(t, u)
-	// why????? because if you pass this a number,
-	// then -- surprise -- length(t) is ZERO. because it's not text.
-	// so step one is to just. do that.
-	// *scream *scream *scream *scream *scream *scream *scream *scream *scream
-	// *scream *scream *scream *scream *scream *scream *scream *scream *scream
-	// *scream *scream *scream *scream *scream *scream *scream *scream *scream
-	t = "[t]"
-	while(length(t) < u)
-		t = " [t]"
-	. = t
+/// Adds `char` ahead of `text` until it reaches `length` characters total
+/proc/pad_leading(text, length, char = " ")
+	. = "[text]" // We stringify this because the input might be a number
+	var/count = length - length_char(.)
+	var/list/chars_to_add[max(count + 1, 0)]
+	return jointext(chars_to_add, char) + .
 
-/proc/add_tspace(t, u)
-	t = "[t]"
-	while(length(t) < u)
-		t = "[t] "
-	. = t
+/// Adds `char` after `text` until it reaches `length` characters total
+/proc/pad_trailing(text, length, char = " ")
+	. = "[text]" // We stringify this because the input might be a number
+	var/count = length - length_char(.)
+	var/list/chars_to_add[max(count + 1, 0)]
+	return . + jointext(chars_to_add, char)
 
 /proc/dd_file2list(file_path, separator, can_escape=0)
 	if(separator == null)
@@ -404,7 +399,7 @@ proc/get_angle(atom/a, atom/b)
 		. = file_path
 	else
 		. = file(file_path)
-	. = trim(file2text(.))
+	. = trimtext(file2text(.))
 	if(can_escape)
 		. = replacetext(., "\\[separator]", "") // To be complete we should also replace \\ with \ etc. but who cares
 	. = splittext(., separator)
@@ -429,25 +424,6 @@ proc/get_angle(atom/a, atom/b)
 	if(start)
 		. = findtext(text, suffix, start, null) //was findtextEx
 
-/**
- * Given a message, returns a list containing the radio prefix and the message,
- * so that the message can be manipulated seperately in various functions.
- */
-/proc/separate_radio_prefix_and_message(var/message)
-	var/prefix = null
-
-	if (dd_hasprefix(message, ":lh") || dd_hasprefix(message, ":rh") || dd_hasprefix(message, ":in"))
-		prefix = copytext(message, 1, 4)
-		message = copytext(message, 4)
-	else if (dd_hasprefix(message, ":"))
-		prefix = copytext(message, 1, 3)
-		message = copytext(message, 3)
-	else if (dd_hasprefix(message, ";"))
-		prefix = ";"
-		message = copytext(message, 2)
-
-	return list(prefix, message)
-
 /proc/dd_centertext(message, length)
 	. = length(message)
 	if(. == length)
@@ -461,7 +437,7 @@ proc/get_angle(atom/a, atom/b)
 		else if(delta % 2)
 			. = " " + message
 		delta--
-		var/spaces = add_lspace("",delta/2-1)
+		var/spaces = pad_leading("",delta/2-1)
 		. = spaces + . + spaces
 
 /proc/dd_limittext(message, length)
@@ -472,12 +448,12 @@ proc/get_angle(atom/a, atom/b)
 		.= copytext(message, 1, length + 1)
 
 /**
-	* Returns the given degree converted to a text string in the form of a direction
-	*/
-/proc/angle2text(var/degree)
+ * Returns the given degree converted to a text string in the form of a direction
+ */
+/proc/angle2text(degree)
 	. = dir2text(angle2dir(degree))
 
-/proc/text_input(var/Message, var/Title, var/Default, var/length=MAX_MESSAGE_LEN)
+/proc/text_input(Message, Title, var/Default, var/length=MAX_MESSAGE_LEN)
 	. = sanitize(tgui_input_text(usr, Message, Title, Default), length)
 
 /proc/scrubbed_input(var/user, var/Message, var/Title, var/Default, var/length=MAX_MESSAGE_LEN)
@@ -621,15 +597,24 @@ proc/get_angle(atom/a, atom/b)
 			. += T
 
 /**
-	* Returns true if the given key is a guest key
-	*/
+ * Returns true if the given key is a guest key
+ */
 /proc/IsGuestKey(key)
 	. = lowertext(copytext(key, 1, 7)) == "guest-"
 
+/**
+ * Returns true if the given client is a local client
+ */
+/proc/IsLocalClient(client/C)
+	#ifdef LIVE_SERVER
+	. = FALSE
+	#else
+	. = !C.address || C.address == world.host || C.address == "127.0.0.1"
+	#endif
 
 /**
-	* Returns f, ensured that it's a valid frequency
-	*/
+ * Returns f, ensured that it's a valid frequency
+ */
 /proc/sanitize_frequency(var/f)
 	. = round(f)
 	. = clamp(., R_FREQ_MINIMUM, R_FREQ_MAXIMUM) // 144.1 -148.9
@@ -681,18 +666,11 @@ proc/get_angle(atom/a, atom/b)
 	for(var/mob/living/silicon/ghostdrone/M in mobs)
 		. += M
 		LAGCHECK(LAG_REALTIME)
-	for(var/mob/zoldorf/M in mobs)
-		. += M
-		LAGCHECK(LAG_REALTIME)
-	for(var/mob/living/intangible/seanceghost/M in mobs)
-		. += M
-		LAGCHECK(LAG_REALTIME)
 
 //Include details shows traitor status etc
 //Admins replaces the src ref for links with a placeholder for message_admins
 //Mentor just changes the private message link
-/proc/key_name(var/whom, var/include_details = 1, var/admins = 1, var/mentor = 0, var/custom_href=null, mob/user=null, ckey_and_alt_key = FALSE,
-		additional_url_data = null)
+/proc/key_name(var/whom, var/include_details = 1, var/admins = 1, var/mentor = 0, var/custom_href=null, mob/user=null, additional_url_data = null)
 	var/mob/the_mob = null
 	var/client/the_client = null
 	var/the_key = ""
@@ -754,10 +732,7 @@ proc/get_angle(atom/a, atom/b)
 			if (the_client.holder && the_client.stealth && !include_details)
 				text += "Administrator"
 			else if (the_client.holder && the_client.alt_key && !include_details)
-				if(ckey_and_alt_key && FALSE)
-					text += "[the_key] (as [the_client.fakekey])"
-				else
-					text += "[the_client.fakekey]"
+				text += "[the_client.fakekey]"
 			else
 				text += "[the_key]"
 		else
@@ -856,11 +831,11 @@ proc/get_angle(atom/a, atom/b)
 
 		// Note diagonal directions won't usually be accurate
 	if(direction & NORTH)
-		target = locate(target.x, world.maxy-1, target.z)
+		target = locate(target.x, world.maxy, target.z)
 	if(direction & SOUTH)
 		target = locate(target.x, 1, target.z)
 	if(direction & EAST)
-		target = locate(world.maxx-1, target.y, target.z)
+		target = locate(world.maxx, target.y, target.z)
 	if(direction & WEST)
 		target = locate(1, target.y, target.z)
 
@@ -936,7 +911,7 @@ proc/get_adjacent_floor(atom/W, mob/user, px, py)
 
 
 // extends pick() to associated lists
-/proc/alist_pick(var/list/L)
+/proc/alist_pick(list/L)
 	if(!L || !length(L))
 		return null
 	return L[pick(L)]
@@ -1000,33 +975,28 @@ proc/get_adjacent_floor(atom/W, mob/user, px, py)
 // <3 Fire
 // I'm preserving the above comment block, let it be known this proc used to use the variables "n", "pr", "te", "t", "p." I have fixed them. You're welcome.
 // <3 FlamingLily
-/proc/stars(input_text, probability)
-	if(probability == null)
-		probability = 25
-	if(probability <= 0)
-		return null
-	else
-		if (probability >= 100)
-			return input_text
-	var/output_text = ""
-	var/input_length = length(input_text)
-	var/cycle = 1
-	while(cycle <= input_length)
-		if ((copytext(input_text, cycle, cycle + 1) == " " || prob(probability)))
-			output_text = text("[][]", output_text, copytext(input_text, cycle, cycle + 1))
-		else
-			output_text = text("[]*", output_text)
-		cycle++
-	return output_text
+/proc/stars(phrase, probability = 25)
+	if(length(phrase) == 0)
+		return
+	var/list/chars = splittext_char(html_decode(phrase), "")
+	for(var/i in 1 to length(chars))
+		if(chars[i] == " " || !prob(probability))
+			continue
+		chars[i] = "*"
+	return sanitize(jointext(chars, ""))
 
-/proc/stutter(n)
-	var/te = html_decode(n)
-	var/t = ""
-	n = length(n)
-	var/p = null
-	p = 1
-	while(p <= n)
-		var/n_letter = copytext(te, p, p + 1)
+/proc/stutter(text)
+	text = html_decode(text)
+	var/output = ""
+	var/length = length(text)
+	var/pos = null
+	pos = 1
+	while(pos <= length)
+		var/n_letter = copytext(text, pos, pos + 1)
+		if (text2num(n_letter))
+			output += n_letter
+			pos++
+			continue
 		if (prob(80))
 			if (prob(10))
 				n_letter = "[n_letter][n_letter][n_letter][n_letter]"
@@ -1038,35 +1008,45 @@ proc/get_adjacent_floor(atom/W, mob/user, px, py)
 						n_letter = n_letter
 					else
 						n_letter = "[n_letter][n_letter]"
-		t = "[t][n_letter]"
-		p++
-	return copytext(sanitize(t),1,MAX_MESSAGE_LEN)
+		output = "[output][n_letter]"
+		pos++
+	return copytext(sanitize(output), 1, MAX_MESSAGE_LEN)
 
-/proc/shake_camera(mob/M, duration, strength=1, delay=0.2)
-	SPAWN(1 DECI SECOND)
-		if(!M || !M.client || M.shakecamera)
-			return
-		M.shakecamera = 1
-		var/client/client = M.client
 
-		for(var/i=0, i<duration, i++)
-			var/off_x = (rand(0, strength) * (prob(50) ? -1:1))
-			var/off_y = (rand(0, strength) * (prob(50) ? -1:1))
-			if(client)
-				animate(client, pixel_x = off_x, pixel_y = off_y, easing = LINEAR_EASING, time = 1, flags = ANIMATION_RELATIVE)
-			animate(pixel_x = off_x*-1, pixel_y = off_y*-1, easing = LINEAR_EASING, time = 1, flags = ANIMATION_RELATIVE)
-			sleep(delay)
+// Some BYOND builtins don't work with `PROC_REF`, so they need to be wrapped.
+/proc/replacetext_wrapper(haystack, needle, replacement, start = 1, end = 0)
+	return replacetext(haystack, needle, replacement, start, end)
 
-		if (client)
-			client.pixel_x = 0
-			client.pixel_y = 0
-			M.shakecamera = 0
+/proc/uppertext_wrapper(string)
+	return uppertext(string)
 
-/proc/findname(msg)
-	for(var/mob/M in mobs)
-		if (M.real_name == text("[msg]"))
-			return 1
-	return 0
+/proc/ckeyEx_wrapper(string)
+	return ckeyEx(string)
+
+
+/proc/shake_camera(mob/M, duration, strength=1, delay=0.4)
+	if(!M || !M.client)
+		return
+	var/client/client = M.client
+	var/initial_x = client.pixel_x
+	var/initial_y = client.pixel_y
+	for(var/i=0, i<duration, i++)
+		var/magnitude = randfloat(0, strength)
+		var/angle = randfloat(0, 360)
+		var/target_x = magnitude * cos(angle) + initial_x
+		var/target_y = magnitude * sin(angle) + initial_y
+		var/offset_x = target_x - client.pixel_x
+		var/offset_y = target_y - client.pixel_y
+		animate(client, pixel_x = offset_x, pixel_y = offset_y, easing = LINEAR_EASING, time = delay, flags = ANIMATION_RELATIVE | (i != 0 ? ANIMATION_CONTINUE : ANIMATION_PARALLEL))
+	var/offset_x = initial_x - client.pixel_x
+	var/offset_y = initial_y - client.pixel_y
+	animate(pixel_x = offset_x, pixel_y = offset_y, easing = LINEAR_EASING, time = delay, flags = ANIMATION_RELATIVE)
+
+/proc/recoil_camera(mob/M, dir, strength=1, spread=3)
+	if(!M || !M.client || !M.client.recoil_controller)
+		return
+	M.client.recoil_controller.recoil_camera(dir,strength,spread)
+
 
 /proc/get_cardinal_step_away(atom/start, atom/finish) //returns the position of a step from start away from finish, in one of the cardinal directions
 	//returns only NORTH, SOUTH, EAST, or WEST
@@ -1147,17 +1127,9 @@ proc/get_adjacent_floor(atom/W, mob/user, px, py)
 		if(SOUTHWEST)
 			return "southwest"
 
-// Marquesas: added an extra parameter to fix issue with changeling.
-// Unfortunately, it has to be this extra parameter, otherwise the spawn(0) in the mob say will
-// cause the mob's name to revert from the one it acquired for mimic voice.
-/atom/proc/hear_talk(mob/M as mob, text, real_name, lang_id)
-	if (src.open_to_sound)
-		for(var/obj/O in src)
-			O.hear_talk(M,text,real_name, lang_id)
-
 /**
-  * Returns true if given value is a hex value
-  */
+ * Returns true if given value is a hex value
+ */
 /proc/is_hex(hex)
 	if (!( istext(hex) ))
 		return FALSE
@@ -1246,7 +1218,7 @@ proc/outermost_movable(atom/movable/target)
 				var/mob/living/carbon/human/H = A
 				if (H.organHolder.head?.head_type == HEAD_SKELETON) // do they have their head
 					. += A
-			else
+			else if(!isAIeye(A)) // AI camera eyes can't hear
 				. += A
 		if (isobj(A) || ismob(A))
 			if (istype(A, /obj/item/organ/head))	//Skeletons can hear from their heads!
@@ -1279,6 +1251,8 @@ proc/outermost_movable(atom/movable/target)
 	if(T?.vistarget)
 		// this turf is being shown elsewhere through a visual mirror, make sure they get to hear too
 		. |= all_hearers(range, T.vistarget)
+	for (var/turf/listener as anything in T?.listening_turfs)
+		. |= all_hearers(range, listener)
 
 	for(var/atom/movable/screen/viewport_handler/viewport_handler in T?.vis_locs)
 		if(viewport_handler.listens)
@@ -1299,7 +1273,7 @@ proc/outermost_movable(atom/movable/target)
 
 /proc/all_range(var/range,var/centre) //above two are blocked by opaque objects
 	. = list()
-	for (var/atom/A as anything in range(range,centre))
+	for (var/atom/A in range(range,centre))
 		if (ismob(A))
 			. += A
 		else if (isobj(A))
@@ -1313,20 +1287,22 @@ proc/outermost_movable(atom/movable/target)
 			. += M
 
 /proc/weightedprob(choices[], weights[])
-	if(!choices || !weights) return null
-
+	if(!choices || !weights)
+		return null
 	//Build a range of weights
 	var/max_num = 0
-	for(var/X in weights) if(isnum(X)) max_num += X
-
+	for(var/X in weights)
+		if(isnum(X))
+			max_num += X
 	//Now roll in the range.
-	var/weighted_num = rand(1,max_num)
+	var/weighted_num = rand(1, max_num)
 
-	var/running_total, i
+	var/running_total
 
 	//Loop through all possible choices
-	for(i = 1; i <= choices.len; i++)
-		if(i > weights.len) return null
+	for(var/i in 1 to length(choices))
+		if(i > length(weights))
+			return null
 
 		running_total += weights[i]
 
@@ -1335,12 +1311,13 @@ proc/outermost_movable(atom/movable/target)
 		if(weighted_num <= running_total)
 			return choices[i]
 
-/* Get the highest ancestor of this object in the tree that is an immediate child of
-   a given ancestor.
-   Usage:
-   var/datum/fart/sassy/F = new
-   get_top_parent(F, /datum) //returns a path to /datum/fart
-   */
+/**
+ * Get the highest ancestor of this object in the tree that is an immediate child of a given ancestor.
+ *
+ * Usage:
+ * var/datum/fart/sassy/F = new
+ * get_top_parent(F, /datum) //returns a path to /datum/fart
+ */
 /proc/get_top_ancestor(var/datum/object, var/ancestor_of_ancestor=/datum)
 	if(!object || !ancestor_of_ancestor)
 		CRASH("Null value parameters in get top ancestor.")
@@ -1357,34 +1334,34 @@ proc/outermost_movable(atom/movable/target)
 	. = text2path(stringtarget)
 
 /proc/GetRedPart(hex)
-    hex = uppertext(hex)
-    var/hi = text2ascii(hex, 2)
-    var/lo = text2ascii(hex, 3)
-    return ( ((hi >= 65 ? hi-55 : hi-48)<<4) | (lo >= 65 ? lo-55 : lo-48) )
+	hex = uppertext(hex)
+	var/hi = text2ascii(hex, 2)
+	var/lo = text2ascii(hex, 3)
+	return ( ((hi >= 65 ? hi-55 : hi-48)<<4) | (lo >= 65 ? lo-55 : lo-48) )
 
 /proc/GetGreenPart(hex)
-    hex = uppertext(hex)
-    var/hi = text2ascii(hex, 4)
-    var/lo = text2ascii(hex, 5)
-    return ( ((hi >= 65 ? hi-55 : hi-48)<<4) | (lo >= 65 ? lo-55 : lo-48) )
+	hex = uppertext(hex)
+	var/hi = text2ascii(hex, 4)
+	var/lo = text2ascii(hex, 5)
+	return ( ((hi >= 65 ? hi-55 : hi-48)<<4) | (lo >= 65 ? lo-55 : lo-48) )
 
 /proc/GetBluePart(hex)
-    hex = uppertext(hex)
-    var/hi = text2ascii(hex, 6)
-    var/lo = text2ascii(hex, 7)
-    return ( ((hi >= 65 ? hi-55 : hi-48)<<4) | (lo >= 65 ? lo-55 : lo-48) )
+	hex = uppertext(hex)
+	var/hi = text2ascii(hex, 6)
+	var/lo = text2ascii(hex, 7)
+	return ( ((hi >= 65 ? hi-55 : hi-48)<<4) | (lo >= 65 ? lo-55 : lo-48) )
 
 /proc/GetColors(hex)
-    hex = uppertext(hex)
-    var/hi1 = text2ascii(hex, 2)
-    var/lo1 = text2ascii(hex, 3)
-    var/hi2 = text2ascii(hex, 4)
-    var/lo2 = text2ascii(hex, 5)
-    var/hi3 = text2ascii(hex, 6)
-    var/lo3 = text2ascii(hex, 7)
-    return list(((hi1>= 65 ? hi1-55 : hi1-48)<<4) | (lo1 >= 65 ? lo1-55 : lo1-48),
-        ((hi2 >= 65 ? hi2-55 : hi2-48)<<4) | (lo2 >= 65 ? lo2-55 : lo2-48),
-        ((hi3 >= 65 ? hi3-55 : hi3-48)<<4) | (lo3 >= 65 ? lo3-55 : lo3-48))
+	hex = uppertext(hex)
+	var/hi1 = text2ascii(hex, 2)
+	var/lo1 = text2ascii(hex, 3)
+	var/hi2 = text2ascii(hex, 4)
+	var/lo2 = text2ascii(hex, 5)
+	var/hi3 = text2ascii(hex, 6)
+	var/lo3 = text2ascii(hex, 7)
+	return list(((hi1>= 65 ? hi1-55 : hi1-48)<<4) | (lo1 >= 65 ? lo1-55 : lo1-48),
+		((hi2 >= 65 ? hi2-55 : hi2-48)<<4) | (lo2 >= 65 ? lo2-55 : lo2-48),
+		((hi3 >= 65 ? hi3-55 : hi3-48)<<4) | (lo3 >= 65 ? lo3-55 : lo3-48))
 
 //Shoves a jump to link or whatever in the thing :effort:
 /proc/showCoords(x, y, z, plaintext, holder, ghostjump)
@@ -1397,7 +1374,7 @@ proc/outermost_movable(atom/movable/target)
 	else if(ghostjump)
 		text += "<a href='byond://winset?command=.ghostjump [x] [y] [z]' title='Jump to Coords'>[x],[y],[z]</a>"
 	else
-		text += "<a href='?src=[holder ? "\ref[holder]" : "%admin_ref%"];action=jumptocoords;target=[x],[y],[z]' title='Jump to Coords'>[x],[y],[z]</a>"
+		text += "<a href='byond://?src=[holder ? "\ref[holder]" : "%admin_ref%"];action=jumptocoords;target=[x],[y],[z]' title='Jump to Coords'>[x],[y],[z]</a>"
 	return text
 
 // hi I'm haine -throws more crap onto the pile-
@@ -1472,7 +1449,7 @@ proc/RarityClassRoll(var/scalemax = 100, var/mod = 0, var/list/category_boundari
 	if (!A || !isnum(size) || size <= 0)
 		return list()
 
-	var/list/turfs = list()
+	. = list()
 	var/turf/center = get_turf(A)
 
 	var/corner_range = round(size * 1.5)
@@ -1487,9 +1464,7 @@ proc/RarityClassRoll(var/scalemax = 100, var/mod = 0, var/list/category_boundari
 				total_distance = abs(center.x - T.x) + abs(center.y - T.y) + (current_range / 2)
 				if (total_distance > corner_range)
 					continue
-				turfs += T
-
-	return turfs
+				. += T
 
 /proc/get_fraction_of_percentage_and_whole(var/perc,var/whole)
 	if (!isnum(perc) || !isnum(whole) || perc == 0 || whole == 0)
@@ -1602,7 +1577,7 @@ proc/formatTimeText(var/timeValue as num)
 /proc/antag_token_list() //List of all players redeeming antagonist tokens
 	var/list/token_list = list()
 	for(var/mob/new_player/player in mobs)
-		if((player.client) && (player.ready) && ((player.client.using_antag_token)))
+		if((player.client) && (player.ready_play) && ((player.client.using_antag_token)))
 			token_list += player.mind
 	if (!token_list.len)
 		return 0
@@ -1757,12 +1732,12 @@ proc/countJob(rank)
 	src.letter_overlay(letter, lcolor, text2dir(dir))
 
 /// Returns a list of eligible dead players that COULD choose to respawn or whatever
-/proc/eligible_dead_player_list(var/allow_dead_antags = 0, var/require_client = FALSE, var/for_antag = TRUE)
+/proc/eligible_dead_player_list(var/allow_dead_antags = 0, var/require_client = FALSE, var/for_antag = TRUE, allow_dnr = FALSE)
 	. = list()
 	for (var/datum/mind/M in ticker.minds)
 		if (M.current && M.current.client)
 			var/client/C = M.current.client
-			if (dead_player_list_helper(M.current, allow_dead_antags, require_client, for_antag) != 1)
+			if (dead_player_list_helper(M.current, allow_dead_antags, require_client, for_antag, allow_dnr=allow_dnr) != 1)
 				continue
 			if (C.holder && !C.holder.ghost_respawns && !C.player_mode || !M.show_respawn_prompts)
 				continue
@@ -1772,7 +1747,7 @@ proc/countJob(rank)
 /// Text messages: 1: alert | 2: alert (chatbox) | 3: alert acknowledged (chatbox) | 4: no longer eligible (chatbox) | 5: waited too long (chatbox)
 /// for_antag indicates that we are polling for an antag role and so should exclude antag-banned players
 /proc/dead_player_list(var/return_minds = 0, var/confirmation_spawn = 0, var/list/text_messages = list(), var/allow_dead_antags = 0,
-		var/require_client = FALSE, var/do_popup = TRUE, var/for_antag = TRUE)
+		var/require_client = FALSE, var/do_popup = TRUE, var/for_antag = TRUE, allow_dnr = FALSE)
 	var/list/candidates = list()
 	// Confirmation delay specified, so prompt eligible dead mobs and wait for response.
 	if (confirmation_spawn > 0)
@@ -1802,7 +1777,7 @@ proc/countJob(rank)
 		for (var/datum/mind/M in ticker.minds)
 			if (M.current && M.current.client)
 				var/client/C = M.current.client
-				if (dead_player_list_helper(M.current, allow_dead_antags, require_client, for_antag) != 1)
+				if (dead_player_list_helper(M.current, allow_dead_antags, require_client, for_antag, allow_dnr=allow_dnr) != 1)
 					continue
 				if (C.holder && !C.holder.ghost_respawns && !C.player_mode || !M.show_respawn_prompts)
 					continue
@@ -1810,7 +1785,7 @@ proc/countJob(rank)
 					candidates |= M
 					continue
 				SPAWN(0) // Don't lock up the entire proc.
-					M.current.playsound_local(M.current, 'sound/misc/lawnotify.ogg', 50, flags=SOUND_IGNORE_SPACE)
+					M.current.playsound_local(M.current, 'sound/misc/lawnotify.ogg', 50, flags=SOUND_IGNORE_SPACE | SOUND_IGNORE_DEAF)
 					boutput(M.current, text_chat_alert)
 					var/list/ghost_button_prompts = list("Yes", "No", "Stop these")
 					var/response = tgui_alert(M.current, text_alert, "Respawn", ghost_button_prompts, (ghost_timestamp + confirmation_spawn - TIME), autofocus = FALSE)
@@ -1818,7 +1793,7 @@ proc/countJob(rank)
 						if (ghost_timestamp && (TIME > ghost_timestamp + confirmation_spawn))
 							if (M.current) boutput(M.current, text_chat_toolate)
 							return
-						if (dead_player_list_helper(M.current, allow_dead_antags, require_client, for_antag) != 1)
+						if (dead_player_list_helper(M.current, allow_dead_antags, require_client, for_antag, allow_dnr=allow_dnr) != 1)
 							if (M.current) boutput(M.current, text_chat_failed)
 							return
 
@@ -1837,7 +1812,7 @@ proc/countJob(rank)
 		// Filter list again.
 		if (candidates.len)
 			for (var/datum/mind/M2 in candidates)
-				if (!M2.current || !ismob(M2.current) || dead_player_list_helper(M2.current, allow_dead_antags, require_client, for_antag) != 1)
+				if (!M2.current || !ismob(M2.current) || dead_player_list_helper(M2.current, allow_dead_antags, require_client, for_antag, allow_dnr=allow_dnr) != 1)
 					candidates.Remove(M2)
 					continue
 
@@ -1862,7 +1837,7 @@ proc/countJob(rank)
 	candidates = list()
 
 	for (var/mob/O in mobs)
-		if (dead_player_list_helper(O, allow_dead_antags, require_client, for_antag) != 1)
+		if (dead_player_list_helper(O, allow_dead_antags, require_client, for_antag, allow_dnr=allow_dnr) != 1)
 			continue
 		if (!(O in candidates))
 			candidates.Add(O.mind)
@@ -1900,8 +1875,8 @@ proc/countJob(rank)
 	logTheThing(LOG_ADMIN, mind.current, " was chosen to respawn as a random event [respawning_as][is_round_observer ? " after joining as an observer" : ""]. Source: [source ? "[source]" : "random"]")
 
 // So there aren't multiple instances of C&P code (Convair880).
-/proc/dead_player_list_helper(var/mob/G, var/allow_dead_antags = 0, var/require_client = FALSE, var/for_antag = TRUE)
-	if (!G?.mind || G.mind.get_player()?.dnr)
+/proc/dead_player_list_helper(var/mob/G, var/allow_dead_antags = 0, var/require_client = FALSE, var/for_antag = TRUE, allow_dnr = FALSE)
+	if (!G?.mind || !allow_dnr && G.mind.get_player()?.dnr)
 		return 0
 	// if (!isobserver(G) && !(isliving(G) && isdead(G))) // if (NOT /mob/dead) AND NOT (/mob/living AND dead)
 	// 	return 0
@@ -1926,6 +1901,8 @@ proc/countJob(rank)
 
 		if (istype(G, /mob/dead/target_observer))
 			var/mob/dead/target_observer/TO = G
+			if (!TO.is_respawnable)
+				return 0
 			if (TO.ghost && istype(TO.ghost, /mob/dead/observer))
 				the_ghost = TO.ghost
 
@@ -1938,7 +1915,7 @@ proc/countJob(rank)
 	return 1
 
 /proc/check_target_immunity(var/atom/target, var/ignore_everything_but_nodamage = FALSE, var/atom/source = 0)
-	var/is_immune = FALSE
+	. = FALSE
 
 	var/area/a = get_area(target)
 	if(a?.sanctuary)
@@ -1946,27 +1923,25 @@ proc/countJob(rank)
 
 	if (isliving(target))
 		var/mob/living/L = target
-
 		if (!isdead(L))
 			if (ignore_everything_but_nodamage)
 				if (L.nodamage)
-					is_immune = TRUE
+					. = TRUE
 			else
-				if (L.nodamage || L.spellshield)
-					is_immune = TRUE
-
-		if (source && istype(source,/obj/projectile) && ishuman(target))
+				if (L.nodamage || L.hasStatus("spellshield"))
+					. = TRUE
+		if (source && istype(source, /obj/projectile) && ishuman(target))
 			var/mob/living/carbon/human/H = target
 			if(H.stance == "dodge") //matrix dodge flip
-				is_immune = TRUE
-
-	return is_immune
+				if (!ON_COOLDOWN(H, "matrix_sound_effect", 1 SECOND))
+					H.playsound_local(H, 'sound/effects/graffiti_hit.ogg', 40, pitch = 0.8)
+				. = TRUE
 
 /**
-  * Looks up a player based on a string. Searches a shit load of things ~whoa~. Returns a list of mob refs.
-  */
+ * Looks up a player based on a string. Searches a shit load of things ~whoa~. Returns a list of mob refs.
+ */
 /proc/whois(target, limit = null, admin)
-	target = trim(ckey(target))
+	target = trimtext(ckey(target))
 	if (!target)
 		return null
 	. = list()
@@ -2027,8 +2002,8 @@ proc/countJob(rank)
 				return M
 
 /**
-  * Finds whoever's dead.
-	*/
+ * Finds whoever's dead.
+ */
 /proc/whodead()
 	. = list()
 	for (var/mob/M in mobs)
@@ -2048,36 +2023,34 @@ proc/countJob(rank)
 //A global cooldown on this so it doesnt destroy the external server
 var/global/nextDectalkDelay = 1 //seconds
 var/global/lastDectalkUse = 0
-/proc/dectalk(msg)
-	if (!msg || !config.spacebee_api_key) return 0
+///dectalk SAYS its default volume is 5 but it seems to actually be more like 100
+/proc/dectalk(msg, volume = 80)
+	if (!msg) return 0
 	if (TIME > (lastDectalkUse + (nextDectalkDelay * 10)))
 		lastDectalkUse = TIME
 		msg = copytext(msg, 1, 2000)
-
-		// Fetch via HTTP from goonhub
-		var/datum/http_request/request = new()
-		request.prepare(RUSTG_HTTP_METHOD_GET, "[config.spacebee_api_url]/api/tts?dectalk=[url_encode(msg)]&api_key=[config.spacebee_api_key]", "", "")
-		request.begin_async()
-		UNTIL(request.is_complete())
-		var/datum/http_response/response = request.into_response()
-
-		if (response.errored || !response.body)
-			logTheThing(LOG_DEBUG, null, "<b>dectalk:</b> Failed to contact goonhub. msg : [msg]")
+		msg = "\[:volume set [volume]\][msg]"
+		var/datum/apiModel/DectalkPlayResource/playDectalkResource
+		try
+			var/datum/apiRoute/dectalk/play/playDectalk = new
+			playDectalk.buildBody(msg, roundId)
+			playDectalkResource = apiHandler.queryAPI(playDectalk)
+		catch (var/exception/e)
+			var/datum/apiModel/Error/error = e.name
+			logTheThing(LOG_DEBUG, null, "<b>dectalk:</b> Failed to play dectalk for msg: '[msg]' because: [error.message]")
 			return
 
-		return list("audio" = response.body, "message" = msg)
+		return list("audio" = playDectalkResource.audio, "message" = msg)
 	else
 		return list("cooldown" = 1)
 
-proc/copy_datum_vars(var/atom/from, var/atom/target)
+proc/copy_datum_vars(var/atom/from, var/atom/target, list/blacklist)
 	if (!target || !from) return
 	for(var/V in from.vars)
 		if (!issaved(from.vars[V]))
 			continue
 
-		if(V == "type") continue
-		if(V == "parent_type") continue
-		if(V == "vars") continue
+		if(V == "type" || V == "parent_type" || V == "vars" || (V in blacklist)) continue
 		target.vars[V] = from.vars[V]
 
 /**
@@ -2103,18 +2076,13 @@ proc/copy_datum_vars(var/atom/from, var/atom/target)
 /proc/restricted_z_allowed(var/mob/M, var/T)
 	. = FALSE
 
-	if (M && isblob(M))
+	if (isblob(M))
 		var/mob/living/intangible/blob_overmind/B = M
 		if (B.tutorial)
 			return TRUE
 
-	var/area/A
-	if (T && istype(T, /area))
-		A = T
-	else if (T && isturf(T))
-		A = get_area(T)
-
-	if (A && istype(A) && A.allowed_restricted_z)
+	var/area/A = get_area(T)
+	if (A?.allowed_restricted_z)
 		return TRUE
 
 /**
@@ -2243,24 +2211,12 @@ proc/copy_datum_vars(var/atom/from, var/atom/target)
 			if (!strip)
 				special = SPAN_ALERT("[special]")
 
-			role += " \[[special]]"
+			role += " \[[special]\]"
 
 	else
 		role += M.job
 
 	return role
-
-// DM simultaneously makes cursed shit like this work...
-// yet won't work with just the unicode raws - infinite pain
-var/const/___proper = "\proper"
-var/const/___improper = "\improper"
-var/static/regex/regexTextMacro = regex("[___proper]|[___improper]", "g")
-
-/**
-  * Removes the special data inserted via use of \improper etc in strings
-  */
-/proc/stripTextMacros(text)
-	return replacetext(text, regexTextMacro, "")
 
 /**
   * Returns true if given mob/client/mind is an admin
@@ -2280,39 +2236,57 @@ var/static/regex/regexTextMacro = regex("[___proper]|[___improper]", "g")
 
 	return FALSE
 
-/**
-  * Returns span with a color gradient between two given colors of given message
-  */
-proc/gradientText(var/color1, var/color2, message)
-  var/color1hex = hex2num(copytext(color1, 2))
-  var/color2hex = hex2num(copytext(color2, 2))
-  var/r1 = (color1hex >> 16) & 0xFF
-  var/g1 = (color1hex >> 8) & 0xFF
-  var/b1 = color1hex & 0xFF
-  var/dr = ((color2hex >> 16) & 0xFF)- r1
-  var/dg = ((color2hex >> 8) & 0xFF) - g1
-  var/db = (color2hex & 0xFF) - b1
-  var/list/result = new/list()
-  var/n = rand(0,10)/10.0 // what a shitty name for a variable
-  var/dir = prob(50) ? -1 : 1
-  for(var/i=1, i<=length(message), i += 3)
-    n += dir * 0.2
-    if(prob(20))
-      dir = dir/abs(dir) * -1
-    if(n < 0)
-      n = 0
-      dir = 1
-    if(n > 1)
-      n = 1
-      dir = -1
-    var/col = rgb(r1 + dr*n, g1 + dg*n, b1 + db*n)
-    var/chars = copytext(message, i, i+3)
-    result += "<span style='color:[col]'>[chars]</span>"
-  . = result.Join()
+/// Repeat a gradient between two colors across text.
+/// Note: This is inaccurate because its a linear transformation, but human eyes do not perceive color this way.
+/proc/gradientText(color_1, color_2, message, mutable_tags = FALSE)
+	var/list/color_list_1 = rgb2num(color_1)
+	var/list/color_list_2 = rgb2num(color_2)
+
+	var/r1 = color_list_1[1]
+	var/g1 = color_list_1[2]
+	var/b1 = color_list_1[3]
+
+	// The difference in value between each color part
+	var/delta_r = color_list_2[1] - r1
+	var/delta_g = color_list_2[2] - g1
+	var/delta_b = color_list_2[3] - b1
+
+	var/list/result = list()
+
+	// Start at a random point between the two, in increments of 0.1
+	var/coeff = rand(0,10) / 10.0
+	var/dir = prob(50) ? -1 : 1
+
+	for(var/i in 1 to length(message) step 3)
+		coeff += dir * 0.2
+		// 20% chance to start going in the opposite direction
+		if(prob(20))
+			dir = -dir
+
+		// Wrap back around
+		if(coeff < 0)
+			coeff = 0
+			dir = 1
+
+		else if(coeff > 1)
+			coeff = 1
+			dir = -1
+
+		var/col = rgb(r1 + delta_r*coeff, g1 + delta_g*coeff, b1 + delta_b*coeff)
+		if (mutable_tags)
+			result += MAKE_CONTENT_IMMUTABLE("<span style='color:[col]'>")
+			result += copytext(message, i, i + 3)
+			result += MAKE_CONTENT_IMMUTABLE("</span>")
+
+		else
+			result += "<span style='color:[col]'>[copytext(message, i, i + 3)]</span>"
+
+	. = jointext(result, "")
+
 
 /**
-  * Returns given text replaced by nonsense chars, excepting HTML tags, on a 40% or given % basis
-  */
+ * Returns given text replaced by nonsense chars, excepting HTML tags, on a 40% or given % basis
+ */
 proc/radioGarbleText(var/message, var/per_letter_corruption_chance=40)
 	var/split_html_text = splittext(message,  regex("<\[^>\]*>"), 1, length(message), TRUE) //I'd love to just use include_delimiters=TRUE, but byond
 	var/list/corruptedChars = list("@","#","!",",",".","-","=","/","\\","'","\"","`","*","(",")","[","]","_","&")
@@ -2331,23 +2305,18 @@ proc/radioGarbleText(var/message, var/per_letter_corruption_chance=40)
 	return jointext(.,"")
 
 
-/**
-  * Returns given text replaced entirely by nonsense chars
-  */
+/// Returns given text replaced entirely by nonsense chars
 proc/illiterateGarbleText(var/message)
 	. = radioGarbleText(message, 100)
 
-/**
-  * Returns the time in seconds since a given timestamp
-  */
+
+/// Returns the time in seconds since a given timestamp
 proc/getTimeInSecondsSinceTime(var/timestamp)
 	var/time_of_day = world.timeofday + ((world.timeofday < timestamp) ? 864000 : 0) // Offset the time of day in case of midnight rollover
 	var/time_elapsed = (time_of_day - timestamp)/10
 	return time_elapsed
 
-/**
-  * Handles the two states icon_size can be in: basic number, or string in WxH format
-  */
+/// Handles the two states icon_size can be in: basic number, or string in WxH format
 proc/getIconSize()
 	if (istext(world.icon_size))
 		var/list/iconSizes = splittext(world.icon_size, "x")
@@ -2355,18 +2324,14 @@ proc/getIconSize()
 
 	return world.icon_size
 
-/**
-  * Finds a client by ckey, throws exception if not found
-  */
+/// Finds a client by ckey, throws exception if not found
 proc/getClientFromCkey(ckey)
 	var/datum/player/player = find_player(ckey)
 	if(!player?.client)
 		throw EXCEPTION("Client not found")
 	return player.client
 
-/**
-	* Returns true if the given atom is within src's contents (deeply/recursively)
-	*/
+/// Returns true if the given atom is within src's contents (deeply/recursively)
 /atom/proc/contains(var/atom/A)
 	. = FALSE
 	if(!A)
@@ -2441,9 +2406,7 @@ proc/check_whitelist(var/atom/TA, var/list/whitelist, var/mob/user as mob, var/c
 
 	return (seer.dir == dir)
 
-/**
-	* Returns the passed decisecond-format time in the form of a text string
-	*/
+/// Returns the passed decisecond-format time in the form of a text string
 proc/time_to_text(var/time)
 	. = list()
 
@@ -2498,8 +2461,10 @@ proc/total_clients_for_cap()
 
 
 proc/client_has_cap_grace(var/client/C)
-	if (C.ckey in player_cap_grace)
-		.= (player_cap_grace[C.ckey] > TIME)
+	logTheThing(LOG_DEBUG, C, "<b>PCAP Grace:</b> Checking PCAP grace for [C.client_auth_intent.ckey]...")
+	if (C.client_auth_intent.ckey in player_cap_grace)
+		.= (player_cap_grace[C.client_auth_intent.ckey] > TIME)
+		logTheThing(LOG_DEBUG, C, "<b>PCAP Grace:</b> Found PCAP grace for [C.client_auth_intent.ckey]. Current time: [TIME], Grace time: [player_cap_grace[C.client_auth_intent.ckey]], Result: [(player_cap_grace[C.client_auth_intent.ckey] > TIME) ? "PASS" : "FAIL"]")
 
 
 //TODO: refactor the below two into one proc
@@ -2512,9 +2477,14 @@ proc/can_act(var/mob/M, var/include_cuffs = 1)
 proc/is_incapacitated(mob/M)
 	return (M &&(\
 		M.hasStatus("stunned") || \
-		M.hasStatus("weakened") || \
+		M.hasStatus("knockdown") || \
+		M.hasStatus("unconscious") || \
 		M.hasStatus("paralysis") || \
 		M.hasStatus("pinned") || \
+		M.hasStatus("lockdown_robot") || \
+		M.hasStatus("lockdown_ai") || \
+		M.hasStatus("no_power_robot") || \
+		M.hasStatus("no_cell_robot") || \
 		M.stat)) && !M.client?.holder?.ghost_interaction
 
 /// sets up the list of ringtones players can select through character setup
@@ -2597,6 +2567,18 @@ proc/connectdirs_to_byonddirs(var/connectdir_bitflag)
 		. += point - prev
 		prev = point
 
+/**Replaces tokens in an input string with a desired replacement token from a text file. Primarily used for accents and similar speech modifiers.
+ * Tokens are separated by whitespace.
+*/
+/proc/find_replace_in_string(input, text_file_path = "language/pirate.txt")
+	var/list/tokens = splittext(input, regex("\\b", "i"))
+	var/list/modded_tokens = list()
+	for (var/token in tokens)
+		var/replacement = strings(text_file_path, lowertext(token), 1)
+		if (replacement)
+			token = replacetext(token, lowertext(token), replacement)
+		modded_tokens += token
+	. = jointext(modded_tokens, "")
 
 /// Returns the sum of densities of all atoms in the given turf including the turf itself
 proc/total_density(turf/T)
@@ -2604,38 +2586,230 @@ proc/total_density(turf/T)
 	for (var/atom/A in T)
 		. += A.density
 
+/// Checks if Cross succeeds for the turf and all atoms in it
+proc/total_cross(turf/T, atom/movable/mover)
+	. = T.Cross(mover)
+	if(!.)
+		return
+	for (var/atom/A in T)
+		. = A.Cross(mover)
+		if(!.)
+			return
+
 
 // Used to send a message to all ghosts when something Interesting has happened
 // Any message sent to this should just be a funny comment on something logged elsewhere,
 // so they probably don't need to be logged here again (e.g. death alerts)
-proc/message_ghosts(var/message, show_wraith = FALSE)
-	if (!message)
-		return
 
-	var/rendered = "<span class='game deadsay'>[message]</span>"
-	for (var/client/C)
-		if (C.deadchatoff) continue
-		if (!C.mob) continue
-		var/mob/M = C.mob
-		if (istype(M, /mob/new_player)) continue
+var/atom/movable/abstract_say_source/deadchat/deadchat_announcer = new()
 
-		// If an admin, show message
-		if (M.try_render_chat_to_admin(C, rendered))
-			// admin saw message, no need to continue tests
+/proc/message_ghosts(message, show_wraith = FALSE)
+	var/list/mob/living/intangible/wraith/wraiths = list()
+	for (var/datum/antagonist/antagonist_datum as anything in global.get_all_antagonists(ROLE_WRAITH))
+		wraiths[antagonist_datum.owner.current] = TRUE
+
+	global.deadchat_announcer.say(message, flags = SAYFLAG_IGNORE_HTML, message_params = list("atom_listeners_to_be_excluded" = wraiths))
+
+/// Find a client based on ckey
+/proc/find_client(ckey)
+	for (var/client/C in clients)
+		if (C.ckey == ckey)
+			return C
+
+/// Return a list of station-level storage objects that are safe to spawn things into
+/// * closed: if TRUE, only include storage objects that are closed
+/// * breathable: if TRUE, only include storage on breathable turfs
+/// * no_others: if TRUE, do not include multiple storage objects on the same turf
+/proc/get_random_station_storage_list(closed=FALSE, breathable=FALSE, no_others=FALSE)
+	RETURN_TYPE(/list/obj/storage)
+	. = list()
+	for_by_tcl(container, /obj/storage)
+		if (container.z != Z_LEVEL_STATION)
+			continue
+		if (closed && container.open)
+			continue
+		if (container.locked || container.welded || container.crunches_contents || container.needs_prying)
+			continue
+		if (istype(container, /obj/storage/secure) || istype(container, /obj/storage/crate/loot))
+			continue
+		// listening posts everywhere or martian ship (in station Z-level on Oshan)
+		if (istype(get_area(container), /area/listeningpost) || istype(get_area(container), /area/evilreaver))
 			continue
 
-		// Skip forced-observers (hivemind, etc)
-		if (istype(M, /mob/dead/target_observer))
-			var/mob/dead/target_observer/tobserver = M
-			if(!tobserver.is_respawnable)
+		if (breathable)
+			var/turf/simulated/T = container.loc
+			if(!istype(T) || (T.air?.oxygen <= (MOLES_O2STANDARD - 1) || T.air?.temperature <= T0C || T.air?.temperature >= DEFAULT_LUNG_AIR_TEMP_TOLERANCE_MAX))
 				continue
 
-		// Skip the wraith if show_wraith is off or they have deadchat off
-		if (iswraith(M))
-			var/mob/living/intangible/wraith/the_wraith = M
-			if (!show_wraith || !the_wraith.hearghosts)
+		if (no_others)
+			var/turf/container_turf = get_turf(container)
+			var/duplicate_containers = FALSE
+			for (var/obj/storage/container_on_turf in container_turf)
+				if (container != container_on_turf)
+					duplicate_containers = TRUE
+					break
+			if (duplicate_containers)
 				continue
 
-		// Otherwise, output to ghosts
-		if (isdead(M) || iswraith(M) || isghostdrone(M) || isVRghost(M) || inafterlifebar(M) || istype(M, /mob/living/intangible/seanceghost))
-			boutput(M, rendered)
+		. += container
+
+/// returns the position of the last matching needle in haystack, case sensitive
+/proc/findLastMatch(haystack, needle)
+	var/last_index = length(haystack)  // Start at the end of the data
+	var/last_match_found = 0
+
+	// Search from the end towards the beginning
+	while(last_index > 0)
+	{
+		last_index = findtext(haystack, needle, -last_index)  // Search from near the end
+		if(last_index > last_match_found)
+		{
+			last_match_found = last_index  // Update the last valid match
+			last_index = length(haystack) - last_index  // Adjust search start closer to the beginning
+		}
+		else
+		{
+			break  // Exit the loop if no further matches are found
+		}
+	}
+
+	return last_match_found
+
+/// returns the position of the last matching needle in haystack, case insensitive
+/proc/findLastMatchEx(haystack, needle)
+	var/last_index = length(haystack)  // Start at the end of the data
+	var/last_match_found = 0
+
+	// Search from the end towards the beginning
+	while(last_index > 0)
+	{
+		last_index = findtextEx(haystack, needle, -last_index)  // Search from near the end
+		if(last_index > last_match_found)
+		{
+			last_match_found = last_index  // Update the last valid match
+			last_index = length(haystack) - last_index  // Adjust search start closer to the beginning
+		}
+		else
+		{
+			break  // Exit the loop if no further matches are found
+		}
+	}
+
+	return last_match_found
+
+/// returns the maxx value of a TGM formatted map. Accepts either a map file or preread map text data
+/proc/get_tgm_maxx(map_data)
+	if (isfile(map_data))
+		map_data = file2text(map_data)
+	var/idx = findLastMatchEx(map_data, regex(@"\((\d+),1,1\)"))
+	var/x_max = 0
+
+	// Extract X from the last valid match
+	if(idx > 0)
+	{
+		var/end_of_tuple = findtextEx(map_data, ")", idx)  // Find the end of the tuple
+		x_max = text2num(copytext(map_data, idx + 1, end_of_tuple))  // Extract the X value
+	}
+	return x_max
+
+/// returns the maxy value of a TGM formatted map. Accepts either a map file or preread map text data
+/proc/get_tgm_maxy(map_data)
+	if (isfile(map_data))
+		map_data = file2text(map_data)
+	var/idx = findLastMatchEx(map_data, regex(@"\((\d+),1,1\)"))
+	var/y_max = 0
+
+	// Start counting newlines from the first newline after the last match
+	if(idx > 0)
+	{
+		var/line_start = findtextEx(map_data, "\n", idx) + 1
+		while(line_start > 0 && line_start < length(map_data))
+		{
+			line_start = findtextEx(map_data, "\n", line_start + 1)  // Find the next newline
+			if(line_start)
+				y_max++
+		}
+		// Decrement Y count if there's an extra newline at the end of the data
+		if(map_data[length(map_data)] == "\n")
+			y_max--
+	}
+	return y_max
+
+/// Returns an html input and a script which allows to toggle elements of a certain class visible or hidden depending what filter the user types in the input.
+proc/search_snippet(var/inputStyle = "", var/inputPlaceholder = "filter packages", var/toggledClass = "supply-package")
+	. = {"<input type="text" id="searchSnippetFilter" style="[inputStyle]" placeholder="[inputPlaceholder]">
+		<script>
+			document.querySelector('#searchSnippetFilter').addEventListener('input', function(event) {
+				var re = new RegExp(event.target.value, "i");
+				rowList = document.querySelectorAll('.[toggledClass]');
+
+				for (var i = 0; i < rowList.length; i++) {
+					rowList\[i\].style.display = rowList\[i\].innerText.match(re) ? '' : 'none';
+				}
+			});
+		</script>"}
+
+//stolen from katana code, turns out blackbody color is quite universal!
+proc/blackbody_color(temperature)
+	var/input = temperature / 100
+
+	var/red
+	if (input <= 66)
+		red = 255
+	else
+		red = input - 60
+		red = 329.698727446 * (red ** -0.1332047592)
+	red = clamp(red, 0, 255)
+
+	var/green
+	if (input <= 66)
+		green = max(0.001, input)
+		green = 99.4708025861 * log(green) - 161.1195681661
+	else
+		green = input - 60
+		green = 288.1221695283 * (green ** -0.0755148492)
+	green = clamp(green, 0, 255)
+
+	var/blue
+	if (input >= 66)
+		blue = 255
+	else
+		if (input <= 19)
+			blue = 0
+		else
+			blue = input - 10
+			blue = 138.5177312231 * log(blue) - 305.0447927307
+	blue = clamp(blue, 0, 255)
+
+	return rgb(red, green, blue)
+
+proc/pick_reagent(mob/user)
+	RETURN_TYPE(/datum/reagent)
+	var/list/reagents_list = list()
+	var/searchFor = input(user, "Look for a part of the reagent ID (or leave blank for all)", "Add reagent") as null|text
+	if(searchFor)
+		for(var/id in global.reagents_cache)
+			if(findtext("[id]", searchFor))
+				reagents_list += id
+	else
+		reagents_list = reagents_cache //you really asked for the 500+ IDs I guess
+
+	if(length(reagents_list) == 1)
+		return global.reagents_cache[reagents_list[1]]
+	else if(length(reagents_list) > 1)
+		var/id = input(user,"Select Reagent:","Reagents",null) as null|anything in reagents_list
+		return global.reagents_cache[id]
+	else
+		user.show_text("No reagents matching that name", "red")
+		return null
+
+
+/// Spawn one of `spawn_type` on a random table in `area_type`
+proc/area_table_spawn(area_type, spawn_type)
+	var/list/tables = list()
+	for_by_tcl(table, /obj/table)
+		if (istype(get_area(table), area_type))
+			tables += table
+	if (!length(tables)) //no tables FUCK
+		return
+	new spawn_type(get_turf(pick(tables)))

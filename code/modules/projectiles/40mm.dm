@@ -36,7 +36,8 @@ toxic - poisons
 	color_red = 0.8
 	color_green = 0
 	color_blue = 0
-	impact_image_state = "bhole-large"
+	impact_image_state = "bullethole-large"
+	has_impact_particles = TRUE
 
 
 //Any special things when it hits shit?

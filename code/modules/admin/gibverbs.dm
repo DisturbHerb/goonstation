@@ -116,7 +116,7 @@
 			logTheThing(LOG_DIARY, usr, "has icegibbed [constructTarget(M,"diary")]", "admin")
 			message_admins("[key_name(usr)] has icegibbed [key_name(M)]")
 
-		M.become_statue_ice()
+		M.become_statue(getMaterial("ice"))
 
 /client/proc/cmd_admin_goldgib(mob/M as mob in world)
 	SET_ADMIN_CAT(ADMIN_CAT_NONE)
@@ -137,8 +137,7 @@
 			logTheThing(LOG_DIARY, usr, "has goldgibbed [constructTarget(M,"diary")]", "admin")
 			message_admins("[key_name(usr)] has goldgibbed [key_name(M)]")
 
-		M.desc = "A dumb looking statue. Very shiny, though."
-		M.become_statue(getMaterial("gold"))
+		M.become_statue(getMaterial("gold"), "A dumb looking statue. Very shiny, though.")
 
 /client/proc/cmd_admin_spidergib(mob/M as mob in world)
 	SET_ADMIN_CAT(ADMIN_CAT_NONE)
@@ -315,6 +314,8 @@
 	set name = "Gibself"
 	SET_ADMIN_CAT(ADMIN_CAT_SELF)
 	set popup_menu = 0
+	ADMIN_ONLY
+	SHOW_VERB_DESC
 	var/turf/T = get_turf(src.mob)
 	if(T)
 		var/obj/overlay/O = new/obj/overlay(T)
@@ -367,7 +368,7 @@
 				var/obj/bantyson/Q = new /obj/bantyson(pickedstart)
 				Q.tysonmins2 = tysonmins
 				Q.tysontarget2 = tysontarget
-				Q.caller = usr
+				Q.caller_mob = usr
 				Q.tysonreason = reason
 				Q.timelimit = time
 				Q.tysonspeed = speed
@@ -394,7 +395,7 @@
 	var/turf/pickedstart = locate(startx, starty, tysontarget.z)
 	var/obj/gibtyson/Q = new /obj/gibtyson(pickedstart)
 	Q.tysontarget2 = tysontarget
-	Q.caller = usr
+	Q.caller_mob = usr
 	Q.tysonspeed = speed
 
 /obj/bantyson
@@ -407,7 +408,7 @@
 	anchored = UNANCHORED
 	var/mob/tysontarget2 = null
 	var/tysonmins2 = null
-	var/mob/caller = null
+	var/mob/caller_mob = null
 	var/tysonreason = null
 	var/tysoncantreach = 0
 	var/timelimit = 6
@@ -441,7 +442,7 @@
 			else if (BOUNDS_DIST(src, src.tysontarget2) == 0)
 				for(var/mob/O in AIviewers(src, null))
 					O.show_message(SPAN_ALERT("<B>[src]</B> punches [tysontarget2]!"), 1)
-				tysontarget2.changeStatus("weakened", 10 SECONDS)
+				tysontarget2.changeStatus("knockdown", 10 SECONDS)
 				tysontarget2.changeStatus("stunned", 10 SECONDS)
 				playsound(src.loc, 'sound/impact_sounds/generic_hit_3.ogg', 50, 1, -1)
 				banproc()
@@ -461,19 +462,20 @@
 				boutput(tysontarget2, "Here is where you'd get banned.")
 				qdel(src)
 				return
-			var/addData[] = new()
-			addData["ckey"] = tysontarget2.ckey
-			addData["compID"] =  tysontarget2.computer_id
-			addData["ip"] = tysontarget2.client.address
-			addData["reason"] = tysonreason
-			addData["akey"] = caller:ckey
-			addData["mins"] = tysonmins2
-			addBan(addData)
+			bansHandler.add(
+				caller_mob.ckey,
+				null,
+				tysontarget2.ckey,
+				tysontarget2.computer_id,
+				tysontarget2.client.address,
+				tysonreason,
+				tysonmins2 * 60 * 10
+			)
 			boutput(tysontarget2, SPAN_ALERT("<BIG><B>You have been tysoned by [usr.client.ckey].<br>Reason: [tysonreason] and he couldn't escape the tyson.</B></BIG>"))
 			boutput(tysontarget2, SPAN_ALERT("This is a temporary tysonban, it will be removed in [tysonmins2] minutes."))
-			logTheThing(LOG_ADMIN, caller:client, "has tysonbanned [constructTarget(tysontarget2,"admin")]. Reason: [tysonreason] and he couldn't escape the tyson. This will be removed in [tysonmins2] minutes.")
-			logTheThing(LOG_DIARY, caller:client, "has tysonbanned [constructTarget(tysontarget2,"diary")]. Reason: [tysonreason] and he couldn't escape the tyson. This will be removed in [tysonmins2] minutes.", "admin")
-			message_admins(SPAN_INTERNAL("[caller?.client?.ckey] has tysonbanned [tysontarget2.ckey].<br>Reason: [tysonreason] and he couldn't escape the tyson.<br>This will be removed in [tysonmins2] minutes."))
+			logTheThing(LOG_ADMIN, caller_mob, "has tysonbanned [constructTarget(tysontarget2,"admin")]. Reason: [tysonreason] and he couldn't escape the tyson. This will be removed in [tysonmins2] minutes.")
+			logTheThing(LOG_DIARY, caller_mob, "has tysonbanned [constructTarget(tysontarget2,"diary")]. Reason: [tysonreason] and he couldn't escape the tyson. This will be removed in [tysonmins2] minutes.", "admin")
+			message_admins(SPAN_INTERNAL("[key_name(caller_mob)] has tysonbanned [key_name(tysontarget2)].<br>Reason: [tysonreason] and he couldn't escape the tyson.<br>This will be removed in [tysonmins2] minutes."))
 			del(tysontarget2.client)
 			tysontarget2.gib()
 		playsound(src.loc, pick('sound/misc/Boxingbell.ogg'), 50, 0)
@@ -489,7 +491,7 @@
 	anchored = UNANCHORED
 	var/mob/tysontarget2 = null
 	var/tysonspeed = 1
-	var/mob/caller = null
+	var/mob/caller_mob = null
 
 	New()
 		SPAWN(0) process()
@@ -510,7 +512,7 @@
 			if (BOUNDS_DIST(src, src.tysontarget2) == 0)
 				for(var/mob/O in AIviewers(src, null))
 					O.show_message(SPAN_ALERT("<B>[src]</B> punches [tysontarget2]!"), 1)
-				tysontarget2.changeStatus("weakened", 10 SECONDS)
+				tysontarget2.changeStatus("knockdown", 10 SECONDS)
 				tysontarget2.changeStatus("stunned", 10 SECONDS)
 				playsound(src.loc, 'sound/impact_sounds/generic_hit_3.ogg', 50, 1, -1)
 				icon_state = "punch"
@@ -529,9 +531,9 @@
 			for(var/mob/O in AIviewers(src, null))
 				O.show_message(SPAN_ALERT("<B>[src]</B> KOs [tysontarget2] in one punch!"), 1)
 			playsound(src.loc, 'sound/impact_sounds/generic_hit_3.ogg', 30, 1, -2)
-			logTheThing(LOG_ADMIN, caller:client, "tysongibbed [constructTarget(tysontarget2,"admin")]")
-			logTheThing(LOG_DIARY, caller:client, "tysongibbed [constructTarget(tysontarget2,"diary")]", "admin")
-			message_admins(SPAN_INTERNAL("[caller?.client?.ckey] has tysongibbed [tysontarget2] ([tysontarget2.ckey])."))
+			logTheThing(LOG_ADMIN, caller_mob, "tysongibbed [constructTarget(tysontarget2,"admin")]")
+			logTheThing(LOG_DIARY, caller_mob, "tysongibbed [constructTarget(tysontarget2,"diary")]", "admin")
+			message_admins(SPAN_INTERNAL("[key_name(caller_mob)] has tysongibbed [key_name(tysontarget2)]."))
 			tysontarget2.gib()
 			sleep(0.5 SECONDS)
 			playsound(src.loc, pick('sound/misc/knockout.ogg'), 50, 0)

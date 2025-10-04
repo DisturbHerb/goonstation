@@ -29,7 +29,6 @@
 	name = "paper"
 	icon = 'icons/obj/writing.dmi'
 	icon_state = "paper_blank"
-	uses_multiple_icon_states = 1
 	wear_image_icon = 'icons/mob/clothing/head.dmi'
 	inhand_image_icon = 'icons/mob/inhand/hand_books.dmi'
 	item_state = "paper"
@@ -43,7 +42,7 @@
 	//cogwerks - burning vars
 	burn_point = 220
 	burn_output = 900
-	burn_possible = 2
+	burn_possible = TRUE
 	var/list/form_startpoints
 	var/list/form_endpoints
 	var/font_css_crap = null
@@ -62,6 +61,8 @@
 	var/list/stamps = null
 	var/list/form_fields = list()
 	var/field_counter = 1
+	///Some subtypes might want to hide the scrollbar
+	var/scrollbar = TRUE
 
 /obj/item/paper/New()
 	..()
@@ -95,29 +96,38 @@
 	else if (menuchoice == "Read")
 		src.examine(user)
 	else
-		var/fold = tgui_input_list(user, "What would you like to fold [src] into?", "Fold paper", list("Paper hat", "Paper plane", "Paper ball", "Cigarette packet"))
+		var/fold = tgui_input_list(user, "What would you like to fold [src] into?", "Fold paper", list("Paper hat", "Paper plane", "Paper crane", "Paper ball", "Cigarette packet"))
 		if(src.disposed || !fold) //It's possible to queue multiple of these menus before resolving any.
 			return
 		user.u_equip(src)
 		if (fold == "Paper hat")
 			user.show_text("You fold the paper into a hat! Neat.", "blue")
 			var/obj/item/clothing/head/paper_hat/H = new()
+			H.setMaterial(src.material)
 			user.put_in_hand_or_drop(H)
 		else if (fold == "Cigarette packet")
 			user.show_text("You fold the paper into a cigarette packet! Neat.", "blue")
 			var/obj/item/cigpacket/paperpack/H = new()
+			H.setMaterial(src.material)
 			user.put_in_hand_or_drop(H)
 		else
 			var/obj/item/paper/folded/F = null
 			if (fold == "Paper plane")
 				user.show_text("You fold the paper into a plane! Neat.", "blue")
 				F = new /obj/item/paper/folded/plane(user)
+
+			else if (fold == "Paper crane")
+				user.show_text("You fold the paper into a crane! Neat.", "blue")
+				F = new /obj/item/paper/folded/crane(user)
 			else
 				user.show_text("You crumple the paper into a ball! Neat.", "blue")
 				F = new /obj/item/paper/folded/ball(user)
 			F.info = src.info
 			F.old_desc = src.desc
+			F.icon_old = src.icon
 			F.old_icon_state = src.icon_state
+			F.stamps = src.stamps
+			F.setMaterial(src.material)
 			user.put_in_hand_or_drop(F)
 
 		qdel(src)
@@ -129,7 +139,7 @@
 
 /obj/item/paper/proc/stamp(x, y, r, stamp_png, icon_state)
 	if(length(stamps) < PAPER_MAX_STAMPS)
-		var/list/stamp_info = list(list(stamp_png, x, y, r))
+		var/list/stamp_info = list(list(stamp_png, x, y, r, icon_state))
 		LAZYLISTADD(stamps, stamp_info)
 	if(icon_state)
 		var/image/stamp_overlay = image('icons/obj/writing.dmi', "paper_[icon_state]");
@@ -175,6 +185,9 @@
 			var/stamp_y = text2num_safe(params["y"])
 			var/stamp_r = text2num_safe(params["r"])	// rotation in degrees
 			var/obj/item/stamp/stamp = ui.user.equipped()
+			if(!istype(stamp))
+				boutput(usr, "What stamp? Where stamp?")
+				return
 
 			if(length(stamps) < PAPER_MAX_STAMPS)
 				stamp(stamp_x, stamp_y, stamp_r, stamp.current_state, stamp.icon_state)
@@ -220,6 +233,7 @@
 		"stamps" = src.stamps,
 		"stampable" = src.stampable,
 		"sealed" = src.sealed,
+		"scrollbar" = src.scrollbar,
 	)
 
 /obj/item/paper/ui_data(mob/user)
@@ -305,9 +319,6 @@
 	if(istype(P, /obj/item/pen) || istype(P, /obj/item/pen/crayon))
 		if(src.sealed)
 			boutput(user, SPAN_ALERT("You can't write on [src]."))
-			return
-		if(length(info) >= PAPER_MAX_LENGTH) // Sheet must have less than 1000 charaters
-			boutput(user, SPAN_WARNING("This sheet of paper is full!"))
 			return
 		ui_interact(user)
 		return
@@ -509,15 +520,14 @@
 	desc = "Fancy."
 	var/print_icon = 'icons/effects/sstv.dmi'
 	var/print_icon_state = "sstv_1"
+	sizex = 640 + 0
+	sizey = 480 + 32
+	scrollbar = FALSE
 
 	New()
 		..()
-		src.info = {"<IMG SRC="sstv_cachedimage.png">"}
+		src.info = "<img style='width: 100%; position: absolute; top: 0; left: 0' src='data:image/png;base64,[icon2base64(icon(print_icon,print_icon_state))]'>"
 		return
-
-	examine()
-		usr << browse_rsc(icon(print_icon,print_icon_state), "sstv_cachedimage.png")
-		. = ..()
 
 	satellite
 		print_icon_state = "sstv_2"
@@ -571,8 +581,7 @@
 	name = "paper bin"
 	icon = 'icons/obj/writing.dmi'
 	icon_state = "paper_bin1"
-	uses_multiple_icon_states = 1
-	amount = 10
+	var/amount_left = 10
 	item_state = "sheet-metal"
 	throwforce = 1
 	w_class = W_CLASS_NORMAL
@@ -582,7 +591,7 @@
 	//cogwerks - burn vars
 	burn_point = 600
 	burn_output = 800
-	burn_possible = 1
+	burn_possible = TRUE
 
 	/// the item type this bin contains, should always be a subtype for /obj/item for reasons...
 	var/bin_type = /obj/item/paper
@@ -592,15 +601,15 @@
 	desc = "A tray full of forms for classifying alien artifacts."
 	icon = 'icons/obj/writing.dmi'
 	icon_state = "artifact_form_tray"
-	amount = INFINITY
+	amount_left = INFINITY
 	bin_type = /obj/item/sticker/postit/artifact_paper
 
 	update()
-		tooltip_rebuild = 1
+		tooltip_rebuild = TRUE
 
 /obj/item/paper_bin/proc/update()
-	tooltip_rebuild = 1
-	src.icon_state = "paper_bin[(src.amount || locate(bin_type, src)) ? "1" : null]"
+	tooltip_rebuild = TRUE
+	src.icon_state = "paper_bin[(src.amount_left || locate(bin_type, src)) ? "1" : null]"
 	return
 
 /obj/item/paper_bin/mouse_drop(mob/user as mob)
@@ -614,13 +623,16 @@
 	if (paper)
 		user.put_in_hand_or_drop(paper)
 	else
-		if (src.amount >= 1 && user) //Wire: Fix for Cannot read null.loc (&& user)
-			src.amount--
-			var/obj/item/P = new bin_type(src)
-			user.put_in_hand_or_drop(P)
-			if (rand(1,100) == 13 && istype(P, /obj/item/paper))
-				var/obj/item/paper/PA = P
-				PA.info = "Help me! I am being forced to code SS13 and It won't let me leave."
+		if (user) //Wire: Fix for Cannot read null.loc (user)
+			if (src.amount_left >= 1)
+				src.amount_left--
+				var/obj/item/P = new bin_type(src)
+				user.put_in_hand_or_drop(P)
+				if (rand(1,100) == 13 && istype(P, /obj/item/paper))
+					var/obj/item/paper/PA = P
+					PA.info = "Help me! I am being forced to code SS13 and It won't let me leave."
+			else
+				user.put_in_hand_or_drop(src)
 	src.update()
 
 /obj/item/paper_bin/attack_self(mob/user as mob)
@@ -637,7 +649,7 @@
 		return ..()
 
 /obj/item/paper_bin/get_desc()
-	var/n = src.amount
+	var/n = src.amount_left
 	if (n == INFINITY)
 		return "There's an infinite amount of paper in \the [src], the wonders of future technology."
 	for(var/obj/item/paper/P in src)
@@ -649,10 +661,10 @@
 	var/next_generate = 0
 
 	attack_self(mob/user as mob)
-		if (src.amount < 1 && isnull(locate(bin_type) in src))
+		if (src.amount_left < 1 && isnull(locate(bin_type) in src))
 			if (src.next_generate < TIME)
 				boutput(user, "The [src] generates another sheet of paper using the power of [pick("technology","science","computers","nanomachines",5;"magic",5;"extremely tiny clowns")].")
-				src.amount++
+				src.amount_left++
 				src.update()
 				src.next_generate = TIME + 5 SECONDS
 				return
@@ -661,7 +673,7 @@
 			return
 
 		boutput(user, "You remove a piece of paper from the [src].")
-		return attack_hand(user)
+		return src.Attackhand(user)
 
 /obj/item/stamp
 	name = "rubber stamp"
@@ -669,7 +681,6 @@
 	icon = 'icons/obj/writing.dmi'
 	icon_state = "stamp"
 	item_state = "stamp"
-	flags = FPRINT | TABLEPASS
 	throwforce = 0
 	w_class = W_CLASS_TINY
 	throw_speed = 7
@@ -845,7 +856,7 @@
 /obj/item/paper/folded
 	name = "folded paper"
 	icon_state = "paper"
-	burn_possible = 1
+	burn_possible = TRUE
 	sealed = 1
 	var/old_desc = null
 	var/old_icon_state = null
@@ -854,8 +865,20 @@
 	if (src.sealed)
 		user.show_text("You unfold the [src] back into a sheet of paper! It looks pretty crinkled.", "blue")
 		src.name = "crinkled paper"
-		src.desc = src.old_desc
+		src.desc = "This sheet has seen better days"
+		tooltip_rebuild = TRUE // tooltip description won't update otherwise
+		var/i = 0
+		for (var/list/stamp in stamps)
+			var/image/stamp_overlay = image('icons/obj/writing.dmi', "paper_[stamp[5]]");
+			var/matrix/stamp_matrix = matrix()
+			stamp_matrix.Scale(1, 1)
+			stamp_matrix.Translate(rand(-2, 2), rand(-3, 2))
+			stamp_overlay.transform = stamp_matrix
+			src.UpdateOverlays(stamp_overlay, "stamps_[i % PAPER_MAX_STAMPS_OVERLAYS]")
+			i++
 		if(src.old_icon_state)
+			if(src.icon_old)
+				src.icon = icon_old
 			src.icon_state = src.old_icon_state
 		else
 			if(src.info)
@@ -868,7 +891,7 @@
 
 /obj/item/paper/folded/examine()
 	if (src.sealed)
-		return list(desc)
+		return list("This is \an [src.name].", desc)
 	else
 		return ..()
 
@@ -878,6 +901,12 @@
 	icon_state = "paperplane"
 	throw_speed = 1
 	throw_spin = 0
+
+/obj/item/paper/folded/crane
+	name = "paper crane"
+	desc = "If you fold a lot of these do you get a wish granted?"
+	icon_state = "papercrane"
+	throw_speed = 1
 
 /obj/item/paper/folded/plane/hit_check(datum/thrown_thing/thr)
 	if(src.throwing && src.sealed)
@@ -938,6 +967,7 @@
 	sealed = TRUE
 	two_handed = TRUE
 	info = ""
+	hitsound = 'sound/impact_sounds/Generic_Stab_1.ogg'
 	var/headline = ""
 	var/publisher = ""
 
@@ -950,11 +980,23 @@
 /obj/item/paper/newspaper/New()
 	. = ..()
 	// it picks a random set of info at new, then the printing press overrides it
-	src.publisher = pick_smart_string("newspaper.txt", "publisher")
+	if (!length(src.publisher))
+		src.publisher = pick_smart_string("newspaper.txt", "publisher")
 	src.name = "[src.publisher]"
-	src.generate_headline()
-	src.generate_article()
+	if (!length(src.headline))
+		src.generate_headline()
+	if (!length(src.info))
+		src.generate_article()
 	src.update_desc()
+
+/obj/item/paper/newspaper/pickup(mob/user)
+	. = ..()
+	user.UpdateName() //hide their face
+
+/obj/item/paper/newspaper/dropped(mob/user)
+	. = ..()
+	SPAWN(0) //sigh
+		user.UpdateName()
 
 /obj/item/paper/newspaper/ui_interact(mob/user, datum/tgui/ui)
 	if (!src.two_handed)
@@ -1032,3 +1074,12 @@
 			if (9)
 				temporary += "<br><br>When [name1] [event1], there was some mild [emotion1] visible from [name2]."
 	src.info += temporary
+
+/obj/item/paper/newspaper/rolled/centcom_plasma
+	publisher = "Seneca Journal"
+	headline = "Nanotrasen denies responsibility for Seneca Lake plasma contamination"
+	info = {"
+		In a rare personal appearance, Nanotrasen CEO John Nanotrasen today categorically denied his company's involvement in the recent Seneca Lake plasma contamination scare.<br>
+		Levels of FAAE (commonly known as "plasma") in the lakewater have reached 500μg per liter according to an EPA source, prompting the agency to declare a substantial threat to public health.<br>
+		Nanotrasen is the only company in the Seneca area licensed to transport plasma, hundreds of kilograms of which are used in the fuelling of their inter-channel shuttle services every month.
+	"}

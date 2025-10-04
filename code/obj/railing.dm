@@ -1,13 +1,14 @@
 /obj/railing
 	name = "railing"
 	desc = "Two sets of bars shooting onward with the sole goal of blocking you off. They can't stop you from vaulting over them though!"
+	HELP_MESSAGE_OVERRIDE("")
 	anchored = ANCHORED
 	density = 1
 	icon = 'icons/obj/objects.dmi'
 	icon_state = "railing"
 	layer = OBJ_LAYER
 	color = "#ffffff"
-	flags = FPRINT | USEDELAY | ON_BORDER
+	flags = USEDELAY | ON_BORDER
 	event_handler_flags = USE_FLUID_ENTER
 	object_flags = HAS_DIRECTIONAL_BLOCKING
 	dir = SOUTH
@@ -58,6 +59,16 @@
 				R.setMaterial(M)
 		qdel(src)
 
+	get_help_message(dist, mob/user)
+		. = ..()
+		if (src.broken)
+			. += "You can use a <b>welding tool</b> to remove this broken railing."
+		else
+			if (src.is_reinforced)
+				. += "You can use <b>wirecutters</b> to remove the reinforcement from this railing, or a <b>welding tool</b> to deconstruct it."
+			else
+				. += "You can use <b>metal rods</b> to reinforce this railing, or a <b>welding tool</b> to deconstruct it."
+
 	ex_act(severity)
 		switch(severity)
 			if(1)
@@ -86,7 +97,7 @@
 	New()
 		..()
 		if(src.is_reinforced)
-			src.flags |= ALWAYS_SOLID_FLUID
+			src.flags |= FLUID_DENSE
 		layerify()
 
 	Turn()
@@ -98,6 +109,8 @@
 			return 0
 		if (!src.density || (O.flags & TABLEPASS && !src.is_reinforced) || istype(O, /obj/newmeteor) || istype(O, /obj/linked_laser) )
 			return 1
+		if (O.throwing)
+			return 1
 		if (src.dir & get_dir(loc, O))
 			return !density
 		return 1
@@ -105,6 +118,8 @@
 	Uncross(atom/movable/O, do_bump = TRUE)
 		if (!src.density || (O.flags & TABLEPASS && !src.is_reinforced)  || istype(O, /obj/newmeteor) || istype(O, /obj/linked_laser) )
 			. = 1
+		if (O.throwing)
+			return 1
 		// Second part prevents two same-dir, unanchored railings from infinitely looping and either crashing the server or breaking throwing when they try to cross
 		else if ((src.dir & get_dir(O.loc, O.movement_newloc)) && !(isobj(O) && (O:object_flags & HAS_DIRECTIONAL_BLOCKING) && (O.dir & src.dir)))
 			. = 0
@@ -128,7 +143,7 @@
 				user.show_text("You cut off the reinforcement on [src].", "blue")
 				src.icon_state = "railing"
 				src.is_reinforced = 0
-				src.flags &= !ALWAYS_SOLID_FLUID
+				src.flags &= !FLUID_DENSE
 				var/obj/item/rods/R = new /obj/item/rods(get_turf(src))
 				R.amount = 1
 				if(src.material)
@@ -138,6 +153,11 @@
 					R.setMaterial(M)
 			else
 				user.show_text("There's no reinforcment on [src] to cut off!", "blue")
+		else if (ispryingtool(W))
+			if(src.anchored)
+				boutput(user, SPAN_NOTICE("\The [src] must be unfastened to rotate!"))
+			else
+				src.set_dir(turn(src.dir, -90))
 		else if (istype(W,/obj/item/rods))
 			if(!src.is_reinforced && can_reinforce)
 				var/obj/item/rods/R = W
@@ -145,7 +165,7 @@
 					user.show_text("You reinforce [src] with the rods.", "blue")
 					src.is_reinforced = 1
 					src.icon_state = "railing-reinforced"
-					src.flags |= ALWAYS_SOLID_FLUID
+					src.flags |= FLUID_DENSE
 			else
 				user.show_text("[src] is already reinforced!", "red")
 
@@ -155,7 +175,7 @@
 	attack_ai(mob/user)
 		if(!can_reach(user, src) || isAI(user) || isAIeye(user))
 			return
-		return src.attack_hand(user)
+		return src.Attackhand(user)
 
 	Bumped(var/mob/AM as mob)
 		. = ..()
@@ -166,7 +186,7 @@
 	proc/try_vault(mob/user, use_owner_dir = FALSE)
 		if (railing_is_broken(src))
 			user.show_text("[src] is broken! All you can really do is break it down...", "red")
-		else if(!actions.hasAction(user, "railing_jump"))
+		else if(!actions.hasAction(user, /datum/action/bar/icon/railing_jump))
 			actions.start(new /datum/action/bar/icon/railing_jump(user, src, use_owner_dir), user)
 
 	reinforced
@@ -221,10 +241,17 @@
 		desc = "A cushy red velvet rope strewn between two golden poles."
 		can_reinforce = FALSE
 
+	guard // I'm yoinking this from window.dm and there's nothing you can do to stop me
+		name = "guard railing"
+		desc = "Doesn't look very sturdy, but it's better than nothing?"
+		icon = 'icons/obj/structures.dmi'
+		is_reinforced = TRUE
+		icon_state = "safetyrail"
+		can_reinforce = FALSE
+
 /datum/action/bar/icon/railing_jump
 	duration = 1 SECOND
 	interrupt_flags = INTERRUPT_MOVE | INTERRUPT_ACT | INTERRUPT_STUNNED | INTERRUPT_ACTION
-	id = "railing_jump"
 	icon = 'icons/ui/actions.dmi'
 	icon_state = "railing_jump"
 	resumable = FALSE
@@ -309,13 +336,13 @@
 		if(obstacle) // did we end up ever bumping the dest or two corners?
 			// if they are a living mob, make them TASTE THE PAIN
 			if (istype(ownerMob, /mob/living))
-				if (!ownerMob.hasStatus("weakened"))
-					ownerMob.changeStatus("weakened", 4 SECONDS)
+				if (!ownerMob.hasStatus("knockdown"))
+					ownerMob.changeStatus("knockdown", 4 SECONDS)
 					playsound(the_railing, 'sound/impact_sounds/Metal_Clang_3.ogg', 50, TRUE, -1)
 					ownerMob.visible_message(SPAN_ALERT("[ownerMob] tries to climb straight into \the [obstacle].[prob(30) ? pick(" What a goof!!", " A silly [ownerMob.name].", " <b>HE HOO HE HA</b>", " Good thing [he_or_she(ownerMob)] didn't bump [his_or_her(ownerMob)] head!") : null]"))
 				// chance for additional head bump damage
 				if (prob(25))
-					ownerMob.changeStatus("weakened", 4 SECONDS)
+					ownerMob.changeStatus("knockdown", 4 SECONDS)
 					ownerMob.TakeDamage("head", 10, 0, 0, DAMAGE_BLUNT)
 					playsound(the_railing, 'sound/impact_sounds/Metal_Hit_Heavy_1.ogg', 50, TRUE, -1)
 					ownerMob.visible_message(SPAN_ALERT("[ownerMob] bumps [his_or_her(ownerMob)] head on \the [obstacle].[prob(30) ? pick(" Oof, that looked like it hurt!", " Is [he_or_she(ownerMob)] okay?", " Maybe that wasn't the wisest idea...", " Don't do that!") : null]"))
@@ -341,7 +368,6 @@
 /datum/action/bar/icon/railing_tool_interact
 	duration = 3 SECONDS
 	interrupt_flags = INTERRUPT_MOVE | INTERRUPT_ACT | INTERRUPT_STUNNED | INTERRUPT_ACTION
-	id = "railing_deconstruct"
 	icon = 'icons/ui/actions.dmi'
 	icon_state = "working"
 	var/obj/railing/the_railing

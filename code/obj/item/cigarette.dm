@@ -8,7 +8,6 @@
 	icon = 'icons/obj/items/cigarettes.dmi'
 	wear_image_icon = 'icons/mob/clothing/mask.dmi'
 	icon_state = "cig"
-	uses_multiple_icon_states = 1
 	item_state = "cig"
 	force = 0
 	hit_type = DAMAGE_BLUNT
@@ -149,13 +148,13 @@
 	temperature_expose(datum/gas_mixture/air, temperature, volume)
 		if (src.on == 0)
 			if (temperature > T0C+200)
-				src.visible_message(SPAN_ALERT("The [src] ignites!"), group = "cig_ignite")
+				src.visible_message(SPAN_ALERT("[src] ignites!"), group = "cig_ignite")
 				src.light()
 
 	ex_act(severity)
 		. = ..()
 		if (src.on == 0)
-			src.visible_message(SPAN_ALERT("The [src] ignites!"), group = "cig_ignite")
+			src.visible_message(SPAN_ALERT("[src] ignites!"), group = "cig_ignite")
 			src.light()
 
 	attackby(obj/item/W, mob/user)
@@ -190,10 +189,11 @@
 		else
 			return ..() // CALL your GODDAMN PARENTS
 
-	attack(atom/target, mob/user)
+	attack(atom/target, mob/user, def_zone, is_special = FALSE)
 		if (isliving(target))
 			var/mob/living/M = target
-
+			if (is_special)
+				return ..()
 			if (ishuman(M))
 				var/mob/living/carbon/human/H = M
 				if (H.bleeding || (H.organHolder?.back_op_stage > BACK_SURGERY_CLOSED && user.zone_sel.selecting == "chest"))
@@ -293,8 +293,7 @@
 					if(H.traitHolder && H.traitHolder.hasTrait("smoker") || !((src in H.get_equipped_items()) || ((H.l_store==src||H.r_store==src) && !(H.wear_mask && (H.wear_mask.c_flags & BLOCKSMOKE || (H.wear_mask.c_flags & MASKINTERNALS && H.internal))))))
 						src.reagents.remove_any(puffrate)
 					else
-						if(H.bodytemperature < H.base_body_temp)
-							H.bodytemperature += 1
+						H.changeBodyTemp(1 KELVIN, max_temp = H.base_body_temp)
 						if (prob(1))
 							H.contract_disease(/datum/ailment/malady/heartdisease,null,null,1)
 						src.reagents.trans_to(M, puffrate)
@@ -333,16 +332,14 @@
 
 	dropped(mob/user as mob)
 		if (!isturf(src.loc))
-			return
+			return ..()
 		if (src.on == 1 && !src.exploding && src.reagents.total_volume <= 20)
 			src.put_out(user, SPAN_ALERT("<b>[user]</b> calmly drops and treads on the lit [src.name], putting it out instantly."))
-			return ..()
 		else if (user.client)
 			if (!user.client.check_key(KEY_THROW)) //checks if player is in throw mode to avoid double messages
 				user.visible_message(SPAN_ALERT("<b>[user]</b> drops [src]. Guess [he_or_she(user)][ve_or_s(user)] had enough for the day."), group = "cig_drop")
-				return ..()
-		else
-			return ..()
+
+		return ..()
 
 
 	proc/trick_explode()
@@ -478,15 +475,15 @@
 
 	New()
 		src.flavor = pick("CBD","CBD","CBD","CBD","THC","THC","THC","THC","silicate","antihol","mutadone","rum","mutagen","toxin","water_holy","fuel","salbutamol","haloperidol",
-		"cryoxadone","cryostylane","omnizine","jenkem","vomit","carpet","charcoal","blood","cheese","bilk","atropine",
+		"cryoxadone","cryostylane","omnizine","vomit","carpet","charcoal","blood","cheese","bilk","atropine",
 		"lexorin","teporone","mannitol","spaceacillin","saltpetre","anti_rad","insulin","gvomit","milk","colors","diluted_fliptonium",
 		"something","honey_tea","tea","coffee","chocolate","guacamole","juice_pickle","vanilla","enriched_msg","egg","aranesp",
 		"paper","bread","green_goop","black_goop", "mint_tea", "juice_peach", "ageinium")
 		..()
 		if (src?.reagents) //Warc: copied ZeWaka's copy of Wire's fix for null.remove_any() way above
 			src.reagents.remove_any(15)
-			src.reagents.add_reagent(pick("CBD","mucus","ethanol","glitter","methamphetamine","uranium","pepperoni","poo","quebon","jenkem","cryoxadone","kerosene","cryostylane","ectoplasm","gravy","cheese","paper","carpet","ants","enriched_msg","THC","THC","THC","bee","coffee","fuel","salbutamol","milk","grog"),5)
-			src.reagents.add_reagent(pick("CBD","mucus","ethanol","glitter","methamphetamine","uranium","pepperoni","poo","quebon","jenkem","cryoxadone","kerosene","cryostylane","ectoplasm","gravy","cheese","paper","carpet","ants","enriched_msg","THC","THC","THC","bee","coffee","fuel","salbutamol","milk","grog"),5)
+			src.reagents.add_reagent(pick("CBD","mucus","ethanol","glitter","methamphetamine","uranium","pepperoni","poo","quebon","cryoxadone","kerosene","cryostylane","ectoplasm","gravy","cheese","paper","carpet","ants","enriched_msg","THC","THC","THC","bee","coffee","fuel","salbutamol","milk","grog"),5)
+			src.reagents.add_reagent(pick("CBD","mucus","ethanol","glitter","methamphetamine","uranium","pepperoni","poo","quebon","cryoxadone","kerosene","cryostylane","ectoplasm","gravy","cheese","paper","carpet","ants","enriched_msg","THC","THC","THC","bee","coffee","fuel","salbutamol","milk","grog"),5)
 			if(prob(5))
 				src.reagents.add_reagent("triplemeth",5)
 
@@ -501,7 +498,7 @@
 
 	New()
 		src.flavor = pick("silicate","antihol","mutadone","rum","mutagen","toxin","water_holy","fuel","salbutamol","haloperidol",
-		"cryoxadone","cryostylane","omnizine","jenkem","vomit","carpet","charcoal","blood","cheese","bilk","atropine",
+		"cryoxadone","cryostylane","omnizine","vomit","carpet","charcoal","blood","cheese","bilk","atropine",
 		"lexorin","teporone","mannitol","spaceacillin","saltpetre","anti_rad","insulin","gvomit","milk","colors","diluted_fliptonium",
 		"something","honey_tea","tea","coffee","chocolate","guacamole","juice_pickle","vanilla","enriched_msg","egg","aranesp",
 		"paper","bread","green_goop","black_goop", "mint_tea", "juice_peach", "ageinium", "synaptizine", "plasma", "morphine","oculine","CBD")
@@ -516,7 +513,7 @@
 // WHY
 /obj/item/clothing/mask/cigarette/custom
 	desc = "There could be anything in this."
-	flags = FPRINT|TABLEPASS|OPENCONTAINER
+	flags = TABLEPASS | OPENCONTAINER
 
 	New()
 		..()
@@ -535,14 +532,13 @@
 	desc = "The most popular brand of Space Cigarettes, sponsors of the Space Olympics."
 	icon = 'icons/obj/items/cigarettes.dmi'
 	icon_state = "cigpacket"
-	uses_multiple_icon_states = 1
 	item_state = "cigpacket"
 	w_class = W_CLASS_TINY
 	throwforce = 2
 	var/max_cigs = 6
 	var/cigtype = /obj/item/clothing/mask/cigarette
 	var/package_style = "cigpacket"
-	flags = TABLEPASS | FPRINT
+	var/list/allowed = list(/obj/item/clothing/mask/cigarette)
 	c_flags = ONBELT
 	stamina_damage = 3
 	stamina_cost = 3
@@ -550,11 +546,45 @@
 
 	New()
 		..()
+		AddComponent(/datum/component/transfer_input/quickloading, allowed, "onLoading", "filterLoading")
 		if (!cigtype)
 			return
 		for(var/i in 1 to src.max_cigs)
 			new src.cigtype(src)
 
+	mouse_drop(atom/over_object, src_location, over_location, src_control, over_control, params)
+		if ((istype(over_object, /obj/table) || \
+					(isturf(over_object) && total_density(over_location) < 1)) && \
+					in_interact_range(over_object,src) && \
+					src.contents.len > 0)
+			usr.visible_message(SPAN_NOTICE("[usr] dumps out [src]'s contents onto [over_object]!"))
+			for (var/obj/item/thing in src.contents)
+				thing.set_loc(over_location)
+			src.UpdateIcon()
+			if (!islist(params)) params = params2list(params)
+			if (params) params["dumped"] = 1
+		else ..()
+
+	should_place_on(obj/target, params)
+		if (istype(target, /obj/table) && params && params["dumped"])
+			return FALSE
+		return ..()
+
+	get_help_message(dist, mob/user)
+		. = ..()
+		. += "Hold this and drag a nearby cigarette onto it to auto-fill.\n \
+			Drag this onto a nearby table or floor while holding it to dump its contents."
+
+/obj/item/cigpacket/proc/onLoading(atom/movable/incoming)
+	src.UpdateIcon()
+	// No idea is usr works via components like this, but there seems to be no recourse without altering the component itself.
+	incoming.add_fingerprint(usr)
+	return TRUE
+
+/obj/item/cigpacket/proc/filterLoading(obj/item/clothing/mask/cigarette/cig)
+	if (length(src.contents) >= max_cigs) return FALSE
+	if (cig.on) return FALSE
+	return TRUE
 
 /obj/item/cigpacket/nicofree
 	name = "nicotine-free cigarette packet"
@@ -603,6 +633,7 @@
 	else
 		src.icon_state = "[src.package_style]o"
 		src.overlays += "cig[length(src.contents)]"
+		src.desc = initial(src.desc)
 	return
 
 /obj/item/cigpacket/attack_hand(mob/user)
@@ -665,17 +696,15 @@
 
 /obj/item/cigarbox
 	name = "cigar box"
-	desc = "The not-so-prestigeous brand of Space Cigars."
+	desc = "The not-so-prestigious brand of Space Cigars."
 	icon = 'icons/obj/items/cigarettes.dmi'
 	icon_state = "cigarbox"
-	uses_multiple_icon_states = 1
 	item_state = "cigarbox"
 	w_class = W_CLASS_TINY
 	throwforce = 2
 	var/cigcount = 5
 	var/cigtype = /obj/item/clothing/mask/cigarette/cigar
 	var/package_style = "cigarbox"
-	flags = TABLEPASS | FPRINT
 	c_flags = ONBELT
 	stamina_damage = 3
 	stamina_cost = 3
@@ -730,17 +759,15 @@
 
 /obj/item/cigarbox/gold
 	name = "deluxe golden cigar box"
-	desc = "The most prestigeous brand of Space Cigars, made in Space Cuba."
+	desc = "The most prestigious brand of Space Cigars, made in Space Cuba."
 	icon = 'icons/obj/items/cigarettes.dmi'
 	icon_state = "cigarbox"
-	uses_multiple_icon_states = 1
 	item_state = "cigarbox"
 	w_class = W_CLASS_TINY
 	throwforce = 2
 	cigcount = 5
 	cigtype = /obj/item/clothing/mask/cigarette/cigar/gold
 	package_style = "cigarbox"
-	flags = TABLEPASS | FPRINT
 	c_flags = ONBELT
 	stamina_damage = 3
 	stamina_cost = 3
@@ -796,7 +823,7 @@
 /obj/item/cigpacket/cigarillo
 	max_cigs = 2
 	name = "Discount Dan's Last-Ditch Doinks"
-	desc = "These claim to be '100% all natoural* tobacco**'."
+	desc = "These claim to be '100% all natoural* tobacco**'."  // dunno if the typo was intentional but I'm keeping it - Mouse
 	cigtype = /obj/item/clothing/mask/cigarette/cigarillo/flavoured
 	icon_state = "cigarillopacket"
 	package_style = "cigarillopacket"
@@ -820,16 +847,15 @@
 	desc = "A little bit of heavy paper with some matches in it, and a little strip to light them on."
 	icon = 'icons/obj/items/cigarettes.dmi'
 	icon_state = "matchbook"
-	uses_multiple_icon_states = 1
 	w_class = W_CLASS_TINY
 	throwforce = 1
-	flags = FPRINT | TABLEPASS | SUPPRESSATTACK
+	flags = TABLEPASS | SUPPRESSATTACK
 	stamina_damage = 0
 	stamina_cost = 0
 	stamina_crit_chance = 1
 	burn_point = 220
 	burn_output = 900
-	burn_possible = 1
+	burn_possible = TRUE
 	health = 4
 	var/match_amt = 6 // -1 for infinite
 	rand_pos = 1
@@ -852,7 +878,7 @@
 				user.put_in_hand_or_drop(W)
 				if (src.match_amt != -1)
 					src.match_amt --
-					tooltip_rebuild = 1
+					tooltip_rebuild = TRUE
 			src.UpdateIcon()
 		else
 			return ..()
@@ -896,19 +922,18 @@
 
 /obj/item/match
 	name = "match"
-	desc = "A little stick of wood with phosphorus on the tip, for lighting fires, or making you very frustrated and not lighting fires. Either or."
+	desc = "A little stick of wood with phosphorus on the tip, for lighting fires, or making you very frustrated and not lighting fires. Either/or."
 	icon = 'icons/obj/items/cigarettes.dmi'
 	icon_state = "match"
-	uses_multiple_icon_states = 1
 	w_class = W_CLASS_TINY
 	throwforce = 1
-	flags = FPRINT | TABLEPASS | SUPPRESSATTACK
+	flags = TABLEPASS | SUPPRESSATTACK
 	stamina_damage = 0
 	stamina_cost = 0
 	stamina_crit_chance = 1
 	burn_point = 220
 	burn_output = 600
-	burn_possible = 1
+	burn_possible = TRUE
 
 	var/on = MATCH_UNLIT
 
@@ -994,7 +1019,7 @@
 	temperature_expose(datum/gas_mixture/air, temperature, volume)
 		if (src.on == MATCH_UNLIT)
 			if (temperature > T0C+200)
-				src.visible_message(SPAN_ALERT("The [src] ignites!"))
+				src.visible_message(SPAN_ALERT("[src] ignites!"))
 				src.light()
 
 	ex_act(severity)
@@ -1002,7 +1027,7 @@
 		if (QDELETED(src))
 			return
 		if (src.on == MATCH_UNLIT)
-			src.visible_message(SPAN_ALERT("The [src] ignites!"))
+			src.visible_message(SPAN_ALERT("[src] ignites!"))
 			src.light()
 
 	afterattack(atom/target, mob/user as mob)
@@ -1081,6 +1106,8 @@
 
 	attack(mob/target, mob/user, def_zone, is_special = FALSE, params = null)
 		if (ishuman(target))
+			if (is_special)
+				return ..()
 			if (src.on > 0)
 				var/mob/living/carbon/human/fella = target
 				if (fella.wear_mask && istype(fella.wear_mask, /obj/item/clothing/mask/cigarette))
@@ -1121,7 +1148,7 @@
 	inhand_image_icon = 'icons/mob/inhand/hand_general.dmi'
 	w_class = W_CLASS_TINY
 	throwforce = 4
-	flags = FPRINT | TABLEPASS | CONDUCT | ATTACK_SELF_DELAY
+	flags = TABLEPASS | CONDUCT | ATTACK_SELF_DELAY
 	c_flags = ONBELT
 	object_flags = NO_GHOSTCRITTER
 	click_delay = 0.7 SECONDS
@@ -1172,7 +1199,7 @@
 		src.firesource = FIRESOURCE_OPEN_FLAME
 		set_icon_state(src.icon_on)
 		src.item_state = "[item_state_base]on"
-		flick("[icon_state]_open", src)
+		FLICK("[icon_state]_open", src)
 		light.enable()
 		processing_items |= src
 		if (user != null)
@@ -1184,7 +1211,7 @@
 		src.firesource = FALSE
 		set_icon_state(src.icon_off)
 		src.item_state = "[item_state_base]"
-		flick("[icon_state]_close", src)
+		FLICK("[icon_state]_close", src)
 		light.disable()
 		processing_items.Remove(src)
 		if (user != null)
@@ -1195,6 +1222,8 @@
 		if (ishuman(target))
 			var/mob/living/carbon/human/fella = target
 
+			if (is_special)
+				return ..()
 			if (src.on)
 				if (fella.wear_mask && istype(fella.wear_mask, /obj/item/clothing/mask/cigarette))
 					var/obj/item/clothing/mask/cigarette/smoke = fella.wear_mask // aaaaaaa
@@ -1267,7 +1296,7 @@
 					src.deactivate(null)
 			//sleep(1 SECOND)
 
-	temperature_expose(datum/gas_mixture/air, exposed_temperature, exposed_volume)
+	temperature_expose(datum/gas_mixture/air, exposed_temperature, exposed_volume, cannot_be_cooled = FALSE)
 		if (exposed_temperature > enviromental_expose_temp)
 			return ..()
 		return

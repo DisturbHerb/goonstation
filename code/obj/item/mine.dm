@@ -19,6 +19,7 @@ TYPEINFO(/obj/item/mine)
 
 	New()
 		..()
+		RegisterSignal(src, COMSIG_ITEM_STORAGE_INTERACTION, PROC_REF(on_storage_interaction))
 		if (src.armed)
 			src.UpdateIcon()
 
@@ -27,8 +28,14 @@ TYPEINFO(/obj/item/mine)
 			src.our_timer.master = src
 
 	disposing()
+		UnregisterSignal(src, COMSIG_ITEM_STORAGE_INTERACTION)
 		our_timer = null
 		..()
+
+	proc/on_storage_interaction(var/affected_mine, var/mob/user)
+		if(src.armed)
+			src.triggered(user)
+			return TRUE
 
 	examine()
 		. = ..()
@@ -78,7 +85,7 @@ TYPEINFO(/obj/item/mine)
 			logTheThing(LOG_BOMBING, user, "has disarmed the [src.name] at [log_loc(user)].")
 
 		if (src.our_timer && istype(src.our_timer))
-			src.our_timer.attack_self(user)
+			src.our_timer.AttackSelf(user)
 
 
 	receive_signal()
@@ -120,6 +127,8 @@ TYPEINFO(/obj/item/mine)
 	Crossed(atom/movable/AM as mob|obj)
 		..()
 		if (AM == src || !(istype(AM, /obj/vehicle) || istype(AM, /obj/machinery/bot) || ismob(AM)))
+			return
+		if (HAS_ATOM_PROPERTY(AM, PROP_ATOM_FLOATING))
 			return
 		if (ismob(AM) && (!isliving(AM) || isintangible(AM) || iswraith(AM)))
 			return
@@ -185,7 +194,7 @@ TYPEINFO(/obj/item/mine)
 		if (!src || !istype(src))
 			return
 		var/logtarget = (T && ismob(T) ? T : null)
-		logTheThing(LOG_BOMBING, M && ismob(M) ? M : null, logtarget, "The [src.name] was triggered at [log_loc(src)][T && ismob(T) ? ", affecting [constructTarget(logtarget,"bombing")]." : "."] Last touched by: [src.fingerprintslast ? "[src.fingerprintslast]" : "*null*"]")
+		logTheThing(LOG_BOMBING, M && ismob(M) ? M : null, "The [src.name] was triggered at [log_loc(src)][T && ismob(T) ? ", affecting [constructTarget(logtarget,"bombing")]." : "."] Last touched by: [src.fingerprintslast ? "[src.fingerprintslast]" : "*null*"]")
 
 /obj/item/mine/radiation
 	name = "radiation land mine"
@@ -224,7 +233,7 @@ TYPEINFO(/obj/item/mine)
 		if (!src || !istype(src))
 			return
 
-		fireflash_melting(get_turf(src), 3, 3000, 500)
+		fireflash_melting(get_turf(src), 3, 3000, 500, chemfire = CHEM_FIRE_RED)
 		playsound(src.loc, 'sound/effects/bamf.ogg', 50, 1)
 
 /obj/item/mine/stun

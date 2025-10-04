@@ -1,5 +1,7 @@
 TYPEINFO(/obj/machinery/secscanner)
 	mats = 18
+	start_speech_modifiers = list(SPEECH_MODIFIER_MACHINERY)
+	start_speech_outputs = list(SPEECH_OUTPUT_SPOKEN_SUBTLE)
 
 /obj/machinery/secscanner
 	name = "security scanner"
@@ -13,6 +15,9 @@ TYPEINFO(/obj/machinery/secscanner)
 	deconstruct_flags = DECON_WRENCH | DECON_WELDER | DECON_WIRECUTTERS | DECON_MULTITOOL
 	appearance_flags = TILE_BOUND | PIXEL_SCALE
 	power_usage = 5
+	speech_verb_say = "beeps"
+	default_speech_output_channel = SAY_CHANNEL_OUTLOUD
+
 	var/timeBetweenUses = 20//I can see this being fun
 	var/success_sound = 'sound/machines/chime.ogg'
 	var/fail_sound = 'sound/machines/alarm_a.ogg'
@@ -29,7 +34,7 @@ TYPEINFO(/obj/machinery/secscanner)
 
 	New()
 		..()
-		MAKE_SENDER_RADIO_PACKET_COMPONENT("pda", FREQ_PDA)
+		MAKE_SENDER_RADIO_PACKET_COMPONENT(null, "pda", FREQ_PDA)
 
 	Crossed(atom/movable/AM)
 		if(isliving(AM) && !isintangible(AM))
@@ -59,11 +64,10 @@ TYPEINFO(/obj/machinery/secscanner)
 			return
 		src.use_power(15)
 
-		var/list/contraband_returned = list()
 		var/contraband = 0
 
-		if (SEND_SIGNAL(I, COMSIG_MOVABLE_GET_CONTRABAND, contraband_returned, TRUE, TRUE))
-			contraband = max(contraband_returned)
+		contraband += GET_ATOM_PROPERTY(I,PROP_MOVABLE_VISIBLE_CONTRABAND)
+		contraband += GET_ATOM_PROPERTY(I,PROP_MOVABLE_VISIBLE_GUNS)
 
 		if (contraband > 2)
 			playsound( src.loc, fail_sound, 10, 0 )
@@ -105,7 +109,7 @@ TYPEINFO(/obj/machinery/secscanner)
 					var/mob/living/carbon/human/H = target
 					var/perpname = H.name
 					src.use_power(15)
-					src.speak("[uppertext(perpname)] HAS FAILED THE VIBE CHECK! BAD VIBES! BAD VIBES!!")
+					src.say("[uppertext(perpname)] HAS FAILED THE VIBE CHECK! BAD VIBES! BAD VIBES!!")
 
 				//////PDA NOTIFY/////
 				if (src.report_scans)
@@ -192,9 +196,8 @@ TYPEINFO(/obj/machinery/secscanner)
 					has_contraband_permit = TRUE
 
 			for(var/obj/item/item in target.contents)
-				var/list/contraband_returned = list()
-				if(SEND_SIGNAL(item, COMSIG_MOVABLE_GET_CONTRABAND, contraband_returned, !has_carry_permit, !has_carry_permit))
-					threatcount += max(contraband_returned)
+				threatcount += GET_ATOM_PROPERTY(item,PROP_MOVABLE_VISIBLE_CONTRABAND)
+				threatcount += GET_ATOM_PROPERTY(item,PROP_MOVABLE_VISIBLE_GUNS)
 			return threatcount
 
 		var/mob/living/carbon/human/perp = target
@@ -224,26 +227,31 @@ TYPEINFO(/obj/machinery/secscanner)
 			if(contraband_access in perp_id.access)
 				has_contraband_permit = TRUE
 
-		if (!has_carry_permit || !has_contraband_permit)
-			var/list/contraband_returned = list()
-			if(SEND_SIGNAL(perp, COMSIG_MOVABLE_GET_CONTRABAND, contraband_returned, !has_contraband_permit, !has_carry_permit))
-				threatcount += max(contraband_returned)
+		if (!has_contraband_permit)
+			threatcount += GET_ATOM_PROPERTY(perp, PROP_MOVABLE_VISIBLE_CONTRABAND)
 
 			if (istype(perp.l_store))
-				contraband_returned = list()
-				if(SEND_SIGNAL(perp.l_store, COMSIG_MOVABLE_GET_CONTRABAND, contraband_returned, !has_contraband_permit, !has_carry_permit))
-					threatcount += max(contraband_returned) * 0.5
+				threatcount += GET_ATOM_PROPERTY(perp.l_store, PROP_MOVABLE_VISIBLE_CONTRABAND) * 0.5
 
 			if (istype(perp.r_store))
-				contraband_returned = list()
-				if(SEND_SIGNAL(perp.r_store, COMSIG_MOVABLE_GET_CONTRABAND, contraband_returned, !has_contraband_permit, !has_carry_permit))
-					threatcount += max(contraband_returned) * 0.5
+				threatcount += GET_ATOM_PROPERTY(perp.r_store, PROP_MOVABLE_VISIBLE_CONTRABAND) * 0.5
 
 			if (istype(perp.back) && perp.back?.storage)
 				for(var/obj/item/item in perp.back.storage.get_contents())
-					contraband_returned = list()
-					if(SEND_SIGNAL(item, COMSIG_MOVABLE_GET_CONTRABAND, contraband_returned, !has_contraband_permit, !has_carry_permit))
-						threatcount += max(contraband_returned) * 0.5
+					threatcount += GET_ATOM_PROPERTY(item, PROP_MOVABLE_VISIBLE_CONTRABAND) * 0.5
+
+		if (!has_carry_permit)
+			threatcount += GET_ATOM_PROPERTY(perp, PROP_MOVABLE_VISIBLE_GUNS)
+
+			if (istype(perp.l_store))
+				threatcount += GET_ATOM_PROPERTY(perp.l_store, PROP_MOVABLE_VISIBLE_GUNS) * 0.5
+
+			if (istype(perp.r_store))
+				threatcount += GET_ATOM_PROPERTY(perp.r_store, PROP_MOVABLE_VISIBLE_GUNS) * 0.5
+
+			if (istype(perp.back) && perp.back?.storage)
+				for(var/obj/item/item in perp.back.storage.get_contents())
+					threatcount += GET_ATOM_PROPERTY(item, PROP_MOVABLE_VISIBLE_GUNS) * 0.5
 
 		//Agent cards lower threatlevel
 		if(istype(perp_id, /obj/item/card/id/syndicate))
@@ -257,7 +265,7 @@ TYPEINFO(/obj/machinery/secscanner)
 			var/perpname = perp.face_visible() ? perp.real_name : perp.name
 
 			for (var/datum/db_record/R as anything in data_core.security.find_records("name", perpname))
-				if(R["criminal"] == "*Arrest*")
+				if(R["criminal"] == ARREST_STATE_ARREST)
 					threatcount = max(4,threatcount)
 					break
 
@@ -270,16 +278,6 @@ TYPEINFO(/obj/machinery/secscanner)
 			if (2,3)
 				if(!prob(60 + severity*10))
 					qdel(src)
-
-	proc/speak(var/message)
-		if (status & NOPOWER)
-			return
-
-		if (!message)
-			return
-
-		for (var/mob/O in hearers(src, null))
-			O.show_message(SPAN_SUBTLE("<span class='game say'>[SPAN_NAME("[src]")] beeps, \"[message]\"</span>"), 2)
 
 
 /obj/machinery/fakesecscanner

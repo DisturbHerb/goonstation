@@ -19,7 +19,7 @@
 			return 1
 
 		if(!istype(get_area(holder.owner), /area/sim/gunsim))
-			holder.owner.say("PHEE CABUE", FALSE, maptext_style, maptext_colors)
+			holder.owner.say("PHEE CABUE", flags = SAYFLAG_IGNORE_STAMINA, message_params = list("maptext_css_values" = src.maptext_style, "maptext_animation_colours" = src.maptext_colors))
 		..()
 
 		var/SPtime = 35
@@ -37,7 +37,7 @@
 	if (!isturf(H.loc))
 		H.show_text("You can't seem to turn incorporeal here.", "red")
 		return
-	if (H.stat || H.getStatusDuration("paralysis") > 0)
+	if (H.stat || H.getStatusDuration("unconscious") > 0)
 		H.show_text("You can't turn incorporeal when you are incapacitated.", "red")
 		return
 
@@ -61,6 +61,10 @@
 			boutput(H, SPAN_NOTICE("The flames sputter out as you phase shift."))
 			H.delStatus("burning")
 
+	for(var/obj/item/grab/grab_grabbed_by in H.grabbed_by)
+		if (!istype(grab_grabbed_by, /obj/item/grab/block))
+			qdel(grab_grabbed_by)
+
 	SPAWN(0)
 		var/start_loc
 		var/mobloc = get_turf(H.loc)
@@ -74,7 +78,7 @@
 		animation.icon_state = "liquify"
 		animation.layer = EFFECTS_LAYER_BASE
 		animation.master = holder
-		flick("liquify",animation)
+		FLICK("liquify",animation)
 		H.set_loc(holder)
 		var/datum/effects/system/steam_spread/steam = new /datum/effects/system/steam_spread
 		steam.set_up(10, 0, mobloc)
@@ -88,7 +92,7 @@
 		H.restrain_time = TIME + 40
 		holder.canmove = 0
 		sleep(2 SECONDS)
-		flick("reappear",animation)
+		FLICK("reappear",animation)
 		sleep(0.5 SECONDS)
 		H.set_loc(mobloc)
 		logTheThing(LOG_COMBAT, H, "used phaseshift to move from [log_loc(start_loc)] to [log_loc(H.loc)].")
@@ -113,27 +117,16 @@
 /obj/dummy/spell_invis/relaymove(var/mob/user, direction, delay)
 	if (!src.canmove || src.movecd)
 		return
-	switch(direction)
-		if(NORTH)
-			src.y++
-		if(SOUTH)
-			src.y--
-		if(EAST)
-			src.x++
-		if(WEST)
-			src.x--
-		if(NORTHEAST)
-			src.y++
-			src.x++
-		if(NORTHWEST)
-			src.y++
-			src.x--
-		if(SOUTHEAST)
-			src.y--
-			src.x++
-		if(SOUTHWEST)
-			src.y--
-			src.x--
+
+	if(direction & NORTH)
+		src.y = min(src.y+1, world.maxy)
+	if(direction & SOUTH)
+		src.y = max(src.y-1, 1)
+	if(direction & EAST)
+		src.x = min(src.x+1, world.maxx)
+	if(direction & WEST)
+		src.x = max(src.x-1, 1)
+
 	src.movecd = 1
 	SPAWN(0.2 SECONDS) src.movecd = 0
 
@@ -143,47 +136,25 @@
 /obj/dummy/spell_invis/bullet_act(obj/projectile/P)
 	return
 
+/obj/dummy/spell_invis/dimshift
+	var/mob/living/carbon/human/owner
+	var/datum/bioEffect/power/dimension_shift/P
 
-
-/proc/spell_batpoof(var/mob/H, var/cloak = 0)
-	if (!H || !ismob(H))
-		return
-	if (!isturf(H.loc))
-		H.show_text("You can't seem to transform in here.", "red")
-		return
-	if (isdead(H))
-		return
-	if (!H.canmove)
-		return
-	if(isrestrictedz(H.loc.z))
-		return
-
-	if (isliving(H))
-		var/mob/living/owner = H
-		if (owner.stamina < STAMINA_SPRINT)
-			return
-
-
-	//usecloak == check abilityholder
-	new /obj/dummy/spell_batpoof( get_turf(H), H , cloak)
-
-/proc/spell_firepoof(var/mob/H)
-	if (!H || !ismob(H))
-		return
-	if (!isturf(H.loc))
-		H.show_text("You can't seem to transform in here.", "red")
-		return
-	if (isdead(H))
-		return
-	if (!H.canmove)
-		return
-
-	if (isliving(H))
-		var/mob/living/owner = H
-		if (owner.stamina < STAMINA_SPRINT)
-			return
-
-	new /obj/dummy/spell_batpoof/firepoof( get_turf(H), H , 0)
+/obj/dummy/spell_invis/dimshift/New(loc, owner, power)
+	. = ..()
+	src.owner = owner
+	src.P = power
+/obj/dummy/spell_invis/dimshift/Exited(Obj, newloc)
+	. = ..()
+	if(Obj == owner)
+		owner.visible_message(SPAN_ALERT("<b>[owner] appears in a burst of blue light!</b>"))
+		playsound(owner.loc, 'sound/effects/ghost2.ogg', 50, 0)
+		SPAWN(0.7 SECONDS)
+			animate(owner, alpha = 255, time = 5, easing = LINEAR_EASING)
+			animate(color = "#FFFFFF", time = 5, easing = LINEAR_EASING)
+			P.active = FALSE
+			P.processing = FALSE
+		qdel(src)
 
 /obj/dummy/spell_batpoof
 	name = "bat"
@@ -239,6 +210,8 @@
 		if(owner)
 			owner.set_loc(src.loc)
 			owner = 0
+		for(var/atom/movable/AM in src)
+			AM.set_loc(src.loc)
 		//overlay_image = 0
 		if (use_cloakofdarkness)
 			processing_items.Remove(src)
@@ -251,11 +224,11 @@
 		var/turf/T = get_turf(owner)
 		if (T)
 			var/area/A = get_area(T)
-			if (T.turf_flags & CAN_BE_SPACE_SAMPLE || A.name == "Emergency Shuttle" || A.name == "Space" || A.name == "Ocean")
+			if (istype(T, /turf/space) || A.name == "Emergency Shuttle" || A.name == "Space" || A.name == "Ocean")
 				src.set_cloaked(0)
 
 			else
-				if (T.RL_GetBrightness() < 0.2 && can_act(owner))
+				if (!T.is_lit() && can_act(owner))
 					src.set_cloaked(1)
 				else
 					src.set_cloaked(0)
@@ -266,7 +239,7 @@
 	proc/set_cloaked(var/cloaked = 1)
 		if (use_cloakofdarkness)
 			if (cloaked == 1)
-				src.invisibility = INVIS_INFRA
+				src.invisibility = INVIS_MESON
 				src.alpha = 120
 				//src.UpdateOverlays(overlay_image, "batpoof_cloak")
 			else
@@ -363,7 +336,7 @@
 
 		relaymove()
 			..()
-			fireflash(get_turf(owner), 0, 100)
+			fireflash(get_turf(owner), 0, 100, chemfire = CHEM_FIRE_RED)
 
 
 		dispel()

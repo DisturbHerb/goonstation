@@ -1,6 +1,18 @@
 // FLOCK INTANGIBLE MOB PARENT
 // for shared things, like references to flocks and vision modes and general intangibility and swapping into drones
 
+/// The relay is under construction
+#define STAGE_UNBUILT 0
+/// The relay has been built
+#define STAGE_BUILT 1
+/// The relay is about to transmit the Signal
+#define STAGE_CRITICAL 2
+/// The relay either transmitted the Signal, or was otherwise destroyed
+#define STAGE_DESTROYED 3
+
+TYPEINFO(/mob/living/intangible/flock)
+	start_listen_languages = list(LANGUAGE_ALL)
+
 /mob/living/intangible/flock
 	name = "caw"
 	desc = "please report this to a coder you shouldn't see this"
@@ -15,12 +27,17 @@
 	use_stamina = 0//no puff tomfuckery
 	respect_view_tint_settings = TRUE
 	sight = SEE_TURFS | SEE_MOBS | SEE_OBJS | SEE_SELF
+	speech_verb_say = list("sings", "clicks", "whistles", "intones", "transmits", "submits", "uploads")
+
 	var/compute = 0
-	var/datum/flock/flock = null
+	var/tmp/datum/flock/flock = null
 	var/wear_id = null // to prevent runtimes from AIs tracking down radio signals
 
 	var/afk_counter = 0
 	var/turf/previous_turf = null
+
+	var/datum/hud/flock_intangible/custom_hud = /datum/hud/flock_intangible
+	var/hud
 
 /mob/living/intangible/flock/New()
 	..()
@@ -37,6 +54,8 @@
 	//src.render_special.set_centerlight_icon("flockvision", "#09a68c", BLEND_OVERLAY, PLANE_FLOCKVISION, alpha=196)
 	//src.render_special.set_widescreen_fill(color="#09a68c", plane=PLANE_FLOCKVISION, alpha=196)
 	src.previous_turf = get_turf(src)
+	src.hud = new custom_hud(src)
+	src.attach_hud(src.hud)
 
 /mob/living/intangible/flock/Login()
 	..()
@@ -100,7 +119,6 @@
 	..()
 
 /mob/living/intangible/flock/is_spacefaring() return 1
-/mob/living/intangible/flock/say_understands() return 1
 /mob/living/intangible/flock/can_use_hands() return 0
 
 /mob/living/intangible/flock/movement_delay()
@@ -123,7 +141,7 @@
 			if(prob(5))
 				user.visible_message("<span class='alert bold'>[user] tries to shove [src.name], but overbalances and falls over!</span>",
 				"<span class='alert bold'>You try to shove [src.name] too forcefully and topple over!</span>")
-				user.changeStatus("weakened", 2 SECONDS)
+				user.changeStatus("knockdown", 2 SECONDS)
 		if(INTENT_GRAB)
 			user.visible_message(SPAN_ALERT("[user] tries to grab [src.name], but they're only a trick of light!"),
 				SPAN_ALERT("You try to grab [src.name] but they're intangible! It's like trying to pull a cloud!"))
@@ -204,37 +222,6 @@
 
 	src.examine_verb(target) //default to examine
 
-/mob/living/intangible/flock/say_quote(var/text)
-	var/speechverb = pick("sings", "clicks", "whistles", "intones", "transmits", "submits", "uploads")
-	return "[speechverb], \"[text]\""
-
-/mob/living/intangible/flock/get_heard_name(just_name_itself=FALSE)
-	if (just_name_itself)
-		return src.real_name
-	return "<span class='name' data-ctx='\ref[src.mind]'>[src.real_name]</span>"
-
-/mob/living/intangible/flock/say(message, involuntary = 0)
-	if (!message || message == "" || stat)
-		return
-	if (src.client && src.client.ismuted())
-		boutput(src, "You are currently muted and may not speak.")
-		return
-
-	if (dd_hasprefix(message, "*"))
-		return src.emote(copytext(message, 2),1)
-
-	if (isdead(src))
-		message = trim(copytext(sanitize(message), 1, MAX_MESSAGE_LEN))
-		return src.say_dead(message)
-
-	message = trim(copytext(sanitize(message), 1, MAX_MESSAGE_LEN))
-	logTheThing(LOG_DIARY, src, ": [message]", "say")
-
-	var/prefixAndMessage = separate_radio_prefix_and_message(message)
-	message = prefixAndMessage[2]
-
-	flock_speak(src, message, src.flock)
-
 /mob/living/intangible/flock/get_tracked_examine_atoms()
 	return ..() + src.flock.structures
 
@@ -281,7 +268,7 @@
 	return src.compute
 
 //moved from flockmind to allow traces to teleport
-/mob/living/intangible/flock/flockmind/Topic(href, href_list)
+/mob/living/intangible/flock/Topic(href, href_list)
 	if(href_list["origin"])
 		var/atom/movable/origin = locate(href_list["origin"])
 		if(!QDELETED(origin))
@@ -292,3 +279,55 @@
 			src.set_loc(get_turf(origin))
 			if (href_list["ping"])
 				origin.AddComponent(/datum/component/flock_ping)
+
+/// Relay HUD icon for flockminds and player-controlled flockdrones to show progress towards objective
+/atom/movable/screen/hud/relay
+	name = "Relay Progress"
+	desc = ""
+	icon = 'icons/mob/flock_ui.dmi'
+	icon_state = "structure-relay"
+	screen_loc = "NORTH, EAST-1"
+	alpha = 0
+	show_tooltip = TRUE
+	tooltip_options = list("theme" = "flock")
+
+/// Update everything about the icon and description
+/atom/movable/screen/hud/relay/proc/update_value(new_stage = null, new_alpha = null, new_desc = null)
+	if (new_desc)
+		src.desc = new_desc
+	if (new_alpha)
+		src.alpha = new_alpha
+	if (!new_stage)
+		return
+
+	switch (new_stage)
+		if (STAGE_BUILT)
+			src.icon_state = "structure-relay-glow"
+			src.alpha = 255
+		if (STAGE_CRITICAL)
+			src.icon_state = "structure-relay-glow"
+			src.alpha = 255
+			var/image/sparks = new(src.icon, icon_state = "structure-relay-sparks")
+			src.overlays += sparks
+		if (STAGE_DESTROYED)
+			qdel(src)
+	src.UpdateIcon()
+
+/atom/movable/screen/hud/relay/MouseEntered(location, control, params)
+	if (src.alpha < 50)
+		return // if you can't see the icon why bother
+	src.update_value()
+	..()
+
+/// Back of the relay HUD icon
+/atom/movable/screen/hud/relay_back
+	name = ""
+	desc = ""
+	icon = 'icons/mob/flock_ui.dmi'
+	icon_state = "template-full"
+	screen_loc = "NORTH, EAST-1"
+
+#undef STAGE_UNBUILT
+#undef STAGE_BUILT
+#undef STAGE_CRITICAL
+#undef STAGE_DESTROYED

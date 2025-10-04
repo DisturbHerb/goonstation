@@ -2,6 +2,7 @@
 	id = ROLE_VAMPIRE
 	display_name = "vampire"
 	antagonist_icon = "vampire"
+	wiki_link = "https://wiki.ss13.co/Vampire"
 
 	/// The ability holder of this vampire, containing their respective abilities. This is also used for tracking blood, at the moment.
 	var/datum/abilityHolder/vampire/ability_holder
@@ -23,6 +24,8 @@
 		src.ability_holder.addAbility(/datum/targetable/vampire/cancel_stuns)
 		src.ability_holder.addAbility(/datum/targetable/vampire/glare)
 		src.ability_holder.addAbility(/datum/targetable/vampire/hypnotize)
+		src.ability_holder.addAbility(/datum/targetable/vampire/vamp_cloak)
+		src.ability_holder.check_for_unlocks()
 
 		src.owner.current.assign_gimmick_skull()
 
@@ -33,6 +36,7 @@
 		src.ability_holder.removeAbility(/datum/targetable/vampire/cancel_stuns)
 		src.ability_holder.removeAbility(/datum/targetable/vampire/glare)
 		src.ability_holder.removeAbility(/datum/targetable/vampire/hypnotize)
+		src.ability_holder.removeAbility(/datum/targetable/vampire/vamp_cloak)
 		src.ability_holder.remove_unlocks()
 		src.owner.current.remove_ability_holder(/datum/abilityHolder/vampire)
 
@@ -41,9 +45,8 @@
 
 	add_to_image_groups()
 		. = ..()
-		var/image/image = image('icons/mob/antag_overlays.dmi', icon_state = src.antagonist_icon)
 		var/datum/client_image_group/image_group = get_image_group(src.ability_holder)
-		image_group.add_mind_mob_overlay(src.owner, image, FALSE)
+		image_group.add_mind_mob_overlay(src.owner, get_antag_icon_image(), FALSE)
 		image_group.add_mind(src.owner)
 
 	remove_from_image_groups()

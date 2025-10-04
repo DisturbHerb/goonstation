@@ -262,6 +262,14 @@ meaty thoughts from cogwerks to his spacepal aibm:
 
 #define MEATHEAD_MAX_CUSTOM_UTTERANCES 32
 
+TYPEINFO(/obj/critter/monster_door/meat_head)
+	start_listen_effects = list(LISTEN_EFFECT_MEAT_HEAD)
+	start_listen_modifiers = null
+	start_listen_inputs = list(LISTEN_INPUT_OUTLOUD)
+	start_listen_languages = list(LANGUAGE_ALL)
+	start_speech_modifiers = null
+	start_speech_outputs = list(SPEECH_OUTPUT_SPOKEN_LOCAL)
+
 /obj/critter/monster_door/meat_head //Clash at Meathead
 	name = "Something"
 	desc = "jesus fuck"
@@ -276,6 +284,11 @@ meaty thoughts from cogwerks to his spacepal aibm:
 	bound_height = 64
 	bound_width = 64
 	angertext = "shakes and wobbles furiously at"
+
+	speech_verb_say = list("mutters", "gurgles", "whimpers")
+	default_speech_output_channel = SAY_CHANNEL_OUTLOUD
+	say_language = LANGUAGE_ENGLISH
+
 	var/list/dialog = null
 	var/obj/item/clothing/head/hat = null
 	var/static/list/meathead_noises = list('sound/misc/meat_gargle.ogg', 'sound/misc/meat_hork.ogg', 'sound/misc/meat_plop.ogg', 'sound/misc/meat_splat.ogg')
@@ -328,8 +341,11 @@ meaty thoughts from cogwerks to his spacepal aibm:
 			return ..()
 		else
 			src.icon_state = initial(src.icon_state)
-			if (prob(10) && length(dialog))
-				speak(pick(dialog))
+			if (prob(10) && length(src.dialog) && src.alive)
+				FLICK("meatboss_chatter", src)
+				playsound(src.loc, pick(src.meathead_noises), 40, 1)
+				src.say(pick(src.dialog))
+
 			return ..()
 
 	CritterAttack(mob/M)
@@ -339,7 +355,7 @@ meaty thoughts from cogwerks to his spacepal aibm:
 		src.attacking = 1
 		src.visible_message(SPAN_ALERT("[src] slaps [M] with a meaty tendril!"))
 		playsound(src.loc, 'sound/impact_sounds/Generic_Snap_1.ogg', 50, 1)
-		M.changeStatus("weakened", 10 SECONDS)
+		M.changeStatus("knockdown", 10 SECONDS)
 		random_brute_damage(M, 10, 1)
 		M.throw_at(get_edge_target_turf(M, get_dir(src, get_step_away(M, src))), 200, 4)
 
@@ -382,12 +398,6 @@ meaty thoughts from cogwerks to his spacepal aibm:
 
 		return 0
 
-	hear_talk(var/mob/living/carbon/speaker, messages, real_name, lang_id)
-		if (prob(20))
-			update_meat_head_dialog(messages[1])
-
-			return
-
 	attackby(obj/item/O, mob/user)
 		if (istype(O, /obj/item/clothing/head))
 			user.visible_message("[user] tosses [O] onto [src]!", "You toss [O] onto [src].")
@@ -419,17 +429,6 @@ meaty thoughts from cogwerks to his spacepal aibm:
 
 		else
 			return ..()
-
-	proc/speak(var/message)
-		if(!src.alive || !message)
-			return
-
-		flick("meatboss_chatter", src)
-		playsound(src.loc, pick(meathead_noises), 40, 1)
-
-		for(var/mob/O in hearers(src, null)) //Todo: gnarly font of some sort
-			O.show_message("<span class='game say'>[SPAN_NAME("[src]")] [prob(33) ? "mutters" : (prob(50) ? "gurgles" : "whimpers")], \"[message]\"",2)
-		return
 
 #undef MEATHEAD_MAX_CUSTOM_UTTERANCES
 
@@ -884,7 +883,7 @@ meaty thoughts from cogwerks to his spacepal aibm:
 		<tr><td><a href='javascript:keypadIn(1);'>1</a></td><td><a href='javascript:keypadIn(2);'>2</a></td><td><a href='javascript:keypadIn(3)'>3</a></td></td><td><a href='javascript:keypadIn("V");'>&#x0412;</a></td></tr>
 		<tr><td><a href='javascript:keypadIn(0);'>0</a></td><td><a href='javascript:keypadIn("E");'>&#x0415;</a></td><td><a href='javascript:keypadIn("D");'>&#x0414;</a></td></td><td><a href='javascript:keypadIn("G");'>&#x0413;</a></td></tr>
 
-		<tr><td colspan=2 width = 100px><a id = "enterkey" href='?src=\ref[src];enter=0;'>&#x041F;&#x0423;&#x0421;&#x041A;</a></td><td colspan = 2 width = 100px><a href='javascript:keypadIn("reset");'>&#x0421;&#x0411;&#x0420;&#x041E;&#x0421;</a></td></tr>
+		<tr><td colspan=2 width = 100px><a id = "enterkey" href='byond://?src=\ref[src];enter=0;'>&#x041F;&#x0423;&#x0421;&#x041A;</a></td><td colspan = 2 width = 100px><a href='javascript:keypadIn("reset");'>&#x0421;&#x0411;&#x0420;&#x041E;&#x0421;</a></td></tr>
 	</table>
 
 <script language="JavaScript">
@@ -934,7 +933,7 @@ meaty thoughts from cogwerks to his spacepal aibm:
 			}
 		}
 
-		document.getElementById("enterkey").setAttribute("href","?src=\ref[src];enter=" + currentVal + ";");
+		document.getElementById("enterkey").setAttribute("href","byond://?src=\ref[src];enter=" + currentVal + ";");
 	}
 
 	function keypadIn(num)
@@ -1039,7 +1038,8 @@ meaty thoughts from cogwerks to his spacepal aibm:
 	var/tmp/inPasswordRequestMode = 0
 
 	initialize()
-		..()
+		if (..())
+			return TRUE
 		src.master.temp = ""
 		src.master.temp_add = ""
 		src.print_text("&#x041F;&#x043E;&#x0436;a&#x043B;y&#x0439;c&#x0442;a, &#x0432;c&#x0442;a&#x0432;&#x044C;&#x0442;e &#x043A;&#x043B;&#x044E;&#x0447;&#x0438; a&#x0432;&#x0442;o&#x0440;&#x0438;&#x044D;a&#x0446;&#x0438;&#x0438;.")
@@ -1075,35 +1075,6 @@ meaty thoughts from cogwerks to his spacepal aibm:
 				if (length(knownKeys) < 2)
 					inPasswordRequestMode = 0
 
-/obj/item/peripheral/cheget
-	name = "lock card"
-	desc = "A card with an electronic lock attached to it.  The kind with a keyhole.  Wonder what this is for."
-	icon_state = "card_mod"
-	setup_has_badge = 1
-	func_tag = "KEY_LOCK"
-
-	return_status_text()
-		return "LOCKED"
-
-	return_badge()
-		return "Key: <a href='?src=\ref[src];key=1'>-----</a>"
-
-	Topic(href, href_list)
-		if(..())
-			return
-
-		if(BOUNDS_DIST(host, usr) > 0)
-			return
-
-		src.host?.add_dialog(usr)
-
-		if(href_list["key"] && istype(usr.equipped(), /obj/item/device/key))
-			boutput(usr, SPAN_ALERT("It doesn't fit.  Must be the wrong key."))
-			host.visible_message(SPAN_ALERT("[src.loc] emits a grumpy boop."))
-			playsound(src.loc, 'sound/machines/cheget_grumpbloop.ogg', 30, 1)
-
-		return
-
 /obj/item/peripheral/cheget_key
 	name = "lock card"
 	desc = "A card with an electronic lock attached to it.  The kind with a keyhole.  Wonder what this is for."
@@ -1115,58 +1086,7 @@ meaty thoughts from cogwerks to his spacepal aibm:
 		return src.inserted_key ? "UNLOCKED" : "LOCKED"
 
 	return_badge()
-		if(src.inserted_key)
-			. = "Key: <A HREF='?src=\ref[src];eject_key=1'>[src.inserted_key.name]</A>"
-		else
-			. = "Key: <a href='?src=\ref[src];key=1'>-----</a>"
-
-	Topic(href, href_list)
-		if(..())
-			return
-
-		if(BOUNDS_DIST(host, usr) > 0)
-			return
-
-		src.host?.add_dialog(usr)
-
-		if(href_list["key"])
-			if(istype(usr.equipped(), /obj/item/device/key/cheget) && !src.inserted_key)
-				var/obj/item/device/key/cheget/C = usr.equipped()
-				usr.drop_item()
-				C.set_loc(src)
-				src.inserted_key = C
-				boutput(usr, SPAN_NOTICE("You insert the key and turn it."))
-				playsound(host.loc, 'sound/impact_sounds/Generic_Click_1.ogg', 30, 1)
-				SPAWN(1 SECOND)
-					if(src.inserted_key)
-						host.visible_message(SPAN_ALERT("[host] emits a satisfied boop and a little green light comes on."))
-						playsound(host.loc, 'sound/machines/cheget_goodbloop.ogg', 30, 1)
-						var/datum/signal/authSignal = get_free_signal()
-						authSignal.data = list("authcode"="\ref[src]")
-						send_command("key_auth", authSignal)
-
-			else if(istype(usr.equipped(), /obj/item/device/key))
-				boutput(usr, SPAN_ALERT("It doesn't fit.  Must be the wrong key."))
-				host.visible_message(SPAN_ALERT("[host] emits a grumpy boop."))
-				playsound(host.loc, 'sound/machines/cheget_grumpbloop.ogg', 30, 1)
-
-		else if (href_list["eject_key"])
-			if(src.inserted_key)
-				boutput(usr, SPAN_NOTICE("You turn the key and pull it out of the lock. The green light turns off."))
-				playsound(src.loc, 'sound/impact_sounds/Generic_Click_1.ogg', 30, 1)
-				src.inserted_key.set_loc(get_turf(src.loc))
-				src.inserted_key = null
-				SPAWN(1 SECOND)
-					if(!src.inserted_key)
-						host.visible_message(SPAN_ALERT("[host] emits a dour boop and a small red light flickers on."))
-						playsound(host.loc, 'sound/machines/cheget_sadbloop.ogg', 30, 1)
-						var/datum/signal/deauthSignal = get_free_signal()
-						deauthSignal.data = list("authcode"="\ref[src]")
-						send_command("key_deauth", deauthSignal)
-			else
-				boutput(usr, SPAN_ALERT("You reach to remove the key from the computer... only to find it missing! Where did it go? ...mysterious."))
-
-		host.updateUsrDialog()
+		. = list("label" = "Key","icon" = "key","contents" = src.inserted_key)
 
 /turf/unsimulated/floor/key_floor
 	var/found_thing = 0
@@ -1200,7 +1120,7 @@ meaty thoughts from cogwerks to his spacepal aibm:
 				qdel(O)
 
 				src.visible_message(SPAN_ALERT("Something pops out of [src]!"))
-				new /obj/item/skull/crystal(get_turf(src))
+				new /obj/item/skull/omnitraitor(get_turf(src))
 
 			else
 				boutput(user, SPAN_ALERT("It doesn't fit.  Dang."))
@@ -1252,7 +1172,7 @@ meaty thoughts from cogwerks to his spacepal aibm:
 			return attack_hand(user)
 
 	attack_hand(mob/user)
-		if (user.stat || user.getStatusDuration("weakened") || BOUNDS_DIST(user, src) > 0 || !user.can_use_hands())
+		if (user.stat || user.getStatusDuration("knockdown") || BOUNDS_DIST(user, src) > 0 || !user.can_use_hands())
 			return
 
 		user.visible_message(SPAN_ALERT("[user] presses against [src]."), SPAN_ALERT("You press against [src].  Ew."))
@@ -1355,7 +1275,7 @@ meaty thoughts from cogwerks to his spacepal aibm:
 		changing_state = 1
 		active = (opened != default_state)
 
-		flick("fangdoorc0",src)
+		FLICK("fangdoorc0",src)
 		src.icon_state = "fangdoor0"
 		set_density(0)
 		set_opacity(0)
@@ -1375,7 +1295,7 @@ meaty thoughts from cogwerks to his spacepal aibm:
 
 		set_density(1)
 		set_opacity(1)
-		flick("fangdoorc1",src)
+		FLICK("fangdoorc1",src)
 		for (var/mob/living/L in src.loc)
 			if (prob(10))
 				boutput(L, SPAN_NOTICE("You just barely slip by the clenching teeth unharmed!"))
@@ -1467,6 +1387,7 @@ meaty thoughts from cogwerks to his spacepal aibm:
 	cant_self_remove = 1
 	cant_other_remove = 1
 	cant_drop = 1
+	c_flags = null // not on belt
 	var/last_shot = 0
 
 	pickup(var/mob/user)
@@ -1507,7 +1428,7 @@ meaty thoughts from cogwerks to his spacepal aibm:
 			if (prob(15))
 				user.emote("scream")
 
-/obj/decal/fakeobjects/core
+/obj/fakeobject/core
 	name = "reactor core"
 	desc = "It looks pretty well ruined."
 	icon = 'icons/effects/64x64.dmi'

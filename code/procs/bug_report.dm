@@ -5,7 +5,7 @@
 		return
 	var/datum/tgui_bug_report_form/form = new
 	form.ui_interact(user)
-	UNTIL(form.done || form.closed)
+	UNTIL(form.done || form.closed, 0)
 	if (!form.done)
 		return
 	var/title = form.data["title"]
@@ -38,12 +38,14 @@
 
 [form.data["additional"]]
 
-Reported by: [user_client.key]
+Reported by: [user_client.ckey]
+Client version: [user_client.byond_version].[user_client.byond_build]
 On server: [global.config.server_name]
 Active test merges: [english_list(testmerges)]
 Round log date: [global.roundLog_date]
 Reported on: [time2text(world.realtime, "YYYY-MM-DD hh:mm:ss")]
-Map: [global.map_setting]
+Round ID: \[[global.roundId]\](https://goonhub.com/rounds/[global.roundId])
+Map: \[[global.map_setting]\](https://goonhub.com[map_settings.goonhub_map])
 "}
 	var/list/success = ircbot.export("issue", list(
 		"title" = title,

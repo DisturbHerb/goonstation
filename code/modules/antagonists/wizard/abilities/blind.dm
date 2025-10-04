@@ -17,7 +17,7 @@
 		if(!holder)
 			return
 		if(!istype(get_area(holder.owner), /area/sim/gunsim))
-			holder.owner.say("YSTIGG MITAZIM", FALSE, maptext_style, maptext_colors)
+			holder.owner.say("YSTIGG MITAZIM", flags = SAYFLAG_IGNORE_STAMINA, message_params = list("maptext_css_values" = src.maptext_style, "maptext_animation_colours" = src.maptext_colors))
 		..()
 
 		elecflash(target)
@@ -56,7 +56,7 @@
 					blindProtected = 1
 
 		if (holder.owner.wizard_spellpower(src))
-			target.changeStatus("weakened", 2 SECONDS)
+			target.changeStatus("knockdown", 2 SECONDS)
 			if (!blindProtected)
 				target.bioHolder.AddEffect("bad_eyesight")
 				SPAWN(45 SECONDS)
@@ -65,7 +65,7 @@
 			target.change_eye_blurry(blindProtected ? 10 : 20)
 		else
 			boutput(holder.owner, SPAN_ALERT("Your spell doesn't last as long without a staff to focus it!"))
-			target.changeStatus("weakened", 1 SECOND)
+			target.changeStatus("knockdown", 1 SECOND)
 			if (!blindProtected)
 				target.bioHolder.AddEffect("bad_eyesight")
 				SPAWN(30 SECONDS)

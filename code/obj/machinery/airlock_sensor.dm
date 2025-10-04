@@ -29,7 +29,7 @@ obj/machinery/airlock_sensor
 		signal.data["command"] = "cycle"
 
 		SEND_SIGNAL(src, COMSIG_MOVABLE_POST_RADIO_PACKET, signal, AIRLOCK_CONTROL_RANGE)
-		flick("airlock_sensor_cycle", src)
+		FLICK("airlock_sensor_cycle", src)
 
 	process()
 		if(on)
@@ -51,4 +51,4 @@ obj/machinery/airlock_sensor
 
 	New()
 		..()
-		MAKE_SENDER_RADIO_PACKET_COMPONENT(null, frequency)
+		MAKE_SENDER_RADIO_PACKET_COMPONENT(null, null, frequency)

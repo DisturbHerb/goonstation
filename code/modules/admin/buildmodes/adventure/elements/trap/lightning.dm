@@ -82,7 +82,7 @@
 					var/attack_amt = 0
 					if (target)
 						attack_amt = 1
-						var/list/affected = DrawLine(target, src, /obj/line_obj/elec ,'icons/obj/projectiles.dmi',"WholeLghtn",1,1,"HalfStartLghtn","HalfEndLghtn",OBJ_LAYER,1,PreloadedIcon='icons/effects/LghtLine.dmi')
+						var/list/affected = drawLineObj(target, src, /obj/line_obj/elec ,'icons/obj/projectiles.dmi',"WholeLghtn",1,1,"HalfStartLghtn","HalfEndLghtn",OBJ_LAYER,1,PreloadedIcon='icons/effects/LghtLine.dmi')
 						for(var/obj/OB in affected)
 							SPAWN(0.6 SECONDS)
 								qdel(OB)
@@ -90,7 +90,7 @@
 							if (damage < 500)
 								M.TakeDamage("chest", 0, damage, 0, DAMAGE_BURN)
 								M.changeStatus("stunned", stun SECONDS)
-								boutput(M, "<b>[SPAN_ALERT("You feel a powerful shock course through your body!")]</b>")
+								boutput(M, SPAN_ALERT("<b>You feel a powerful shock course through your body!</b>"))
 							else
 								if(ishuman(M))
 									logTheThing(LOG_COMBAT, M, "was gibbed by [src] ([src.type]) at [log_loc(M)].")
@@ -98,14 +98,14 @@
 					else
 						for (var/mob/living/M in view(src, range))
 							attack_amt = 1
-							var/list/affected = DrawLine(M, src, /obj/line_obj/elec ,'icons/obj/projectiles.dmi',"WholeLghtn",1,1,"HalfStartLghtn","HalfEndLghtn",OBJ_LAYER,1,PreloadedIcon='icons/effects/LghtLine.dmi')
+							var/list/affected = drawLineObj(M, src, /obj/line_obj/elec ,'icons/obj/projectiles.dmi',"WholeLghtn",1,1,"HalfStartLghtn","HalfEndLghtn",OBJ_LAYER,1,PreloadedIcon='icons/effects/LghtLine.dmi')
 							for(var/obj/OB in affected)
 								SPAWN(0.6 SECONDS)
 									qdel(OB)
 							if (damage < 500)
 								M.TakeDamage("chest", 0, damage, 0, DAMAGE_BURN)
 								M.changeStatus("stunned", stun SECONDS)
-								boutput(M, "<b>[SPAN_ALERT("You feel a powerful shock course through your body!")]</b>")
+								boutput(M, SPAN_ALERT("<b>You feel a powerful shock course through your body!</b>"))
 							else
 								if(ishuman(M))
 									logTheThing(LOG_COMBAT, M, "was gibbed by [src] ([src.type]) at [log_loc(M)].")

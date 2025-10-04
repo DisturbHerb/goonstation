@@ -143,7 +143,7 @@
 /obj/machinery/bot/mining/proc/pointAtTarget()
 	if (src.target)
 		for (var/mob/O in hearers(src, null))
-			O.show_message(SPAN_SUBTLE("<span class='game say'>[SPAN_NAME("[src]")] points and beeps, \"Doomed rock detected!\"</span>"), 2)
+			O.show_message(SPAN_SUBTLE(SPAN_SAY("[SPAN_NAME("[src]")] points and beeps, \"Doomed rock detected!\"")), 2)
 		point(target)
 
 /obj/machinery/bot/mining/proc/buildPath()
@@ -200,7 +200,6 @@
 /datum/action/bar/icon/digbotdig
 	duration = 3 SECONDS //This varies, see below
 	interrupt_flags = INTERRUPT_MOVE | INTERRUPT_STUNNED | INTERRUPT_ATTACKED
-	id = "digbot_dig"
 	icon = 'icons/obj/items/mining.dmi'
 	icon_state = "" //intentionaly blank
 	//The pick-variant has a mining animation, but the drill variant does not - and overrides icon_state
@@ -255,8 +254,7 @@
 		return TRUE
 
 /datum/action/bar/icon/digbotdig/drill
-	id = "digbot_drill"
-	icon_state = "lasdrill"
+	icon_state = "lasdrill-old"
 
 
 //////////////////////////////////////
@@ -287,15 +285,19 @@
 	show_ui(usr)
 
 /datum/digbot_ui/proc/show_ui(mob/user)
-	if (user.client?.tooltipHolder)
-		user.client.tooltipHolder.showClickTip(bot, list("title" = "Digbot Controls", "content" = render()))
+	if (user.client?.tooltips)
+		user.client.tooltips.show(
+			TOOLTIP_PINNED, bot,
+			title = "Digbot Controls",
+			content = src.render(),
+		)
 
 /datum/digbot_ui/proc/render()
 	return {"
-<span>[bot.on ? "Active" : "Inactive"] - </span><a href="?src=\ref[src]&ui_target=digbot_ui&ui_action=toggle_power">Toggle Power</a><br />
+<span>[bot.on ? "Active" : "Inactive"] - </span><a href="byond://?src=\ref[src]&ui_target=digbot_ui&ui_action=toggle_power">Toggle Power</a><br />
 <span>Settings:<br />
-<a href="?src=\ref[src]&ui_target=digbot_ui&ui_action=toggle_suspicious">[bot.digsuspicious ? "Digging" : "Avoiding"] suspicious rocks</a><br />
-<a href="?src=\ref[src]&ui_target=digbot_ui&ui_action=hardness">Targeting rock hardness [bot.hardthreshold] and lower</a>
+<a href="byond://?src=\ref[src]&ui_target=digbot_ui&ui_action=toggle_suspicious">[bot.digsuspicious ? "Digging" : "Avoiding"] suspicious rocks</a><br />
+<a href="byond://?src=\ref[src]&ui_target=digbot_ui&ui_action=hardness">Targeting rock hardness [bot.hardthreshold] and lower</a>
 "}
 
 
@@ -324,7 +326,7 @@
 			else
 				boutput(user,  "You already added that part!")
 				return
-		else if (istype(T, /obj/item/mining_tool/drill))
+		else if (istype(T, /obj/item/mining_tool/powered/drill))
 			if (src.build_step == 1)
 				if (user.r_hand == T) user.u_equip(T)
 				else user.u_equip(T)

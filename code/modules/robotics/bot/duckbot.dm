@@ -44,7 +44,7 @@
 
 /obj/machinery/bot/duckbot/New()
 	. = ..()
-	MAKE_DEFAULT_RADIO_PACKET_COMPONENT("pda", FREQ_PDA)
+	MAKE_DEFAULT_RADIO_PACKET_COMPONENT(null, "pda", FREQ_PDA)
 
 /// Makes the duckbot mill around aimlessly, or chase people if emagged
 /obj/machinery/bot/duckbot/proc/wakka_wakka()
@@ -96,14 +96,14 @@
 	if(src.on == 1)
 		if(src.emagged == TRUE)
 			var/message = pick("QUacK", "WHaCKA", "quURK", "bzzACK", "quock", "queck", "WOcka", "wacKY","GOggEL","gugel","goEGL","GeGGal")
-			src.speak(message, 1, 1)
+			src.say(message, flags = SAYFLAG_SINGING)
 			wakka_wakka(TRUE) // Seek loser is TRUE
 			if(prob(70))
 				playsound(src.loc, 'sound/misc/amusingduck.ogg', 50, 1) // MUSIC
 		else
 			if(!ON_COOLDOWN(src, DUCKBOT_QUACK_COOLDOWN, src.quack_cooldown) && prob(60))
 				var/message = pick("wacka", "quack","quacky","gaggle")
-				src.speak(message, 1, 0)
+				src.say(message, flags = SAYFLAG_SINGING)
 			if(!src.moving)
 				if(prob(1))/* This is a clusterfuck no thanks
 					if(!ON_COOLDOWN(global, DUCKBOT_NATURAL_MIGRATION_COOLDOWN, 15 MINUTES)) // Time to fly south(ern solar array) for the winter
@@ -138,7 +138,7 @@
 
 		if(quack_now)
 			var/message = pick("wacka", "quack", "quacky", "gaggle")
-			src.speak(message, 1, 0)
+			src.say(message, flags = SAYFLAG_SINGING)
 			src.cooldowns[DUCKBOT_QUACK_COOLDOWN] = TIME + src.quack_cooldown
 	..()
 
@@ -147,13 +147,13 @@
 		return
 	if (href_list["on"])
 		on = !on
-	attack_hand(usr)
+	src.Attackhand(usr)
 
 /obj/machinery/bot/duckbot/attack_hand(mob/user)
 	var/dat
 	dat += "<TT><B>AMUSING DUCK</B></TT><BR>"
 	dat += "<B>toy series with strong sense for playing</B><BR><BR>"
-	dat += "LAY EGG IS: <A href='?src=\ref[src];on=1'>[src.on ? "TRUE!!!" : "NOT TRUE!!!"]</A><BR><BR>"
+	dat += "LAY EGG IS: <A href='byond://?src=\ref[src];on=1'>[src.on ? "TRUE!!!" : "NOT TRUE!!!"]</A><BR><BR>"
 	dat += "AS THE DUCK ADVANCING,FLICKING THE PLUMAGE AND YAWNING THE MOUTH GO WITH MUSIC & LIGHT.<BR>"
 	dat += "THE DUCK STOP,IT SWAYING TAIL THEN THE DUCK LAY AN EGG AS OPEN IT'S BUTTOCKS,<BR>GO WITH THE DUCK'S CALL"
 
@@ -165,7 +165,7 @@
 	if (!src.emagged)
 		if(user)
 			boutput(user, SPAN_ALERT("You short out the horn on [src]."))
-		src.audible_message(SPAN_ALERT("<B>[src] quacks loudly!</B>"), 1)
+		src.audible_message(SPAN_ALERT("<B>[src] quacks loudly!</B>"))
 		playsound(src.loc, 'sound/misc/amusingduck.ogg', 50, 1)
 		src.eggs += rand(3,9)
 		src.emagged = 1
@@ -284,7 +284,7 @@
 	if(src.exploding) return
 	src.exploding = 1
 	src.on = 0
-	src.visible_message(SPAN_ALERT("<B>[src] blows apart!</B>"), 1)
+	src.visible_message(SPAN_ALERT("<B>[src] blows apart!</B>"))
 	playsound(src.loc, 'sound/impact_sounds/Machinery_Break_1.ogg', 40, 1)
 	elecflash(src, radius=1, power=3, exclude_center = 0)
 	new /obj/item/instrument/bikehorn(src.loc)

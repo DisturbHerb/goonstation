@@ -24,7 +24,6 @@
 
 /mob/living/critter/killertomato
 	name = "killer tomato"
-	real_name = "killer tomato"
 	desc = "Today, Space Station 13 - tomorrow, THE WORLD!"
 	density = 1
 	icon_state = "ktomato"
@@ -34,14 +33,14 @@
 	blood_id = "juice_tomato"
 	add_abilities = list(/datum/targetable/critter/bite/tomato_bite, /datum/targetable/critter/slam/polymorph)
 
-	faction = FACTION_BOTANY
+	faction = list(FACTION_BOTANY)
 
 	specific_emotes(var/act, var/param = null, var/voluntary = 0)
 		switch (act)
 			if ("scream")
 				if (src.emote_check(voluntary, 50))
 					playsound(src, 'sound/voice/MEraaargh.ogg', 70, TRUE, channel=VOLUME_CHANNEL_EMOTE)
-					return "<b>[SPAN_ALERT("[src] roars!")]</b>"
+					return SPAN_ALERT("<b>[src] roars!</b>")
 		return null
 
 	specific_emote_type(var/act)

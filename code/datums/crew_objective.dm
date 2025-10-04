@@ -71,13 +71,14 @@
 
 ABSTRACT_TYPE(/datum/objective/crew)
 /datum/objective/crew
+	var/XPreward = 50
 
 /datum/objective/crew/custom
 
 ABSTRACT_TYPE(/datum/objective/crew/captain)
 /datum/objective/crew/captain/hat
 	explanation_text = "Don't lose your hat!"
-	medal_name = "Hatris"
+	// medal_name = "Hatris"
 	check_completion()
 		if(owner.current && owner.current.check_contents_for(/obj/item/clothing/head/caphat || owner.current.check_contents_for(/obj/item/clothing/head/fancy/captain)))
 			return 1
@@ -85,7 +86,7 @@ ABSTRACT_TYPE(/datum/objective/crew/captain)
 			return 0
 /datum/objective/crew/captain/drunk
 	explanation_text = "Have alcohol in your bloodstream at the end of the round."
-	medal_name = "Edward Smith"
+	// medal_name = "Edward Smith"
 	check_completion()
 		if(owner.current && owner.current.reagents && owner.current.reagents.has_reagent("ethanol"))
 			return 1
@@ -95,24 +96,13 @@ ABSTRACT_TYPE(/datum/objective/crew/captain)
 ABSTRACT_TYPE(/datum/objective/crew/headofsecurity)
 /datum/objective/crew/headofsecurity/hat
 	explanation_text = "Don't lose your hat/beret!"
-	medal_name = "Hatris"
+	// medal_name = "Hatris"
 	check_completion()
 		if(owner.current && owner.current.check_contents_for(/obj/item/clothing/head/hos_hat))
 			return 1
 		else
 			return 0
-/datum/objective/crew/headofsecurity/brig
-	explanation_text = "Have at least one antagonist cuffed in the brig at the end of the round." //can be dead as people usually suicide
-	medal_name = "Suitable? How about the Oubliette?!"
-	var/static/check_result = null
-	check_completion()
-		if(isnull(check_result))
-			check_result = FALSE
-			for(var/datum/mind/M in ticker.minds)
-				if(M.special_role && M.current && !isobserver(M.current) && istype(get_area(M.current),/area/station/security/brig) && M.current.hasStatus("handcuffed")) //think that's everything...
-					check_result = TRUE
-					break
-		return check_result
+
 /datum/objective/crew/headofsecurity/centcom
 	explanation_text = "Bring at least one antagonist back to CentCom in handcuffs for interrogation. You must accompany them on the escape shuttle." //can also be dead I guess
 	medal_name = "Dead or alive, you're coming with me"
@@ -197,16 +187,7 @@ ABSTRACT_TYPE(/datum/objective/crew/chiefengineer)
 		return check_result
 
 ABSTRACT_TYPE(/datum/objective/crew/securityofficer)
-// grabbed the HoS's two antag-related objectives cause they work just fine for regular sec too, so...?
-	/*brig
-		explanation_text = "Have at least one antagonist cuffed in the brig at the end of the round." //can be dead as people usually suicide
-		medal_name = "Suitable? How about the Oubliette?!"
-		check_completion()
-			for(var/datum/mind/M in ticker.minds)
-				if(M.special_role && M.current && !isobserver(M.current) && istype(get_area(M.current),/area/station/security/brig) && M.current.hasStatus("handcuffed")) //think that's everything...
-					return 1
-			return 0
-	*/
+
 /datum/objective/crew/securityofficer/centcom
 	explanation_text = "Bring at least one antagonist back to CentCom in handcuffs for interrogation. You must accompany them on the escape shuttle." //can also be dead I guess
 	medal_name = "Dead or alive, you're coming with me"
@@ -264,6 +245,12 @@ ABSTRACT_TYPE(/datum/objective/crew/quartermaster)
 	explanation_text = "Fulfill an off-station order requisition or special order."
 	check_completion()
 		return length(shippingmarket.complete_orders)
+
+ABSTRACT_TYPE(/datum/objective/crew/mailcourier)
+/datum/objective/crew/mailcourier/maildelivery
+	explanation_text = "Ensure 30 pieces of mail are opened by their addressees."
+	check_completion()
+		return game_stats.GetStat("mail_opened") >= 30
 
 ABSTRACT_TYPE(/datum/objective/crew/detective)
 /datum/objective/crew/detective/drunk
@@ -477,7 +464,7 @@ ABSTRACT_TYPE(/datum/objective/crew/chef)
 				i--
 			current_rolls++
 			if (current_rolls > max_rolls)
-				stack_trace("Failed to generate a foodlist objective for chef. Aborting.")
+				stack_trace("Failed to generate a cake objective for chef. Aborting.")
 				return
 		explanation_text = "Create a custom, three-tier cake with layers of "
 		for (var/ingredient in names)
@@ -497,14 +484,20 @@ ABSTRACT_TYPE(/datum/objective/crew/chef)
 	set_up()
 		..()
 		var/list/names[PIZZA_OBJ_COUNT]
+		var/current_rolls = 0
+		var/max_rolls = 30
 		for(var/i = 1, i <= PIZZA_OBJ_COUNT, i++)
 			choices[i] = pick(allowed_favorite_ingredients)
 			var/choiceType = choices[i]
 			var/obj/item/reagent_containers/food/snacks/instance =  new choiceType
-			if(!instance.custom_food || !instance.name)
+			if(instance.custom_food && instance.w_class <= W_CLASS_SMALL)
+				names[i] = instance.name
+			else
 				i--
-				continue
-			names[i] = instance.name
+			current_rolls++
+			if (current_rolls > max_rolls)
+				stack_trace("Failed to generate a pizza objective for chef. Aborting.")
+				return
 		explanation_text = "Create a custom pizza with "
 		for (var/ingredient in names)
 			if (ingredient != names[PIZZA_OBJ_COUNT])
@@ -615,7 +608,7 @@ ABSTRACT_TYPE(/datum/objective/crew/miner)
 		var/list/materials = list()
 		if(isnull(check_result))
 			for_by_tcl(S, /obj/machinery/ore_cloud_storage_container)
-				if(S.broken)
+				if(S.is_disabled())
 					continue
 				var/list/ores = S.ores
 				for(var/ore in ores)
@@ -624,6 +617,24 @@ ABSTRACT_TYPE(/datum/objective/crew/miner)
 						materials |= ore
 			check_result = length(materials) >= 10
 		return check_result
+
+#ifndef UNDERWATER_MAP // not a lot of rockworms under the sea
+/datum/objective/crew/miner/rockworm
+	explanation_text = "Have two tamed rock worms at the end of the round."
+	var/static/check_result
+	check_completion()
+		. = ..()
+		if (isnull(check_result))
+			check_result = FALSE
+			var/tame_worm_count = 0
+			for_by_tcl(worm, /mob/living/critter/rockworm)
+				if (worm.tamed)
+					tame_worm_count++
+					if (tame_worm_count >= 2)
+						check_result = TRUE
+						break
+		return check_result
+#endif
 
 ABSTRACT_TYPE(/datum/objective/crew/researchdirector)
 /datum/objective/crew/researchdirector/heisenbee
@@ -659,6 +670,15 @@ ABSTRACT_TYPE(/datum/objective/crew/researchdirector)
 		for_by_tcl(F, /obj/dfissure_to)
 			if(F.z == Z_LEVEL_STATION) return 1
 		return 0
+
+/datum/objective/crew/researchdirector/artifact
+	explanation_text = "Research and activate 10 artifacts by the end of the shift."
+	medal_name = "Licensed Archaeologist"
+	var/artifacts_activated = 0
+	check_completion()
+		if (src.artifacts_activated >= 10)
+			return TRUE
+
 /datum/objective/crew/researchdirector/onfire
 	explanation_text = "Escape on the shuttle alive while on fire with silver sulfadiazine in your bloodstream."
 	medal_name = "Better to burn out, than fade away"
@@ -704,12 +724,13 @@ ABSTRACT_TYPE(/datum/objective/crew/scientist)
 			if(in_centcom(H) && H.getStatusDuration("burning") > 1 && owner.current.reagents.has_reagent("silver_sulfadiazine")) return 1
 			else return 0
 
-	/*artifact // This is going to be really fucking awkward to do so disabling for now
-		explanation_text = "Activate at least one artifact on the station z level by the end of the round, excluding the test artifact."
-		check_completion()
-			for(var/obj/machinery/artifact/A in machines)
-				if(A.z == Z_LEVEL_STATION && A.activated == 1 && A.name != "Test Artifact") return 1 //someone could label it I guess but I don't want to go adding an istestartifact var just for this..
-			return 0*/
+/datum/objective/crew/scientist/artifact
+	explanation_text = "Research and activate 10 artifacts by the end of the shift."
+	medal_name = "Licensed Archaeologist"
+	var/artifacts_activated = 0
+	check_completion()
+		if (src.artifacts_activated >= 10)
+			return TRUE
 
 ABSTRACT_TYPE(/datum/objective/crew/medicaldirector)
 // so much copy/pasted stuff  :(
@@ -978,12 +999,12 @@ ABSTRACT_TYPE(/datum/objective/crew/staffassistant)
 	explanation_text = "Ensure that Gnome Chompski escapes on the shuttle."
 	medal_name = "Guardin' gnome"
 	check_completion()
-		for_by_tcl(G, /obj/item/gnomechompski)
+		for(var/obj/item/gnomechompski/G in by_cat[TR_CAT_GHOST_OBSERVABLES])
 			if (in_centcom(G)) return 1
 		return 0
 
-/datum/objective/crew/staffassistant/mailman
-	explanation_text = "Escape on the shuttle alive wearing at least one piece of mailman clothing."
+/datum/objective/crew/staffassistant/mailcourier
+	explanation_text = "Escape on the shuttle alive wearing at least one piece of mail courier clothing."
 	medal_name = "The mail always goes through"
 	check_completion()
 		if(owner.current && ishuman(owner.current))
@@ -1027,8 +1048,8 @@ ABSTRACT_TYPE(/datum/objective/crew/technicalassistant)
 			var/mob/living/carbon/human/H = owner.current
 			if(in_centcom(H) && H.head && H.head.name == "[H.real_name]'s butt") return 1
 		return 0
-/datum/objective/crew/technicalassistant/mailman
-	explanation_text = "Escape on the shuttle alive wearing at least one piece of mailman clothing."
+/datum/objective/crew/technicalassistant/mailcourier
+	explanation_text = "Escape on the shuttle alive wearing at least one piece of mail courier clothing."
 	medal_name = "The mail always goes through"
 	check_completion()
 		if(owner.current && ishuman(owner.current))

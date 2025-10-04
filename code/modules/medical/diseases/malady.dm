@@ -2,11 +2,16 @@
 /datum/ailment/malady
 	name = "Malady"
 	scantype = "Medical Malady"
-	cure = "Unknown"
+	cure_flags = CURE_UNKNOWN
+	strain_type = /datum/ailment_data/malady
 
 /datum/ailment_data/malady
 	var/robo_restart = 0 // used for cyberheart stuff
 	var/affected_area = null // used for bloodclots, can be chest (heart, eventually lung), head (brain), limb
+
+	copy_other(datum/ailment_data/malady/other)
+		..()
+		src.affected_area = other.affected_area
 
 	New()
 		..()
@@ -45,20 +50,12 @@
 					stage++
 
 		// Common cures
-		if (cure != "Incurable")
-			if (cure == "Sleep" && affected_mob.sleeping && probmult(33))
+		if (!(cure_flags & CURE_INCURABLE))
+			if ((cure_flags & CURE_SLEEP) && affected_mob.sleeping && probmult(33))
 				state = "Remissive"
 				return 1
 
-			else if (cure == "Self-Curing" && probmult(5))
-				state = "Remissive"
-				return 1
-
-			else if (cure == "Beatings" && affected_mob.get_brute_damage() >= 40)
-				state = "Remissive"
-				return 1
-
-			else if (cure == "Burnings" && (affected_mob.get_burn_damage() >= 40 || affected_mob.getStatusDuration("burning")))
+			else if ((cure_flags & CURE_TIME) && probmult(5))
 				state = "Remissive"
 				return 1
 
@@ -98,7 +95,8 @@
 	scantype = "Medical Emergency"
 	info = "The patient is in shock."
 	max_stages = 3
-	cure = "Saline Solution"
+	cure_flags = CURE_CUSTOM
+	cure_desc = "Saline solution"
 	reagentcure = list("saline")
 	recureprob = 10
 	affected_species = list("Human","Monkey")
@@ -160,7 +158,8 @@
 	scantype = "Medical Emergency"
 	max_stages = 3
 	info = "The patient has low blood sugar."
-	cure = "Deactivation of implants/augments combined with eating or glucose treatment"
+	cure_flags = CURE_CUSTOM
+	cure_desc = "Deactivation of implants/augments combined with eating or glucose treatment"
 	affected_species = list("Human")
 	stage_prob = 1
 
@@ -186,7 +185,7 @@
 				affected_mob.changeStatus("slowed", rand(8,32) SECONDS)
 				boutput(affected_mob, SPAN_ALERT("You feel [pick("tired", "exhausted", "sluggish")]."))
 			if (probmult(5))
-				affected_mob.changeStatus("weakened", 12 SECONDS)
+				affected_mob.changeStatus("knockdown", 12 SECONDS)
 				affected_mob.stuttering = max(10, affected_mob.stuttering)
 				boutput(affected_mob, SPAN_ALERT("You feel [pick("numb", "confused", "dizzy", "lightheaded")]."))
 				affected_mob.emote("collapse")
@@ -194,7 +193,7 @@
 			if(probmult(8))
 				affected_mob.contract_disease(/datum/ailment/malady/shock,null,null,1)
 			if(probmult(12))
-				affected_mob.changeStatus("weakened", 12 SECONDS)
+				affected_mob.changeStatus("knockdown", 12 SECONDS)
 				affected_mob.stuttering = max(10, affected_mob.stuttering)
 				boutput(affected_mob, SPAN_ALERT("You feel [pick("numb", "confused", "dizzy", "lightheaded")]."))
 				affected_mob.emote("collapse")
@@ -210,7 +209,8 @@
 	scantype = "Potential Medical Emergency"
 	max_stages = 1
 	info = "The patient has a blood clot."
-	cure = "Anticoagulants"
+	cure_flags = CURE_CUSTOM
+	cure_desc = "Anticoagulants"
 	reagentcure = list("heparin")
 	recureprob = 10
 	affected_species = list("Human","Monkey")
@@ -278,6 +278,8 @@
 				if (probmult(5))
 					affected_mob.take_oxygen_deprivation(rand(1,2))
 				if (probmult(5))
+					affected_mob?.organHolder.damage_organ(tox=2*mult, organ="heart")
+				if (probmult(5))
 					affected_mob.emote(pick("twitch", "groan", "gasp"))
 				if (probmult(1))
 					affected_mob.contract_disease(/datum/ailment/malady/heartfailure,null,null,1)
@@ -328,7 +330,8 @@
 	scantype = "Medical Concern"
 	info = "The patient's arteries have narrowed."
 	max_stages = 2
-	cure = "Lifestyle Changes, Anticoagulants or Aspirin"
+	cure_flags = CURE_CUSTOM
+	cure_desc = "Lifestyle Changes, Anticoagulants or Aspirin"
 	reagentcure = list("heparin"=1, "salicylic_acid"=2)
 	affected_species = list("Human","Monkey")
 	stage_prob = 1
@@ -410,7 +413,8 @@
 	scantype = "Medical Emergency"
 	info = "The patient is having a cardiac emergency."
 	max_stages = 3
-	cure = "Cardiac Stimulants"
+	cure_flags = CURE_CUSTOM
+	cure_desc = "Cardiac Stimulants"
 	reagentcure = list("atropine"=8,"epinephrine"=10,"heparin"=5)
 	recureprob = 10
 	affected_species = list("Human","Monkey")
@@ -498,7 +502,7 @@
 	scantype = "Medical Emergency"
 	info = "The patient's heart has stopped."
 	max_stages = 1
-	cure = "Electric Shock"
+	cure_flags = CURE_ELEC_SHOCK
 	affected_species = list("Human","Monkey")
 	reagentcure = list("atropine" = 0.01, // atropine is not recommended for use in treating cardiac arrest anymore but SHRUG
 	"epinephrine" = 0.1) // epi is recommended though
@@ -559,6 +563,7 @@
 			else if (prob(10))
 				H.take_brain_damage(1 * mult)
 
-		H.changeStatus("weakened", 6 * mult SECONDS)
+		H.changeStatus("knockdown", 6 * mult SECONDS)
 		H.losebreath+=20 * mult
 		H.take_oxygen_deprivation(20 * mult)
+		H.organHolder?.damage_organ(tox=1 * mult, organ="heart")

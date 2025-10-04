@@ -24,8 +24,10 @@
 // areas
 
 /area/radiostation
+	requires_power = FALSE
 	name = "Radio Station"
 	icon_state = "purple"
+	occlude_foreground_parallax_layers = TRUE
 
 /area/radiostation/studio
 	name = "Radio Studio"
@@ -37,14 +39,14 @@
 
 /area/radiostation/podbay
 	name = "Radio Podbay"
-	icon_state = "green"
+	icon_state = "hangar"
 
 /area/radiostation/bedroom
-	name = "Radio Bedroom"
+	name = "Radio Quarters"
 	icon_state = "red"
 
 /area/radiostation/engineering
-	name = "Radio Engine"
+	name = "Radio Supply Closet"
 	icon_state = "blue"
 
 /area/radiostation/hallway
@@ -56,6 +58,22 @@
 	icon_state = "yellow"
 	sound_environment = 3
 	workplace = 1
+
+/area/radiostation/tv_set
+	name = "Radio TV Studio"
+	icon_state = "green"
+
+/area/radiostation/green
+	name = "Radio Green Room"
+	icon_state = "green"
+
+/area/radiostation/teleporter
+	name = "Radio Cargo Intake"
+	icon_state = "red"
+
+/area/radiostation/press
+	name = "Radio Paper Press"
+	icon_state = "yellow"
 
 //objects
 
@@ -131,26 +149,50 @@
 	anchored = ANCHORED
 	density = 1
 	flags = TGUI_INTERACTIVE
+	/// A static list of mixingdesk permitted accent IDs, indexed by their name.
 	var/static/list/accents
-	var/list/voices
-	var/selected_voice = 0
+	/// The maximum number of voices that this mixing desk may store.
 	var/const/max_voices = 9
+	/// A list of name/accent pairs to be displayed on the UI.
+	var/list/voices
+	/// A list of abstract say sources to be used for each voice.
+	var/list/atom/movable/abstract_say_source/mixing_desk/voice_say_sources
+	/// The index of the current voice selected.
+	var/selected_voice = 0
+	/// Whether the UI should display a say popup window.
 	var/say_popup = FALSE
 
 /obj/submachine/mixing_desk/New()
 	. = ..()
 	src.voices = list()
-	if(!src.accents)
-		src.accents = list()
-		for(var/bio_type in concrete_typesof(/datum/bioEffect/speech, FALSE))
-			var/datum/bioEffect/speech/effect = new bio_type()
-			if(!effect.acceptable_in_mutini || !effect.occur_in_genepools || !effect.mixingdesk_allowed)
-				continue
-			var/name = effect.id
-			if(length(name) >= 7 && copytext(name, 1, 8) == "accent_")
-				name = copytext(name, 8)
-			name = replacetext(name, "_", " ")
-			accents[name] = effect
+	src.voice_say_sources = list()
+
+	if (src.accents)
+		return
+
+	src.accents = list()
+	for (var/datum/bioEffect/speech/effect_type as anything in concrete_typesof(/datum/bioEffect/speech))
+		if (!effect_type::acceptable_in_mutini || !effect_type::occur_in_genepools || !effect_type::mixingdesk_allowed)
+			continue
+
+		var/name = effect_type::id
+		if ((length(name) >= 7) && findtext(name, "accent_", 1, 8))
+			name = copytext(name, 8)
+
+		name = replacetext(name, "_", " ")
+		src.accents[name] = effect_type::id
+
+/obj/submachine/mixing_desk/attack_hand(mob/user)
+	if (isghostcritter(user) || isghostdrone(user))
+		boutput(user, SPAN_ALERT("This thing looks way too complex to use."))
+		return
+	. = ..()
+
+/obj/submachine/mixing_desk/attackby(obj/item/I, mob/user)
+	if (isghostcritter(user) || isghostdrone(user))
+		boutput(user, SPAN_ALERT("This thing looks way too complex to use."))
+		return
+	. = ..()
 
 /obj/submachine/mixing_desk/ui_status(mob/user, datum/ui_state/state)
 	return min(
@@ -172,65 +214,82 @@
 	)
 
 /obj/submachine/mixing_desk/ui_act(action, params, datum/tgui/ui, datum/ui_state/state)
-	if(..())
+	if (..())
 		return
-	switch(action)
-		if("add_voice")
-			if(length(src.voices) >= src.max_voices)
+
+	switch (action)
+		if ("add_voice")
+			if (length(src.voices) >= src.max_voices)
 				return FALSE
-			var/name = strip_html(input("Enter voice name:", "Voice name"))
-			if(!name)
+
+			var/name = tgui_input_text(usr, "Enter voice name:", "Voice Name", max_length = FULLNAME_MAX)
+			if (!name)
 				return FALSE
-			phrase_log.log_phrase("voice-radiostation", name, no_duplicates=TRUE)
-			if(length(name) > FULLNAME_MAX)
-				name = copytext(name, 1, FULLNAME_MAX)
-			name = strip_html(name)
-			var/accent = input("Pick an accent:", "Accent") as null|anything in list("none") + src.accents
-			if(accent == "none")
+
+			phrase_log.log_phrase("voice-radiostation", name, no_duplicates = TRUE)
+
+			var/accent = tgui_input_list(usr, "Pick an accent:", "Accent", list("None") + src.accents)
+			if (accent == "None")
 				accent = null
-			src.voices += list(list("name"=name, "accent"=accent))
+				src.voice_say_sources += new /atom/movable/abstract_say_source/mixing_desk(src, name)
+			else
+				src.voice_say_sources += new /atom/movable/abstract_say_source/mixing_desk(src, name, src.accents[accent])
+
+			src.voices += list(list(
+				"name" = name,
+				"accent" = accent,
+			))
+
 			. = TRUE
+
 		if("remove_voice")
 			var/id = params["id"]
-			if(id <= 0 || id > length(voices))
+			if ((id <= 0) || (id > length(src.voices)))
 				return FALSE
-			if(id == src.selected_voice)
+
+			if (id == src.selected_voice)
 				src.selected_voice = 0
-			else if(id < src.selected_voice)
-				src.selected_voice--
+			else if (id < src.selected_voice)
+				src.selected_voice -= 1
+
 			src.voices.Cut(id, id + 1)
+			qdel(src.voice_say_sources[id])
+
 			. = TRUE
+
 		if("switch_voice")
 			var/id = params["id"]
-			if(id <= 0 || id > length(voices))
+			if ((id <= 0) || (id > length(src.voices)))
 				src.selected_voice = 0
 			else
 				src.selected_voice = id
+
 			. = TRUE
+
 		if("say_popup")
 			if("id" in params)
 				src.selected_voice = params["id"]
+
 			src.say_popup = TRUE
 			. = TRUE
+
 		if("cancel_say")
 			src.say_popup = FALSE
 			. = TRUE
+
 		if("say")
 			src.say_popup = FALSE
 			var/message = strip_html(params["message"])
-			if(src.selected_voice <= 0 || src.selected_voice > length(voices))
-				usr.say(message)
+			if ((src.selected_voice <= 0) || (src.selected_voice > length(src.voices)))
+				usr.say(message, flags = SAYFLAG_SPOKEN_BY_PLAYER)
 				return TRUE
-			var/name = voices[src.selected_voice]["name"]
-			var/accent_id = voices[src.selected_voice]["accent"]
-			if(!isnull(accent_id))
-				var/datum/bioEffect/speech/accent = src.accents[accent_id]
-				message = accent.OnSpeak(message)
-			logTheThing(LOG_SAY, usr, "SAY: [message] (Synthesizing the voice of <b>([constructTarget(name,"say")])</b> with accent [accent_id])")
-			var/original_name = usr.real_name
-			usr.real_name = copytext(name, 1, MOB_NAME_MAX_LENGTH)
-			usr.say(message)
-			usr.real_name = original_name
+
+			src.voice_say_sources[src.selected_voice].say(message, flags = SAYFLAG_SPOKEN_BY_PLAYER | SAYFLAG_IGNORE_POSITION)
+
+			var/name = src.voices[src.selected_voice]["name"]
+			var/accent_id = src.accents[src.voices[src.selected_voice]["accent"]]
+			logTheThing(LOG_SAY, usr, "SAY: [message] (Synthesizing the voice of <b>([constructTarget(name, "say")])</b> with accent [accent_id])")
+
 			. = TRUE
 
 // Record player
@@ -247,7 +306,7 @@
 
 	New()
 		. = ..()
-		MAKE_SENDER_RADIO_PACKET_COMPONENT("pda", FREQ_PDA)
+		MAKE_SENDER_RADIO_PACKET_COMPONENT(null, "pda", FREQ_PDA)
 		START_TRACKING
 
 	get_desc()
@@ -259,6 +318,9 @@
 		. = ..()
 
 /obj/submachine/record_player/attackby(obj/item/W, mob/user)
+	if (isghostcritter(user) || isghostdrone(user))
+		boutput(user, SPAN_ALERT("This thing looks way too complex to use."))
+		return
 	if (istype(W, /obj/item/record))
 		if (!src.can_play_music)
 			boutput(user, SPAN_ALERT("You insert the record into the record player, but it won't turn on."))
@@ -269,26 +331,39 @@
 			boutput(user, SPAN_ALERT("Music is already playing, it'd be rude to interrupt!"))
 		else
 			var/obj/item/record/inserted_record = W
-			var/R = copytext(html_encode(tgui_input_text(user, "What is the name of this record?", "Record Name", inserted_record.record_name)), 1, MAX_MESSAGE_LEN)
-			if(!R)
+			var/record_name = copytext(tgui_input_text(user, "What is the name of this record?", "Record Name", inserted_record.record_name), 1, MAX_MESSAGE_LEN)
+			if(!record_name)
 				boutput(user, SPAN_NOTICE("You decide not to play this record."))
 				return
+			if(!(inserted_record in user.equipped_list()))
+				boutput(user, SPAN_ALERT("You have to be holding a record to place it in the player!"))
+				return
 			if(!in_interact_range(src, user))
-				boutput(user, "You're out of range of the [src.name]!")
+				boutput(user, SPAN_ALERT("You're out of range of the [src.name]!"))
 				return
 			if(is_music_playing()) // someone queuing up several input windows
 				return
-			phrase_log.log_phrase("record", R)
+			phrase_log.log_phrase("record", html_encode(record_name))
 			boutput(user, "You insert the record into the record player.")
 			src.visible_message(SPAN_NOTICE("<b>[user] inserts the record into the record player.</b>"))
-			user.drop_item()
+			user.drop_item(W)
 			W.set_loc(src)
 			src.record_inside = W
 			src.has_record = TRUE
-			user.client.play_music_radio(record_inside.song, R)
+
+			if (istype(W, /obj/item/record/remote))
+				// play remote
+				var/obj/item/record/remote/YT = W
+				if (YT.youtube)
+					play_youtube_remote_url(user, YT.youtube)
+				else
+					boutput(user, SPAN_ALERT("You have no idea what happened but this record does not seem to work. Maybe call an admin."))
+					return	// guh????
+			else
+				user.client.play_music_radio(record_inside.song, html_encode(record_name))
 			/// PDA message ///
 			var/datum/signal/pdaSignal = get_free_signal()
-			pdaSignal.data = list("address_1"="00000000", "command"="text_message", "sender_name"="RADIO-STATION", "sender"="00000000", "message"="Now playing: [R].", "group" = MGA_RADIO)
+			pdaSignal.data = list("address_1"="00000000", "command"="text_message", "sender_name"="RADIO-STATION", "sender"="00000000", "message"="Now playing: [record_name].", "group" = MGA_RADIO)
 			SEND_SIGNAL(src, COMSIG_MOVABLE_POST_RADIO_PACKET, pdaSignal, null, "pda")
 #ifdef UNDERWATER_MAP
 			EXTEND_COOLDOWN(global, "music", 500 SECONDS)
@@ -309,6 +384,22 @@
 		else
 			boutput(user, "You can feel heat emanating from the record player. You should probably wait a while before touching it. It's kinda old and you don't want to break it.")
 
+/obj/submachine/record_player/portable
+	name = "portable record player"
+	desc = "An old school record player, painted in a cool syndicate-red."
+	icon_state = "portable_record"
+	density = 0
+
+	New()
+		..()
+		src.AddComponent(/datum/component/foldable,/obj/item/objBriefcase/syndicate)
+		var/datum/component/foldable/fold_component = src.GetComponent(/datum/component/foldable) //Fold up into a briefcase the first spawn
+		if(!fold_component?.the_briefcase)
+			return
+		var/obj/item/objBriefcase/briefcase = fold_component.the_briefcase
+		if (briefcase)
+			briefcase.set_loc(get_turf(src))
+			src.set_loc(briefcase)
 // Records
 /obj/item/record
 	name = "record"
@@ -339,7 +430,7 @@
 			target.visible_message(SPAN_ALERT("<B>[user] smashes [src] over [target]'s head!</B>"))
 			logTheThing(LOG_COMBAT, user, "smashes [src] over [constructTarget(target,"combat")]'s head! ")
 		target.TakeDamageAccountArmor("head", force, 0, 0, DAMAGE_BLUNT)
-		target.changeStatus("weakened", 2 SECONDS)
+		target.changeStatus("knockdown", 2 SECONDS)
 		playsound(src, "shatter", 70, 1)
 		var/obj/O = new /obj/item/raw_material/shard/glass
 		O.set_loc(get_turf(target))
@@ -555,6 +646,11 @@ ABSTRACT_TYPE(/obj/item/record/random/chronoquest)
 
 	New()
 		..()
+#ifdef NIGHTSHADE
+		//apparently second reality has copyright issues, not allowed on streamer servers
+		qdel(src)
+		return
+#endif
 		var/image/overlay = new /image(src.icon, "record_3")
 		overlay.color = list(1.5, 0, 0, 0, 0, 0, 0, 0, 0) // very red
 		src.UpdateOverlays(overlay, "recordlabel")
@@ -601,6 +697,16 @@ ABSTRACT_TYPE(/obj/item/record/random/funk)
 	name = "record - \"Lunch4Laika\""
 	record_name = "Lunch4Laika"
 	song = 'sound/radio_station/music/lunch.ogg'
+
+/obj/item/record/random/funk/monkey_riot
+	name = "record - \"Monkey Riot\""
+	record_name = "Monkey Riot"
+	song = 'sound/radio_station/music/monkey_riot.ogg'
+
+/obj/item/record/random/funk/space_gardener
+	name = "record - \"Space Gardener\""
+	record_name = "Space Gardener"
+	song = 'sound/radio_station/music/space_gardener.ogg'
 
 ABSTRACT_TYPE(/obj/item/record/random/notaquario)
 /obj/item/record/random/notaquario
@@ -672,6 +778,12 @@ ABSTRACT_TYPE(/obj/item/record/random/notaquario)
 	icon_state = "record_fruit"
 	song = 'sound/radio_station/music/honkmas.ogg'
 
+/obj/item/record/lay_egg_is_true
+	desc = "This egg seems to be laid particularly TRUE!!!"
+	add_overlay = 0
+	icon_state = "record_duck"
+	song = 'sound/radio_station/music/lay_egg_is_true.ogg'
+
 /obj/item/record/clown_collection // By Arborinus. Honk!
 	add_overlay = 0
 	icon_state = "record_yellow"
@@ -695,6 +807,35 @@ ABSTRACT_TYPE(/obj/item/record/random/notaquario)
 /obj/item/record/clown_collection/poo
 	song = 'sound/radio_station/music/core_of_poo.ogg'
 	color = "#DE9F47"
+
+/obj/item/record/remote
+	name = "remote record"
+	desc = "You know those casettes that you put in tape decks that are actually aux cables? This is like that, but for records! You have no idea how it works."
+	icon_state = "record_red"
+	var/youtube = null
+
+	get_desc()
+		if (src.youtube)
+			. += " It looks like it will play <a href=\"[copytext(src.youtube,1,5) == "http" ? "[src.youtube]" : "https://youtu.be/[src.youtube]"]\">this</a>, whatever that is."
+		else
+			. += " It looks like this isn't connected to anything. You should probably call an admin."
+
+	attack_self(mob/user as mob)
+		if (!src.youtube && isadmin(user))
+			var/yt = input(user, "Input the Youtube video information\nEither the full URL e.g. https://www.youtube.com/watch?v=145RCdUwAxM\nOr just the video ID e.g. 145RCdUwAxM", "Set Record Audio") as null|text
+			if (yt)
+				boutput(user, SPAN_NOTICE("You configure the record's radio. This makes sense, I promise."))
+				src.name = "remote record - \"???\""
+				src.youtube = yt
+				src.record_name = yt
+				var/de = input(user, "What should the name of this record be?", "Set Record Name") as null|text
+				if (de)
+					src.name = "remote record - \"[de]\""
+					src.record_name = de
+		else if (!src.youtube && !isadmin(user))
+			boutput(user, SPAN_NOTICE("You have no idea how to configure this thing! It's written in some sort of weird language that makes your head hurt and your ears throb with knocking sounds."))
+		return
+
 
 // Record sets
 /obj/item/storage/box/record
@@ -805,6 +946,7 @@ ABSTRACT_TYPE(/obj/item/record/random/notaquario)
 	New()
 		. = ..()
 		START_TRACKING
+		MAKE_SENDER_RADIO_PACKET_COMPONENT(null, "pda", FREQ_PDA)
 
 	get_desc()
 		if(!src.can_play_tapes)
@@ -841,7 +983,7 @@ ABSTRACT_TYPE(/obj/item/record/random/notaquario)
 
 /obj/submachine/tape_deck/attack_hand(mob/user)
 	if(has_tape)
-		if(!is_music_playing() && !GET_COOLDOWN(src, "play"))
+		if(!GET_COOLDOWN(src, "play"))
 			if(istype(src.tape_inside,/obj/item/radio_tape/advertisement))
 				src.visible_message(SPAN_ALERT("<b>[src.tape_inside]'s copyright preserving self destruct feature activates!</b>"))
 				qdel(src.tape_inside)
@@ -1020,7 +1162,7 @@ ABSTRACT_TYPE(/obj/item/record/random/notaquario)
 		/obj/item/radio_tape/audio_book/heisenbee)*/
 
 //Fake objects
-/obj/decal/fakeobjects/cpucontroller
+/obj/fakeobject/cpucontroller
 	name = "central processing unit"
 	desc = "The computing core of the mainframe."
 	icon = 'icons/obj/large/64x64.dmi'
@@ -1030,7 +1172,7 @@ ABSTRACT_TYPE(/obj/item/record/random/notaquario)
 	anchored = ANCHORED
 	density = 1
 
-/obj/decal/fakeobjects/vacuumtape
+/obj/fakeobject/vacuumtape
 	name = "vacuum column tape drive"
 	desc = "A large 9 track magnetic tape storage unit."
 	icon = 'icons/obj/large/32x64.dmi'
@@ -1040,7 +1182,7 @@ ABSTRACT_TYPE(/obj/item/record/random/notaquario)
 	anchored = ANCHORED
 	density = 1
 
-/obj/decal/fakeobjects/operatorconsole
+/obj/fakeobject/operatorconsole
 	name = "operator's console"
 	desc = "The computer operating console, covered in fancy toggle switches and register value lamps."
 	icon = 'icons/obj/large/32x64.dmi'
@@ -1050,14 +1192,14 @@ ABSTRACT_TYPE(/obj/item/record/random/notaquario)
 	anchored = ANCHORED
 	density = 1
 
-/obj/decal/fakeobjects/broadcastcomputer
+/obj/fakeobject/broadcastcomputer
 	name = "broadcast server"
 	icon = 'icons/obj/decoration.dmi'
 	icon_state = "gannets_machine11"
 	anchored = ANCHORED
 	density = 1
 
-/obj/decal/fakeobjects/tapedeck
+/obj/fakeobject/tapedeck
 	name = "reel to reel tape deck"
 	icon = 'icons/obj/decoration.dmi'
 	icon_state = "gannets_machine20"
@@ -1107,7 +1249,8 @@ ABSTRACT_TYPE(/obj/item/record/random/notaquario)
 	fields = strings("radioship/radioship_records.txt","log_2")
 
 
-
+TYPEINFO(/obj/item/device/radio/intercom/radiostation)
+	mats = 0
 /obj/item/device/radio/intercom/radiostation
 	name = "broadcast radio"
 	desc = "A powerful radio transmitter. Enable the microphone to begin broadcasting your radio show."

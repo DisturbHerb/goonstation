@@ -8,6 +8,10 @@
 	#define COMSIG_COMPONENT_REMOVING "component_removing"
 	/// just before a datum's disposing()
 	#define COMSIG_PARENT_PRE_DISPOSING "parent_pre_disposing"
+	/// when a variable is changed by admin varedit
+	#define COMSIG_VARIABLE_CHANGED "variable_changed"
+	/// when a proc is called by admin proc-call
+	#define COMSIG_PROC_CALLED "proc_called"
 
 // ---- mind signals ----
 
@@ -28,6 +32,8 @@
 // ---- TGUI signals ----
 	/// A TGUI window was opened by a user (receives tgui datum)
 	#define COMSIG_TGUI_WINDOW_OPEN "tgui_window_open"
+	/// A TGUI window has fully opened (tgui_window, client)
+	#define COMSIG_TGUI_WINDOW_VISIBLE "tgui_window_visible"
 
 // ---- reagents signals ----
 	/// When reagent scanned

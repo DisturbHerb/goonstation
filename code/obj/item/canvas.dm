@@ -29,7 +29,6 @@
 	var/gray_padding = 100
 
 
-	uses_multiple_icon_states = 1
 	inhand_image_icon = 'icons/mob/inhand/hand_books.dmi'
 	item_state = "paper"
 
@@ -41,7 +40,7 @@
 
 	burn_point = 220
 	burn_output = 900
-	burn_possible = 2
+	burn_possible = TRUE
 	health = 10
 
 	stamina_damage = 0
@@ -192,7 +191,6 @@
 <html>
 <head>
 <title>[src]</title>
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta http-equiv="pragma" content="no-cache">
 <style>
@@ -422,7 +420,7 @@
 		save_to_id(src.id)
 
 	get_dot_color(mob/user)
-		if(text2num(user?.client.cloud_get("persistent_canvas_banned")))
+		if(text2num(user?.client.player?.cloudSaves.getData("persistent_canvas_banned")))
 			return null
 		if((user.ckey in src.artists) && (!admin_override || user?.client?.holder?.level < LEVEL_PA))
 			boutput(user, SPAN_ALERT("The first brush stroke exhausted you too much. You will need to wait until the next shift for another."))
@@ -495,6 +493,7 @@
 	var/exhibit_id = "ex_0"
 	/// cost to purchase this exhibit space
 	var/spacebux_cost = 0
+	var/datum/exhibit_data/data
 
 	lowend
 		spacebux_cost = 5000
@@ -504,4 +503,7 @@
 		spacebux_cost = 25000
 	premium
 		spacebux_cost = 50000
+
+/datum/exhibit_data
+	var/icon/art
 #endif

@@ -22,7 +22,7 @@
 		src.equip_if_possible(my_mask, SLOT_WEAR_MASK)
 		src.equip_new_if_possible(/obj/item/storage/belt/security, SLOT_BELT)
 
-		src.equip_new_if_possible(/obj/item/tank/emergency_oxygen, SLOT_R_STORE)
+		src.equip_new_if_possible(/obj/item/tank/pocket/oxygen, SLOT_R_STORE)
 
 		my_sword = new /obj/item/sword(src)
 		my_sword.bladecolor = "P"
@@ -37,12 +37,12 @@
 		abilityHolder.updateButtons()
 
 	initializeBioholder()
-		bioHolder.mobAppearance.customization_first = new /datum/customization_style/hair/short/short
-		bioHolder.mobAppearance.customization_second = new /datum/customization_style/beard/fullbeard
-		bioHolder.mobAppearance.customization_third = new /datum/customization_style/eyebrows/eyebrows
-		bioHolder.mobAppearance.customization_first_color = "#555555"
-		bioHolder.mobAppearance.customization_second_color = "#555555"
-		bioHolder.mobAppearance.customization_third_color = "#555555"
+		bioHolder.mobAppearance.customizations["hair_bottom"].style =  new /datum/customization_style/hair/short/short
+		bioHolder.mobAppearance.customizations["hair_middle"].style =  new /datum/customization_style/beard/fullbeard
+		bioHolder.mobAppearance.customizations["hair_top"].style =  new /datum/customization_style/eyebrows/eyebrows
+		bioHolder.mobAppearance.customizations["hair_bottom"].color = "#555555"
+		bioHolder.mobAppearance.customizations["hair_middle"].color = "#555555"
+		bioHolder.mobAppearance.customizations["hair_top"].color = "#555555"
 		. = ..()
 
 	bullet_act(obj/projectile/P, mob/meatshield) // deflect energy projectiles, cut bullets
@@ -186,7 +186,8 @@
 		if(istype(holder.owner, /mob/living/carbon/human/cyalume_knight))
 			var/mob/living/carbon/human/cyalume_knight/my_mob = holder.owner
 			src.sword = my_mob.my_sword
-
+		else
+			src.sword = locate() in holder.owner
 
 		if(!src.sword)
 			boutput(holder.owner, SPAN_ALERT("Your sword appears to have been banished from the physical realm!"))
@@ -260,7 +261,7 @@
 	dissipation_rate = 5
 	damage_type = D_KINETIC
 	hit_type = DAMAGE_BLUNT
-	impact_image_state = "bhole"
+	impact_image_state = "bullethole"
 	implanted = null
 	casing = null
 
@@ -268,7 +269,7 @@
 		if (ishuman(hit))
 			var/mob/living/carbon/human/M = hit
 			var/turf/target = get_edge_target_turf(M, dirflag)
-			M.do_disorient(15, weakened = 10)
+			M.do_disorient(15, knockdown = 10)
 			M.throw_at(target, 6, 3, throw_type = THROW_GUNIMPACT)
 			M.update_canmove()
 
@@ -358,7 +359,6 @@
 /datum/action/bar/icon/force_lightning_action // UNLIMITED POWER
 	duration = 5
 	interrupt_flags = INTERRUPT_MOVE | INTERRUPT_ACT | INTERRUPT_STUNNED | INTERRUPT_ACTION
-	id = "cyalumeknight_lightning"
 	icon = 'icons/misc/GerhazoStuff.dmi'
 	icon_state = "cknight_lightning_action"
 	var/mob/living/carbon/human/M
@@ -470,7 +470,6 @@
 /datum/action/bar/icon/force_choke_action
 	duration = 50
 	interrupt_flags = INTERRUPT_MOVE | INTERRUPT_ACT | INTERRUPT_STUNNED | INTERRUPT_ACTION
-	id = "cyalumeknight_choke"
 	icon = 'icons/misc/GerhazoStuff.dmi'
 	icon_state = "cknight_grip_action"
 	var/mob/living/carbon/human/M
@@ -554,7 +553,6 @@
 /datum/action/bar/icon/force_heal_action
 	duration = 50
 	interrupt_flags = INTERRUPT_MOVE | INTERRUPT_ACT | INTERRUPT_STUNNED | INTERRUPT_ACTION
-	id = "cyalumeknight_heal"
 	icon = 'icons/misc/GerhazoStuff.dmi'
 	icon_state = "cknight_heal_action"
 	var/mob/living/carbon/human/M
@@ -595,6 +593,7 @@
 			M.take_toxin_damage(-15)
 			M.take_oxygen_deprivation(-15)
 			M.losebreath = max(0, M.losebreath - 10)
+			repair_bleeding_damage(M, 100, rand(1,2))
 			M.visible_message(SPAN_ALERT("Some of [M]'s wounds slowly fade away!"), SPAN_ALERT("Your wounds begin to fade away."))
 			playsound(M, 'sound/items/mender.ogg', 50, TRUE)
 		else
@@ -645,11 +644,11 @@
 				src.icon_state = "robuddy-vibin"
 
 			if("flip")
-				flick("robuddy-speen", src)
+				FLICK("robuddy-speen", src)
 				..(act, voluntary) // to let the regular emote also occur
 
 			if("wave")
-				flick("robuddy-wave", src)
+				FLICK("robuddy-wave", src)
 				..(act, voluntary) // to let the regular wave(wave message, etc) also occur
 
 			if("neutral")
@@ -732,7 +731,7 @@
 
 	afterattack(var/atom/target, mob/user, flag)
 		if (target == user)
-			src.attack_self(user)
+			src.AttackSelf(user)
 		else
 			. = ..()
 
@@ -999,7 +998,7 @@
 		src.maptext_x = 36
 		src.maptext_y = 64
 
-		src.m_intent = "walk"
+		src.set_m_intent("walk")
 		hud.update_mintent()
 
 		// dirty code for a loop since taking up an actual processing loop for a gimmick seems excessive
@@ -1039,7 +1038,7 @@
 		var/atom/movable/AM = A
 		if ((isturf(A) || isobj(A)) && momentum >= machrun_animation_min_momentum)
 			if(world.time > last_bumped_object_timestamp + 0.2 SECONDS)
-				flick("mach_hit_wall", src)
+				FLICK("mach_hit_wall", src)
 				last_bumped_object_timestamp = world.time
 				animate_storage_thump(A)
 		if (ismob(AM) && momentum >= machrun_animation_min_momentum)
@@ -1110,7 +1109,7 @@
 			if(moved_right != 1)
 				update_current_moving_direction(moved_right, moved_up)
 				if(momentum > machrun_animation_min_momentum)
-					flick("mach_right_to_left", src)
+					FLICK("mach_right_to_left", src)
 					APPLY_ATOM_PROPERTY(src, PROP_MOB_CANTMOVE, src.type)
 					SPAWN(0.4 SECONDS)
 						REMOVE_ATOM_PROPERTY(src, PROP_MOB_CANTMOVE, src.type)
@@ -1119,7 +1118,7 @@
 			if(moved_right != -1)
 				update_current_moving_direction(moved_right, moved_up)
 				if(momentum > machrun_animation_min_momentum)
-					flick("mach_left_to_right", src)
+					FLICK("mach_left_to_right", src)
 					APPLY_ATOM_PROPERTY(src, PROP_MOB_CANTMOVE, src.type)
 					SPAWN(0.4 SECONDS)
 						REMOVE_ATOM_PROPERTY(src, PROP_MOB_CANTMOVE, src.type)
@@ -1129,9 +1128,9 @@
 				update_current_moving_direction(moved_right, moved_up)
 				if(momentum > machrun_animation_min_momentum)
 					if(moved_right == 1)
-						flick("mach_left_to_right", src)
+						FLICK("mach_left_to_right", src)
 					else
-						flick("mach_right_to_left", src)
+						FLICK("mach_right_to_left", src)
 					APPLY_ATOM_PROPERTY(src, PROP_MOB_CANTMOVE, src.type)
 					SPAWN(0.4 SECONDS)
 						REMOVE_ATOM_PROPERTY(src, PROP_MOB_CANTMOVE, src.type)
@@ -1141,9 +1140,9 @@
 				update_current_moving_direction(moved_right, moved_up)
 				if(momentum > machrun_animation_min_momentum)
 					if(moved_right == -1)
-						flick("mach_right_to_left", src)
+						FLICK("mach_right_to_left", src)
 					else
-						flick("mach_left_to_right", src)
+						FLICK("mach_left_to_right", src)
 					APPLY_ATOM_PROPERTY(src, PROP_MOB_CANTMOVE, src.type)
 					SPAWN(0.4 SECONDS)
 						REMOVE_ATOM_PROPERTY(src, PROP_MOB_CANTMOVE, src.type)
@@ -1174,21 +1173,21 @@
 		switch (act)
 			if ("scream")
 				if (src.emote_check(voluntary, 50))
-					flick("scream", src)
+					FLICK("scream", src)
 					playsound(src.loc, '+secret/sound/misc/peppino_scream.ogg', 90, 1)
-					return "<b>[SPAN_ALERT("[src] screams!")]</b>"
+					return SPAN_ALERT("<b>[src] screams!</b>")
 			if ("dance")
 				if (src.emote_check(voluntary, 50))
-					flick("breakdance", src)
+					FLICK("breakdance", src)
 					playsound(src.loc, '+secret/sound/misc/peppino_breakdance.ogg', 75)
-					return "<b>[SPAN_ALERT("[src] breaks out some sick moves!")]</b>"
+					return SPAN_ALERT("<b>[src] breaks out some sick moves!</b>")
 			if ("fart")
 				if (src.emote_check(voluntary, 50))
 					if(prob(50))
 						attack_twitch(src)
 					else
 						animate_buff_in(src)
-					flick("taunt_[rand(1,10)]", src)
+					FLICK("taunt_[rand(1,10)]", src)
 					playsound(src.loc, '+secret/sound/misc/peppino_taunt.ogg', 75)
 					return null
 		return null

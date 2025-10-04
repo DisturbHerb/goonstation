@@ -12,21 +12,24 @@
 
 	New()
 		..()
-
-		if (!islist(portable_machinery))
-			portable_machinery = list()
-		portable_machinery.Add(src)
+		START_TRACKING_CAT(TR_CAT_PORTABLE_MACHINERY)
 
 		src.homeloc = src.loc
 		return
 
 	disposing()
-		if (islist(portable_machinery))
-			portable_machinery.Remove(src)
+		STOP_TRACKING_CAT(TR_CAT_PORTABLE_MACHINERY)
 		if(occupant)
 			occupant.set_loc(get_turf(src.loc))
 			occupant = null
 		..()
+
+	get_help_message(dist, mob/user)
+		. = ..()
+		if(src.status & BROKEN)
+			return "Use <b>2 glass sheets</b> to repair [src]."
+		else
+			return ""
 
 	examine()
 		. = ..()
@@ -38,7 +41,7 @@
 			return
 		if ((usr in src.contents) || !isturf(usr.loc))
 			return
-		if (usr.stat || usr.getStatusDuration("stunned") || usr.getStatusDuration("weakened"))
+		if (usr.stat || usr.getStatusDuration("stunned") || usr.getStatusDuration("knockdown"))
 			return
 		if (BOUNDS_DIST(src, usr) > 0)
 			usr.show_text("You are too far away to do this!", "red")
@@ -61,17 +64,21 @@
 			logTheThing(LOG_STATION, usr, "sets [src.name]'s home turf to [log_loc(src.homeloc)].")
 		return
 
-	relaymove(mob/usr as mob, dir)
-		if (!isalive(usr))
+	relaymove(mob/user as mob, dir)
+		if (!isalive(user))
 			return
 		if (src.locked)
-			boutput(usr, SPAN_ALERT("<b>The scanner door is locked!</b>"))
+			boutput(user, SPAN_ALERT("<b>The scanner door is locked!</b>"))
 			return
 
 		src.go_out()
-		add_fingerprint(usr)
+		add_fingerprint(user)
 		playsound(src.loc, 'sound/machines/sleeper_open.ogg', 50, 1)
 		return
+
+	Click(location, control, params)
+		if(!src.ghost_observe_occupant(usr, src.occupant))
+			. = ..()
 
 	MouseDrop_T(mob/living/target, mob/user)
 		if (!istype(target) || isAI(user))
@@ -80,9 +87,10 @@
 		if (BOUNDS_DIST(src, user) > 0 || BOUNDS_DIST(user, target) > 0)
 			return
 
-		if (target == user)
-			go_in(target)
-		else if (can_operate(user,target))
+		if (can_operate(user, target))
+			if (target == user)
+				go_in(target)
+				return
 			var/previous_user_intent = user.a_intent
 			user.set_a_intent(INTENT_GRAB)
 			user.drop_item()
@@ -92,22 +100,22 @@
 				if (can_operate(user,target))
 					if (istype(user.equipped(), /obj/item/grab))
 						src.Attackby(user.equipped(), user)
-		return
 
 	proc/can_operate(var/mob/M, var/mob/living/target)
 		if (!isalive(M))
 			return 0
 		if (BOUNDS_DIST(src, M) > 0)
 			return 0
-		if (M.getStatusDuration("paralysis") || M.getStatusDuration("stunned") || M.getStatusDuration("weakened"))
+		if (M.getStatusDuration("unconscious") || M.getStatusDuration("stunned") || M.getStatusDuration("knockdown"))
 			return 0
 		if (src.occupant)
 			boutput(M, SPAN_NOTICE("<B>The scanner is already occupied!</B>"))
 			return 0
 		if(ismobcritter(target))
-			boutput(M, SPAN_ALERT("<B>The scanner doesn't support this body type.</B>"))
-			return 0
-		if(!iscarbon(target) )
+			if(!genResearch.isResearched(/datum/geneticsResearchEntry/critter_scanner))				 // CHANGE TO CHECK FOR MODULE?
+				boutput(M, SPAN_ALERT("<B>More research is required to support this body type.</B>"))
+				return 0
+		else if(!iscarbon(target) )
 			boutput(M, SPAN_ALERT("<B>The scanner supports only carbon based lifeforms.</B>"))
 			return 0
 		if (src.occupant)
@@ -120,15 +128,10 @@
 		.= 1
 
 	set_broken()
-		if (status & BROKEN)
-			return
-		var/datum/effects/system/harmless_smoke_spread/smoke = new /datum/effects/system/harmless_smoke_spread()
-		smoke.set_up(5, 0, src)
-		smoke.start()
+		. = ..()
+		if (.) return
 		src.go_out()
 		icon_state = "PAG_broken"
-		light.disable()
-		status |= BROKEN
 
 	attack_hand(mob/user)
 		if (src.status & BROKEN)
@@ -169,16 +172,7 @@
 		else if (istype(W, /obj/item/grab))
 			var/obj/item/grab/G = W
 
-			if (src.occupant)
-				boutput(user, SPAN_ALERT("<B>The scanner is already occupied!</B>"))
-				return
-
-			if (src.locked)
-				boutput(user, SPAN_ALERT("<B>You need to unlock the scanner first.</B>"))
-				return
-
-			if(!iscarbon(G.affecting))
-				boutput(user, SPAN_HINT("<B>The scanner supports only carbon based lifeforms.</B>"))
+			if(!can_operate(user, G.affecting))
 				return
 
 			var/mob/M = G.affecting

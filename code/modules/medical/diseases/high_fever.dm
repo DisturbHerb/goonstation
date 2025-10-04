@@ -3,7 +3,8 @@
 	name = "High Fever"
 	max_stages = 5
 	stage_prob = 10
-	cure = "ice"
+	cure_flags = CURE_CUSTOM
+	cure_desc = "Ice"
 	reagentcure = list("ice")
 
 	associated_reagent = "too much"
@@ -16,15 +17,15 @@
 		if(2)
 			if(probmult(10))
 				boutput(affected_mob, SPAN_ALERT("Its getting warm around here..."))
-				affected_mob.bodytemperature += 5
+				affected_mob.changeBodyTemp(5 KELVIN)
 		if(3)
 			if(probmult(10))
 				boutput(affected_mob, SPAN_ALERT("You're starting to heat up..."))
-				affected_mob.bodytemperature += 10
+				affected_mob.changeBodyTemp(10 KELVIN)
 		if(4)
 			if(probmult(10))
 				boutput(affected_mob, SPAN_ALERT("You're REALLY starting to heat up..."))
-				affected_mob.bodytemperature += 15
+				affected_mob.changeBodyTemp(15 KELVIN)
 
 		if(5)
 			boutput(affected_mob, SPAN_ALERT("You're a hundred and one!"))

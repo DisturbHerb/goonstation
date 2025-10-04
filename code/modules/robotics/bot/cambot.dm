@@ -39,6 +39,7 @@
 		if (src)
 			src.camera = new /obj/item/camera(src)
 			src.icon_state = "cambot[src.on]"
+			src.AddComponent(/datum/component/proximity)
 
 /obj/machinery/bot/cambot/emag_act(var/mob/user, var/obj/item/card/emag/E)
 	if (!src.emagged)
@@ -52,10 +53,20 @@
 
 		src.audible_message(SPAN_ALERT("<B>[src] buzzes oddly!</B>"))
 		playsound(src, 'sound/weapons/flash.ogg', 50, TRUE)
-		flick("cambot-spark", src)
+		FLICK("cambot-spark", src)
 		src.emagged = 1
 		return 1
 	return 0
+
+/obj/machinery/bot/cambot/attackby(obj/item/W, mob/user) //guh
+	. = ..()
+	switch(W.hit_type)
+		if (DAMAGE_BURN)
+			src.health -= W.force * 0.75
+		else
+			src.health -= W.force * 0.5
+	if (src.health <= 0)
+		src.explode()
 
 /obj/machinery/bot/cambot/demag(var/mob/user)
 	if (!src.emagged)
@@ -104,7 +115,7 @@
 	if(src.exploding) return
 	src.exploding = 1
 	src.on = 0
-	src.visible_message(SPAN_ALERT("<B>[src] blows apart!</B>"), 1)
+	src.visible_message(SPAN_ALERT("<B>[src] blows apart!</B>"))
 	playsound(src.loc, 'sound/impact_sounds/Machinery_Break_1.ogg', 40, 1)
 
 	elecflash(src, radius=1, power=3, exclude_center = 0)
@@ -183,8 +194,7 @@
 		src.navigate_to(get_turf(src.target), CAMBOT_MOVE_SPEED, 1, 20)
 
 		if (!islist(src.path)) // Woops, couldn't find a path.
-			if (!(src.target in src.targets_invalid))
-				src.targets_invalid += src.target
+			LAZYLISTADDUNIQUE(src.targets_invalid, src.target)
 			src.target = null
 			return
 
@@ -196,7 +206,7 @@
 	return
 
 /// Gotta catch those driveby moments
-/obj/machinery/bot/cambot/HasProximity(atom/movable/AM as mob|obj)
+/obj/machinery/bot/cambot/EnteredProximity(atom/movable/AM)
 	if(!on || stunned || src.last_shot + src.shot_cooldown <= TIME || (src.idle && TIME < src.idle + src.idle_delay))
 		return
 

@@ -23,9 +23,6 @@
 		return FALSE
 	return copytext(text, length(text) - length(end) + 1, length(text) + 1) == end
 
-/proc/trim(text)
-	return trim_left(trim_right(text))
-
 #define is_uppercase_letter(c) (text2ascii(c, 1) >= 65 && text2ascii(c, 1) <= 90)
 #define is_lowercase_letter(c) (text2ascii(c, 1) >= 97 && text2ascii(c, 1) <= 122)
 
@@ -41,6 +38,13 @@ var/list/lowercase_letters = list("a", "b", "c", "d", "e", "f", "g", "h", "i", "
 
 	return uppertext(copytext(t, 1, 2)) + copytext(t, 2)
 
+/proc/capitalize_each_word(t as text)
+	var/list/split = splittext(t, " ")
+	var/list/words = list()
+	for (var/word in split)
+		words += capitalize(word)
+	return list2text(words, " ")
+
 /// Returns true if the given string has a vowel
 /proc/isVowel(var/t as text)
 	return findtextEx(lowertext(t), "aeiouåäö") > 0
@@ -50,10 +54,7 @@ var/list/lowercase_letters = list("a", "b", "c", "d", "e", "f", "g", "h", "i", "
   * The explicitly defined entries are various blank unicode characters that don't get included as white space by \s
   */
 var/global/regex/is_blank_string_regex = new(@{"^(\s|[\u00A0\u00AC\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u200B\u200C\u200D\u200E\u200F\u2011\u2028\u2029\u202A\u202B\u202C\u202D\u202E\u202F\u205F\u2060\u2066\u2067\u2068\u2069\u206A\u206B\u206C\u206D\u206E\u206F\u3000])*$"})
-/proc/is_blank_string(var/txt)
-	if (is_blank_string_regex.Find(txt))
-		return 1
-	return 0 //not blank
+#define is_blank_string(txt) is_blank_string_regex.Find(txt)
 
 var/global/regex/discord_emoji_regex = new(@{"(?:<|&lt;)(?:a)?:([-a-zA-Z0-9_]+):(\d+)(?:>|&gt;)"}, "g")
 /proc/discord_emojify(text)
@@ -168,3 +169,24 @@ proc/pluralize(word)
 		. += "es"
 	else
 		. += "s"
+
+proc/list2text(L, d = "")
+	return jointext(L, d)
+
+
+// DM simultaneously makes cursed shit like this work...
+// yet won't work with just the unicode raws - infinite pain
+var/const/___proper = "\proper"
+var/const/___improper = "\improper"
+var/static/regex/regexTextMacro = regex("[___proper]|[___improper]", "g")
+
+/**
+  * Removes the special data inserted via use of \improper etc in strings
+  */
+#define stripTextMacros(text) replacetext(text, regexTextMacro, "")
+
+var/global/regex/sentence_end_regex = regex(".*\[\\.\\?\\!\\-\]$")
+proc/end_sentence(sentence, punctuation = ".")
+	if (sentence_end_regex.Find(sentence))
+		return sentence
+	return sentence + punctuation

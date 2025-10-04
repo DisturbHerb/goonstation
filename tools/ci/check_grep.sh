@@ -25,6 +25,11 @@ if grep -P 'step_[xy]' assets/maps/**/*.dmm maps/**/*.dmm;	then
     st=1
 fi;
 
+if grep -P '^\/area(?!\/dmm_suite\/clear_area)' assets/maps/random_rooms/**/*.dmm; then
+    echo "ERROR: random room uses non '/area/dmm_suite/clear' area"
+    st=1
+fi;
+
 # We check for this as well to ensure people aren't actually using this mapping effect in their maps.
 if grep -P '/obj/merge_conflict_marker' assets/maps/**/*.dmm maps/**/*.dmm; then
     echo "ERROR: Merge conflict markers detected in map, please resolve all merge failures!"
@@ -46,6 +51,31 @@ fi;
 if grep -P 'rand\([^)]*[0-9]\.' */**/*.dm;	then
     echo "ERROR: rand() does not support floating point numbers, use randfloat() instead."
     st=1
+fi;
+
+if grep -P 'istype\([^,)]*\.type' */**/*.dm;	then
+    echo "ERROR: you probably meant to use istype(foo, sometype) instead of istype(foo.type, sometype)."
+    st=1
+fi;
+
+if grep -P '^ABSTRACT_TYPE\([^/]' */**/*.dm;	then
+    echo "ERROR: You need to include the slash before the area type name in ABSTRACT_TYPE."
+    st=1
+fi;
+
+if grep -P '^ABSTRACT_TYPE\([^/]' */**/*.dm;	then
+    echo "ERROR: You need to include the slash before the area type name in ABSTRACT_TYPE."
+    st=1
+fi;
+
+if grep -P 'as anything in o?(range|hearers)' */**/*.dm;	then
+    echo "ERROR: Don't include 'as anything' before o?range|hearers, it disables optimizations."
+    st=1
+fi;
+
+if grep -P "(?<!UNLINT\().*name = .*\"\[.*\]'s" */**/*.dm;    then
+	echo "ERROR: Using an apostrophe in a name like [mob]'s brain may cause Byond to get confused between the two objects in click verbs etc. Please use ’ (U+2019) instead."
+	st=1
 fi;
 
 exit $st

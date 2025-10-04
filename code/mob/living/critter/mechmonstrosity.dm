@@ -1,6 +1,5 @@
 /mob/living/critter/mechmonstrosity
 	name = "mechanical monstrosity"
-	real_name = "mechanical monstrosity"
 	desc = "A severely disfigured human torso which is forcibly kept alive by the mechanical parts.."
 	density = TRUE
 	icon = 'icons/mob/critter/robotic/mechanical/monstrosity.dmi'
@@ -13,12 +12,12 @@
 	can_disarm = FALSE
 	can_help = FALSE
 	blood_id = "oil"
-	speechverb_say = "states"
-	speechverb_gasp = "states"
-	speechverb_stammer = "states"
-	speechverb_exclaim = "declares"
-	speechverb_ask = "queries"
-	faction = FACTION_DERELICT
+	speech_verb_say = "states"
+	speech_verb_gasp = "states"
+	speech_verb_stammer = "states"
+	speech_verb_exclaim = "declares"
+	speech_verb_ask = "queries"
+	faction = list(FACTION_DERELICT)
 
 	setup_healths()
 		add_hh_robot(100, 1)
@@ -90,7 +89,6 @@
 
 /mob/living/critter/mechmonstrosity/medical
 	name = "V.I.V.I-SECT-10N"
-	real_name = "V.I.V.I-SECT-10N"
 	desc = "You better wish that apples will keep this thing away from you.."
 	icon = 'icons/mob/critter/robotic/mechanical/vivisection.dmi'
 	icon_state = "vivisection"
@@ -130,8 +128,8 @@
 					var/obj/window/W = AM
 					W.health = 0
 					W.smash()
-				else if(istype(AM,/obj/grille))
-					var/obj/grille/G = AM
+				else if(istype(AM,/obj/mesh/grille))
+					var/obj/mesh/grille/G = AM
 					G.damage_blunt(30)
 				else if(istype(AM, /obj/table))
 					AM.meteorhit()
@@ -237,6 +235,7 @@
 			boutput(M, SPAN_ALERT("It would be a waste of time to stun the dead."))
 			return TRUE
 
+		. = ..()
 		M.visible_message(SPAN_ALERT("<B>[M] glares angrily at [target]!</B>"))
 		target.apply_flash(5, 5)
 		boutput(target, SPAN_ALERT("You can feel a chill running down your spine as [M] glares at you with hatred burning in their  mechanical eyes."))
@@ -248,7 +247,6 @@
 /datum/action/bar/icon/mechanimateAbility
 	duration = 8 SECONDS
 	interrupt_flags = INTERRUPT_MOVE | INTERRUPT_ACT | INTERRUPT_STUNNED | INTERRUPT_ACTION
-	id = "mechanimate"
 	icon = 'icons/mob/critter_ui.dmi'
 	icon_state = "turn_over"
 	var/mob/living/target
@@ -285,7 +283,7 @@
 			playsound(ownerMob, 'sound/items/hypo.ogg', 80, FALSE)
 
 			var/mob/living/critter/robotic/crawler/crawler = new /mob/living/critter/robotic/crawler(get_turf(target))
-			crawler.name = "[target]'s crawling head"
+			crawler.name = "[target]’s crawling head"
 			crawler.desc = "A horrible crawling monstrosity, ravaged from the corpse of [target]."
 			crawler.revivalChance = 100
 
@@ -326,6 +324,7 @@
 		if (GET_DIST(M, target) > src.max_range)
 			boutput(M, SPAN_ALERT("[target] is too far away."))
 			return TRUE
+		. = ..()
 		holder.owner.say("Transformation protocol engaged. Please stand clear of the recipient.")
 		actions.start(new/datum/action/bar/icon/mechanimateAbility(target, src), holder.owner)
 		return FALSE
@@ -357,6 +356,7 @@
 			boutput(M, SPAN_ALERT("[target] is too far away."))
 			return TRUE
 
+		. = ..()
 		M.visible_message(SPAN_ALERT("<B>With their double saw whirling, [M] swiftly severs all [target]'s limbs!</B>"))
 		H.sever_limb("r_arm")
 		H.sever_limb("l_arm")
@@ -381,9 +381,13 @@
 	var/inject_amount = 15
 
 	on_hit(atom/hit, angle, var/obj/projectile/O)
-		if (ismob(hit))
-			if (hit.reagents)
-				hit.reagents.add_reagent(venom_id, inject_amount)
+		if (!ismob(hit) || !hit.reagents)
+			return
+		if (islist(src.venom_id))
+			for (var/id in src.venom_id)
+				hit.reagents.add_reagent(id, inject_amount)
+		else
+			hit.reagents.add_reagent(venom_id, inject_amount)
 
 /datum/computer/file/record/replicants
 
@@ -446,7 +450,8 @@
 	health_brute_vuln = 0.5
 	health_burn = 20
 	health_burn_vuln = 0.25
-	faction = FACTION_DERELICT
+	faction = list(FACTION_DERELICT)
+	is_npc = TRUE
 	ai_type = /datum/aiHolder/aggressive
 	ai_retaliates = TRUE
 	ai_retaliate_patience = 0
@@ -507,11 +512,11 @@
 	base_move_delay = 5
 	base_walk_delay = 5
 	blood_id = "oil"
-	speechverb_say = "states"
-	speechverb_gasp = "states"
-	speechverb_stammer = "states"
-	speechverb_exclaim = "declares"
-	speechverb_ask = "queries"
+	speech_verb_say = "states"
+	speech_verb_gasp = "states"
+	speech_verb_stammer = "states"
+	speech_verb_exclaim = "declares"
+	speech_verb_ask = "queries"
 	bound_height = 32
 	bound_width = 32
 	var/icon/northsouth = null

@@ -1,6 +1,10 @@
 var/datum/telescope_manager/tele_man
-var/list/special_places = list() //list of location names, which are coincidentally also landmark ids
+var/list/special_places = list("Luna", "Observatory") //list of location names, which are coincidentally also landmark ids
 
+TYPEINFO(/obj/machinery/lrteleporter)
+	mats = list("telecrystal" = 10,
+				"metal" = 10,
+				"conductive" = 10)
 /obj/machinery/lrteleporter
 	name = "Experimental long-range teleporter"
 	desc = "Well this looks somewhat unsafe."
@@ -8,7 +12,7 @@ var/list/special_places = list() //list of location names, which are coincidenta
 	icon_state = "lrport"
 	density = 0
 	anchored = ANCHORED
-	flags = FPRINT | CONDUCT | TGUI_INTERACTIVE
+	flags = CONDUCT | TGUI_INTERACTIVE
 	var/busy = 0
 	layer = 2
 	deconstruct_flags = DECON_SCREWDRIVER | DECON_WRENCH | DECON_CROWBAR | DECON_WELDER
@@ -25,7 +29,7 @@ var/list/special_places = list() //list of location names, which are coincidenta
 		STOP_TRACKING
 
 	attack_ai(mob/user as mob)
-		return attack_hand(user)
+		return src.Attackhand(user)
 
 	attack_hand(mob/user)
 		ui_interact(user)
@@ -62,7 +66,7 @@ var/list/special_places = list() //list of location names, which are coincidenta
 			if (!target) //we didnt find a turf to send to
 				return 0
 			src.busy = 1
-			flick("[src.icon_state]-act", src)
+			FLICK("[src.icon_state]-act", src)
 			playsound(src, 'sound/machines/lrteleport.ogg', 60, TRUE)
 			for(var/atom/movable/M in src.loc)
 				if(M.anchored)
@@ -87,7 +91,7 @@ var/list/special_places = list() //list of location names, which are coincidenta
 			if (!target) //we didnt find a turf to send to
 				return 0
 			src.busy = 1
-			flick("[src.icon_state]-act", src)
+			FLICK("[src.icon_state]-act", src)
 			playsound(src, 'sound/machines/lrteleport.ogg', 60, TRUE)
 			for(var/atom/movable/M in target)
 				if(M.anchored)
@@ -227,20 +231,31 @@ var/list/special_places = list() //list of location names, which are coincidenta
 	projectile_type = /datum/projectile/laser/drill/cutter
 	current_projectile = new/datum/projectile/laser/drill/cutter
 	droploot = null
-	smashes_shit = 1
+	smashes_shit = FALSE
+	/// how many times has this nanite swarm reassembled
+	var/generation = 1
+	var/rare_metal_drop_chance = 5
+	var/rare_metal_drop_path = /obj/item/material_piece/iridiumalloy
+
+	ai_think()
+		if (dying) return
+		. = ..()
 
 	ChaseAttack(atom/M)
+		if(dying) return
 		if(target && !attacking)
 			attacking = 1
 			src.visible_message(SPAN_ALERT("<b>[src]</b> floats towards [M]!"))
 			walk_to(src, src.target,1,4)
 			var/tturf = get_turf(M)
 			Shoot(tturf, src.loc, src)
+			flick("nanites-attack", src)
 			SPAWN(attack_cooldown)
 				attacking = 0
 		return
 
 	CritterAttack(atom/M)
+		if(dying) return
 		if(target && !attacking)
 			attacking = 1
 			//playsound(src.loc, 'sound/machines/whistlebeep.ogg', 55, 1)
@@ -248,6 +263,7 @@ var/list/special_places = list() //list of location names, which are coincidenta
 
 			var/tturf = get_turf(M)
 			Shoot(tturf, src.loc, src)
+			flick("nanites-attack", src)
 			SPAWN(attack_cooldown)
 				attacking = 0
 		return
@@ -258,15 +274,42 @@ var/list/special_places = list() //list of location names, which are coincidenta
 		return
 
 	CritterDeath()
-		if(prob(33) && alive && !dying)
+		if(dying) return
+		src.visible_message(SPAN_ALERT("<b>[src]</b> collapses into a pile of dust!"))
+		walk(src, 0)
+		if(prob(50/src.generation) && alive && !dying)
 			src.visible_message(SPAN_ALERT("<b>[src]</b> begins to reassemble!"))
 			var/turf/T = src.loc
+			var/current_generation = src.generation
+			var/obj/decal/respawn_decal = new(src.loc)
+			respawn_decal.name = "reassembling nanite swarm"
+			respawn_decal.icon = 'icons/mob/critter/robotic/nanites.dmi'
+			respawn_decal.icon_state = "nanites-dead-reform"
+			respawn_decal.layer = MOB_LAYER + 1
+			respawn_decal.plane = PLANE_DEFAULT
+			SPAWN(4.7 SECONDS)
+				flick("nanites-reform", respawn_decal)
+
 			SPAWN(5 SECONDS)
-				new/obj/critter/gunbot/drone/buzzdrone/naniteswarm(T)
+				var/obj/critter/gunbot/drone/buzzdrone/naniteswarm/swarm  = new(T)
+				swarm.generation = current_generation + 1
+
+				if(respawn_decal)
+					qdel(respawn_decal)
+
 				if(src)
 					qdel(src)
 
-		if(prob(5) && alive && !dying)
-			new/obj/item/material_piece/iridiumalloy(src.loc)
+		if(prob(src.rare_metal_drop_chance) && alive && !dying)
+			new src.rare_metal_drop_path(src.loc)
 
 		..()
+
+/obj/critter/gunbot/drone/buzzdrone/naniteswarm/rare_metal
+	rare_metal_drop_chance = 100
+
+/obj/critter/gunbot/drone/buzzdrone/naniteswarm/rare_metal/iridium
+	rare_metal_drop_path = /obj/item/material_piece/iridiumalloy/small
+
+/obj/critter/gunbot/drone/buzzdrone/naniteswarm/rare_metal/plutonium // plutonium power source
+	rare_metal_drop_path = /obj/item/material_piece/plutonium_scrap

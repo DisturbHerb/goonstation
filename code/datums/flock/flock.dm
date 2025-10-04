@@ -1,3 +1,12 @@
+/// The relay is under construction
+#define STAGE_UNBUILT 0
+/// The relay has been built
+#define STAGE_BUILT 1
+/// The relay is about to transmit the Signal
+#define STAGE_CRITICAL 2
+/// The relay either transmitted the Signal, or was otherwise destroyed
+#define STAGE_DESTROYED 3
+
 /////////////////////////////
 // FLOCK DATUM
 /////////////////////////////
@@ -10,6 +19,7 @@ var/flock_signal_unleashed = FALSE
 var/datum/flock/default_flock = null
 ///Gimmick flock with infinite compute that lone structures and units automatically connect to
 proc/get_default_flock()
+	RETURN_TYPE(/datum/flock)
 	if (!default_flock)
 		default_flock = new
 		default_flock.relay_allowed = FALSE
@@ -44,7 +54,7 @@ proc/get_default_flock()
 	var/current_egg_cost = FLOCK_LAY_EGG_COST
 	/// associative list of used names (for traces, drones, and bits) to true values
 	var/list/active_names = list()
-	var/list/enemies = list()
+	var/list/atom/movable/enemies = list()
 	var/list/atom/movable/ignores = list()
 	///Associative list of objects to an associative list of their annotation names to images
 	var/list/annotations = list()
@@ -56,21 +66,31 @@ proc/get_default_flock()
 	///list of strings that lets flock record achievements for structure unlocks
 	var/list/achievements = list()
 	var/mob/living/intangible/flock/flockmind/flockmind
+	/// The last relay placed, in case admin intervention or respawns somehow.
+	var/obj/flock_structure/relay/last_relay = null
+	/// How long until the last placed relay transmits the Signal
+	var/time_left
+	/// Relay is in the process of being made real, gibs and all
 	var/relay_in_progress = FALSE
+	/// Relay has exploded. Game over!
 	var/relay_finished = FALSE
 	var/datum/tgui/flockpanel
 	var/ui_tab = "drones"
 	///Can this flock realize the relay?
 	var/relay_allowed = TRUE
+	/// If we can, how far are we to transmitting the Signal?
+	var/relay_stage = STAGE_UNBUILT
 	///Do we broadcast system announcements?
 	var/quiet = FALSE
 
 	var/center_x = 0
 	var/center_y = 0
 
-	var/obj/dummy/center_marker = null
+	var/obj/effects/center_marker = null
 
 	var/datum/flockstats/stats
+
+	var/atom/movable/abstract_say_source/flock_system/system_say_source
 
 /datum/flock/New()
 	..()
@@ -91,7 +111,9 @@ proc/get_default_flock()
 	src.load_structures()
 	if (!annotation_imgs)
 		annotation_imgs = build_annotation_imgs()
+
 	src.units[/mob/living/critter/flock/drone] = list() //this one needs initialising
+	src.system_say_source = new(null, src)
 
 
 /datum/flock/proc/load_structures()
@@ -113,7 +135,8 @@ proc/get_default_flock()
 		ui.open()
 
 /datum/flock/ui_act(action, list/params, datum/tgui/ui)
-	var/mob/user = ui.user;
+	. = ..()
+	var/mob/user = ui.user
 	if (!istype(user, /mob/living/intangible/flock/flockmind))
 		var/mob/living/critter/flock/drone/F = user
 		if (!istype(F) || !istype(F.controller, /mob/living/intangible/flock/flockmind))
@@ -143,7 +166,7 @@ proc/get_default_flock()
 			if(T)
 				var/mob/living/critter/flock/drone/host = T.loc
 				if(istype(host))
-					boutput(host, SPAN_FLOCKSAY("<b>\[SYSTEM: The flockmind has removed you from your previous corporeal shell.\]</b>"))
+					src.system_say_source.say("The flockmind has removed you from your previous corporeal shell.", atom_listeners_override = list(host))
 					host.release_control()
 		if("promote_trace")
 			var/message = "Are you sure?"
@@ -171,8 +194,8 @@ proc/get_default_flock()
 					var/mob/living/critter/flock/drone/host = T.loc
 					if(istype(host))
 						host.release_control()
-					flock_speak(null, "Partition [T.real_name] has been reintegrated into flock background processes.", src)
-					boutput(T, SPAN_FLOCKSAY("<b>\[SYSTEM: Your higher cognition has been forcibly reintegrated into the collective will of the flock.\]</b>"))
+					src.system_say_source.say("Partition [T.real_name] has been reintegrated into flock background processes.")
+					src.system_say_source.say("Your higher cognition has been forcibly reintegrated into the collective will of the flock.", atom_listeners_override = list(T))
 					T.death()
 		if ("cancel_tealprint")
 			var/obj/flock_structure/ghost/tealprint = locate(params["origin"])
@@ -285,6 +308,7 @@ proc/get_default_flock()
 /datum/flock/proc/can_afford_compute(var/cost)
 	return (cost <= src.total_compute() - src.used_compute)
 
+/// Update the compute values for all flocktraces and the flockmind
 /datum/flock/proc/update_computes(forceTextUpdate = FALSE)
 	var/totalCompute = src.total_compute()
 
@@ -297,29 +321,47 @@ proc/get_default_flock()
 
 	src.max_trace_count = round(min(src.total_compute(), FLOCK_RELAY_COMPUTE_COST) / FLOCKTRACE_COMPUTE_COST) + src.free_traces
 
-/datum/flock/proc/registerFlockmind(var/mob/living/intangible/flock/flockmind/F)
+/// Update the tile count values for all flocktraces and the flockmind
+/datum/flock/proc/update_tiles()
+	var/tiles_owned = length(src.all_owned_tiles)
+
+	var/datum/abilityHolder/flockmind/aH = src.flockmind?.abilityHolder
+	aH?.updateTiles(tiles_owned)
+
+	for (var/mob/living/intangible/flock/trace/T as anything in src.traces)
+		aH = T.abilityHolder
+		aH?.updateTiles(tiles_owned)
+
+/datum/flock/proc/registerFlockmind(mob/living/intangible/flock/flockmind/F)
 	if(!F)
 		return
+
 	src.flockmind = F
+	src.flockmind.ensure_speech_tree().AddSpeechOutput(SPEECH_OUTPUT_FLOCK, subchannel = "\ref[src]", flock = src)
+	src.flockmind.ensure_listen_tree().AddListenInput(LISTEN_INPUT_FLOCKMIND, subchannel = "\ref[src]")
 
 //since flocktraces need to be given their flock in New this is useful for debug
 /datum/flock/proc/spawnTrace()
 	var/mob/living/intangible/flock/trace/T = new(usr.loc, src)
 	return T
 
-/datum/flock/proc/addTrace(var/mob/living/intangible/flock/trace/T)
+/datum/flock/proc/addTrace(mob/living/intangible/flock/trace/T)
 	if(!T)
 		return
 	src.traces |= T
 	src.update_computes(TRUE)
+	T.ensure_speech_tree().AddSpeechOutput(SPEECH_OUTPUT_FLOCK, subchannel = "\ref[src]", flock = src)
+	T.ensure_listen_tree().AddListenInput(LISTEN_INPUT_FLOCK, subchannel = "\ref[src]")
 
-/datum/flock/proc/removeTrace(var/mob/living/intangible/flock/trace/T)
+/datum/flock/proc/removeTrace(mob/living/intangible/flock/trace/T)
 	if(!T)
 		return
 	src.traces -= T
 	src.active_names -= T.real_name
 	hideAnnotations(T)
 	src.update_computes(TRUE)
+	T.ensure_speech_tree().RemoveSpeechOutput(SPEECH_OUTPUT_FLOCK, subchannel = "\ref[src]")
+	T.ensure_listen_tree().RemoveListenInput(LISTEN_INPUT_FLOCK, subchannel = "\ref[src]")
 
 /datum/flock/proc/ping(var/atom/target, var/mob/living/intangible/flock/pinger)
 	//awful typecheck because turfs and movables have vis_contents defined seperately because god hates us
@@ -343,7 +385,7 @@ proc/get_default_flock()
 				qdel(arrow)
 		var/class = "flocksay ping [istype(F, /mob/living/intangible/flock/flockmind) ? "flockmind" : ""]"
 		var/prefix = "[SPAN_BOLD("\[[src.name]\]")] [SPAN_NAME("[pinger.name]")]"
-		boutput(F, "<span class='[class]'><a href='?src=\ref[F];origin=\ref[target];ping=[TRUE]'>[prefix]: Interrupt request, target: [target] in [get_area(target)].</a></span>")
+		boutput(F, "<span class='[class]'><a href='byond://?src=\ref[F];origin=\ref[target];ping=[TRUE]'>[prefix]: Interrupt request, target: [target] in [get_area(target)].</a></span>")
 	playsound_global(src.traces + src.flockmind, 'sound/misc/flockmind/ping.ogg', 50, 0.5)
 
 // ANNOTATIONS
@@ -488,41 +530,49 @@ proc/get_default_flock()
 
 // UNITS
 
-/datum/flock/proc/registerUnit(var/mob/living/critter/flock/D, check_name_uniqueness = FALSE)
-	if(isflockmob(D))
-		if(!src.units[D.type])
-			src.units[D.type] = list()
-		src.units[D.type] |= D
-		if (istype(D, /mob/living/critter/flock/drone))
-			src.updateEggCost()
-		if (check_name_uniqueness && src.active_names[D.real_name])
-			D.real_name = istype(D, /mob/living/critter/flock/drone) ? src.pick_name("flockdrone") : src.pick_name("flockbit")
-		D.AddComponent(/datum/component/flock_interest, src)
-		var/comp_provided = D.compute_provided()
-		if (comp_provided)
-			if (comp_provided < 0)
-				src.used_compute += abs(comp_provided)
-			else
-				src.total_compute += comp_provided
-			src.update_computes()
+/datum/flock/proc/registerUnit(mob/living/critter/flock/D, check_name_uniqueness = FALSE)
+	if(!isflockmob(D))
+		return
 
-/datum/flock/proc/removeDrone(var/mob/living/critter/flock/D)
-	if(isflockmob(D))
-		src.units[D.type] -= D
-		src.active_names -= D.real_name
-		if (istype(D, /mob/living/critter/flock/drone))
-			src.updateEggCost()
-		D.GetComponent(/datum/component/flock_interest)?.RemoveComponent(/datum/component/flock_interest)
-		if(D.real_name && busy_tiles[D.real_name])
-			src.unreserveTurf(D.real_name)
-		var/comp_provided = D.compute_provided()
-		if (comp_provided)
-			if (comp_provided < 0)
-				src.used_compute -= abs(comp_provided)
-			if (comp_provided > 0)
-				src.total_compute -= comp_provided
-			src.update_computes()
-		D.flock = null
+	if(!src.units[D.type])
+		src.units[D.type] = list()
+	src.units[D.type] |= D
+	if (istype(D, /mob/living/critter/flock/drone))
+		src.updateEggCost()
+	if (check_name_uniqueness && src.active_names[D.real_name])
+		D.real_name = istype(D, /mob/living/critter/flock/drone) ? src.pick_name("flockdrone") : src.pick_name("flockbit")
+	D.AddComponent(/datum/component/flock_interest, src)
+	var/comp_provided = D.compute_provided()
+	if (comp_provided)
+		if (comp_provided < 0)
+			src.used_compute += abs(comp_provided)
+		else
+			src.total_compute += comp_provided
+		src.update_computes()
+
+	D.ensure_speech_tree().AddSpeechOutput(SPEECH_OUTPUT_FLOCK, subchannel = "\ref[src]", flock = src)
+
+/datum/flock/proc/removeDrone(mob/living/critter/flock/D)
+	if(!isflockmob(D))
+		return
+
+	src.units[D.type] -= D
+	src.active_names -= D.real_name
+	if (istype(D, /mob/living/critter/flock/drone))
+		src.updateEggCost()
+	D.GetComponent(/datum/component/flock_interest)?.RemoveComponent(/datum/component/flock_interest)
+	if(D.real_name && busy_tiles[D.real_name])
+		src.unreserveTurf(D.real_name)
+	var/comp_provided = D.compute_provided()
+	if (comp_provided)
+		if (comp_provided < 0)
+			src.used_compute -= abs(comp_provided)
+		if (comp_provided > 0)
+			src.total_compute -= comp_provided
+		src.update_computes()
+
+	D.flock = null
+	D.ensure_speech_tree().RemoveSpeechOutput(SPEECH_OUTPUT_FLOCK, subchannel = "\ref[src]")
 
 // TRACES
 
@@ -540,37 +590,45 @@ proc/get_default_flock()
 // STRUCTURES
 
 ///This function only notifies the flock of the unlock, actual unlock logic is handled in the datum
-/datum/flock/proc/notifyUnlockStructure(var/datum/unlockable_flock_structure/SD)
-	flock_speak(null, "New structure devised: [SD.friendly_name]", src)
+/datum/flock/proc/notifyUnlockStructure(datum/unlockable_flock_structure/SD)
+	src.system_say_source.say("New structure devised: [SD.friendly_name]")
 
 ///This function only notifies the flock of the relock, actual unlock logic is handled in the datum
-/datum/flock/proc/notifyRelockStructure(var/datum/unlockable_flock_structure/SD)
-	flock_speak(null, "Alert, structure tealprint disabled: [SD.friendly_name]", src)
+/datum/flock/proc/notifyRelockStructure(datum/unlockable_flock_structure/SD)
+	src.system_say_source.say("Alert, structure tealprint disabled: [SD.friendly_name]")
 
 /datum/flock/proc/registerStructure(obj/flock_structure/S)
-	if(isflockstructure(S))
-		src.structures |= S
-		S.AddComponent(/datum/component/flock_interest, src)
-		var/comp_provided = S.compute_provided()
-		if (comp_provided)
-			if (comp_provided < 0)
-				src.used_compute += abs(comp_provided)
-			else
-				src.total_compute += comp_provided
-			src.update_computes()
+	if(!isflockstructure(S))
+		return
+
+	src.structures |= S
+	S.AddComponent(/datum/component/flock_interest, src)
+	var/comp_provided = S.compute_provided()
+	if (comp_provided)
+		if (comp_provided < 0)
+			src.used_compute += abs(comp_provided)
+		else
+			src.total_compute += comp_provided
+		src.update_computes()
+
+	S.ensure_speech_tree().AddSpeechOutput(SPEECH_OUTPUT_FLOCK_SYSTEM, subchannel = "\ref[src]", flock = src)
 
 /datum/flock/proc/removeStructure(obj/flock_structure/S)
-	if(isflockstructure(S))
-		src.structures -= S
-		S.GetComponent(/datum/component/flock_interest)?.RemoveComponent(/datum/component/flock_interest)
-		S.flock = null
-		var/comp_provided = S.compute_provided()
-		if (comp_provided)
-			if (comp_provided < 0)
-				src.used_compute -= abs(comp_provided)
-			else
-				src.total_compute -= comp_provided
-			src.update_computes()
+	if(!isflockstructure(S))
+		return
+
+	src.structures -= S
+	S.GetComponent(/datum/component/flock_interest)?.RemoveComponent(/datum/component/flock_interest)
+	S.flock = null
+	var/comp_provided = S.compute_provided()
+	if (comp_provided)
+		if (comp_provided < 0)
+			src.used_compute -= abs(comp_provided)
+		else
+			src.total_compute -= comp_provided
+		src.update_computes()
+
+	S.ensure_speech_tree().RemoveSpeechOutput(SPEECH_OUTPUT_FLOCK_SYSTEM, subchannel = "\ref[src]")
 
 /datum/flock/proc/getComplexDroneCount()
 	if (!src.units)
@@ -758,33 +816,101 @@ proc/get_default_flock()
 			available_tiles -= src.busy_tiles[owner]
 		return available_tiles
 
-// PROCESS
-
+/// Process to check what to do with the relay based off compute/tiles, specifically for before placement
 /datum/flock/proc/relay_process()
-	if (src.total_compute() > 300)
+
+	if (src.flockmind?.tutorial || src.relay_finished)
+		return
+
+	// Handle relay post-placement
+	if (src.relay_in_progress)
+		src.time_left = src.last_relay.get_time_left()
+		return
+
+	var/total_tiles = length(src.all_owned_tiles)
+	// A value from 0 to 1 representing progress towards creating the Relay, an average of both requirements
+	var/pct_to_relay = (min(total_tiles / FLOCK_RELAY_TILE_REQUIREMENT, 1) + min(src.total_compute() / FLOCK_RELAY_COMPUTE_COST, 1)) / 2
+
+	// Place the relay
+	if (pct_to_relay >= 1)
+		src.relay_in_progress = TRUE
+		src.center_marker.alpha = 0
+		for (var/turf/T in range(3, src.center_marker))
+			for (var/atom/A in T)
+				if ((ismob(A) || isflockstructure(A)) && !isintangible(A)) //stupid, but flock structures define gib too
+					var/mob/M = A
+					M.gib()
+				else if (A.density)
+					qdel(A)
+			T.ReplaceWith(/turf/simulated/floor/feather)
+		new /obj/flock_structure/relay(get_turf(src.center_marker), src)
+	// Handle pre-relay stuff
+	else if (pct_to_relay > 0.75)
 		for (var/mob/living/intangible/flock/flockmob in (src.traces + src.flockmind))
-			if (flockmob.GetComponent(/datum/component/tracker_hud/flock))
-				continue
-			flockmob.AddComponent(/datum/component/tracker_hud/flock, src.center_marker)
-	if (!src.relay_in_progress && !src.relay_finished)
-		if ((src.total_compute() >= FLOCK_RELAY_COMPUTE_COST) && !src.flockmind?.tutorial)
-			src.relay_in_progress = TRUE
-			src.center_marker.alpha = 0
-			for (var/turf/T in range(3, src.center_marker))
-				for (var/atom/A in T)
-					if ((ismob(A) || isflockstructure(A)) && !isintangible(A)) //stupid, but flock structures define gib too
-						var/mob/M = A
-						M.gib()
-					else if (A.density)
-						qdel(A)
-				T.ReplaceWith(/turf/simulated/floor/feather)
-			new /obj/flock_structure/relay(get_turf(src.center_marker), src)
-		else
-			src.center_marker.alpha = max(0, src.total_compute() - 300)
+			if (!flockmob.GetComponent(/datum/component/tracker_hud/flock))
+				flockmob.AddComponent(/datum/component/tracker_hud/flock, src.center_marker)
+		// Relay dummy alpha
+		src.center_marker.alpha = round(255 * pct_to_relay)
+
+/// Get the new stage of the relay. Return if the state has changed.
+/datum/flock/proc/update_stage()
+	if (!src.last_relay)
+		src.relay_stage = STAGE_UNBUILT
+	else if (src.relay_finished)
+		src.relay_stage = STAGE_DESTROYED
+	else if (!src.time_left)
+		return
+	else if (src.time_left > 60)
+		src.relay_stage = STAGE_BUILT
+	else if (src.time_left <= 60)
+		src.relay_stage = STAGE_CRITICAL
+
+/datum/flock/proc/get_progress_desc()
+	switch (src.relay_stage)
+		if (STAGE_UNBUILT)
+			var/pct_compute = min(100, round((src.total_compute - src.used_compute) / FLOCK_RELAY_COMPUTE_COST * 100))
+			var/pct_tiles = min(100, round(length(src.all_owned_tiles) / FLOCK_RELAY_TILE_REQUIREMENT * 100))
+			var/pct_total = round((((pct_compute / 100) * (pct_tiles / 100)) * 100))
+			return "Overall Progress: [pct_total]%</br>Compute: [pct_compute]%</br>Converted: [pct_tiles]%"
+		if (STAGE_BUILT)
+			return "Time until transmission: [src.time_left] seconds"
+		if (STAGE_CRITICAL)
+			return "!!! TRANSMISSION IMMINENT !!!"
+
+/datum/flock/proc/update_flockmob_relay_icons()
+	var/new_alpha = null
+	var/previous_stage = src.relay_stage
+	src.update_stage()
+
+	if (src.relay_stage == STAGE_UNBUILT)
+		var/pct_compute = min(src.total_compute / FLOCK_RELAY_COMPUTE_COST, 1)
+		var/pct_tiles = min(length(src.all_owned_tiles) / FLOCK_RELAY_TILE_REQUIREMENT, 1)
+		new_alpha = round(255 * pct_compute * pct_tiles)
+
+	else if (src.relay_stage != STAGE_BUILT && previous_stage == src.relay_stage)
+		return
+
+	var/new_desc = src.get_progress_desc()
+
+	// Update all HUD icons.
+	for (var/mob/living/intangible/flock/flockmob in (src.traces + src.flockmind))
+		if (QDELETED(flockmob)) //aaa
+			continue
+		if (istype(flockmob.loc, /mob/living/critter/flock/drone))
+			var/mob/living/critter/flock/drone/drone = flockmob.loc
+			var/datum/hud/critter/flock/drone/flockhud = drone.hud
+			flockhud.relayInfo.update_value(src.relay_stage, new_alpha, new_desc)
+			continue
+		var/datum/hud/flock_intangible/flockhud = flockmob.hud
+		flockhud.relayInfo.update_value(src.relay_stage, new_alpha, new_desc)
 
 /datum/flock/proc/process()
 	if (src.relay_allowed)
 		src.relay_process()
+		src.update_flockmob_relay_icons()
+
+	src.update_tiles()
+	src.update_computes(TRUE)
 
 	for(var/datum/unlockable_flock_structure/ufs as anything in src.unlockableStructures)
 		ufs.process()
@@ -839,7 +965,7 @@ proc/get_default_flock()
 // if you have a subclass, it MUST go first in the list, or the first type that matches will take priority (ie, the superclass)
 // see /obj/machinery/light/small/floor and /obj/machinery/light for examples of this
 /var/list/flock_conversion_paths = list(
-	/obj/grille = /obj/grille/flock,
+	/obj/mesh/grille = /obj/mesh/flock/barricade,
 	/obj/window = /obj/window/auto/feather,
 	/obj/machinery/door = /obj/machinery/door/feather,
 	/obj/stool = /obj/stool/chair/comfy/flock,
@@ -907,7 +1033,7 @@ proc/get_default_flock()
 			qdel(lat)
 			new /obj/lattice/flock(T)
 
-	var/obj/grille/catwalk/catw = locate(/obj/grille/catwalk) in T
+	var/obj/mesh/catwalk/catw = locate(/obj/mesh/catwalk) in T
 	if(catw)
 		qdel(catw)
 		T.ReplaceWith(/turf/simulated/floor/feather, FALSE, force=force)
@@ -940,7 +1066,7 @@ proc/get_default_flock()
 						success = TRUE
 						break
 				if (istype(O, /obj/machinery/computer))
-					if (istype(O, /obj/machinery/computer/card/portable) || istype(O, /obj/machinery/computer/security/wooden_tv) || istype(O, /obj/machinery/computer/secure_data/detective_computer) || istype(O, /obj/machinery/computer/airbr) || istype(O, /obj/machinery/computer/tanning) || istype(O, /obj/machinery/computer/tour_console) || istype(O, /obj/machinery/computer/arcade) || istype(O, /obj/machinery/computer/tetris))
+					if (istype(O, /obj/machinery/computer/card/portable) || istype(O, /obj/machinery/computer/television) || istype(O, /obj/machinery/computer/secure_data/detective_computer) || istype(O, /obj/machinery/computer/airbr) || istype(O, /obj/machinery/computer/tanning) || istype(O, /obj/machinery/computer/tour_console) || istype(O, /obj/machinery/computer/arcade) || istype(O, /obj/machinery/computer/tetris))
 						break
 				if (istype(O, /obj/machinery/light/lamp) || istype(O, /obj/machinery/computer3/generic/personal) || istype(O, /obj/machinery/computer3/luggable))
 					break
@@ -1006,3 +1132,8 @@ proc/get_default_flock()
 		y += dy
 		// get next turf
 		T = locate(ox + x, oy + y, z)
+
+#undef STAGE_UNBUILT
+#undef STAGE_BUILT
+#undef STAGE_CRITICAL
+#undef STAGE_DESTROYED

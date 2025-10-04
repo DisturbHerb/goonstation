@@ -3,7 +3,8 @@
 	max_stages = 5
 	stage_prob = 4
 	spread = "Non-Contagious"
-	cure = "Robustissin application after removal of salbutamol."
+	cure_flags = CURE_CUSTOM
+	cure_desc = "Robustissin application after removal of salbutamol."
 	associated_reagent = "lungrot_bloom"
 	reagentcure = list("cold_medicine")
 	//for as long as salbutamol is in the patient, robustissin is extremly ineffective
@@ -14,7 +15,7 @@
 
 /datum/ailment/disease/lungrot/stage_act(var/mob/living/affected_mob, var/datum/ailment_data/affecting_ailment, mult)
 	//if salbutamol is out of the person, increase the cure chance by a lot
-	if (affected_mob.reagents.get_reagent_amount("salbutamol") > 0)
+	if (affected_mob.reagents?.get_reagent_amount("salbutamol") > 0)
 		affecting_ailment.recureprob = 1
 	else
 		affecting_ailment.recureprob = 20
@@ -53,7 +54,7 @@
 				miasma_to_breath = rand(18,28)
 
 		// Now we add the miasma and deal damage
-		affected_mob.reagents.add_reagent("miasma", miasma_to_add * mult)
+		affected_mob.reagents?.add_reagent("miasma", miasma_to_add * mult)
 		affected_mob.take_toxin_damage(tox_damage_to_deal * mult)
 
 		// On later stages, we begin breathing out miasma
@@ -84,3 +85,4 @@
 		// Once the chance exist we exhale miasma, we give the poor person some messages to warn them for whats about to come
 		if (effective_ailment_stage > 1 && !did_cough && probmult(10) && (!ON_COOLDOWN(affected_mob, "lungrot_message", 25 SECONDS)))
 			boutput(affected_mob, SPAN_ALERT("You feel [pick("a burning sensation in your lungs", "like it's harder to breath", "a fur-like texture on your tongue")]."))
+			affected_mob.organHolder?.damage_organs(tox=2*mult, organs=list("left_lung", "right_lung"))

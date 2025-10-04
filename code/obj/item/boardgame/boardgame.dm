@@ -30,6 +30,10 @@
  * # Boardgame
  */
 ABSTRACT_TYPE(/obj/item/boardgame)
+
+TYPEINFO(/obj/item/boardgame)
+	start_speech_outputs = list(SPEECH_OUTPUT_SPOKEN_SUBTLE)
+
 /obj/item/boardgame
 	name = "board game"
 	desc = "A generic board game?"
@@ -41,6 +45,8 @@ ABSTRACT_TYPE(/obj/item/boardgame)
 	two_handed = TRUE
 	stamina_damage = 30
 	stamina_cost = 20
+
+	speech_verb_say = "states"
 
 	var/list/sounds = list(
 		SOUND_MOVE = 'sound/impact_sounds/Wood_Tap.ogg',
@@ -335,9 +341,10 @@ ABSTRACT_TYPE(/obj/item/boardgame)
 		playsound(src.loc, src.sounds[SOUND_MOVE], 30, 1)
 
 	proc/speakMapText(piece, newX, newY, oldX, oldY, mapTextType, captured=null)
-		if(!src.use_map_text) return // Don't use map text
+		if(!src.use_map_text)
+			return
 
-		var/map_text = ""
+		var/message = ""
 		if(!piece) return // If the piece doesn't exist, return
 		if(!piece["selected"]) return // If the piece isn't selected, return
 		var/user = src.active_users[piece["selected"]]
@@ -347,14 +354,12 @@ ABSTRACT_TYPE(/obj/item/boardgame)
 
 		switch(mapTextType)
 			if(MAP_TEXT_MOVE)
-				map_text = "[moverName] moves [prevPosString] to [newPosString]!"
+				message = "[moverName] moves [prevPosString] to [newPosString]!"
 			if(MAP_TEXT_CAPTURE)
 				if(captured)
-					map_text = "[moverName] moves [prevPosString] to [newPosString] and captures [captured["code"]]!"
+					message = "[moverName] moves [prevPosString] to [newPosString] and captures [captured["code"]]!"
 
-		var/map_text_final = make_chat_maptext(src, map_text, "color: #A8E9F0;", alpha = 150, time = 8)
-		for (var/mob/O in hearers(src))
-			O.show_message(assoc_maptext = map_text_final)
+		src.say(message)
 
 	proc/placeSelectedPiece(ckey, x, y)
 		// Check if out of bounds
@@ -536,7 +541,7 @@ ABSTRACT_TYPE(/obj/item/boardgame)
 		src.ui_interact(user)
 
 	attack_ai(var/mob/user)
-		return src.attack_hand(user)
+		return src.Attackhand(user)
 
 	attackby(obj/item/W, mob/user, params)
 		/// Check if the board is hit by a paint can
@@ -549,13 +554,13 @@ ABSTRACT_TYPE(/obj/item/boardgame)
 			else if(user.r_hand == can)
 				tileColour = STYLING_TILECOLOR2
 			else
-				boutput(user, SPAN_WARNING("You need to hold the paint can in your hand to use it!"))
+				boutput(user, SPAN_ALERT("You need to hold the paint can in your hand to use it!"))
 				return
 
 
 			//Check if the paint can is empty
 			if(can.uses <= 0)
-				boutput(user, SPAN_WARNING("The paint can is empty!"))
+				boutput(user, SPAN_ALERT("The paint can is empty!"))
 				return
 
 			//Apply the paint to the src.styling[tileColour]

@@ -4,6 +4,7 @@
 	antagonist_icon = "vampthrall"
 	remove_on_death = TRUE
 	remove_on_clone = TRUE
+	wiki_link = "https://wiki.ss13.co/Vampire#Thralls"
 
 	/// The ability holder of the master of this vampire thrall, which is to be used alongside `src.master`, due to vampire TEGs.
 	var/datum/abilityHolder/vampire/master_ability_holder
@@ -45,10 +46,11 @@
 			H.AddComponent(/datum/component/tracker_hud/vampthrall, src.master_ability_holder.owner)
 			src.ability_holder.master = src.master_ability_holder
 			src.master_ability_holder.thralls += H
-			src.master_ability_holder.getAbility(/datum/targetable/vampire/enthrall)?.pointCost = 200 + 100 * length(src.master_ability_holder.thralls)
 
-		src.ability_holder.addAbility(/datum/targetable/vampiric_thrall/speak)
 		src.ability_holder.addAbility(/datum/targetable/vampire/vampire_bite/thrall)
+
+		src.owner.current.ensure_speech_tree().AddSpeechOutput(SPEECH_OUTPUT_THRALLCHAT_THRALL, subchannel = "\ref[src.master_ability_holder]")
+		src.owner.current.ensure_listen_tree().AddListenInput(LISTEN_INPUT_THRALLCHAT, subchannel = "\ref[src.master_ability_holder]")
 
 	remove_equipment()
 		var/mob/living/carbon/human/H = src.owner.current
@@ -57,17 +59,17 @@
 
 		if (src.ability_holder.master)
 			src.ability_holder.master.thralls -= H
-			src.ability_holder.master.getAbility(/datum/targetable/vampire/enthrall)?.pointCost = 200 + 100 * length(src.ability_holder.master.thralls)
 
-		src.ability_holder.removeAbility(/datum/targetable/vampiric_thrall/speak)
 		src.ability_holder.removeAbility(/datum/targetable/vampire/vampire_bite/thrall)
 		H.remove_ability_holder(/datum/abilityHolder/vampiric_thrall)
 
+		src.owner.current.ensure_speech_tree().RemoveSpeechOutput(SPEECH_OUTPUT_THRALLCHAT_THRALL, subchannel = "\ref[src.master_ability_holder]")
+		src.owner.current.ensure_listen_tree().RemoveListenInput(LISTEN_INPUT_THRALLCHAT, subchannel = "\ref[src.master_ability_holder]")
+
 	add_to_image_groups()
 		. = ..()
-		var/image/image = image('icons/mob/antag_overlays.dmi', icon_state = src.antagonist_icon)
 		var/datum/client_image_group/image_group = get_image_group(src.master_ability_holder)
-		image_group.add_mind_mob_overlay(src.owner, image)
+		image_group.add_mind_mob_overlay(src.owner, get_antag_icon_image())
 		image_group.add_mind(src.owner)
 
 	remove_from_image_groups()

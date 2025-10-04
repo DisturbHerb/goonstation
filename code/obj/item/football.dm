@@ -33,7 +33,7 @@
 /obj/item/clothing/under/football
 	name = "athletic pants"
 	desc = "These are athletic pants bearing the colors of the Spacecow Wobbegongs. The fabric feels like victory."
-	icon = 'icons/obj/clothing/uniforms/item_js_athletic.dmi'
+	icon = 'icons/obj/clothing/jumpsuits/item_js_athletic.dmi'
 	wear_image_icon = 'icons/mob/clothing/jumpsuits/worn_js_athletic.dmi'
 	icon_state = "fb_blue"
 	item_function_flags = IMMUNE_TO_ACID
@@ -62,28 +62,26 @@
 
 /mob/living/carbon/human/proc/wearing_football_gear()
 	return ( (src.wear_suit && istype(src.wear_suit,/obj/item/clothing/suit/armor/football)) \
-			&& (src.shoes && istype(src.shoes,/obj/item/clothing/shoes/cleats) || istype(mutantrace, /datum/mutantrace/cow)) \
-			&& (src.w_uniform && istype(src.w_uniform,/obj/item/clothing/under/football)) )
+			&& (src.shoes && istype(src.shoes,/obj/item/clothing/shoes/cleats) || istype(mutantrace, /datum/mutantrace/cow)) )
 
 
 /mob/living/carbon/human/proc/rush()
 	if (!wearing_football_gear())
 		boutput(src, SPAN_ALERT("You need to wear more football gear first! It just wouldn't be safe."))
 		return
-
+	if (src.buckled)
+		src.buckled.unbuckle()
 	var/obj/item/clothing/suit/armor/football/S = src.wear_suit
 	if (S.in_rush) return
 	S.in_rush = 1
 	playsound(src.loc, 'sound/impact_sounds/Generic_Shove_1.ogg', 50, 0.4, 0 , 2)
 
 	var/charge_dir = src.dir
-	var/turf/T = get_turf(src)
 	for(var/i=1, i<20, i++)
 		if (!S.in_rush)
 			break
 		S.in_rush = i
-		T = get_step(T, charge_dir)
-		src.Move(T)
+		step(src, charge_dir)
 		sleep(0.1 SECONDS)
 
 	S.in_rush = 0
@@ -102,7 +100,7 @@
 
 	if (src.hasStatus("handcuffed"))
 		boutput(src, SPAN_ALERT("With your hands tied behind your back, you slam into [target] face first!"))
-		src.changeStatus("weakened", 3 SECONDS)
+		src.changeStatus("knockdown", 3 SECONDS)
 		src.force_laydown_standup()
 
 	src.remove_stamina(40)
@@ -119,7 +117,7 @@
 		M.visible_message(SPAN_ALERT("<B>[src] [msg] [target]!</B>"))
 
 		M.changeStatus("stunned", 2 SECONDS)
-		M.changeStatus("weakened", 2 SECONDS)
+		M.changeStatus("knockdown", 2 SECONDS)
 		M.force_laydown_standup()
 		power = max(9, power)
 		M.TakeDamageAccountArmor("chest", power, 0, 0, DAMAGE_BLUNT)
@@ -172,7 +170,6 @@
 	desc = "A pigskin. An oblate leather spheroid. For tossing around."
 	icon = 'icons/obj/items/items.dmi'
 	icon_state = "football"
-	uses_multiple_icon_states = 1
 	item_state = "football"
 	w_class = W_CLASS_NORMAL
 	force = 0
@@ -282,7 +279,7 @@
 							//boutput(hitMob, SPAN_ALERT("Oof! The [src.name] knocks the wind right out of you!"))
 							hitMob.visible_message(SPAN_ALERT("<b>[src] hits [hit_atom] in the gut and knocks the wind right out of them!</b>"))
 							hitMob.changeStatus("stunned", 2 SECONDS)
-							hitMob.changeStatus("weakened", 2 SECONDS)
+							hitMob.changeStatus("knockdown", 2 SECONDS)
 							hitMob.remove_stamina(30)
 							hitMob.force_laydown_standup()
 

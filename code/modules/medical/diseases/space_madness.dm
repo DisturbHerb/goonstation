@@ -3,7 +3,8 @@
 	scantype = "Psychological Condition"
 	max_stages = 5
 	spread = "Non-Contagious"
-	cure = "Haloperidol"
+	cure_flags = CURE_CUSTOM
+	cure_desc = "Haloperidol"
 	reagentcure = list("haloperidol")
 	associated_reagent = "loose_screws"
 	affected_species = list("Human")
@@ -38,7 +39,7 @@
 						else
 							var/monkeys = rand(1,3)
 							for(var/i = 0, i < monkeys, i++)
-								fake_attackEx(affected_mob, 'icons/mob/monkey.dmi', "monkey1", "monkey ([rand(1, 1000)])")
+								fake_attackEx(affected_mob, 'icons/mob/monkey.dmi', "monkey_hallucination", pick_string_autokey("names/monkey.txt"))
 					if(2)
 						var/halluc_state = null
 						var/halluc_name = null
@@ -77,7 +78,7 @@
 						else
 							var/monkeys = rand(1,3)
 							for(var/i = 0, i < monkeys, i++)
-								fake_attackEx(affected_mob, 'icons/mob/monkey.dmi', "monkey1", "monkey ([rand(1, 1000)])")
+								fake_attackEx(affected_mob, 'icons/mob/monkey.dmi', "monkey_hallucination", pick_string_autokey("names/monkey.txt"))
 					if(2)
 						var/halluc_state = null
 						var/halluc_name = null

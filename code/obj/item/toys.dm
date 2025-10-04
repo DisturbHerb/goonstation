@@ -27,6 +27,7 @@
 		icon_state = "sword1-[bladecolor]"
 		item_state = "sword1-[bladecolor]"
 		src.setItemSpecial(/datum/item_special/swipe)
+		AddComponent(/datum/component/itemblock/reflect/toyswordblock, TRUE, PROC_REF(get_reflect_color))
 		BLOCK_SETUP(BLOCK_SWORD)
 
 	attack(target, mob/user)
@@ -37,6 +38,10 @@
 				playsound(U, pick(src.sound_attackM1, src.sound_attackM2), 100, 0, 0, U.get_age_pitch())
 			else
 				playsound(U, pick(src.sound_attackF1, src.sound_attackF2), 100, 0, 0, U.get_age_pitch())
+
+
+/obj/item/toy/sword/proc/get_reflect_color()
+	return src.bladecolor
 
 /obj/item/toy/judge_gavel
 	name = "judge's gavel"
@@ -76,14 +81,16 @@
 	stamina_cost = 0
 	stamina_crit_chance = 1
 	var/cooldown = 0
+	var/say_message = "Order, order in the court!"
+	var/gavel_sound = 'sound/items/gavel.ogg'
 
 /obj/item/toy/judge_block/attackby(obj/item/I, mob/user)
 	if(istype(I, /obj/item/toy/judge_gavel))
 		if(cooldown > world.time)
 			return
 		else
-			playsound(loc, 'sound/items/gavel.ogg', 75, TRUE)
-			user.say("Order, order in the court!")
+			playsound(src.loc, src.gavel_sound, 75, TRUE)
+			user.say(src.say_message)
 			cooldown = world.time + 40
 			return
 	return ..()
@@ -114,7 +121,7 @@
 		var/mob/living/carbon/human/H = user
 		if (H.mind && H.mind.assigned_role == "Clown")
 			if (target == user)
-				user.visible_message("[H] shows off [src]!", 1)
+				src.AttackSelf(user) //Showoff...
 				return
 			if(ON_COOLDOWN(target, "clown_diploma", 30 SECONDS))
 				user.visible_message("[H] waves the diploma at [target]!")
@@ -126,6 +133,13 @@
 			..()
 	else
 		..()
+
+/obj/item/toy/diploma/attack_self(mob/user as mob)
+	if(ON_COOLDOWN(user, "showoff_item", SHOWOFF_COOLDOWN))
+		return
+	playsound(user, "sound/misc/boing/[rand(1,6)].ogg", 20, 1)
+	user.visible_message("[user] shows off [his_or_her(user)] very real diploma!", "You show off your illustrious, hard-earned diploma!")
+	actions.start(new /datum/action/show_item(user, src, "diploma", 5, 3), user)
 
 /obj/item/toy/gooncode
 	name = "gooncode hard disk drive"
@@ -166,12 +180,17 @@
 /obj/item/toy/gooncode/attack()
 	return
 
+TYPEINFO(/obj/item/toy/cellphone)
+	start_speech_outputs = list(SPEECH_OUTPUT_SPOKEN_SUBTLE)
+
 /obj/item/toy/cellphone
 	name = "flip phone"
 	desc = "Wow! You've always wanted one of these charmingly clunky doodads!"
 	icon = 'icons/obj/cellphone.dmi'
 	icon_state = "cellphone-on"
 	w_class = W_CLASS_SMALL
+	speech_verb_say = "beeps"
+
 	var/datum/game/tetris
 	var/datum/mail
 
@@ -196,12 +215,15 @@
 
 TYPEINFO(/obj/item/toy/handheld)
 	mats = 2
+	start_speech_outputs = list(SPEECH_OUTPUT_SPOKEN_SUBTLE)
 
 /obj/item/toy/handheld
 	name = "arcade toy"
 	desc = "These high tech gadgets compress the full arcade experience into a large, clunky handheld!"
 	icon = 'icons/obj/items/device.dmi'
 	icon_state = "arcade-generic"
+	speech_verb_say = "beeps"
+
 	var/arcademode = FALSE
 	//The arcade machine will typecheck if we're this type
 	var/obj/machinery/computer/arcade/handheld/arcadeholder = null
@@ -263,7 +285,7 @@ TYPEINFO(/obj/item/toy/handheld)
 	stamina_cost = 10
 	stamina_crit_chance = 5
 
-ADMIN_INTERACT_PROCS(/obj/item/rubberduck, proc/quack, proc/evil_quack, proc/speak)
+ADMIN_INTERACT_PROCS(/obj/item/rubberduck, proc/quack, proc/evil_quack)
 /obj/item/rubberduck
 	name = "rubber duck"
 	desc = "Awww, it squeaks!"
@@ -304,27 +326,6 @@ ADMIN_INTERACT_PROCS(/obj/item/rubberduck, proc/quack, proc/evil_quack, proc/spe
 		sleep(0.1 SECONDS)
 		pixel_y = 0
 		pixel_x = 0
-
-/obj/item/rubberduck/proc/speak(message)
-	if(isnull(message))
-		message = tgui_input_text(usr, "Speak message through [src]", "Speak", "")
-	var/image/chat_maptext/chat_text = make_chat_maptext(src, message, "color: '#FFFF00';", alpha = 255)
-
-	var/list/mob/targets = null
-	var/mob/holder = src
-	while(holder && !istype(holder))
-		holder = holder.loc
-	ENSURE_TYPE(holder)
-	if(!holder)
-		targets = hearers(src, null)
-	else
-		targets = list(holder)
-		chat_text.plane = PLANE_HUD
-		chat_text.layer = 999
-
-	for(var/mob/O in targets)
-		O.show_message("<span class='game say bold'>[SPAN_NAME("[src.name]")] says, [SPAN_MESSAGE("\"[message]\"")]</span>", 2, assoc_maptext = chat_text)
-
 
 
 ADMIN_INTERACT_PROCS(/obj/item/ghostboard, proc/admin_command_speak)
@@ -397,7 +398,7 @@ ADMIN_INTERACT_PROCS(/obj/item/ghostboard, proc/admin_command_speak)
 				if(M.client)
 					boutput(M, SPAN_NOTICE("You sense a disturbance emanating from \a [src] in \the [AR.name]."))
 		for (var/mob/O in observersviewers(7, src))
-			O.show_message("<B>[SPAN_NOTICE("The board spells out a message ... \"[message]\"")]</B>", 1)
+			O.show_message(SPAN_NOTICE("<B>The board spells out a message ... \"[message]\"</B>"), 1)
 
 	proc/admin_command_speak()
 		set name = "Speak"

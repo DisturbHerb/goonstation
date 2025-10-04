@@ -44,7 +44,7 @@ var/global/area/current_battle_spawn = null
 		var/mob/new_player/player = C.mob
 		if (!istype(player)) continue
 
-		if (player.ready)
+		if (player.ready_play)
 			src.traitors.Add(player)
 			if(player.mind)
 				player.mind.assigned_role = "MODE"
@@ -315,10 +315,12 @@ proc/hide_weapons_everywhere(var/total_battlers = 1)
 	var/list/obj/murder_supplies = list()
 
 	for(var/datum/syndicate_buylist/D in syndi_buylist_cache)
-		if(D.item)
-			if(!D.br_allowed)
-				continue
-			murder_supplies.Add(D.item)
+		if(length(D.items) == 0)
+			continue
+		if(!D.br_allowed)
+			continue
+		for (var/item in D.items)
+			murder_supplies.Add(item)
 
 	var/list/weapon_supplies = list()
 	// Feel free to add more!
@@ -330,17 +332,14 @@ proc/hide_weapons_everywhere(var/total_battlers = 1)
 	weapon_supplies.Add(/obj/item/gun/kinetic/revolver)
 	weapon_supplies.Add(/obj/item/gun/kinetic/detectiverevolver)
 	weapon_supplies.Add(/obj/item/gun/kinetic/single_action/colt_saa)
-	weapon_supplies.Add(/obj/item/gun/kinetic/riotgun)
+	weapon_supplies.Add(/obj/item/gun/kinetic/pumpweapon/riotgun)
 	weapon_supplies.Add(/obj/item/gun/kinetic/airzooka)
 	weapon_supplies.Add(/obj/item/gun/kinetic/grenade_launcher)
 	weapon_supplies.Add(/obj/item/gun/kinetic/gyrojet)
 	weapon_supplies.Add(/obj/item/gun/energy/phaser_small)
 	weapon_supplies.Add(/obj/item/gun/energy/phaser_huge)
-	weapon_supplies.Add(/obj/item/gun/energy/optio1)
-	weapon_supplies.Add(/obj/item/gun/energy/blaster_pistol)
 	weapon_supplies.Add(/obj/item/gun/energy/alastor)
 	weapon_supplies.Add(/obj/item/gun/energy/heavyion)
-	weapon_supplies.Add(/obj/item/gun/energy/pulse_rifle)
 	weapon_supplies.Add(/obj/item/bat)
 	weapon_supplies.Add(/obj/item/ratstick)
 	weapon_supplies.Add(/obj/item/saw)
@@ -376,19 +375,38 @@ proc/hide_weapons_everywhere(var/total_battlers = 1)
 	armor_supplies.Add(/obj/item/clothing/suit/armor/batman)
 	armor_supplies.Add(/obj/item/clothing/suit/armor/football)
 	armor_supplies.Add(/obj/item/clothing/suit/space/syndicate)
-	armor_supplies.Add(/obj/item/clothing/suit/space/syndicate/commissar_greatcoat)
-	armor_supplies.Add(/obj/item/clothing/suit/space/syndicate/knight)
+	armor_supplies.Add(/obj/item/clothing/suit/space/syndicate/specialist/commissar_greatcoat)
+	armor_supplies.Add(/obj/item/clothing/suit/space/syndicate/specialist/knight)
 	armor_supplies.Add(/obj/item/clothing/head/helmet/hardhat/security)
 	armor_supplies.Add(/obj/item/clothing/head/helmet/hardhat/security/improved)
 	armor_supplies.Add(/obj/item/clothing/head/helmet/swat)
 	armor_supplies.Add(/obj/item/clothing/head/helmet/space/syndicate/specialist)
 	armor_supplies.Add(/obj/item/clothing/head/helmet/space/syndicate/specialist/knight)
-	armor_supplies.Add(/obj/item/clothing/head/helmet/space/syndicate/commissar_cap)
+	armor_supplies.Add(/obj/item/clothing/head/helmet/space/syndicate/specialist/commissar_cap)
 	armor_supplies.Add(/obj/item/clothing/head/helmet/space/ntso)
 	armor_supplies.Add(/obj/item/clothing/head/helmet/space/nanotrasen)
 	armor_supplies.Add(/obj/item/clothing/head/helmet/viking)
 	armor_supplies.Add(/obj/item/clothing/head/helmet/football)
 	armor_supplies.Add(/obj/item/clothing/head/helmet/batman)
+
+	var/list/utility_supplies = list()
+	// Ranch Eggs
+	utility_supplies.Add(/obj/item/reagent_containers/food/snacks/ingredient/egg/chicken/cockatrice)
+	utility_supplies.Add(/obj/item/kitchen/egg_box/rancher/plant)
+	utility_supplies.Add(/obj/item/kitchen/egg_box/rancher/void) // table ambushes ig
+	utility_supplies.Add(/obj/item/kitchen/egg_box/rancher/snow)
+	utility_supplies.Add(/obj/item/kitchen/egg_box/rancher/wizard)
+	utility_supplies.Add(/obj/item/kitchen/egg_box/rancher/knight)
+	utility_supplies.Add(/obj/item/kitchen/egg_box/rancher/mime)
+	utility_supplies.Add(/obj/item/reagent_containers/food/snacks/ingredient/egg/chicken/robot)
+	utility_supplies.Add(/obj/item/reagent_containers/food/snacks/ingredient/egg/chicken/candy) // Keeping this a one off cause I know someone will kill themselves and be salty
+	utility_supplies.Add(/obj/item/reagent_containers/food/snacks/ingredient/egg/chicken/dream)
+#ifdef SECRETS_ENABLED
+	utility_supplies.Add(/obj/item/reagent_containers/food/snacks/ingredient/egg/chicken/dragon)
+	utility_supplies.Add(/obj/item/reagent_containers/food/snacks/ingredient/egg/chicken/phoenix)
+	utility_supplies.Add(/obj/item/reagent_containers/food/snacks/ingredient/egg/chicken/coral)
+	utility_supplies.Add(/obj/item/reagent_containers/food/snacks/ingredient/egg/chicken/zappy)
+#endif
 
 
 	var/total_storage
@@ -429,6 +447,9 @@ proc/hide_weapons_everywhere(var/total_battlers = 1)
 					if (prob(25))
 						weapon = pick(weapon_supplies)
 						new weapon(locker)
+					if (prob(15))
+						var/obj/utility = pick(utility_supplies)
+						new utility(locker)
 				else
 					// Misc weapon and armor chests
 					var/obj/storage/crate/chest/chest = new /obj/storage/crate/chest(T)
@@ -439,12 +460,18 @@ proc/hide_weapons_everywhere(var/total_battlers = 1)
 						new armor(chest)
 					if (prob(33))
 						new /obj/item/reagent_containers/patch/mini/synthflesh(chest)
+					if (prob(25))
+						var/obj/utility = pick(utility_supplies)
+						new utility(chest)
 
 proc/equip_battler(mob/living/carbon/human/battler)
 	if (!ishuman(battler))
 		return
 
 	battler.equip_if_possible(new /obj/item/device/radio/headset(battler), SLOT_EARS)
+
+	battler.equip_sensory_items()
+	battler.equip_body_traits()
 
 	// Battle royale crewmembers are rainbow flavored
 	var/obj/item/clothing/under/jumpsuit = null
@@ -542,29 +569,13 @@ proc/equip_battler(mob/living/carbon/human/battler)
 	battler.equip_if_possible(new /obj/item/reagent_containers/food/snacks/donut/custom/robusted(battler), SLOT_L_STORE)
 	battler.equip_if_possible(new /obj/item/reagent_containers/mender/both/mini(battler), SLOT_R_STORE)
 
-	var/obj/item/card/id/captains_spare/I = new /obj/item/card/id/captains_spare // for whatever reason, this is neccessary
+	var/obj/item/card/id/gold/captains_spare/I = new /obj/item/card/id/gold/captains_spare // for whatever reason, this is neccessary
 	I.registered = "[battler.name]"
 	I.assignment = "Battler"
-	I.access |= access_maxsec
+	I.access |= list(access_maxsec, access_armory)
 	battler.equip_if_possible(I, SLOT_WEAR_ID)
 	//battler.Equip_Bank_Purchase(battler.mind.purchased_bank_item)
 	battler.set_clothing_icon_dirty()
-
-//returns a list of all areas on a station
-// Maybe nuclear could use this in the future???
-proc/get_accessible_station_areas()
-	if(global.station_areas && global.area_list_is_up_to_date) // In case someone makes a new area
-		return global.station_areas
-	// All areas
-	var/list/L = list()
-	for_by_tcl(AR, /area/station)
-		for(var/turf/T in AR)
-			if(!isfloor(T) && is_blocked_turf(T) && istype(T,/area/sim/test_area) && T.z == 1)
-				continue
-			L[AR.name] = AR
-	global.area_list_is_up_to_date = 1
-	global.station_areas = L
-	return L
 
 #undef STORM_REGULAR
 #undef STORM_FINAL

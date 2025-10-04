@@ -167,7 +167,7 @@
 	if(length(bumped_queue) >= 9)
 		bumped_queue.Cut(1,2)
 
-	if(isturf(AM) || istype(AM, /obj/window) || istype(AM, /obj/grille))
+	if(isturf(AM) || istype(AM, /obj/window) || istype(AM, /obj/mesh/grille))
 		if(sickness < 100 || z == 2 || z == 4)
 			src.messageNearby(SPAN_ALERT("<B>You crash into the [AM]!</B>"), SPAN_ALERT("<B>[rider] crashes into the [AM] with the [src]!</B>"))
 			playsound(src, pick(sb_fails), 55, 1)
@@ -198,8 +198,7 @@
 				input_lockout -= 1
 
 	else if(isobj(AM))
-		var/trick = trickName()
-		src.messageNearby(SPAN_ALERT("<B>You do a [trick] on the [AM]!</B>"), SPAN_ALERT("<B>[rider] does a [trick] on the [AM]!</B>"))
+		//chat message removed due to extreme amounts of spam
 		if(give_points)
 			adjustSickness(4)
 		trickAnimate()
@@ -240,7 +239,7 @@
 		src.messageNearby(SPAN_ALERT("<B>You are flung off the [src]!</B>"), SPAN_ALERT("<B>[rider] is flung off the [src]!</B>"))
 
 		rider.changeStatus("stunned", 2 SECONDS)
-		rider.changeStatus("weakened", 2 SECONDS)
+		rider.changeStatus("knockdown", 2 SECONDS)
 		var/turf/target = get_edge_target_turf(src, src.dir)
 		rider.throw_at(target, 5, 1)
 		rider.TakeDamageAccountArmor("All", round(sickness / 4), round(sickness / 4), 0, DAMAGE_BLUNT)
@@ -251,8 +250,8 @@
 	actions.stop(runningAction, src)
 	runningAction = null
 
+	src.vis_contents -= rider
 	rider = null
-	overlays = null
 
 	adjustSickness(-sickness)
 	update()
@@ -260,10 +259,13 @@
 
 /obj/vehicle/skateboard/relaymove(mob/user as mob, dir)
 	if(input_lockout) return
+	if (src.hasStatus("teleporting"))
+		return
 
 	if(rider)
 		if(istype(src.loc, /turf/space))
 			return
+		src.dir = user.dir
 		walk(src, dir, speed_delay)
 	else
 		for(var/mob/M in src.contents)
@@ -285,7 +287,7 @@
 	rider.pixel_x = 0
 	rider.pixel_y = 4
 
-	overlays += rider
+	src.vis_contents += rider
 
 	adjustSickness(-sickness)
 	update()
@@ -299,7 +301,7 @@
 	if(usr != rider)
 		..()
 		return
-	if(!(usr.getStatusDuration("paralysis") || usr.getStatusDuration("stunned") || usr.getStatusDuration("weakened") || usr.stat))
+	if(!(usr.getStatusDuration("unconscious") || usr.getStatusDuration("stunned") || usr.getStatusDuration("knockdown") || usr.stat))
 		eject_rider(0, 1)
 	return
 

@@ -5,7 +5,6 @@
 	inhand_image_icon = 'icons/mob/inhand/hand_tools.dmi'
 	icon_state = "cell"
 	item_state = "cell"
-	flags = FPRINT|TABLEPASS
 	force = 5
 	throwforce = 5
 	throw_speed = 3
@@ -114,6 +113,8 @@
 	charge = 25000
 
 /obj/item/cell/New()
+	src.RegisterSignal(src, COMSIG_ITEM_ASSEMBLY_ITEM_SETUP, PROC_REF(assembly_setup))
+	src.RegisterSignal(src, COMSIG_ITEM_ASSEMBLY_ITEM_REMOVAL, PROC_REF(assembly_removal))
 	..()
 
 // I think this relic of a by-gone age is only used by APCs (in New()). Did result in absurd numbers for these
@@ -129,6 +130,29 @@
 	if (genrate)
 		processing_items |= src
 
+
+/// ----------- Trigger/Applier/Target-Assembly-Related Procs -----------
+
+/obj/item/cell/assembly_get_part_examine_message(var/mob/user, var/obj/item/assembly/parent_assembly)
+	if (src.artifact || src.unusualCell)
+		return
+	if(user && !user.stat)
+		return "\nThe manufacturer's label of the [src] states it has a power rating of [maxcharge].<br>The charge meter reads [round(src.percent() )]%."
+
+/obj/item/cell/proc/assembly_setup(var/manipulated_cell, var/obj/item/assembly/parent_assembly, var/mob/user, var/is_build_in)
+	//since we have different cells
+	if(parent_assembly.applier == src)
+		parent_assembly.applier_icon_prefix = "cell"
+	if(parent_assembly.target == src)
+		//we need to displace the icon a bit more
+		parent_assembly.icon_base_offset = 3
+
+/obj/item/cell/proc/assembly_removal(var/manipulated_cell, var/obj/item/assembly/parent_assembly, var/mob/user)
+	//we need to reset the base icon offset
+	parent_assembly.icon_base_offset = 0
+
+/// ----------------------------------------------
+
 /obj/item/cell/disposing()
 	processing_items -= src
 	..()
@@ -143,13 +167,13 @@
 	if(!I) I = image('icons/obj/power.dmi', "cell-o2")
 
 	if(charge < 0.01)
-		UpdateOverlays(null, "charge_indicator", 0, 1)
+		ClearSpecificOverlays(TRUE, "charge_indicator")
 	else if(charge/maxcharge >=0.995)
 		I.icon_state = "cell-o2"
-		UpdateOverlays(I, "charge_indicator")
+		AddOverlays(I, "charge_indicator")
 	else
 		I.icon_state = "cell-o1"
-		UpdateOverlays(I, "charge_indicator")
+		AddOverlays(I, "charge_indicator")
 
 /obj/item/cell/proc/percent()		// return % charge of cell
 	return 100.0*charge/maxcharge
@@ -260,15 +284,15 @@
 		src.explode()
 	else ..()
 
-/obj/item/cell/is_detonator_attachment()
-	return 1
-
-/obj/item/cell/detonator_act(event, var/obj/item/assembly/detonator/det)
+/obj/item/cell/detonator_act(event, var/obj/item/canbomb_detonator/det)
 	switch (event)
+		if ("attach")
+			det.initial_wire_functions += src
 		if ("pulse")
-			if (det.part_fs.time > 10)
-				det.part_fs.time = 10 //Oh no!
-				det.attachedTo.visible_message("<span class='bold' style='color: #B7410E;'>The timer flashes ominously and decreases to [det.part_fs.time] seconds.</span>")
+			var/obj/item/device/timer/checked_timer = det.part_assembly.trigger
+			if (checked_timer.time > 10)
+				checked_timer.time = 10 //Oh no!
+				det.attachedTo.visible_message("<span class='bold' style='color: #B7410E;'>The timer flashes ominously and decreases to [checked_timer.time] seconds.</span>")
 			else
 				det.attachedTo.visible_message("<span class='bold' style='color: #B7410E;'>The timer flashes ominously.</span>")
 		if ("cut")
@@ -317,10 +341,11 @@
 	max_charge = 10
 	recharge_rate = 0
 
-/obj/item/ammo/power_cell/self_charging/potato/New(var/loc, var/potency, var/endurance)
+/obj/item/ammo/power_cell/self_charging/potato/New(var/loc, var/potency, var/endurance) //capped, approches double stats of disruptor cell
 	var/rngfactor = 2 + rand()
-	src.max_charge += round(potency/rngfactor)
-	src.recharge_rate = 0.25 * round(endurance/rand(25,30))
+//	src.max_charge += round(potency/rngfactor)
+	src.max_charge += round(190 * potency / (potency + 100 * rngfactor)) //asymptote at 200pu
+	src.recharge_rate = 0.25 * round(0.01 + 20 * endurance / (endurance + rand(400,500))) //asymptote at 5 recharge rate
 	src.charge = src.max_charge
 	..()
 

@@ -91,20 +91,22 @@ var/global
 		//For local-testing fallback
 		if (!cdn)
 			var/list/chatResources = list(
-				"browserassets/vendor/js/jquery.min.js",
-				"browserassets/js/errorHandler.js",
-				//"browserassets/vendor/js/array.generics.min.js",
-				//"browserassets/vendor/js/anchorme.js",
-				"browserassets/js/browserOutput.js",
-				"browserassets/css/fonts/fontawesome-webfont.eot",
-				"browserassets/css/fonts/fontawesome-webfont.ttf",
-				"browserassets/css/fonts/fontawesome-webfont.woff",
-				"browserassets/vendor/css/font-awesome.css",
-				"browserassets/css/browserOutput.css"
+				"browserassets/src/vendor/js/jquery.min.js",
+				"browserassets/src/js/errorHandler.js",
+				"browserassets/src/js/browserOutput.js",
+				"browserassets/src/css/fonts/fontawesome-webfont.eot",
+				"browserassets/src/css/fonts/fontawesome-webfont.ttf",
+				"browserassets/src/css/fonts/fontawesome-webfont.woff",
+				"browserassets/src/css/fonts/twemoji.woff2",
+				"browserassets/src/vendor/css/font-awesome.css",
+				"browserassets/src/css/browserOutput.css"
 			)
 			src.owner.loadResourcesFromList(chatResources)
 
-		src.owner << browse(grabResource("html/browserOutput.html"), "window=browseroutput")
+		var/html = grabResource("html/browserOutput.html")
+		html = replacetext(html, "{theme}", src.owner.darkmode ? "theme-dark" : "theme-default")
+		src.owner << browse(html, "window=browseroutput")
+		winshow(src.owner, "browseroutput", TRUE)
 
 		if (src.loadAttempts < 5) //To a max of 5 load attempts
 			SPAWN(20 SECONDS) //20 seconds
@@ -119,33 +121,24 @@ var/global
 		return
 
 /// Called on chat output done-loading by JS.
-/datum/chatOutput/proc/doneLoading(ua)
+/datum/chatOutput/proc/doneLoading()
 	if (src.owner && !src.loaded)
 		src.loaded = 1
 		winset(src.owner, "browseroutput", "is-disabled=false")
-		//if (src.owner.holder)
 		src.loadAdmin()
 		if (src.messageQueue)
 			for (var/list/message in src.messageQueue)
 				boutput(src.owner, message["message"], message["group"])
 		src.messageQueue = null
-		if (ua)
-			//For persistent user tracking
-			apiHandler?.queryAPI("versions/add", list(
-				"ckey" = src.owner.ckey,
-				"userAgent" = ua,
-				"byondMajor" = src.owner.byond_version,
-				"byondMinor" = src.owner.byond_build
-			))
+		src.sendClientData()
+		SEND_SIGNAL(src.owner, COMSIG_CLIENT_CHAT_LOADED, src)
 
-		else
-			src.sendClientData()
-			/* WIRE TODO: Fix this so the CDN dying doesn't break everyone
-			SPAWN(1 MINUTE) //60 seconds
-				if (!src.cookieSent) //Client has very likely futzed with their local html/js chat file
-					out(src.owner, "<div class='fatalError'>Chat file tampering detected. Closing connection.</div>")
-					del(src.owner)
-			*/
+		/* WIRE TODO: Fix this so the CDN dying doesn't break everyone
+		SPAWN(1 MINUTE) //60 seconds
+			if (!src.cookieSent) //Client has very likely futzed with their local html/js chat file
+				boutput(src.owner, "<div class='fatalError'>Chat file tampering detected. Closing connection.</div>")
+				del(src.owner)
+		*/
 
 /// Called in update_admins()
 /datum/chatOutput/proc/loadAdmin()
@@ -153,13 +146,14 @@ var/global
 		ehjax.send(src.owner, "browseroutput", url_encode(data))
 
 /datum/chatOutput/proc/changeTheme(theme)
+	if (!src.loaded) return
 	var/data = json_encode(list("changeTheme" = theme))
 	ehjax.send(src.owner, "browseroutput", url_encode(data))
 
 /// Sends client connection details to the chat to handle and save
 /datum/chatOutput/proc/sendClientData()
 	//Fix for Cannot read null.ckey (how!?)
-	if (!src.owner) return
+	if (!src.owner || !src.owner.authenticated) return
 
 	//Get dem deets
 	var/list/deets = list("clientData" = list())
@@ -171,7 +165,7 @@ var/global
 
 /// Called by client, sent data to investigate (cookie history so far)
 /datum/chatOutput/proc/analyzeClientData(cookie = "")
-	if (!cookie) return
+	if (!cookie || !src.owner.authenticated) return
 	if (cookie != "none")
 		// Hotfix patch, credit to https://github.com/yogstation13/Yogstation/pull/9951
 		var/regex/json_decode_crasher = regex("^\\s*(\[\\\[\\{\\}\\\]]\\s*){5,}")
@@ -192,17 +186,22 @@ var/global
 		if (connData && islist(connData) && length(connData) && connData["connData"])
 			src.connectionHistory = connData["connData"] //lol fuck
 			var/list/found = new()
+			var/list/checkBan = null
 			for (var/i = src.connectionHistory.len; i >= 1; i--)
 				var/list/row = src.connectionHistory[i]
-				if (!row || length(row) < 3 || (!row["ckey"] && !row["compid"] && !row["ip"])) //Passed malformed history object
-					return
-				if (checkBan(row["ckey"], row["compid"], row["ip"]))
+				if (!row || length(row) < 3 || (!row["ckey"] && !row["compid"] && !row["ip"]))
+					// Passed malformed history object
+					continue
+				if (row["ckey"] == src.owner.ckey && row["ip"] == src.owner.address && row["compid"] == src.owner.computer_id)
+					// Skip checking own data (as the player is logged in and thus already passed a ban check)
+					continue
+				checkBan = bansHandler.check(row["ckey"], row["compid"], row["ip"])
+				if (checkBan)
 					found = row
 					break
 
 			//Uh oh this fucker has a history of playing on a banned account!!
 			if (length(found) && found["ckey"] != src.owner.ckey)
-				//TODO: add a new evasion ban for the CURRENT client details, using the matched row details
 				message_admins("[key_name(src.owner)] has a cookie from a banned account! (Matched: [found["ckey"]], [found["ip"]], [found["compid"]])")
 				logTheThing(LOG_DEBUG, src.owner, "has a cookie from a banned account! (Matched: [found["ckey"]], [found["ip"]], [found["compid"]])")
 				logTheThing(LOG_DIARY, src.owner, "has a cookie from a banned account! (Matched: [found["ckey"]], [found["ip"]], [found["compid"]])", "debug")
@@ -212,17 +211,20 @@ var/global
 					var/ircmsg[] = new()
 					ircmsg["key"] = owner.key
 					ircmsg["name"] = stripTextMacros(owner.mob.name)
-					ircmsg["msg"] = "has a cookie from banned account [found["ckey"]](IP: [found["ip"]], CompID: [found["compID"]])"
+					ircmsg["msg"] = "has a cookie from banned account [found["ckey"]](IP: [found["ip"]], CompID: [found["compid"]])"
 					ircbot.export_async("admin", ircmsg)
 
-				var/banData[] = new()
-				banData["ckey"] = src.owner.ckey
-				banData["compID"] = (found["compID"] == "N/A" ? "N/A" : src.owner.computer_id) // don't add CID if original ban doesn't have one
-				banData["akey"] = "Auto Banner"
-				banData["ip"] = (found["ip"] == "N/A" ? "N/A" : src.owner.address) // don't add IP if original ban doesn't have one
-				banData["reason"] = "\[Evasion Attempt\] Previous ckey: [found["ckey"]]"
-				banData["mins"] = 0
-				addBan(banData)
+				//Add evasion ban details
+				var/datum/apiModel/Tracked/Ban/ban = checkBan["ban"]
+				bansHandler.addDetails(
+					ban.id,
+					TRUE,
+					"bot",
+					src.owner.ckey,
+					isnull(found["compid"]) ? null : src.owner.computer_id,
+					isnull(found["ip"]) ? null : src.owner.address
+				)
+				del(src.owner)
 	src.cookieSent = 1
 
 /datum/chatOutput/proc/getContextFlags()
@@ -269,7 +271,7 @@ var/global
 		if ("boot")
 			src.owner.cmd_boot(targetMob)
 		if ("ban")
-			src.owner.addBanDialog(targetMob)
+			src.owner.addBanTemp(targetMob)
 		if ("gib")
 			src.owner.cmd_admin_gib(targetMob)
 			logTheThing(LOG_ADMIN, src.owner, "gibbed [constructTarget(targetMob,"admin")].")
@@ -300,9 +302,9 @@ var/global
 	for (var/client/C in clients)
 		ehjax.send(C, "browseroutput", data)
 
-/datum/chatOutput/proc/playMusic(url, volume)
+/datum/chatOutput/proc/playMusic(url, volume, fromTopic = FALSE)
 	if (!url || !volume) return
-	var/data = json_encode(list("playMusic" = url, "volume" = volume / 100))
+	var/data = json_encode(list("playMusic" = url, "volume" = volume / 100, "fromTopic" = fromTopic))
 	data = url_encode(data)
 
 	ehjax.send(src.owner, "browseroutput", data)
@@ -349,19 +351,28 @@ var/global
 	return copytext(partial[2], 3, -5)
 
 
-/proc/bicon(obj)
-	if (ispath(obj))
-		obj = new obj()
+/proc/bicon(obj, scale = 1)
 
 	var/baseData
-
 	if (isicon(obj))
 		baseData = icon2base64(obj)
 		return "<img style='position: relative; left: -1px; bottom: -3px;' class='icon misc' src='data:image/png;base64,[baseData]' />"
 
-	if (obj && obj:icon)
+	var/icon_f = null // icon [file]
+	var/icon_s = null // icon_state
+	if (ispath(obj))
+		// avoid creating objects, just get the icon and state
+		var/atom/what = obj
+		icon_f = initial(what.icon)
+		icon_s = initial(what.icon_state)
+	else if (obj)
+		// we got an object so use its icon and state
+		icon_f = obj:icon
+		icon_s = obj:icon_state
+
+	if (icon_f)
 		//Hash the darn dmi path and state
-		var/iconKey = md5("[obj:icon][obj:icon_state]")
+		var/iconKey = md5("[icon_f][icon_s]")
 		var/iconData
 
 		//See if key already exists in savefile
@@ -379,22 +390,28 @@ var/global
 			baseData = copytext(partial[2], 3, -5)
 		else
 			//It doesn't exist! Create the icon
-			var/icon/icon = icon(file(obj:icon), obj:icon_state, SOUTH, 1)
+			var/icon/icon = icon(file(icon_f), icon_s, SOUTH, 1)
 
 			if (!icon)
 				logTheThing(LOG_DEBUG, null, "Unable to create output icon for: [obj]")
 				return
 
 			baseData = icon2base64(icon, iconKey)
+		var/pixelation_mode = "image-rendering: pixelated"
+		var/width = scale == 1 ? "" : " width: [world.icon_size * scale]px;"
+		var/height = scale == 1 ? "" :  "height: [world.icon_size * scale]px;"
+		return "<img style='position: relative; left: -1px; bottom: -3px;[width][height] [pixelation_mode]' class='icon' src='data:image/png;base64,[baseData]' />"
 
-		return "<img style='position: relative; left: -1px; bottom: -3px;' class='icon' src='data:image/png;base64,[baseData]' />"
-
-/proc/boutput(target = 0, message = "", group = "", forceScroll=FALSE)
+/proc/boutput(target = null, message = "", group = "", forceScroll=FALSE)
+	if (isnull(target))
+		return
 	// if (findtext(message, "<") != 1)
 	// 	stack_trace("Message \"[message]\" being sent via boutput without HTML tag wrapping.")
 
 	if (target == world)
 		for (var/client/C in clients)
+			if (istype(C.mob, /mob/living/carbon/human/tutorial))
+				continue
 			boutput(C, message, group, forceScroll)
 		return
 
@@ -405,71 +422,68 @@ var/global
 			boutput(T, message, group, forceScroll)
 		return
 
-	//Otherwise, we're good to throw it at the user
-	else if (istext(message))
-		if (istext(target)) return
+	if (!istext(message))
+		CRASH("boutput called with non-text message [message] ([string_type_of_anything(message)])")
 
-		//Some macros remain in the string even after parsing and fuck up the eventual output
-		message = stripTextMacros(message)
+	//Some macros remain in the string even after parsing and fuck up the eventual output
+	message = stripTextMacros(message)
 
-		// shittery that breaks text or worse
-		var/static/regex/shittery_regex = regex(@"[\u2028\u202a\u202b\u202c\u202d\u202e]", "g")
-		message = replacetext(message, shittery_regex, "")
+	// shittery that breaks text or worse
+	var/static/regex/shittery_regex = regex(@"[\u2028\u202a\u202b\u202c\u202d\u202e]", "g")
+	message = replacetext(message, shittery_regex, "")
 
-		//Grab us a client if possible
-		var/client/C
-		if (isclient(target))
-			C = target
-		else if (ismob(target))
-			var/mob/M = target
-			if (M.boutput_relay_mob)
-				boutput(M.boutput_relay_mob, message, group, forceScroll)
-			else if(istype(M, /mob/living/silicon/ai))
-				var/mob/living/silicon/ai/AI = M
-				if(AI.deployed_to_eyecam)
-					C = AI.eyecam?.client
-			else
-				C = M.client
-		else if (ismind(target) && target:current)
-			C = target:current:client
-
-		if (islist(C?.chatOutput?.messageQueue) && !C.chatOutput.loaded)
-			//Client sucks at loading things, put their messages in a queue
-			C.chatOutput.messageQueue += list(list("message" = message, "group" = group))
+	//Grab us a client if possible
+	var/client/C
+	if (isclient(target))
+		C = target
+	else if (ismob(target))
+		var/mob/M = target
+		if(istype(M, /mob/living/silicon/ai))
+			var/mob/living/silicon/ai/AI = M
+			if(AI.deployed_to_eyecam)
+				C = AI.eyecam?.client
 		else
-			if (C?.chatOutput)
-				if (islist(C.chatOutput.burstQueue))
-					C.chatOutput.burstQueue += list(list("message" = message, "group" = group))
-					return
+			C = M.client
+	else if (ismind(target) && target:current)
+		C = target:current:client
+	else
+		if (ismobcritter(target) || istype(target, /obj/machinery/bot/)) // These act like clients a lot through logic, and get tons of messages.
+			return
+		CRASH("boutput called with incorrect target [target]")
 
-				var/now = TIME
-				if (C.chatOutput.burstTime != now)
-					C.chatOutput.burstTime = now
-					C.chatOutput.burstCount = 1
-				else
-					C.chatOutput.burstCount++
+	if (islist(C?.chatOutput?.messageQueue) && !C.chatOutput.loaded)
+		//Client sucks at loading things, put their messages in a queue
+		C.chatOutput.messageQueue += list(list("message" = message, "group" = group))
+	else
+		if (C?.chatOutput)
+			if (islist(C.chatOutput.burstQueue))
+				C.chatOutput.burstQueue += list(list("message" = message, "group" = group))
+				return
 
-				if (C.chatOutput.burstCount > CHAT_BURST_START)
-					C.chatOutput.burstQueue = list(
-						list("message" = message, "group" = group, "forceScroll" = forceScroll)
-					)
-					SPAWN(CHAT_BURST_TIME)
-						target << output(list2params(list(
-							json_encode(C.chatOutput.burstQueue)
-						)), "browseroutput:outputBatch")
-						C.chatOutput.burstQueue = null
-					return
+			var/now = TIME
+			if (C.chatOutput.burstTime != now)
+				C.chatOutput.burstTime = now
+				C.chatOutput.burstCount = 1
+			else
+				C.chatOutput.burstCount++
 
-			target << output(list2params(list(
-				message,
-				group,
-				0,
-				forceScroll
-			)), "browseroutput:output")
+			if (C.chatOutput.burstCount > CHAT_BURST_START)
+				C.chatOutput.burstQueue = list(
+					list("message" = message, "group" = group, "forceScroll" = forceScroll)
+				)
+				SPAWN(CHAT_BURST_TIME)
+					target << output(list2params(list(
+						json_encode(C.chatOutput.burstQueue)
+					)), "browseroutput:outputBatch")
+					C.chatOutput.burstQueue = null
+				return
 
-//Aliases for boutput
-/proc/out(target = 0, message = "", group = "")
-	boutput(target, message, group)
+		target << output(list2params(list(
+			message,
+			group,
+			0,
+			forceScroll
+		)), "browseroutput:output")
 
 /*
 I spent so long on this regex I don't want to get rid of it :(
@@ -494,5 +508,5 @@ if (findtext(message, "<IMG CLASS=ICON"))
 	src.chatOutput = new /datum/chatOutput(src)
 	src.chatOutput.start()
 
-	out(src, "Reloaded chat")
+	boutput(src, "Reloaded chat")
 */

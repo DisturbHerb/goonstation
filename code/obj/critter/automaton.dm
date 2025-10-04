@@ -174,7 +174,7 @@ var/global/the_automaton = null
 				user.canmove = 0
 				user.anchored = ANCHORED
 				user.set_loc(src.loc)
-				K.burn_possible = 1
+				K.burn_possible = TRUE
 				SPAWN(2 SECONDS)
 					src.visible_message(SPAN_ALERT("<B>[src] forces [user] inside one of the keyholes!</B>."))
 					user.implode()
@@ -228,6 +228,7 @@ var/global/the_automaton = null
 				if (keycount < (AUTOMATON_MAX_KEYS-1))
 					src.visible_message(SPAN_ALERT("<b>[src]</b> studies [W] intently for a moment, then hands it back.  Maybe it's not yet time?"))
 				else
+					logTheThing(LOG_STATION, user, "inserted [W] in [src]")
 					keycount = AUTOMATON_MAX_KEYS
 					src.visible_message(SPAN_ALERT("<b>[src]</b> studies [W] intently for a moment, before secreting it away into a central key hole in its chest."))
 					playsound(src.loc, 'sound/impact_sounds/Generic_Click_1.ogg', 60, 1)
@@ -271,6 +272,7 @@ var/global/the_automaton = null
 
 			else
 				keycount = min(keycount+1, AUTOMATON_MAX_KEYS-1)
+				logTheThing(LOG_STATION, user, "inserted [W] in [src] (keycount: [keycount])")
 				src.visible_message(SPAN_ALERT("<b>[src]</b> studies [W] intently for a moment, before secreting it away into one of many key holes in its chest."))
 				playsound(src.loc, 'sound/impact_sounds/Generic_Click_1.ogg', 60, 1)
 				playsound(src.loc, 'sound/musical_instruments/Gong_Rumbling.ogg', 60, 1)
@@ -293,7 +295,7 @@ var/global/the_automaton = null
 				SPAN_ALERT("<b>[src]</b> ignores you.  Perhaps it's not time for that?"))
 				return
 
-			if (!istype(W, /obj/item/skull/crystal) || W.icon_state != "skull_crystal")
+			if (!istype(W, /obj/item/skull/omnitraitor) || W.icon_state != "skull_omnitraitor")
 				src.visible_message(SPAN_ALERT("<b>[src]</b> holds [W] out for a moment, staring into its empty face, then hands it back "))
 				return
 
@@ -318,6 +320,7 @@ var/global/the_automaton = null
 				W.desc = "The key seems to be gone from the photo."
 				if (keycount < (AUTOMATON_MAX_KEYS-1))
 					keycount++
+					logTheThing(LOG_STATION, user, "showed the onyx photo to [src] (keycount: [keycount])")
 					inserted_key(user)
 					playsound(src.loc, 'sound/musical_instruments/Gong_Rumbling.ogg', 60, 1)
 			else
@@ -356,6 +359,7 @@ var/global/the_automaton = null
 				SPAN_ALERT("<b>[src]</b> ignores your attempts to hand over the book, even if you wave it right in its face and get all obnoxious about it.  Maybe this isn't the right time?"))
 				return
 
+			logTheThing(LOG_STATION, user, "gave [src] the King in Yellow[saw_moon_bee ? ", triggering ending_event":""]")
 			user.visible_message(SPAN_ALERT("[user] hands [W] to [src]!"), "You hand [W] to [src].")
 			src.visible_message(SPAN_ALERT("<b>[src]</b> appears to read from [W]."))
 			user.drop_item()
@@ -453,7 +457,7 @@ var/global/the_automaton = null
 						SPAWN(2 SECONDS) if (somesparks) qdel(somesparks)
 						var/list/tempEffect
 						if (temp_effect_limiter-- > 0)
-							tempEffect = DrawLine(src, somesparks, /obj/line_obj/elec, 'icons/obj/projectiles.dmi',"WholeLghtn",1,1,"HalfStartLghtn","HalfEndLghtn",FLY_LAYER,1,PreloadedIcon='icons/effects/LghtLine.dmi')
+							tempEffect = drawLineObj(src, somesparks, /obj/line_obj/elec, 'icons/obj/projectiles.dmi',"WholeLghtn",1,1,"HalfStartLghtn","HalfEndLghtn",FLY_LAYER,1,PreloadedIcon='icons/effects/LghtLine.dmi')
 						sleep(0.6 SECONDS)
 						for (var/obj/O in tempEffect)
 							qdel(O)

@@ -6,15 +6,19 @@
 	health = 60
 	maxhealth = 60
 	weapon_class = 1
-	speed = 2.8
+	speedmod = 0.36
 	var/launched = 0
 	var/steps_moved = 0
 	var/failing = 0
 
+	New()
+		. = ..()
+		for(var/datum/contextAction/CA in src.contextActions)
+			if(istype(CA, /datum/contextAction/vehicle/parts))
+				src.contextActions -= CA
+				break
+
 	attackby(obj/item/W, mob/living/user)
-		if (ispryingtool(W))
-			boutput(user, "There's no maintenance panel to open.")
-			return
 		if (isweldingtool(W))
 			boutput(user, "You can't repair this pod.")
 			return
@@ -199,3 +203,8 @@
 	anchored = ANCHORED
 	density = 0
 	opacity = 0
+
+/obj/machinery/macrofab/portable_oxygen
+	name = "Portable Oxygen Tank Fabricator"
+	desc = "A sophisticated machine that fabricates and pressurizes oxygen tanks."
+	createdObject = /obj/item/tank/pocket/oxygen

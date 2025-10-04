@@ -20,7 +20,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/firealarm, proc/alarm, proc/reset)
 	var/net_id
 	var/ringlimiter = 0
 	var/dont_spam = 0
-	var/static/manual_off_reactivate_idle = 8 //how many machine loop ticks to idle after being manually switched off
+	var/static/manual_off_reactivate_idle = 4 //! how many machine loop ticks to idle after being manually switched off
 	var/idle_count = 0
 	/// specifies if the alarm is currently going off
 	var/alarm_active = FALSE
@@ -50,7 +50,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/firealarm, proc/alarm, proc/reset)
 
 	AddComponent(/datum/component/mechanics_holder)
 	SEND_SIGNAL(src,COMSIG_MECHCOMP_ADD_INPUT,"toggle", PROC_REF(toggleinput))
-	MAKE_DEFAULT_RADIO_PACKET_COMPONENT(null, alarm_frequency)
+	MAKE_DEFAULT_RADIO_PACKET_COMPONENT(src.net_id, null, alarm_frequency)
 
 /obj/machinery/firealarm/disposing()
 	STOP_TRACKING
@@ -88,7 +88,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/firealarm, proc/alarm, proc/reset)
 /obj/machinery/firealarm/temperature_expose(datum/gas_mixture/air, temperature, volume)
 	if(src.detecting)
 		if(temperature > T0C+200)
-			src.alarm()			// added check of detector status here
+			src.alarm(triggered_automatically=TRUE)			// added check of detector status here
 	return
 
 /obj/machinery/firealarm/attack_ai(mob/user as mob)
@@ -126,6 +126,8 @@ ADMIN_INTERACT_PROCS(/obj/machinery/firealarm, proc/alarm, proc/reset)
 /obj/machinery/firealarm/process()
 	if(status & (NOPOWER|BROKEN))
 		return
+	if(idle_count > 0)
+		idle_count--
 	..()
 
 /obj/machinery/firealarm/power_change()
@@ -169,7 +171,10 @@ ADMIN_INTERACT_PROCS(/obj/machinery/firealarm, proc/alarm, proc/reset)
 	post_alert(0)
 	return
 
-/obj/machinery/firealarm/proc/alarm()
+/obj/machinery/firealarm/proc/alarm(triggered_automatically=FALSE)
+	if(triggered_automatically && idle_count > 0)
+		return
+
 	if(!working)
 		return
 
@@ -184,6 +189,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/firealarm, proc/alarm, proc/reset)
 
 	alarm_active = TRUE
 
+	src.AddComponent(/datum/component/minimap_marker/minimap, MAP_ALERTS, "alarm_fire", name="[get_area(src)] Fire Alarm")
 	A.firealert()	//Icon state is set to "fire1" in A.firealert()
 	post_alert(1)
 
@@ -218,6 +224,20 @@ ADMIN_INTERACT_PROCS(/obj/machinery/firealarm, proc/alarm, proc/reset)
 
 	SEND_SIGNAL(src, COMSIG_MOVABLE_POST_RADIO_PACKET, alert_signal)
 
+/// Reply with current status
+/obj/machinery/firealarm/proc/reply_status(sender, command)
+	var/datum/signal/reply = new
+	reply.source = src
+	reply.data["address_1"] = sender
+	reply.data["command"] = command
+	reply.data["device"] = "WNET_FIREALARM"
+	reply.data["netid"] = src.net_id
+	reply.data["alert"] = src.alarm_active ? "fire" : "reset"
+	reply.data["zone"] = src.alarm_zone
+	reply.data["type"] = "Fire"
+
+	SEND_SIGNAL(src, COMSIG_MOVABLE_POST_RADIO_PACKET, reply)
+
 /obj/machinery/firealarm/receive_signal(datum/signal/signal)
 	if(status & NOPOWER)
 		return
@@ -229,37 +249,14 @@ ADMIN_INTERACT_PROCS(/obj/machinery/firealarm, proc/alarm, proc/reset)
 	if (signal.data["address_1"] == src.net_id)
 		switch (lowertext(signal.data["command"]))
 			if ("status")
-				post_alert(!alarm_active, sender)
+				src.reply_status(sender, "status_reply")
 			if ("trigger")
 				src.alarm()
 			if ("reset")
 				src.reset()
 
 	else if(signal.data["address_1"] == "ping")
-		var/datum/signal/reply = new
-		reply.source = src
-		reply.data["address_1"] = sender
-		reply.data["command"] = "ping_reply"
-		reply.data["device"] = "WNET_FIREALARM"
-		reply.data["netid"] = src.net_id
-		reply.data["alert"] = !alarm_active ? "reset" : "fire"
-		reply.data["zone"] = alarm_zone
-		reply.data["type"] = "Fire"
 		SPAWN(0.5 SECONDS)
-			SEND_SIGNAL(src, COMSIG_MOVABLE_POST_RADIO_PACKET, reply)
+			src.reply_status(sender, "ping_reply")
 
-// these seem kind of inverted but it's because an alarm on a wall to the north faces south and etc
-/obj/machinery/firealarm/north
-	pixel_y = 30
-
-/obj/machinery/firealarm/south
-	dir = NORTH
-	pixel_y = -22
-
-/obj/machinery/firealarm/east
-	dir = WEST
-	pixel_x = 24
-
-/obj/machinery/firealarm/west
-	dir = EAST
-	pixel_x = -24
+SET_UP_DIRECTIONALS(/obj/machinery/firealarm, OFFSETS_FIREALARM)

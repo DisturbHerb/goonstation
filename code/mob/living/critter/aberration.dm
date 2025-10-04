@@ -1,4 +1,7 @@
 // A terrible post-human cloud of murder.
+TYPEINFO(/mob/living/critter/aberration)
+	start_speech_modifiers = list(SPEECH_MODIFIER_MOB_MODIFIERS, SPEECH_MODIFIER_ACCENT_VOID)
+
 /mob/living/critter/aberration
 	name = "transposed particle field"
 	desc = {"A cloud of particles transposed by some manner of dangerous science, echoing some mannerisms of their previous configuration. In layman's
@@ -12,25 +15,26 @@
 	ai_type = /datum/aiHolder/aggressive
 	is_npc = TRUE
 
-	speechverb_say = "materializes"
-	speechverb_ask = "emits"
-	speechverb_exclaim = "forces"
-	speechverb_stammer = "creates"
-	speechverb_gasp = "rasps"
-	speech_void = TRUE
+	speech_verb_say = "materializes"
+	speech_verb_ask = "emits"
+	speech_verb_exclaim = "forces"
+	speech_verb_stammer = "creates"
+	speech_verb_gasp = "rasps"
 
 	can_burn = FALSE
 	can_implant = FALSE
 	canbegrabbed = FALSE
 	throws_can_hit_me = FALSE
 	reagent_capacity = 0
-	faction = FACTION_DERELICT
+	faction = list(FACTION_DERELICT)
 	blood_id = null
 	can_bleed = FALSE
 	metabolizes = FALSE
 	use_stamina = FALSE
+	ailment_immune = TRUE
+	throws_can_hit_me = FALSE
 
-	grabresistmessage = "but their hands pass right through %src%!"
+	grabresistmessage = "but their hands pass right through!"
 	death_text = "%src% dissipates!"
 
 	New()
@@ -38,12 +42,9 @@
 
 		remove_lifeprocess(/datum/lifeprocess/blood)
 		remove_lifeprocess(/datum/lifeprocess/chems)
-		remove_lifeprocess(/datum/lifeprocess/fire)
 		remove_lifeprocess(/datum/lifeprocess/mutations)
 		remove_lifeprocess(/datum/lifeprocess/organs)
-		remove_lifeprocess(/datum/lifeprocess/skin)
 		remove_lifeprocess(/datum/lifeprocess/stuns_lying)
-		remove_lifeprocess(/datum/lifeprocess/viruses)
 		remove_lifeprocess(/datum/lifeprocess/blindness)
 		remove_lifeprocess(/datum/lifeprocess/radiation)
 
@@ -84,7 +85,7 @@
 			return
 		M.visible_message(SPAN_COMBAT("<b>[M] shocks the [src.name] with [I]!</b>"),
 			SPAN_COMBAT("<b>While your baton passes through, the [src.name] appears damaged!</b>"))
-		M.lastattacked = src
+		M.lastattacked = get_weakref(src)
 		B.process_charges(-1, M)
 
 		src.hurt(50)
@@ -96,7 +97,7 @@
 	projCanHit(datum/projectile/P)
 		return P.damage_type == D_ENERGY
 
-	do_disorient(stamina_damage, weakened, stunned, paralysis, disorient = 60, remove_stamina_below_zero = 0, target_type = DISORIENT_BODY, stack_stuns = 1)
+	do_disorient(stamina_damage, knockdown, stunned, unconscious, disorient = 60, remove_stamina_below_zero = 0, target_type = DISORIENT_BODY, stack_stuns = 1)
 		return
 
 	TakeDamage(zone, brute, burn, tox, damage_type, disallow_limb_loss)
@@ -107,6 +108,9 @@
 
 	blob_act(power)
 		return
+
+	is_spacefaring()
+		return TRUE
 
 	proc/hurt(damage)
 		var/datum/healthHolder/Br = src.get_health_holder("brute")
@@ -138,6 +142,7 @@
 		return FALSE
 
 /datum/limb/aberration_field
+	can_beat_up_robots = TRUE
 
 	harm(mob/living/target, mob/living/user)
 		if (GET_COOLDOWN(user, "envelop_attack"))

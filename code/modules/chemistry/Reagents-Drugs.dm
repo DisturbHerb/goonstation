@@ -16,7 +16,7 @@ datum
 			fluid_g = 250
 			fluid_b = 250
 			transparency = 100
-			addiction_prob = 15//80
+			addiction_prob = 15
 			addiction_min = 5
 			overdose = 20
 			depletion_rate = 0.6
@@ -46,16 +46,14 @@ datum
 				var/check = rand(0,100)
 				if (ishuman(M))
 					var/mob/living/carbon/human/H = M
-					if (check < 8 && H.bioHolder.mobAppearance.customization_second.id != "tramp") // M.is_hobo = very yes
-						H.bioHolder.mobAppearance.customization_second = new /datum/customization_style/beard/tramp
+					if (check < 8 && H.bioHolder.mobAppearance.customizations["hair_middle"].style.id != "tramp") // M.is_hobo = very yes
+						H.bioHolder.mobAppearance.customizations["hair_middle"].style =  new /datum/customization_style/beard/tramp
 						H.set_face_icon_dirty()
 						boutput(M, SPAN_ALERT("<b>You feel gruff!</b>"))
 						SPAWN(0.3 SECONDS)
-							M.visible_message(SPAN_ALERT("<b>[M.name]</b> has a wild look in their eyes!"))
+							M.visible_message(SPAN_ALERT("<b>[M.name]</b> has a wild look in [his_or_her(M)] eyes!"))
 					if(check < 60)
-						if(H.getStatusDuration("paralysis")) H.delStatus("paralysis")
-						H.delStatus("stunned")
-						H.delStatus("weakened")
+						H.remove_stuns()
 					if(check < 30)
 						H.emote(pick("twitch", "twitch_s", "scream", "drool", "grumble", "mumble"))
 
@@ -66,8 +64,8 @@ datum
 
 
 				if(check < 8)
-					M.reagents.add_reagent(pick("methamphetamine", "crank", "neurotoxin"), rand(1,5))
-					M.visible_message(SPAN_ALERT("<b>[M.name]</b> scratches at something under their [issilicon(M) ? "chassis" : "skin"]!"))
+					M.reagents.add_reagent(pick("methamphetamine", "crank", "neurotoxin"), randfloat(1.7 , 8.4) * src.calculate_depletion_rate(M, mult))
+					M.visible_message(SPAN_ALERT("<b>[M.name]</b> scratches at something under [his_or_her(M)] [issilicon(M) ? "chassis" : "skin"]!"))
 					random_brute_damage(M, 5 * mult)
 				else if (check < 16)
 					switch(rand(1,2))
@@ -137,7 +135,7 @@ datum
 						M.change_misstep_chance(25 * mult)
 						M.make_jittery(10)
 						M.emote("scream")
-						M.reagents.add_reagent("salts1", 5 * mult)
+						M.reagents.add_reagent("salts1", 8.4 * src.calculate_depletion_rate(M, mult))
 					else if (effect <= 4)
 						M.visible_message(SPAN_ALERT("<b>[M.name]'s</b> eyes dilate!"))
 						M.emote("twitch_s")
@@ -145,10 +143,10 @@ datum
 						M.take_brain_damage(1 * mult)
 						M.setStatusMin("stunned", 4 SECONDS * mult)
 						M.change_eye_blurry(7, 7)
-						M.reagents.add_reagent("salts1", 5 * mult)
+						M.reagents.add_reagent("salts1", 8.4 * src.calculate_depletion_rate(M, mult))
 					else if (effect <= 7)
 						M.emote("faint")
-						M.reagents.add_reagent("salts1", 5 * mult)
+						M.reagents.add_reagent("salts1", 8.4 * src.calculate_depletion_rate(M, mult))
 				else if (severity == 2)
 					if (effect <= 2)
 						M.visible_message(SPAN_ALERT("<b>[M.name]'s</b> eyes dilate!"))
@@ -156,50 +154,21 @@ datum
 						M.take_brain_damage(1 * mult)
 						M.setStatusMin("stunned", 4 SECONDS * mult)
 						M.change_eye_blurry(7, 7)
-						M.reagents.add_reagent("salts1", 5 * mult)
+						M.reagents.add_reagent("salts1", 8.4 * src.calculate_depletion_rate(M, mult))
 					else if (effect <= 4)
 						M.visible_message(SPAN_ALERT("<b>[M.name]</b> convulses violently and falls to the floor!"))
 						M.make_jittery(50)
 						M.take_toxin_damage(2 * mult)
 						M.take_brain_damage(1 * mult)
-						M.setStatusMin("weakened", 9 SECONDS * mult)
+						M.setStatusMin("knockdown", 9 SECONDS * mult)
 						M.emote("gasp")
-						M.reagents.add_reagent("salts1", 5 * mult)
+						M.reagents.add_reagent("salts1", 8.4 * src.calculate_depletion_rate(M, mult))
 					else if (effect <= 7)
 						M.emote("scream")
-						M.visible_message(SPAN_ALERT("<b>[M.name]</b> tears at their own skin!"))
+						M.visible_message(SPAN_ALERT("<b>[M.name]</b> tears at [his_or_her(M)] own skin!"))
 						random_brute_damage(M, 5 * mult)
-						M.reagents.add_reagent("salts1", 5 * mult)
+						M.reagents.add_reagent("salts1", 8.4 * src.calculate_depletion_rate(M, mult))
 						M.emote("twitch")
-
-
-		drug/jenkem
-			name = "jenkem"
-			id = "jenkem"
-			description = "Jenkem is a prison drug made from fermenting feces in a solution of urine. Extremely disgusting."
-			reagent_state = LIQUID
-			fluid_r = 100
-			fluid_g = 70
-			fluid_b = 0
-			transparency = 255
-			addiction_prob = 5//30
-			addiction_min = 5
-			value = 2 // 1 1  :I
-			viscosity = 0.4
-			bladder_value = -0.03
-			hunger_value = -0.04
-			hygiene_value = -0.5
-			thirst_value = -0.04
-			energy_value = -0.04
-
-			on_mob_life(var/mob/M, var/mult = 1)
-				if(!M) M = holder.my_atom
-				M.make_dizzy(5 * mult)
-				if(prob(10))
-					M.emote(pick("twitch","drool","moan"))
-					M.take_toxin_damage(1 * mult)
-				..()
-				return
 
 		drug/crank
 			name = "crank" // sort of a shitty version of methamphetamine that can be made by assistants
@@ -210,7 +179,7 @@ datum
 			fluid_b = 0
 			fluid_g = 200
 			transparency = 40
-			addiction_prob = 10//50
+			addiction_prob = 10
 			addiction_min = 5
 			overdose = 20
 			value = 20 // 10 2 1 3 1 heat explosion :v
@@ -226,11 +195,11 @@ datum
 				if(probmult(15)) M.emote(pick("twitch", "twitch_s", "grumble", "laugh"))
 				if(prob(8))
 					boutput(M, SPAN_NOTICE("<b>You feel great!</b>"))
-					M.reagents.add_reagent("methamphetamine", rand(1,2) * mult)
+					M.reagents.add_reagent("methamphetamine", randfloat(2.5 , 5) * src.calculate_depletion_rate(M, mult))
 					M.emote(pick("laugh", "giggle"))
 				if(prob(6))
 					boutput(M, SPAN_NOTICE("<b>You feel warm.</b>"))
-					M.bodytemperature += rand(1,10) * mult
+					M.changeBodyTemp(rand(1,10) KELVIN * mult)
 				if(prob(4))
 					boutput(M, SPAN_ALERT("<b>You feel kinda awful!</b>"))
 					M.take_toxin_damage(1 * mult)
@@ -249,7 +218,7 @@ datum
 						M.emote("scream")
 					else if (effect <= 4)
 						M.visible_message(SPAN_ALERT("<b>[M.name]</b> is all sweaty!"))
-						M.bodytemperature += rand(5,30) * mult
+						M.changeBodyTemp(rand(5,30) KELVIN * mult)
 						M.take_brain_damage(1 * mult)
 						M.take_toxin_damage(1 * mult)
 						M.setStatusMin("stunned", 3 SECONDS * mult)
@@ -259,7 +228,7 @@ datum
 				else if (severity == 2)
 					if (effect <= 2)
 						M.visible_message(SPAN_ALERT("<b>[M.name]</b> is sweating like a pig!"))
-						M.bodytemperature += rand(20,100) * mult
+						M.changeBodyTemp(rand(20,100) KELVIN * mult)
 						M.take_toxin_damage(5 * mult)
 						M.setStatusMin("stunned", 4 SECONDS * mult)
 					else if (effect <= 4)
@@ -267,13 +236,13 @@ datum
 						M.make_jittery(100)
 						M.take_toxin_damage(2 * mult)
 						M.take_brain_damage(8 * mult)
-						M.setStatusMin("weakened", 4 SECONDS * mult)
+						M.setStatusMin("knockdown", 4 SECONDS * mult)
 						M.change_misstep_chance(25 * mult)
 						M.emote("scream")
-						M.reagents.add_reagent("salts1", 5 * mult)
+						M.reagents.add_reagent("salts1", 12.5 * src.calculate_depletion_rate(M, mult))
 					else if (effect <= 7)
 						M.emote("scream")
-						M.visible_message(SPAN_ALERT("<b>[M.name]</b> nervously scratches at their skin!"))
+						M.visible_message(SPAN_ALERT("<b>[M.name]</b> nervously scratches at [his_or_her(M)] skin!"))
 						M.make_jittery(10)
 						random_brute_damage(M, 5 * mult)
 						M.emote("twitch")
@@ -289,6 +258,7 @@ datum
 			transparency = 20
 			value = 6 // 4 2
 			thirst_value = -0.03
+			var/time_in_bloodstream = 0
 			var/static/list/halluc_sounds = list(
 				"punch",
 				'sound/vox/poo-vox.ogg',
@@ -349,18 +319,20 @@ datum
 			on_mob_life(var/mob/M, var/mult = 1)
 				if(!M) M = holder.my_atom
 				//pretty colors
-				M.AddComponent(/datum/component/hallucination/trippy_colors, timeout=10)
+				src.time_in_bloodstream += mult
+				if (src.time_in_bloodstream > 15)
+					M.AddComponent(/datum/component/hallucination/trippy_colors, timeout=10)
 
-				//get attacked
+			//get attacked
 				if(prob(60)) //monkey mode
-					M.AddComponent(/datum/component/hallucination/fake_attack, timeout=10, image_list=monkey_images, name_list=monkey_names, attacker_prob=20, max_attackers=3)
+					M.AddComponent(/datum/component/hallucination/fake_attack, timeout=10, image_list=monkey_images, name_list=monkey_names, attacker_prob=4, max_attackers=1)
 				else
-					M.AddComponent(/datum/component/hallucination/fake_attack, timeout=10, image_list=null, name_list=null, attacker_prob=20, max_attackers=3)
+					M.AddComponent(/datum/component/hallucination/fake_attack, timeout=10, image_list=null, name_list=null, attacker_prob=4, max_attackers=1)
 
 				//THE VOICES GET LOUDER
 				M.AddComponent(/datum/component/hallucination/random_sound, timeout=10, sound_list=src.halluc_sounds, sound_prob=5)
 
-				if(probmult(8)) //display a random chat message
+				if(src.time_in_bloodstream > 10 && probmult(8)) //display a random chat message
 					M.playsound_local(M.loc, pick(src.speech_sounds, 100, 1))
 					boutput(M, "<b>[pick(src.voice_names)]</b> says, \"[phrase_log.random_phrase("say")]\"")
 
@@ -378,6 +350,7 @@ datum
 			on_remove()
 				. = ..()
 				if (ismob(holder.my_atom))
+					src.time_in_bloodstream = 0 //ehhhh
 					var/mob/M = holder.my_atom
 					if (M.client)
 						animate(M.client, color = null, time = 2 SECONDS, easing = SINE_EASING) // gotta come down sometime
@@ -406,7 +379,7 @@ datum
 				if(!M) M = holder.my_atom
 				M.druggy = max(M.druggy, 5)
 				var/image/imagekey = pick(bee_halluc)
-				M.AddComponent(/datum/component/hallucination/fake_attack, timeout=10, image_list=list(imagekey), name_list=bee_halluc[imagekey], attacker_prob=10)
+				M.AddComponent(/datum/component/hallucination/fake_attack, timeout=10, image_list=list(imagekey), name_list=bee_halluc[imagekey], attacker_prob=7, max_attackers = 1)
 				if (probmult(12))
 					M.visible_message(pick("<b>[M]</b> makes a buzzing sound.", "<b>[M]</b> buzzes."),pick("BZZZZZZZZZZZZZZZ", SPAN_ALERT("<b>THE BUZZING GETS LOUDER</b>"), SPAN_ALERT("<b>THE BUZZING WON'T STOP</b>")))
 				if (probmult(15))
@@ -431,8 +404,8 @@ datum
 			fluid_r = 200
 			fluid_g = 185
 			fluid_b = 230
-			addiction_prob = 15//65
-			addiction_min = 10
+			addiction_prob = 15
+			addiction_min = 25
 			depletion_rate = 0.2
 			value = 3 // 1c + 1c + 1c
 			viscosity = 0.2
@@ -464,11 +437,11 @@ datum
 			fluid_r = 230
 			fluid_g = 220
 			fluid_b = 230
-			addiction_prob = 1 //It lasts a while, it's not as low as it seems
-			addiction_min = 100
-			max_addiction_severity = "LOW"
+			addiction_prob = 1 //Less addictive than ethanol due to its higher depletion rate
+			addiction_min = 50
+			addiction_severity = LOW_ADDICTION_SEVERITY
 			stun_resist = 3
-			depletion_rate = 0.1
+			depletion_rate = 0.05
 			taste = "bitter"
 			overdose = 60
 			threshold = THRESHOLD_INIT
@@ -498,6 +471,21 @@ datum
 					REMOVE_ATOM_PROPERTY(M, PROP_MOB_STAMINA_REGEN_BONUS, "caffeine_rush")
 				..()
 
+			calculate_depletion_rate(var/mob/affected_mob, var/mult = 1)
+				. = ..()
+				var/caffeine_amt = holder.get_reagent_amount(src.id)
+				switch(caffeine_amt) //use ~midpoints for depeletion rate thresholds - need stronger coffees or blends to overcaffeinate
+					if(3 to 10)
+						. *= 2
+					if(10 to 30)
+						. *= 4
+					if(30 to 50)
+						. *= 8
+					if(50 to INFINITY)
+						. *= 10
+				return .
+
+
 			on_mob_life(var/mob/M, var/mult = 1)
 				if(!M) M = holder.my_atom
 				var/caffeine_amt = holder.get_reagent_amount(src.id)
@@ -507,20 +495,8 @@ datum
 					L.contract_disease(/datum/ailment/malady/heartfailure, null, null, 1)
 					heart_failure_counter = 0
 
-				switch(caffeine_amt) //use ~midpoints for depeletion rate thresholds - need stronger coffees or blends to overcaffeinate
-					if(0 to 3)
-						depletion_rate = 0.05
-					if(3 to 10)
-						depletion_rate = 0.1
-					if(10 to 30)
-						depletion_rate = 0.2
-					if(30 to 50)
-						depletion_rate = 0.4
-					if(50 to INFINITY)
-						depletion_rate = 0.5
-
 				switch(caffeine_amt)
-					if(0 to 5)   //This is your trace amount of caffeine, doesn't do much
+					if(0 to 5)   //This is a trace amount of caffeine, doesn't do much
 						expected_stamina_regen = 1
 						expected_stun_resist   = 3
 
@@ -544,15 +520,15 @@ datum
 						M.sleeping = 0 //Causes insomnia
 						if (prob(35))
 							M.make_jittery(10 * mult)
-						if (probmult(3) && !ON_COOLDOWN(M, "Caffeine Message", 30 SECONDS)) // Keeps down that emote span
-							boutput(M, pick(SPAN_NOTICE("You a slight twitch in your arm."),\
-									SPAN_NOTICE("You feel a slight tension in your shoulders."),\
-									SPAN_NOTICE("You feel resltess and anxious."),\
+						if (probmult(3) && !ON_COOLDOWN(M, "Caffeine Message", 30 SECONDS)) // Limits emote spam
+							boutput(M, pick(SPAN_NOTICE("You feel a slight twitch in your arm."),\
+									SPAN_NOTICE("Your shoulders are unusually tense."),\
+									SPAN_NOTICE("You feel kind of antsy, for some reason."),\
 									SPAN_ALERT("You feel ready for anything!"),\
-									SPAN_ALERT("You feel a rush of energy."),\
-									SPAN_ALERT("You can feel a slight pressure in your skull.")))
+									SPAN_ALERT("You feel energized!"),\
+									SPAN_ALERT("You've got a bit of a headache...")))
 
-					if(40 to 60) //A unhealthy amount of caffeine
+					if(40 to 60) //An unhealthy amount of caffeine
 						if (M.get_eye_blurry())
 							M.change_eye_blurry(-2 * mult)
 						expected_stamina_regen = 6
@@ -562,18 +538,18 @@ datum
 						M.make_jittery(10 * mult)
 						M.change_misstep_chance(1 * mult)
 						M.sleeping = 0
-						if (probmult(3) && !ON_COOLDOWN(M, "Caffeine Message", 30 SECONDS)) // Keeps down that emote span
-							boutput(M, pick(SPAN_NOTICE("You a slight twitch in your arm."),\
-									SPAN_NOTICE("You feel a slight tension in your shoulders."),\
-									SPAN_NOTICE("You feel resltess and anxious."),\
-									SPAN_ALERT("You feel ready for anything!"),\
-									SPAN_ALERT("You feel a rush of energy."),\
-									SPAN_ALERT("You can feel a slight pressure in your skull.")))
+						if (probmult(3) && !ON_COOLDOWN(M, "Caffeine Message", 30 SECONDS)) // Limits emote spam
+							boutput(M, pick(SPAN_NOTICE("The muscles in your arms are twitching a lot. Huh."),\
+									SPAN_NOTICE("Your whole body feels really tense right now."),\
+									SPAN_NOTICE("You feel very restless - something isn't right."),\
+									SPAN_ALERT("You feel ready for anything! Nothing can stop you!"),\
+									SPAN_ALERT("You can feel power coursing through your veins!"),\
+									SPAN_ALERT("Your head is pounding...")))
 						else if (probmult(9))
 							M.emote(pick("twitch","twitch_v","blink_r", "shiver"))
-						heart_failure_counter += mult //This can be bad for you over time
+						heart_failure_counter += mult //This will be bad for you, given enough time
 
-					if(60 to INFINITY)  //Too much coffee. Way bad for you. This is actually non-trivial to reach now
+					if(60 to INFINITY)  //Way too much coffee - very bad for you. This is actually non-trivial to reach now
 						if (M.get_eye_blurry())
 							M.change_eye_blurry(-3 * mult)
 						expected_stamina_regen = 8
@@ -584,13 +560,13 @@ datum
 						M.make_jittery(15 * mult)
 						M.sleeping = 0
 						if (probmult(3) && !ON_COOLDOWN(M, "Caffeine Message", 30 SECONDS))
-							boutput(M, pick(SPAN_ALERT("You feel your chest clutching for a moment."),\
+							boutput(M, pick(SPAN_ALERT("Oh god, your chest just spasmed! That felt bad!"),\
 									SPAN_ALERT("YOU ARE ENERGY INCARNATE."),\
-									SPAN_ALERT("YOU FEEL LIKE YOU COULD CONQUER THE WORLD."),\
-									SPAN_ALERT("YOU CAN DO EVERYTHING, YOU ARE READY FOR ANY CHALLENGE."),\
-									SPAN_ALERT("Your chest burns slightly."),\
-									SPAN_ALERT("You feel a flash of pain in your head."),\
-									SPAN_ALERT("You are speed."),\
+									SPAN_ALERT("YOU FEEL LIKE YOU COULD CONQUER THE WORLD!"),\
+									SPAN_ALERT("YOU CAN DO ANYTHING. YOU ARE READY FOR ANY CHALLENGE."),\
+									SPAN_ALERT("There's a burning sensation in your chest!"),\
+									SPAN_ALERT("Your head feels like it's throbbing!"),\
+									SPAN_ALERT("Speed. You are speed."),\
 									SPAN_NOTICE("Something is wrong.")))
 						else if (probmult(12))
 							M.emote(pick("shiver","twitch_v","blink_r","wheeze"))
@@ -632,7 +608,7 @@ datum
 				src.tick_counter += 1
 
 				if(probmult(3))
-					boutput(M, pick(SPAN_NOTICE("You feel eerily alone.."),\
+					boutput(M, pick(SPAN_NOTICE("You feel eerily alone..."),\
 									SPAN_NOTICE("You feel like everything's gone silent."),\
 									SPAN_NOTICE("Everything seems so quiet all of a sudden."),\
 									SPAN_NOTICE("You can hear your heart beating."),\
@@ -664,7 +640,7 @@ datum
 							invisible_people += chosen
 
 				if(counter > 25)                   //some side effects (not using a switch statement so the stages stack)
-					if(M.get_brain_damage() <= 40)
+					if(M.get_brain_damage() <= BRAIN_DAMAGE_MODERATE)
 						M.take_brain_damage(1 * mult) //some amount of brain damage
 					if(probmult(9) && !ON_COOLDOWN(M, "heartbeat_hallucination", 60 SECONDS)) //play some hearbeat sounds
 						M.playsound_local(get_turf(M), 'sound/effects/HeartBeatLong.ogg', 20, 1)
@@ -675,10 +651,10 @@ datum
 				if (ismob(holder.my_atom))
 					var/mob/M = holder.my_atom
 
-					if(!isnull(invisible_group) && (M.get_brain_damage() > 10))          //hits you and knocks you down for a little
+					if(!isnull(invisible_group) && (M.get_brain_damage() > BRAIN_DAMAGE_MINOR / 2))          //hits you and knocks you down for a little
 						M.visible_message(SPAN_ALERT("<B>[M]</B> starts convulsing violently!"),\
 											"You feel as if your body is tearing itself apart!")
-						M.setStatusMin("weakened", 10 SECONDS)
+						M.setStatusMin("knockdown", 10 SECONDS)
 						M.make_jittery(500)
 
 				qdel(invisible_group)
@@ -707,17 +683,13 @@ datum
 				M.stuttering += rand(0,2)
 				if(M.client && probmult(5))
 					for (var/obj/critter/domestic_bee/bee in view(7,M))
-						var/chat_text = null
 						var/text = pick_smart_string("shit_bees_say_when_youre_high.txt", "strings", list(
 							"M"="[M]",
 							"beeMom"=bee.beeMom ? bee.beeMom : "Mom",
 							"other_bee"=istype(bee, /obj/critter/domestic_bee/sea) ? "Spacebee" : "Seabee",
 							"bee"=istype(bee, /obj/critter/domestic_bee/sea) ? "Seabee" : "Spacebee"
-							))
-						if(!M.client.preferences.flying_chat_hidden)
-							var/speechpopupstyle = "font-family: 'Comic Sans MS'; font-size: 8px;"
-							chat_text = make_chat_maptext(bee, text, "color: [rgb(194,190,190)];" + speechpopupstyle, alpha = 140)
-						M.show_message("[bee] buzzes \"[text]\"",2, assoc_maptext = chat_text)
+						))
+						bee.say(text, atom_listeners_override = list(M))
 						break
 
 				if(probmult(5))
@@ -754,7 +726,7 @@ datum
 					boutput(M, "[pick("You feel peaceful.","You breathe softly.","You feel chill.","You vibe.")]")
 				if(probmult(10))
 					M.change_misstep_chance(-5)
-					M.delStatus("weakened")
+					M.delStatus("knockdown")
 				if (holder.get_reagent_amount(src.id) >= 70 && probmult(25))
 					if (holder.get_reagent_amount("THC") <= 20)
 						M.setStatus("drowsy", 20 SECONDS)
@@ -773,9 +745,9 @@ datum
 			fluid_b = 0
 			viscosity = 0.2
 			transparency = 190
-			addiction_prob = 15//70
+			addiction_prob = 15
 			addiction_min = 10
-			max_addiction_severity = "LOW"
+			addiction_severity = LOW_ADDICTION_SEVERITY
 			overdose = 35 // raise if too low - trying to aim for one sleepypen load being problematic, two being deadlyish
 			//var/counter = 1
 			//note that nicotine is also horribly poisonous in concentrated form IRM - could be used as a poor-man's toxin?
@@ -816,7 +788,7 @@ datum
 						M.emote("twitch")
 					else if (effect <= 4)
 						M.visible_message(SPAN_ALERT("<b>[M.name]</b> is all sweaty!"))
-						M.bodytemperature += rand(15,30) * mult
+						M.changeBodyTemp(rand(15,30) KELVIN * mult)
 						M.take_toxin_damage(3 * mult)
 					else if (effect <= 7)
 						M.take_toxin_damage(4 * mult)
@@ -834,13 +806,13 @@ datum
 						M.emote("drool")
 						M.make_jittery(10)
 						M.take_toxin_damage(5 * mult)
-						M.setStatusMin("weakened", 1 SECOND * mult)
+						M.setStatusMin("knockdown", 1 SECOND * mult)
 						M.change_misstep_chance(33 * mult)
 					else if (effect <= 7)
 						M.emote("collapse")
 						boutput(M, SPAN_ALERT("<b>Your heart is pounding!</b>"))
 						M.playsound_local_not_inworld('sound/effects/heartbeat.ogg', 100)
-						M.setStatusMin("paralysis", 5 SECONDS * mult)
+						M.setStatusMin("unconscious", 5 SECONDS * mult)
 						M.make_jittery(30)
 						M.take_toxin_damage(6 * mult)
 						M.take_oxygen_deprivation(20 * mult)
@@ -883,10 +855,7 @@ datum
 					M.playsound_local(M.loc, 'sound/effects/heartbeat.ogg', 50, 1)
 					M.take_toxin_damage(2)
 				if(probmult(5))
-					M.delStatus("paralysis")
-					M.delStatus("stunned")
-					M.delStatus("weakened")
-					M.delStatus("paralysis")
+					M.remove_stuns()
 					M.sleeping = 0
 					M.make_jittery(30)
 					M.emote(pick("twitch","twitch_v","shiver","shudder","flinch","blink_r"))
@@ -911,7 +880,7 @@ datum
 					else if (effect <= 4)
 						M.visible_message(SPAN_ALERT("<b>[M.name]</b> is super sweaty!"))
 						boutput(M, SPAN_ALERT("<b>You feel hot! Is it hot in here?!</b>"))
-						M.bodytemperature += rand(30,60)
+						M.changeBodyTemp(rand(30,60) KELVIN)
 						M.take_toxin_damage(4)
 					else if (effect <= 7)
 						M.take_toxin_damage(5)
@@ -932,13 +901,13 @@ datum
 						M.emote("drool")
 						M.make_jittery(20)
 						M.take_toxin_damage(5)
-						M.changeStatus("weakened", 10 * mult)
+						M.changeStatus("knockdown", 10 * mult)
 						M.change_misstep_chance(66)
 					else if (effect <= 7)
 						M.emote("collapse")
 						boutput(M, SPAN_ALERT("<b>Your heart is pounding! You need help!</b>"))
 						M << sound('sound/effects/heartbeat.ogg')
-						M.changeStatus("weakened", 50 * mult)
+						M.changeStatus("knockdown", 50 * mult)
 						M.make_jittery(60)
 						M.take_toxin_damage(5)
 						M.take_oxygen_deprivation(20)*/
@@ -981,12 +950,12 @@ datum
 								if(3)
 									boutput(M, SPAN_ALERT("<b>Unknown has punched [M]</b>"))
 									boutput(M, SPAN_ALERT("<b>Unknown has weakened [M]</b>"))
-									M.setStatusMin("weakened", 1 SECOND * mult)
+									M.setStatusMin("knockdown", 1 SECOND * mult)
 									M.playsound_local(M.loc, pick(sounds_punch), 50, 1)
 								if(4)
 									boutput(M, SPAN_ALERT("<b>[M] has been attacked with the taser gun by Unknown</b>"))
 									boutput(M, "<i>You can almost hear someone talking...</i>")
-									M.setStatusMin("paralysis", 3 SECONDS * mult)
+									M.setStatusMin("unconscious", 3 SECONDS * mult)
 				..()
 
 
@@ -999,7 +968,7 @@ datum
 			fluid_g = 100
 			fluid_b = 180
 			transparency = 250
-			addiction_prob = 10//50
+			addiction_prob = 10
 			addiction_min = 10
 			overdose = 20
 			hunger_value = -0.1
@@ -1012,7 +981,7 @@ datum
 				if(probmult(15)) M.emote(pick("smile", "grin", "yawn", "laugh", "drool"))
 				if(prob(10))
 					boutput(M, SPAN_NOTICE("<b>You feel pretty chill.</b>"))
-					M.bodytemperature -= 1 * mult
+					M.changeBodyTemp(-1 * mult)
 					M.emote("smile")
 				if(prob(5))
 					boutput(M, SPAN_ALERT("<b>You feel too chill!</b>"))
@@ -1020,7 +989,7 @@ datum
 					M.setStatusMin("stunned", 2 SECONDS * mult)
 					M.take_toxin_damage(1 * mult)
 					M.take_brain_damage(1 * mult)
-					M.bodytemperature -= 20 * mult
+					M.changeBodyTemp(-20 * mult)
 				if(prob(2))
 					boutput(M, SPAN_ALERT("<b>Your skin feels all rough and dry.</b>"))
 					random_brute_damage(M, 2 * mult)
@@ -1036,7 +1005,7 @@ datum
 						M.emote("drool")
 					else if (effect <= 4)
 						M.emote("shiver")
-						M.bodytemperature -= 40 * mult
+						M.changeBodyTemp(-40 * mult)
 					else if (effect <= 7)
 						boutput(M, SPAN_ALERT("<b>Your skin is cracking and bleeding!</b>"))
 						random_brute_damage(M, 5 * mult)
@@ -1048,18 +1017,21 @@ datum
 						M.visible_message(SPAN_ALERT("<b>[M.name]</b> sways and falls over!"))
 						M.take_toxin_damage(3 * mult)
 						M.take_brain_damage(3 * mult)
-						M.setStatusMin("weakened", 9 SECONDS * mult)
+						M.setStatusMin("knockdown", 9 SECONDS * mult)
 						M.emote("faint")
 					else if (effect <= 4)
-						if(ishuman(M))
-							M.visible_message(SPAN_ALERT("<b>[M.name]'s</b> skin is rotting away!"))
+						if (ishuman(M))
+							if (isskeleton(M))
+								M.visible_message(SPAN_ALERT("<b>[M.name]'s bones are rotting away from the inside!"))
+							else
+								M.visible_message(SPAN_ALERT("<b>[M.name]'s</b> skin is rotting away!"))
 							random_brute_damage(M, 25 * mult)
 							M.emote("scream")
 							M.bioHolder.AddEffect("eaten") //grody. changed line in human.dm to use decomp1 now
 							M.emote("faint")
 					else if (effect <= 7)
 						M.emote("shiver")
-						M.bodytemperature -= 70 * mult
+						M.changeBodyTemp(-70 * mult)
 
 		drug/catdrugs
 			name = "cat drugs"
@@ -1104,7 +1076,7 @@ datum
 		drug/triplemeth
 			name = "triple meth"
 			id = "triplemeth"
-			description = "Hot damn ... i don't even ..."
+			description = "Hot damn ... I don't even ..."
 			reagent_state = SOLID
 			fluid_r = 250
 			fluid_g = 250
@@ -1163,9 +1135,9 @@ datum
 					return //Since is created by a meth overdose, dont react while meth is in their system.
 				if (severity == 1)
 					if (effect <= 2)
-						M.visible_message(SPAN_ALERT("<b>[M.name]</b> can't seem to control their legs!"))
+						M.visible_message(SPAN_ALERT("<b>[M.name]</b> can't seem to control [his_or_her(M)] legs!"))
 						M.change_misstep_chance(12 * mult)
-						M.setStatusMin("weakened", 5 SECONDS * mult)
+						M.setStatusMin("knockdown", 5 SECONDS * mult)
 					else if (effect <= 4)
 						M.visible_message(SPAN_ALERT("<b>[M.name]'s</b> hands flip out and flail everywhere!"))
 						M.empty_hands()
@@ -1178,7 +1150,7 @@ datum
 					else if (effect <= 4)
 						M.visible_message(SPAN_ALERT("<b>[M.name]</b> falls to the floor and flails uncontrollably!"))
 						M.make_jittery(10)
-						M.setStatusMin("weakened", 10 SECONDS * mult)
+						M.setStatusMin("knockdown", 10 SECONDS * mult)
 					else if (effect <= 7)
 						M.emote("laugh")
 
@@ -1191,7 +1163,7 @@ datum
 			fluid_g = 250
 			fluid_b = 250
 			transparency = 220
-			addiction_prob = 10//60
+			addiction_prob = 10
 			addiction_min = 5
 			overdose = 20
 			depletion_rate = 0.6
@@ -1253,9 +1225,9 @@ datum
 					return
 				if (severity == 1)
 					if (effect <= 2)
-						M.visible_message(SPAN_ALERT("<b>[M.name]</b> can't seem to control their legs!"))
+						M.visible_message(SPAN_ALERT("<b>[M.name]</b> can't seem to control [his_or_her(M)] legs!"))
 						M.change_misstep_chance(20 * mult)
-						M.setStatusMin("weakened", 5 SECONDS * mult)
+						M.setStatusMin("knockdown", 5 SECONDS * mult)
 					else if (effect <= 4)
 						M.visible_message(SPAN_ALERT("<b>[M.name]'s</b> hands flip out and flail everywhere!"))
 						M.empty_hands()
@@ -1273,7 +1245,7 @@ datum
 					else if (effect <= 4)
 						M.visible_message(SPAN_ALERT("<b>[M.name]</b> falls to the floor and flails uncontrollably!"))
 						M.make_jittery(10)
-						M.setStatusMin("weakened", 2 SECONDS * mult)
+						M.setStatusMin("knockdown", 2 SECONDS * mult)
 					else if (effect <= 7)
 						M.emote("laugh")
 
@@ -1295,8 +1267,8 @@ datum
 				if (prob(40))
 					if(!M)
 						M = holder.my_atom
-					M.reagents.add_reagent(pick_string("chemistry_tools.txt", "CYBERPUNK_drug_primaries"), 3 * mult)
-					M.reagents.add_reagent(pick_string("chemistry_tools.txt", "CYBERPUNK_drug_adulterants"), 2 * mult)
+					M.reagents.add_reagent(pick_string("chemistry_tools.txt", "CYBERPUNK_drug_primaries"), 1.5 * src.calculate_depletion_rate(M, mult))
+					M.reagents.add_reagent(pick_string("chemistry_tools.txt", "CYBERPUNK_drug_adulterants"), 1 * src.calculate_depletion_rate(M, mult))
 					M.reagents.remove_reagent(src, 1 * mult)
 				..()
 
@@ -1342,10 +1314,10 @@ datum
 					if(check < 20)
 						boutput(M, SPAN_ALERT("Your throat feels like it's on fire!"))
 						M.emote(pick("scream","cry","twitch_s","choke","gasp","grumble"))
-						M.changeStatus("paralysis", 2 SECONDS)
+						M.changeStatus("unconscious", 2 SECONDS)
 					if(check < 20)
 						boutput(M, SPAN_NOTICE("<b>You feel A LOT warmer.</b>"))
-						M.bodytemperature += rand(30,60)
+						M.changeBodyTemp(rand(30,60) KELVIN)
 				..()
 				return
 
@@ -1373,4 +1345,4 @@ datum/reagent/drug/hellshroom_extract/proc/breathefire(var/mob/M)
 			continue
 		if (GET_DIST(M,F) > range)
 			continue
-		fireflash(F,1,temp)
+		fireflash(F,1,temp, chemfire = CHEM_FIRE_RED)

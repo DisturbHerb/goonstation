@@ -16,6 +16,7 @@
 	var/affecting_stam_drain = 20
 	var/resist_count = 0
 	var/item_grab_overlay_state = "grab_small"
+	var/transfering_chemicals = FALSE
 	var/can_pin = 1
 	var/dropped = 0
 	var/irresistible = 0
@@ -56,7 +57,7 @@
 
 		if(assailant)	//drop that grab to avoid the sticky behavior
 			REMOVE_ATOM_PROPERTY(src.assailant, PROP_MOB_CANTMOVE, src)
-			if (src in assailant.equipped_list() && !dropped)
+			if ((src in assailant.equipped_list()) && !dropped)
 				if (assailant.equipped() == src)
 					assailant.drop_item()
 				else
@@ -76,17 +77,17 @@
 
 
 			if (state == GRAB_PIN)
-				assailant.changeStatus("weakened",2 SECONDS)
-				affecting.changeStatus("weakened",1 SECOND)
+				assailant.changeStatus("knockdown",2 SECONDS)
+				affecting.changeStatus("knockdown",1 SECOND)
 				assailant.force_laydown_standup()
 				affecting.force_laydown_standup()
 
 			if (state == GRAB_CHOKE)
-				logTheThing(LOG_COMBAT, src.assailant, "releases their choke on [constructTarget(src.affecting,"combat")] after [choke_count] cycles at [log_loc(src.affecting)]")
+				logTheThing(LOG_COMBAT, src.assailant, "releases [his_or_her(src.assailant)] choke on [constructTarget(src.affecting,"combat")] after [choke_count] cycles at [log_loc(src.affecting)]")
 			else if (state == GRAB_PIN)
-				logTheThing(LOG_COMBAT, src.assailant, "drops their pin on [constructTarget(src.affecting,"combat")] at [log_loc(src.affecting)]")
+				logTheThing(LOG_COMBAT, src.assailant, "drops [his_or_her(src.assailant)] pin on [constructTarget(src.affecting,"combat")] at [log_loc(src.affecting)]")
 			else if(!istype(src, /obj/item/grab/block))
-				logTheThing(LOG_COMBAT, src.assailant, "drops their grab on [constructTarget(src.affecting,"combat")] at [log_loc(src.affecting)]")
+				logTheThing(LOG_COMBAT, src.assailant, "drops [his_or_her(src.assailant)] grab on [constructTarget(src.affecting,"combat")] at [log_loc(src.affecting)]")
 			if (affecting.grabbed_by)
 				affecting.grabbed_by -= src
 
@@ -151,7 +152,7 @@
 		if (check())
 			return
 		if (target == src.affecting)
-			attack_self(user)
+			src.AttackSelf(user)
 			return
 
 	attack_hand(mob/user)
@@ -165,7 +166,7 @@
 			H.stamina_stun(mult)
 			if(H.stamina <= -75)
 				H.losebreath += (3 * mult)
-				H.setStatusMin("paralysis", STAMINA_NEG_CAP_STUN_TIME * mult) //not ideal
+				H.setStatusMin("unconscious", STAMINA_NEG_CAP_STUN_TIME * mult) //not ideal
 			else if(H.stamina <= -50)
 				H.losebreath += (1.5 * mult)
 			else if(H.stamina <= -33)
@@ -223,23 +224,36 @@
 				else
 					logTheThing(LOG_COMBAT, src.assailant, "'s grip upped to aggressive on [constructTarget(src.affecting,"combat")]")
 					for(var/mob/O in AIviewers(src.assailant, null))
-						O.show_message(SPAN_ALERT("[src.assailant] has grabbed [src.affecting] aggressively (now hands)!"), 1)
+						O.show_message(SPAN_ALERT("[src.assailant] has grabbed [src.affecting] aggressively!"), 1)
+					if (istype(src.loc, /obj/item/cloth) || istype(src.loc, /obj/item/material_piece/cloth))
+						SPAWN(0.3 SECONDS) //wait for them to move in
+							if (!QDELETED(src))
+								attack_particle(src.assailant, src.affecting)
+						var/obj/item/cloth = src.loc
+						if (cloth.reagents && cloth.reagents.total_volume > 0 && iscarbon(src.affecting))
+							logTheThing(LOG_COMBAT, src.assailant, "tries to force [constructTarget(src.affecting)] to breathe from [cloth] [log_reagents(cloth.reagents)]")
+							boutput(src.affecting, SPAN_BOLD("[src.assailant] presses the [cloth] in your face to force you to breathe in chemicals!"))
+							SPAWN(2 SECONDS) // When it actually begins passing chemicals through
+								if (src.state >= GRAB_AGGRESSIVE)
+									transfering_chemicals = TRUE
 					icon_state = "reinforce"
 					src.state = GRAB_AGGRESSIVE //used to be '1'. SKIP LEVEL 1
+					SEND_SIGNAL(src.affecting, COMSIG_MOB_GRABBED, src)
 					set_affected_loc()
 
 					user.next_click = world.time + user.combat_click_delay //+ rand(6,11) //this was utterly disgusting, leaving it here in memorial
 			if (GRAB_STRONG)
 				icon_state = "!reinforce"
 				src.state = GRAB_AGGRESSIVE
+				SEND_SIGNAL(src.affecting, COMSIG_MOB_GRABBED, src)
 				if (!src.affecting.buckled)
 					set_affected_loc()
-				src.assailant.lastattacked = src.affecting
-				src.affecting.lastattacker = src.assailant
+				src.assailant.lastattacked = get_weakref(src.affecting)
+				src.affecting.lastattacker = get_weakref(src.assailant)
 				src.affecting.lastattackertime = world.time
 				logTheThing(LOG_COMBAT, src.assailant, "'s grip upped to aggressive on [constructTarget(src.affecting,"combat")]")
 				user.next_click = world.time + user.combat_click_delay
-				src.assailant.visible_message(SPAN_ALERT("[src.assailant] has reinforced [his_or_her(assailant)] grip on [src.affecting] (now aggressive)!"))
+				src.assailant.visible_message(SPAN_ALERT("[src.assailant] has reinforced [his_or_her(assailant)] grip on [src.affecting]!"))
 			if (GRAB_AGGRESSIVE)
 				if (ishuman(src.affecting))
 					var/mob/living/carbon/human/H = src.affecting
@@ -253,7 +267,7 @@
 				user.next_click = world.time + user.combat_click_delay
 			if (GRAB_CHOKE)
 				src.state = GRAB_AGGRESSIVE
-				logTheThing(LOG_COMBAT, src.assailant, "releases their choke on [constructTarget(src.affecting,"combat")] after [choke_count] cycles")
+				logTheThing(LOG_COMBAT, src.assailant, "releases [his_or_her(src.assailant)] choke on [constructTarget(src.affecting,"combat")] after [choke_count] cycles")
 				for (var/mob/O in AIviewers(src.assailant, null))
 					O.show_message(SPAN_ALERT("[src.assailant] has loosened [his_or_her(assailant)] grip on [src.affecting]'s neck!"), 1)
 				user.next_click = world.time + user.combat_click_delay
@@ -266,10 +280,6 @@
 		icon_state = "disarm/kill"
 		logTheThing(LOG_COMBAT, src.assailant, "chokes [constructTarget(src.affecting,"combat")]")
 		choke_count = 0
-		if (istype(src.loc, /obj/item/cloth))
-			var/obj/item/cloth/cloth = src.loc
-			if (cloth.reagents && cloth.reagents.total_volume > 0 && iscarbon(src.affecting))
-				logTheThing(LOG_COMBAT, src.assailant, "begins to force [constructTarget(src.affecting)] to breathe from [cloth] [log_reagents(cloth.reagents)]")
 		if (!msg_overridden)
 			if (isitem(src.loc))
 				var/obj/item/I = src.loc
@@ -279,9 +289,10 @@
 				for (var/mob/O in AIviewers(src.assailant, null))
 					O.show_message(SPAN_ALERT("[src.assailant] has tightened [his_or_her(assailant)] grip on [src.affecting]'s neck!"), 1)
 		src.state = GRAB_CHOKE
+		SEND_SIGNAL(src.affecting, COMSIG_MOB_GRABBED, src)
 		REMOVE_ATOM_PROPERTY(src.assailant, PROP_MOB_CANTMOVE, src)
-		src.assailant.lastattacked = src.affecting
-		src.affecting.lastattacker = src.assailant
+		src.assailant.lastattacked = get_weakref(src.affecting)
+		src.affecting.lastattacker = get_weakref(src.assailant)
 		src.affecting.lastattackertime = world.time
 		if (!src.affecting.buckled)
 			set_affected_loc()
@@ -308,9 +319,10 @@
 			O.show_message(SPAN_ALERT("[src.assailant] has pinned [src.affecting] to [get_turf(T)]!"), 1)
 
 		src.state = GRAB_PIN
+		SEND_SIGNAL(src.affecting, COMSIG_MOB_GRABBED, src)
 
-		src.assailant.lastattacked = src.affecting
-		src.affecting.lastattacker = src.assailant
+		src.assailant.lastattacked = get_weakref(src.affecting)
+		src.affecting.lastattacker = get_weakref(src.assailant)
 		src.affecting.lastattackertime = world.time
 
 		step_to(src.assailant,T)
@@ -389,10 +401,10 @@
 		else if (src.state == GRAB_PIN)
 			var/succ = 0
 
-			if (resist_count >= 8 && prob(7 * prob_mod)) //after 8 resists, start rolling for breakage. this is to make sure people with stamina buffs cant infinite-pin someone
+			if (resist_count >= 8 && prob(10 * prob_mod)) //after 8 resists, start rolling for breakage. this is to make sure people with stamina buffs cant infinite-pin someone
 				succ = 1
 			else if (ishuman(src.assailant))
-				src.assailant.remove_stamina(19)
+				src.assailant.remove_stamina(29)
 				src.affecting.remove_stamina(10)
 				var/mob/living/carbon/human/H = src.assailant
 				if (H.stamina <= 0)
@@ -430,15 +442,17 @@
 		if (!src.affecting) return 0
 		if (BOUNDS_DIST(user, src.affecting) > 0)
 			return 0
-		if ((src.state < 1 && !(src.affecting.getStatusDuration("paralysis") || src.affecting.getStatusDuration("weakened") || src.affecting.stat)) || !isturf(user.loc))
+		if ((src.state < 1 && !(src.affecting.getStatusDuration("unconscious") || src.affecting.getStatusDuration("knockdown") || src.affecting.stat)) || !isturf(user.loc))
 			user.visible_message(SPAN_ALERT("[src.affecting] stumbles a little!"))
 			user.u_equip(src)
+			qdel(src)
 			return 0
 
-		src.affecting.lastattacker = src.assailant
+		src.affecting.lastattacker = get_weakref(src.assailant)
 		src.affecting.lastattackertime = world.time
 		.= src.affecting
 		user.u_equip(src)
+		qdel(src)
 
 
 	proc/check_hostage(owner, obj/projectile/P)
@@ -459,7 +473,6 @@
 /datum/action/bar/icon/strangle_target
 	duration = 30
 	interrupt_flags = INTERRUPT_MOVE | INTERRUPT_ACT | INTERRUPT_STUNNED
-	id = "strangle_target"
 	icon = 'icons/mob/critter_ui.dmi'
 	icon_state = "neck_over"
 	color_active = "#d37610"
@@ -503,9 +516,8 @@
 		target = null
 
 /datum/action/bar/icon/pin_target
-	duration = 25
+	duration = 30
 	interrupt_flags = INTERRUPT_ACT | INTERRUPT_STUNNED
-	id = "pin_target"
 	icon = 'icons/ui/actions.dmi'
 	icon_state = "pin"
 	color_active = "#d37610"
@@ -519,7 +531,7 @@
 		T = Turf
 
 		if (ishuman(target) && target:stamina < target:stamina_max/2)
-			duration -= 15 * (1-(target:stamina/(target:stamina_max/2)))
+			duration -= 20 * (1-(target:stamina/(target:stamina_max/2)))
 
 		if (G.state < GRAB_AGGRESSIVE)
 			duration += 25 //takes longer if you dont have a good gripp
@@ -593,8 +605,8 @@
 /turf/grab_smash(obj/item/grab/G, mob/user)
 	var/mob/affecting = G.affecting //the parent disposes G
 	if(..())
-		var/duration = (G.state > 0) ? 4 SECONDS : 2 SECONDS
-		affecting.do_disorient(40, disorient = duration, stack_stuns = FALSE)
+		var/duration = (G.state > 0) ? 6 SECONDS : 4 SECONDS
+		affecting.do_disorient(80, disorient = duration, stack_stuns = FALSE)
 
 /obj/window/grab_smash(obj/item/grab/G, mob/user)
 	if (!ismob(G.affecting) || BOUNDS_DIST(G.affecting, src) != 0)
@@ -611,8 +623,8 @@
 		logTheThing(LOG_COMBAT, user, "slams [constructTarget(user,"combat")]'s head into [src]")
 		playsound(src.loc, src.hitsound , 100, 1)
 
-	var/duration = (G.state > 0) ? 4 SECONDS : 2 SECONDS
-	G.affecting.do_disorient(20, disorient = duration, stack_stuns = FALSE)
+	var/duration = (G.state > 0) ? 5 SECONDS : 3 SECONDS
+	G.affecting.do_disorient(50, disorient = duration, stack_stuns = FALSE)
 
 	G.dispose()
 	return 1
@@ -725,7 +737,7 @@
 		for (var/obj/item/clothing/C in clothing)
 			if (C.c_flags & (COVERSMOUTH | MASKINTERNALS))
 				for (var/mob/O in AIviewers(src.assailant, null))
-					O.show_message(SPAN_ALERT("[src.assailant] fails to choke [src.affecting] with [src.loc] because their [C] is in the way!"), 1)
+					O.show_message(SPAN_ALERT("[src.assailant] fails to choke [src.affecting] with [src.loc] because [his_or_her(src.affecting)] [C] is in the way!"), 1)
 				return 0
 
 		..(msg_overridden = 1)
@@ -737,7 +749,7 @@
 
 		if (use_internal)
 			for (var/mob/O in AIviewers(src.assailant, null))
-				O.show_message(SPAN_ALERT("[src.assailant] has tightened [his_or_her(assailant)] grip on [src.affecting]'s neck, forcing them to inhale from [use_internal]!"), 1)
+				O.show_message(SPAN_ALERT("[src.assailant] has tightened [his_or_her(assailant)] grip on [src.affecting]'s neck, forcing [him_or_her(src.affecting)] to inhale from [use_internal]!"), 1)
 		else
 			for (var/mob/O in AIviewers(src.assailant, null))
 				O.show_message(SPAN_ALERT("[src.assailant] has tightened [his_or_her(assailant)] grip on [src.affecting]'s neck with no internals tank attached!"), 1)
@@ -772,43 +784,42 @@
 
 	src.hide_attack = initial(src.hide_attack)
 
-/obj/item/grab/gunpoint
-	var/shot = 0
-
-	New()
-		..()
+//this should be abstract but abstract type markers propagate to the parent
+/obj/item/grab/threat
+	var/activated = FALSE
 
 	post_item_setup()
 		..()
-		if (!(src.affecting.mob_flags & AT_GUNPOINT))
-			src.affecting.mob_flags |= AT_GUNPOINT
+		RegisterSignal(src.affecting, COMSIG_MOB_TRIGGER_THREAT, PROC_REF(activate))
 
 	disposing()
-		if (!shot && src.assailant && isitem(src.loc))
+		UnregisterSignal(src.affecting, COMSIG_MOB_TRIGGER_THREAT)
+		if (!src.activated && src.assailant && isitem(src.loc))
 			for (var/mob/O in AIviewers(src.assailant, null))
 				if (O.client)
 					O.show_message(SPAN_ALERT("[src.assailant] lowers [src.loc]."))
-
-		if (src.affecting)
-			var/found = 0
-			for (var/obj/item/grab/gunpoint/G in src.affecting.grabbed_by)
-				if (G != src)
-					found = 1
-					break
-			if (!found)
-				src.affecting.mob_flags &= ~AT_GUNPOINT
 		..()
 
-	proc/shoot()
-		if(src.shot)
+	do_resist()
+		src.activate()
+		if (!QDELETED(src))
+			..()
+
+	proc/activate()
+		if(src.activated)
 			return
-		src.shot = TRUE
+		src.activated = TRUE
 		if (src.affecting && src.assailant && isitem(src.loc))
-			var/obj/item/gun/G = src.loc
-			G.ShootPointBlank(src.affecting,src.assailant,1) //don't shoot an offhand gun
+			src.kill(src.loc)
 
 		qdel(src)
 
+	proc/kill(obj/item/weapon)
+		return
+
+/obj/item/grab/threat/gunpoint
+	kill(obj/item/gun/gun)
+		gun.ShootPointBlank(src.affecting,src.assailant,1) //don't shoot an offhand gun
 
 /obj/item/grab/block
 	c_flags = EQUIPPED_WHILE_HELD
@@ -825,7 +836,7 @@
 		if (isitem(src.loc))
 			var/obj/item/I = src.loc
 			I.c_flags |= HAS_GRAB_EQUIP
-			I.tooltip_rebuild = 1
+			I.tooltip_rebuild = TRUE
 		setProperty("I_disorient_resist", 20)
 
 	disposing()
@@ -835,7 +846,7 @@
 		if (isitem(src.loc))
 			var/obj/item/I = src.loc
 			I.c_flags &= ~HAS_GRAB_EQUIP
-			I.tooltip_rebuild = 1
+			I.tooltip_rebuild = TRUE
 			SEND_SIGNAL(I, COMSIG_ITEM_BLOCK_END, src)
 		else
 			if (assailant)
@@ -844,7 +855,7 @@
 
 		if (assailant)
 			if(assailant.hasStatus("blocking"))
-				assailant.visible_message(SPAN_ALERT("[assailant] lowers their defenses!"))
+				assailant.visible_message(SPAN_ALERT("[assailant] lowers [his_or_her(src.assailant)] defenses!"))
 				assailant.delStatus("blocking")
 			assailant.last_resist = world.time + COMBAT_BLOCK_DELAY
 		..()
@@ -909,9 +920,9 @@
 		var/target_dir = get_dir(user,target)
 		if(!target_dir)
 			target_dir = user.dir
-		if (!(T.turf_flags & CAN_BE_SPACE_SAMPLE) && !(user.lying) && can_act(user) && !HAS_ATOM_PROPERTY(user, PROP_MOB_CANTMOVE) && target_dir)
+		if (!istype(T, /turf/space) && !(user.lying) && can_act(user) && !HAS_ATOM_PROPERTY(user, PROP_MOB_CANTMOVE) && target_dir &&!isghostcritter(user))
 
-			user.changeStatus("weakened", max(user.movement_delay()*2, 0.5 SECONDS))
+			user.changeStatus("knockdown", max(user.movement_delay()*2, 0.5 SECONDS))
 			user.force_laydown_standup()
 			var/turf/target_turf = get_step(user, target_dir)
 			if (!target_turf)
@@ -927,6 +938,7 @@
 
 				if (dive_attack_hit)
 					var/damage = rand(1,6)
+					var/area/AR = get_area(dive_attack_hit)
 					if (ishuman(user))
 						var/mob/living/carbon/human/H = user
 						if (H.shoes)
@@ -936,14 +948,16 @@
 						else if (H.limbs.l_leg)
 							damage += H.limbs.l_leg.limb_hit_bonus
 					if(issilicon(dive_attack_hit))
-						playsound(src.loc, 'sound/impact_sounds/Metal_Clang_3.ogg', 60, 1)
-						for (var/mob/O in AIviewers(user))
-							O.show_message(SPAN_ALERT("<b>[user] slides into [dive_attack_hit]! What [pick_string("descriptors.txt", "borg_punch")]!</b>"))
+						playsound(user, 'sound/impact_sounds/Metal_Clang_3.ogg', 60, 1)
+						user.visible_message(SPAN_ALERT("<b>[user] slides into [dive_attack_hit]! What [pick_string("descriptors.txt", "borg_punch")]!</b>"))
+					else if (AR.sanctuary)
+						playsound(user, 'sound/impact_sounds/Generic_Hit_2.ogg', 50, TRUE, -1)
+						user.visible_message(SPAN_ALERT("<B>[user] slides into [dive_attack_hit] harmlessly!</B>"))
 					else
 						dive_attack_hit.TakeDamageAccountArmor("chest", damage, 0, 0, DAMAGE_BLUNT)
+						dive_attack_hit.was_harmed(user)
 						playsound(user, 'sound/impact_sounds/Generic_Hit_2.ogg', 50, TRUE, -1)
-						for (var/mob/O in AIviewers(user))
-							O.show_message(SPAN_ALERT("<B>[user] slides into [dive_attack_hit]!</B>"), 1)
+						user.visible_message(SPAN_ALERT("<B>[user] slides into [dive_attack_hit]!</B>"))
 					logTheThing(LOG_COMBAT, user, "slides into [dive_attack_hit] at [log_loc(dive_attack_hit)].")
 
 
@@ -974,7 +988,7 @@
 							if (throw_target)
 								item_num_to_throw--
 								playsound(itm, "swing_hit", 50, 1)
-								itm.throw_at(throw_target, W_CLASS_HUGE - itm.w_class, (1 / itm.w_class) + 0.8) // Range: 1-4, Speed: 1-2
+								itm.throw_at(throw_target, W_CLASS_HUGE - itm.w_class, (1 / itm.w_class) + 0.8, thrown_by=user) // Range: 1-4, Speed: 1-2
 
 							if (!item_num_to_throw)
 								break
@@ -995,7 +1009,7 @@
 
 	New()
 		..()
-		src.create_reagents(10)
+		src.create_reagents(20)
 
 	disposing()
 		..()
@@ -1004,9 +1018,12 @@
 
 	process_grab(var/mult = 1)
 		..()
-		if (src.chokehold && src.reagents && src.reagents.total_volume > 0 && chokehold.state == GRAB_CHOKE && iscarbon(src.chokehold.affecting))
-			src.reagents.reaction(chokehold.affecting, INGEST, 0.5 * mult)
-			src.reagents.trans_to(chokehold.affecting, 0.5 * mult)
+		if (chokehold.transfering_chemicals || chokehold.state > GRAB_AGGRESSIVE) // Having more than an aggressive grab will transfer the chemicals anyway
+			if (src.chokehold && src.reagents && src.reagents.total_volume > 0 && chokehold.state >= GRAB_AGGRESSIVE && iscarbon(src.chokehold.affecting))
+				//src.reagents.reaction(chokehold.affecting, INGEST, 0.5 * mult) // No more ingesting means no stacking damage horribly and instantly
+				src.reagents.trans_to(chokehold.affecting, 1.5 * mult)
+			else
+				chokehold.transfering_chemicals = FALSE
 
 	is_open_container()
 		.= 1

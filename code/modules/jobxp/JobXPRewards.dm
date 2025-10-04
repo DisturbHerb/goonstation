@@ -6,38 +6,36 @@ var/list/xpRewardButtons = list() //Assoc, datum:button obj
 mob/verb/checkrewards()
 	set name = "Check Job Rewards"
 	set category = "Commands"
-	var/txt = input(usr, "Which job? (Case sensitive)","Check Job Rewards", src.job)
-	if(txt == null || length(txt) == 0) txt = src.job
-	showJobRewards(txt)
-	return
 
-/proc/showJobRewards(var/job) //Pass in job instead
+	if (!src.mind) return
+
+	if(isdead(usr))
+		boutput(usr, SPAN_NOTICE("You can't claim rewards while dead!"))
+		return
+
 	SPAWN(0)
 		var/mob/M = usr
-		if(job)
-			if(!winexists(M, "winjobrewards_[M.ckey]"))
-				winclone(M, "winJobRewards", "winjobrewards_[M.ckey]")
+		if(!winexists(M, "winjobrewards_[M.ckey]"))
+			winclone(M, "winJobRewards", "winjobrewards_[M.ckey]")
 
-			var/list/valid = list()
-			for(var/datum/jobXpReward/J in xpRewardButtons) //This could be cached later.
-				if(job in J.required_levels)
-					valid.Add(J)
-					valid[J] = xpRewardButtons[J]
+		var/list/valid = list()
+		for(var/datum/jobXpReward/J in xpRewardButtons) //This could be cached later.
+			if(job in J.required_levels)
+				valid.Add(J)
+				valid[J] = xpRewardButtons[J]
 
-			if(valid.len)
-				winset(M, "winjobrewards_[M.ckey].grdJobRewards", "cells=\"1x[valid.len]\"")
-				var/count = 0
-				for(var/S in valid)
-					winset(M, "winjobrewards_[M.ckey].grdJobRewards", "current-cell=1,[++count]")
-					M << output(valid[S], "winjobrewards_[M.ckey].grdJobRewards")
-				winset(M, "winjobrewards_[M.ckey].lblJobName", "text=\"Job rewards for '[job]', Lvl [get_level(M.key, job)]\"")
-			else
-				winset(M, "winjobrewards_[M.ckey].grdJobRewards", "cells=\"1x0\"")
-				winset(M, "winjobrewards_[M.ckey].lblrewarddesc", "text=\"Sorry nothing.\"")
-				winset(M, "winjobrewards_[M.ckey].lblJobName", "text=\"Sorry there's no rewards for the [job] yet :(\"")
-			winshow(M, "winjobrewards_[M.ckey]")
+		if(valid.len)
+			winset(M, "winjobrewards_[M.ckey].grdJobRewards", "cells=\"1x[valid.len]\"")
+			var/count = 0
+			for(var/S in valid)
+				winset(M, "winjobrewards_[M.ckey].grdJobRewards", "current-cell=1,[++count]")
+				M << output(valid[S], "winjobrewards_[M.ckey].grdJobRewards")
+			winset(M, "winjobrewards_[M.ckey].lblJobName", "text=\"Job rewards for '[job]', Lvl [get_level(M.key, job)]\"")
 		else
-			boutput(M, SPAN_ALERT("Woops! That's not a valid job, sorry!"))
+			winset(M, "winjobrewards_[M.ckey].grdJobRewards", "cells=\"1x0\"")
+			winset(M, "winjobrewards_[M.ckey].lblrewarddesc", "text=\"Sorry nothing.\"")
+			winset(M, "winjobrewards_[M.ckey].lblJobName", "text=\"Sorry there's no rewards for the [job] yet :(\"")
+		winshow(M, "winjobrewards_[M.ckey]")
 
 //Once again im forced to make fucking objects to properly use byond skin stuff.
 /obj/jobxprewardbutton
@@ -47,29 +45,11 @@ mob/verb/checkrewards()
 	var/datum/jobXpReward/rewardDatum = null
 
 	Click(location,control,params)
-		if(control && rewardDatum)
-			if(control == "winjobrewards_[usr.ckey].grdJobRewards")
-				if(rewardDatum.claimable && (usr.job in rewardDatum.required_levels) && rewardDatum.qualifies(usr.key)) //Check for number of claims.
-					var/claimsLeft = 1
-					if(rewardDatum.claimPerRound > 0)
-						if(rewardDatum.claimedNumbers.Find(usr.key) && rewardDatum.claimedNumbers[usr.key] >= rewardDatum.claimPerRound)
-							claimsLeft = 0
-					if(claimsLeft)
-						if(tgui_alert(usr, "Would you like to claim this reward?", "Claim reward", list("Yes", "No")) == "Yes")
-							if(rewardDatum.claimPerRound > 0)
-								if(rewardDatum.claimedNumbers.Find(usr.key) && rewardDatum.claimedNumbers[usr.key] >= rewardDatum.claimPerRound)
-									return
-							if(rewardDatum.qualifies(usr.key))
-								rewardDatum.activate(usr.client)
-								if(usr.key in rewardDatum.claimedNumbers)
-									rewardDatum.claimedNumbers[usr.key] = (rewardDatum.claimedNumbers[usr.key] + 1)
-								else
-									rewardDatum.claimedNumbers[usr.key] = 1
-							else
-								boutput(usr, SPAN_ALERT("Looks like you haven't earned this yet, sorry!"))
-					else
-						boutput(usr, SPAN_ALERT("Sorry, you can not claim any more of this reward, this round."))
-		return
+		if(!src.rewardDatum)
+			return
+		if(control != "winjobrewards_[usr.ckey].grdJobRewards")
+			return
+		src.rewardDatum.try_claim(usr)
 
 	MouseEntered(location,control,params)
 		if(winexists(usr, "winjobrewards_[usr.ckey]"))
@@ -98,15 +78,42 @@ mob/verb/checkrewards()
 	var/list/claimedNumbers = list() //Assoc list, key:numclaimed
 
 	proc/qualifies(var/key)
-		var/pass = 1
 		for(var/X in required_levels)
+			if (required_levels[X] <= 0) //dont car
+				continue
 			var/level = get_level(key, X)
 			if(level < required_levels[X])
-				pass = 0
-		return pass
+				return FALSE
+		return TRUE
 
 	proc/activate(var/client/C)
 		return
+
+	proc/try_claim(mob/user, check_levels = TRUE)
+		if(!src.claimable || !(user.job in src.required_levels))
+			return
+
+		if(src.claimPerRound > 0) //Check for number of claims.
+			if(src.claimedNumbers.Find(user.key) && src.claimedNumbers[user.key] >= src.claimPerRound)
+				boutput(user, SPAN_ALERT("Sorry, you can not claim any more of this reward, this round."))
+				return
+
+		if(tgui_alert(user, "Would you like to claim this reward?", "Claim reward", list("Yes", "No")) != "Yes")
+			return
+
+		if(check_levels && !src.qualifies(user.key))
+			boutput(user, SPAN_ALERT("Looks like you haven't earned this yet, sorry!"))
+			return
+
+		src.activate(user.client)
+
+		if(user.key in src.claimedNumbers)
+			src.claimedNumbers[user.key] = (src.claimedNumbers[user.key] + 1)
+		else
+			src.claimedNumbers[user.key] = 1
+
+		return TRUE
+
 
 //JANITOR
 
@@ -308,7 +315,7 @@ mob/verb/checkrewards()
 		if (istype(O, sacrifice_path))
 			var/obj/item/gun/energy/E = O
 			var/list/ret = list()
-			if(SEND_SIGNAL(src, COMSIG_CELL_CHECK_CHARGE, ret) & CELL_RETURNED_LIST)
+			if(SEND_SIGNAL(E, COMSIG_CELL_CHECK_CHARGE, ret) & CELL_RETURNED_LIST)
 				charge = ret["charge"]
 				max_charge = ret["max_charge"]
 			C.mob.remove_item(E)
@@ -333,6 +340,7 @@ mob/verb/checkrewards()
 		LG.set_loc(get_turf(C.mob))
 		C.mob.put_in_hand(LG)
 		boutput(C.mob, "Your E-Gun vanishes and is replaced with [LG]!")
+		LG.assign_name(C.mob)
 		C.mob.put_in_hand_or_drop(LGP)
 		boutput(C.mob, SPAN_EMOTE("A pamphlet flutters out."))
 		return

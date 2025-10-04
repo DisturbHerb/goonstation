@@ -4,8 +4,9 @@
 	dir = 4;
 	icon_state = "lattice-dir"
 	},
-/obj/decal/fakeobjects/pipe{
-	dir = 4
+/obj/fakeobject/pipe{
+	dir = 4;
+	color = "b4b4b4"
 	},
 /turf/variableTurf/clear,
 /area/noGenerate)
@@ -25,7 +26,7 @@
 	dir = 4;
 	icon_state = "lattice-dir"
 	},
-/obj/decal/fakeobjects/shuttleengine{
+/obj/fakeobject/shuttleengine{
 	dir = 8;
 	icon_state = "alt_heater"
 	},
@@ -44,8 +45,9 @@
 /area/noGenerate)
 "y" = (
 /obj/lattice,
-/obj/decal/fakeobjects/pipe{
-	dir = 4
+/obj/fakeobject/pipe{
+	dir = 4;
+	color = "b4b4b4"
 	},
 /turf/variableTurf/clear,
 /area/noGenerate)

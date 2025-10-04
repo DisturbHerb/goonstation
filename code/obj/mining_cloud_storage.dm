@@ -6,6 +6,8 @@
 	var/list/stats = list()
 	var/amount_sold = 0
 
+#define ROCKBOX_MAX_HEALTH 100
+
 /obj/machinery/ore_cloud_storage_container
 	name = "Rockbox™ Ore Cloud Storage Container"
 	desc = "This thing stores ore in \"the cloud\" for the station to use. Best not to think about it too hard."
@@ -14,13 +16,15 @@
 	density = TRUE
 	anchored = ANCHORED
 	event_handler_flags = USE_FLUID_ENTER | NO_MOUSEDROP_QOL
+	req_access = list(access_mining)
 
+	var/sound_destroyed = 'sound/impact_sounds/Machinery_Break_1.ogg'
 	var/list/datum/ore_cloud_data/ores = list()
 	var/default_price = 20
 	var/autosell = TRUE
 
-	var/health = 100
-	var/broken = FALSE
+	var/health = ROCKBOX_MAX_HEALTH
+
 	var/sound/sound_load = sound('sound/items/Deconstruct.ogg')
 
 	var/output_target = null
@@ -34,6 +38,7 @@
 		STOP_TRACKING
 
 	mouse_drop(over_object, src_location, over_location)
+
 		if(!isliving(usr) || isintangible(usr))
 			boutput(usr, SPAN_ALERT("Only tangible, living mobs are able to set the output target for [src]."))
 			return
@@ -44,6 +49,10 @@
 
 		if(BOUNDS_DIST(over_object, usr) > 0)
 			boutput(usr, SPAN_ALERT("You are too far away from the target!"))
+			return
+
+		if (src.is_broken())
+			boutput(usr, SPAN_ALERT("Cannot set output target as [src] seems broken and inoperable!"))
 			return
 
 		if (istype(over_object,/obj/storage/crate/))
@@ -89,6 +98,10 @@
 
 		if(BOUNDS_DIST(dropped, user) > 0)
 			boutput(user, SPAN_ALERT("You are too far away!"))
+			return
+
+		if (src.is_broken())
+			boutput(user, SPAN_ALERT("The quick-load system will not work since the [src] seems broken and inoperable!"))
 			return
 
 		if(!src.accept_loading(user, TRUE))
@@ -163,15 +176,31 @@
 		boutput(user, SPAN_NOTICE("You finish stuffing [O] into [src]!"))
 		return
 
+	proc/write_message_broken(mob/user)
+		boutput(user, SPAN_ALERT("Cannot deposit ores into [src] since it seems to be broken and inoperable!"))
+
 	attackby(obj/item/W, mob/user)
+		var/broken = src.is_broken()
+
 		if (istype(W, /obj/item/ore_scoop))
+			if (broken)
+				src.write_message_broken(user)
+				return
+
 			var/obj/item/ore_scoop/scoop = W
 			if (!scoop?.satchel)
 				boutput(user, SPAN_ALERT("No ore satchel to unload from [W]."))
 				return
 			W = scoop.satchel
 
-		if (istype(W, /obj/item/raw_material/) && src.accept_loading(user))
+		if (istype(W, /obj/item/raw_material/))
+			if (broken)
+				src.write_message_broken(user)
+				return
+
+			if (!src.accept_loading(user))
+				return
+
 			var/obj/item/raw_material/R = W
 			if(R.material?.getName() != R.initial_material_name)
 				boutput(user, SPAN_ALERT("[src] rejects the anomalous ore."))
@@ -179,6 +208,10 @@
 			user.visible_message(SPAN_NOTICE("[user] loads [W] into the [src]."), SPAN_NOTICE("You load [W] into the [src]."))
 			src.load_item(W,user)
 		else if (istype(W, /obj/item/satchel/mining))
+			if (broken)
+				src.write_message_broken(user)
+				return
+
 			var/obj/item/satchel/mining/satchel = W
 			user.visible_message(SPAN_NOTICE("[user] starts dumping [satchel] into [src]."), SPAN_NOTICE("You start dumping [satchel] into [src]."))
 			var/amtload = 0
@@ -189,21 +222,34 @@
 				src.load_item(R, user)
 				amtload++
 			satchel.UpdateIcon()
-			satchel.tooltip_rebuild = 1
+			satchel.tooltip_rebuild = TRUE
 			if (amtload)
 				boutput(user, SPAN_NOTICE("[amtload] materials loaded from [satchel]!"))
 			else
 				boutput(user, SPAN_ALERT("[satchel] is empty!"))
-		else
-			src.health = max(src.health-W.force,0)
-			src.check_health()
+		else if (!broken)
+			user.lastattacked = get_weakref(src)
+			if (W.force)
+				if (W.hitsound)
+					playsound(src.loc, W.hitsound, 50, 1)
+				src.health = max(src.health - randfloat(W.force/1.5, W.force),0)
+
+				attack_particle(user,src)
+				hit_twitch(src)
+				src.check_health()
+
+				if (src.health < ROCKBOX_MAX_HEALTH / 1.5)
+					if (prob(66))
+						elecflash(src.loc, 1, 4, 0)
 			..()
 
 	proc/check_health()
-		if(!src.health && !broken)
-			src.broken = TRUE
+		if(!src.health && !(src.is_broken()))
+			src.status |= BROKEN
 			src.visible_message(SPAN_ALERT("[src] breaks!"))
 			src.icon_state = "ore_storage_unit-broken"
+			robogibs(src.loc)
+			playsound(src.loc, src.sound_destroyed, 50, 2)
 
 	proc/load_item(var/obj/item/raw_material/R,var/mob/living/user)
 		if (!R)
@@ -219,7 +265,7 @@
 	proc/accept_loading(var/mob/user,var/allow_silicon = FALSE)
 		if (!user)
 			return 0
-		if (src.status & BROKEN || src.status & NOPOWER)
+		if (src.is_disabled())
 			return 0
 		if (!istype(user, /mob/living/))
 			return 0
@@ -291,7 +337,7 @@
 				OCD.amount--
 
 		if(transmit)
-			flick("ore_storage_unit-transmit",src)
+			FLICK("ore_storage_unit-transmit",src)
 			showswirl(eject_location)
 			leaveresidual(eject_location)
 
@@ -329,7 +375,20 @@
 
 		return src.loc
 
+	get_desc(dist, mob/user)
+		. = ..()
+
+		if (src.is_broken())
+			. += SPAN_ALERT("It looks broken and inoperable.")
+
 	ui_interact(mob/user, datum/tgui/ui)
+		if (src.is_broken())
+			boutput(user, SPAN_ALERT("The [src] seems to be broken and inoperable!"))
+			return
+		if(!src.allowed(user))
+			boutput(user, SPAN_ALERT("Access Denied."))
+			return
+
 		ui = tgui_process.try_update_ui(user, src, ui)
 		if (!ui)
 			ui = new(user, src, "Rockbox")
@@ -358,6 +417,7 @@
 		. = ..()
 		if(.)
 			return
+
 		switch(action)
 			if("dispense-ore")
 				eject_ores(params["ore"], null, params["take"])
@@ -368,7 +428,8 @@
 				. = TRUE
 			if("set-default-price")
 				var/price = params["newPrice"]
-				default_price = max(price, 0)
+				if(isnum_safe(price))
+					default_price = max(price, 0)
 				. = TRUE
 			if("toggle-auto-sell")
 				autosell = !autosell
@@ -376,6 +437,8 @@
 			if("set-ore-price")
 				var/ore = params["ore"]
 				var/price = params["newPrice"]
-				update_ore_price(ore, price)
+				if(isnum_safe(price))
+					update_ore_price(ore, price)
 				. = TRUE
 
+#undef ROCKBOX_MAX_HEALTH

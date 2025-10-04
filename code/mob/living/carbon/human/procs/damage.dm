@@ -42,6 +42,7 @@
 							if (P.forensic_ID)
 								implanted.forensic_ID = P.forensic_ID
 							src.implant += implanted
+							implanted.forensic_holder = P.forensic_holder // Give projectile forensics to the implanted bullet
 							if (P.proj_data.material)
 								implanted.setMaterial(P.proj_data.material)
 							implanted.implanted(src, null, 60)
@@ -74,6 +75,7 @@
 						src.implant += implanted
 						if (P.forensic_ID)
 							implanted.forensic_ID = P.forensic_ID
+						implanted.forensic_holder = P.forensic_holder
 						if (P.proj_data.material)
 							implanted.setMaterial(P.proj_data.material)
 						implanted.implanted(src, null, 100)
@@ -102,7 +104,7 @@
 				if (istype(P.proj_data, /datum/projectile/laser))
 					var/wound_num = rand(0, 4)
 					var/image/I = image(icon = 'icons/mob/human.dmi', icon_state = "laser_wound-[wound_num]", layer = MOB_EFFECT_LAYER)
-					src.UpdateOverlays(I, "laser_wound-[wound_num]")
+					src.AddOverlays(I, "laser_wound-[wound_num]")
 
 			if (D_BURNING)
 				if (armor_value_bullet > 1)
@@ -127,7 +129,7 @@
 							implanted.owner = src
 							if (P.forensic_ID)
 								implanted.forensic_ID = P.forensic_ID
-							src.implant += implanted
+							implanted.forensic_holder = P.forensic_holder
 							implanted.setMaterial(P.proj_data.material)
 							implanted.implanted(src, null, 0)
 	return 1
@@ -172,7 +174,7 @@
 	var/reduction = 0
 	var/shielded = 0
 
-	if (src.spellshield)
+	if (src.hasStatus("spellshield"))
 		reduction += 2
 		shielded = 1
 		boutput(src, SPAN_ALERT("<b>Your Spell Shield absorbs some blast!</b>"))
@@ -214,7 +216,7 @@
 	src.apply_sonic_stun(0, 0, 0, 0, 0, round(power*7), round(power*7), power*40)
 
 	if (prob(b_loss) && !shielded && !reduction)
-		src.changeStatus("paralysis", b_loss DECI SECONDS)
+		src.changeStatus("unconscious", b_loss DECI SECONDS)
 		src.force_laydown_standup()
 
 	TakeDamage(zone="All", brute=b_loss, burn=f_loss, tox=0, damage_type=0, disallow_limb_loss=1)
@@ -225,7 +227,7 @@
 	if (isdead(src) || src.nodamage)
 		return
 	var/shielded = 0
-	if (src.spellshield)
+	if (src.hasStatus("spellshield"))
 		shielded = 1
 
 	var/modifier = power / 20
@@ -244,7 +246,7 @@
 
 	src.show_message(SPAN_ALERT("The blob attacks you!"))
 
-	if (src.spellshield)
+	if (src.hasStatus("spellshield"))
 		boutput(src, SPAN_ALERT("<b>Your Spell Shield absorbs some damage!</b>"))
 
 	var/list/zones = list("head", "chest", "l_arm", "r_arm", "l_leg", "r_leg")
@@ -260,7 +262,7 @@
 					src.show_message(SPAN_ALERT("You have been protected from a hit to the head."))
 				return
 			if (damage > 4.9)
-				changeStatus("weakened", 2 SECONDS)
+				changeStatus("knockdown", 2 SECONDS)
 				for (var/mob/O in viewers(src, null))
 					O.show_message(SPAN_ALERT("<B>The blob has weakened [src]!</B>"), 1, SPAN_ALERT("You hear someone fall."), 2)
 			src.TakeDamage("head", damage, 0, 0, DAMAGE_BLUNT)
@@ -270,7 +272,7 @@
 				return
 			if (damage > 4.9)
 				if (prob(50))
-					src.changeStatus("weakened", 5 SECONDS)
+					src.changeStatus("knockdown", 5 SECONDS)
 					for (var/mob/O in viewers(src, null))
 						O.show_message(SPAN_ALERT("<B>The blob has knocked down [src]!</B>"), 1, SPAN_ALERT("You hear someone fall."), 2)
 				else
@@ -297,14 +299,14 @@
 				visible_message(SPAN_ALERT("<b>The blob has knocked [src] off-balance!</b>"))
 				drop_item()
 				if (prob(50))
-					src.changeStatus("weakened", 1 SECOND)
+					src.changeStatus("knockdown", 1 SECOND)
 		if ("r_leg")
 			src.TakeDamage("r_leg", damage, 0, 0, DAMAGE_BLUNT)
 			if (prob(5))
 				visible_message(SPAN_ALERT("<b>The blob has knocked [src] off-balance!</b>"))
 				drop_item()
 				if (prob(50))
-					src.changeStatus("weakened", 1 SECOND)
+					src.changeStatus("knockdown", 1 SECOND)
 
 	src.force_laydown_standup()
 
@@ -327,6 +329,10 @@
 
 	if(src.traitHolder?.hasTrait("athletic"))
 		brute *=1.33
+
+	brute *= 1 - GET_ATOM_PROPERTY(src, PROP_MOB_TALISMAN_BRUTE_REDUCTION) / 100
+	burn *= 1 - GET_ATOM_PROPERTY(src, PROP_MOB_TALISMAN_BURN_REDUCTION) / 100
+	tox *= 1 - GET_ATOM_PROPERTY(src, PROP_MOB_TALISMAN_TOX_REDUCTION) / 100
 
 	if(src.mutantrace) //HOW
 		var/typemult
@@ -381,6 +387,11 @@
 					if(prob(20))
 						make_cleanable(/obj/decal/cleanable/ash, get_turf(src))
 					qdel(P)
+				else if (tox > 30 && prob(tox) && !disallow_limb_loss)
+					src.visible_message(SPAN_ALERT("[src.name]'s [initial(P.name)] turns to sludge!"))
+					P.remove(FALSE)
+					make_cleanable(/obj/decal/cleanable/molten_item{name="gooey green mass";color="#00AA00"}, get_turf(src))
+					qdel(P)
 
 	// roll a quick death roll if you're already really beat up
 	// same as the standard death rolls, but an additional penalty percentage is added, based on damage taken:
@@ -425,7 +436,6 @@
 	TakeDamage(zone, max(brute, 0), max(burn, 0), 0, damage_type)
 
 /mob/living/carbon/human/HealDamage(zone, brute, burn, tox, var/bypass_reversal = FALSE)
-
 	if (src.traitHolder && src.traitHolder.hasTrait("reversal"))
 		src.TakeDamage(zone, brute, burn, tox, null, FALSE, TRUE)
 
@@ -453,21 +463,19 @@
 	if (type == "single")
 		for (var/i in 0 to 2)
 			if (src.GetOverlayImage("slash_wound-[i]"))
-				src.UpdateOverlays(null, "slash_wound-[i]")
+				src.ClearSpecificOverlays( "slash_wound-[i]")
 				break
 	else if (type == "all")
-		for (var/i in 0 to 2)
-			src.UpdateOverlays(null, "slash_wound-[i]")
+		src.ClearSpecificOverlays("slash_wound-0", "slash_wound-1", "slash_wound-2")
 
 /mob/living/carbon/human/proc/heal_laser_wound(type)
 	if (type == "single")
 		for (var/i in 0 to 4)
 			if (src.GetOverlayImage("laser_wound-[i]"))
-				src.UpdateOverlays(null, "laser_wound-[i]")
+				src.ClearSpecificOverlays("laser_wound-[i]")
 				break
 	else if (type == "all")
-		for (var/i in 0 to 4)
-			src.UpdateOverlays(null, "laser_wound-[i]")
+		src.ClearSpecificOverlays("laser_wound-0", "laser_wound-1", "laser_wound-2", "laser_wound-3", "laser_wound-4")
 
 /mob/living/carbon/human/take_eye_damage(var/amount, var/tempblind = 0, var/side)
 	if (!src || !ishuman(src) || (!isnum(amount) || amount == 0))
@@ -478,18 +486,18 @@
 		if (src.organHolder)
 			var/datum/organHolder/O = src.organHolder
 			if (side == "right")
-				if (O.right_eye)
+				if (O.right_eye?.provides_sight)
 					O.right_eye.brute_dam = max(0, O.right_eye.brute_dam + amount)
 			else if (side == "left")
-				if (O.left_eye)
+				if (O.left_eye?.provides_sight)
 					O.left_eye.brute_dam = max(0, O.left_eye.brute_dam + amount)
 			else
-				if (O.right_eye && O.left_eye)
+				if (O.right_eye?.provides_sight && O.left_eye?.provides_sight)
 					O.right_eye.brute_dam = max(0, O.right_eye.brute_dam + (amount/2))
 					O.left_eye.brute_dam = max(0, O.left_eye.brute_dam + (amount/2))
-				else if (O.right_eye)
+				else if (O.right_eye?.provides_sight)
 					O.right_eye.brute_dam = max(0, O.right_eye.brute_dam + amount)
-				else if (O.left_eye)
+				else if (O.left_eye?.provides_sight)
 					O.left_eye.brute_dam = max(0, O.left_eye.brute_dam + amount)
 		else
 			src.eye_damage = max(0, src.eye_damage + amount)
@@ -528,7 +536,8 @@
 
 				if (prob(eye_dam - 25 + 1))
 					src.show_text("You go blind!", "red")
-					src.bioHolder.AddEffect("blind")
+					src.organHolder?.left_eye?.take_damage(100)
+					src.organHolder?.right_eye?.take_damage(100)
 				else
 					src.change_eye_blurry(rand(12,16))
 
@@ -640,6 +649,20 @@
 		src.visible_message(SPAN_ALERT("<b>[src.name]</b> goes limp, their facial expression utterly blank."))
 		INVOKE_ASYNC(src, TYPE_PROC_REF(/mob/living/carbon/human, death))
 
+
+	if (amount > 0 && src.get_brain_damage() >= BRAIN_DAMAGE_SEVERE)
+		if (src.listen_tree && !src.listen_tree.GetModifierByID(LISTEN_MODIFIER_BRAIN_DAMAGE))
+			src.listen_tree.AddListenModifier(LISTEN_MODIFIER_BRAIN_DAMAGE)
+			src.change_misstep_chance(66)
+	else if (amount < 0 && src.get_brain_damage() < BRAIN_DAMAGE_SEVERE && src.listen_tree?.GetModifierByID(LISTEN_MODIFIER_BRAIN_DAMAGE))
+		src.listen_tree.RemoveListenModifier(LISTEN_MODIFIER_BRAIN_DAMAGE)
+		src.change_misstep_chance(-66)
+
+	if (amount > 0 && src.get_brain_damage() >= BRAIN_DAMAGE_MODERATE && !(locate(/datum/lifeprocess/brain) in src.lifeprocesses))
+		src.add_lifeprocess(/datum/lifeprocess/brain)
+	else if (amount < 0 && src.get_brain_damage() < BRAIN_DAMAGE_MODERATE)
+		src.remove_lifeprocess(/datum/lifeprocess/brain)
+
 /mob/living/carbon/human/get_brain_damage()
 	if (src.organHolder && src.organHolder.brain)
 		return src.organHolder.brain.get_damage()
@@ -649,3 +672,4 @@
 /mob/living/carbon/human/UpdateDamage()
 	..()
 	src.hud?.update_health_indicator()
+	src.update_health_monitor_icon()

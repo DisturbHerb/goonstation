@@ -1,27 +1,12 @@
 /obj/item/artifact/attack_wand
 	name = "artifact attack wand"
 	associated_datum = /datum/artifact/attack_wand
-	flags =  FPRINT | CONDUCT | EXTRADELAY
+	flags =  CONDUCT | EXTRADELAY
 
 	// this is necessary so that this returns null
 	// else afterattack will not be called when out of range
 	pixelaction(atom/target, params, mob/user, reach)
 		..()
-
-	afterattack(atom/target as mob|obj|turf|area, mob/user as mob, flag)
-		if (user.equipped() == src)
-			if (!src.ArtifactSanityCheck())
-				return
-			var/datum/artifact/attack_wand/A = src.artifact
-			if (!istype(A))
-				return
-			if (!A.activated)
-				return
-
-			user.lastattacked = src
-			var/turf/U = (istype(target, /atom/movable) ? target.loc : target)
-			A.effect_click_tile(src,user,U)
-
 /datum/artifact/attack_wand
 	associated_object = /obj/item/artifact/attack_wand
 	type_name = "Elemental Wand"
@@ -81,10 +66,14 @@
 		if(attack_type == "all")
 			curAttack = pick("lightning","fire","ice","sonic")
 
+		// copied from gun_parent.dm->shoot
+		for(var/mob/viewer in AIviewers(user, null))
+			viewer.show_message(SPAN_ALERT("<B>[user] points [O] at [T]!</B>"), 1, SPAN_ALERT("You hear surge of magic!"), 2)
+
 		switch(curAttack)
 			if("fire")
 				playsound(T, 'sound/effects/bamf.ogg', 50, TRUE, 0)
-				fireflash(T, powerVars["fireRadius"], powerVars["fireTemp"])
+				fireflash(T, powerVars["fireRadius"], powerVars["fireTemp"], chemfire = CHEM_FIRE_RED)
 
 				ArtifactLogs(user, T, O, "used", "creating fireball on target turf", 0) // Attack wands need special log handling (Convair880).
 

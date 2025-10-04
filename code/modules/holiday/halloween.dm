@@ -80,7 +80,7 @@
 
 	attack_ai(mob/user as mob)
 		if(BOUNDS_DIST(src, user) == 0)
-			return attack_hand(user)
+			return src.Attackhand(user)
 		else
 			boutput(user, "This jukebox is too old to be controlled remotely.")
 		return
@@ -125,7 +125,7 @@
 			if(!isdead(M) && M.loc != src) //No transferring to dead dudes.
 				transfer_targets.Add(M)
 
-			M.changeStatus("weakened", 3 SECONDS)
+			M.changeStatus("knockdown", 3 SECONDS)
 
 		if(!src.to_transfer.len || length(src.to_transfer) == 1)
 			src.visible_message("The [src] buzzes.")
@@ -194,9 +194,6 @@
 /obj/item/reagent_containers/glass/beaker/strange_reagent
 	name = "beaker-'Property of H. Jam'"
 	desc = "A beaker labled 'Property of H. Jam'.  Can hold up to 50 units."
-	icon = 'icons/obj/chemical.dmi'
-	icon_state = "beaker0"
-	item_state = "beaker"
 	initial_volume = 50
 
 	New()
@@ -252,34 +249,6 @@
 		newfolder.add_file( new /datum/computer/file/text/hjam_rlog_1(src))
 		newfolder.add_file( new /datum/computer/file/text/hjam_rlog_2(src))
 		newfolder.add_file( new /datum/computer/file/text/hjam_rlog_3(src))
-
-//Old outpost stuff
-/obj/machinery/computer3/generic/outpost1
-	name = "VR Research Console"
-	setup_starting_peripheral1 = /obj/item/peripheral/network/powernet_card
-	setup_starting_peripheral2 = /obj/item/peripheral/printer
-	setup_drive_type = /obj/item/disk/data/fixed_disk/outpost_rdrive
-
-/obj/item/disk/data/fixed_disk/outpost_rdrive
-	title = "VR_HDD"
-
-	New()
-		..()
-		//First off, create the directory for logging stuff
-		var/datum/computer/folder/newfolder = new /datum/computer/folder(  )
-		newfolder.name = "logs"
-		src.root.add_file( newfolder )
-		newfolder.add_file( new /datum/computer/file/record/c3help(src))
-		//newfolder.add_file( new /datum/computer/file/text/hjam_passlog(src))
-		//This is the bin folder. For various programs I guess sure why not.
-		newfolder = new /datum/computer/folder
-		newfolder.name = "bin"
-		src.root.add_file( newfolder )
-		newfolder.add_file( new /datum/computer/file/terminal_program/writewizard(src))
-
-		src.root.add_file( new /datum/computer/file/text/outpost_rlog_1(src))
-		src.root.add_file( new /datum/computer/file/text/outpost_rlog_2(src))
-		//src.root.add_file( new /datum/computer/file/text/hjam_rlog_3(src))
 
 //Haunted camera. Steals people's souls.
 /obj/item/camera/haunted
@@ -554,7 +523,7 @@
 			var/obj/item/reagent_containers/food/snacks/candy/newcandy = new newcandy_path
 			user.put_in_hand_or_drop(newcandy)
 			if (prob(5))
-				newcandy.razor_blade = 1
+				newcandy.has_razor_blade = TRUE
 			boutput(user, "You grab [newcandy] from the cauldron!")
 
 		/// subtype named "ephemeral" which only spawns on halloween

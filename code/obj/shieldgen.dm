@@ -7,7 +7,7 @@ Shield and graivty well generators
 /obj/shieldgen
 	name = "shield generator"
 	desc = "Used to seal minor hull breaches."
-	icon = 'icons/obj/objects.dmi'
+	icon = 'icons/obj/shield_gen.dmi'
 	icon_state = "shieldoff"
 
 	density = 1
@@ -175,6 +175,14 @@ TYPEINFO(/obj/gravity_well_generator)
 
 /obj/gravity_well_generator
 
+	New()
+		. = ..()
+		START_TRACKING_CAT(TR_CAT_SINGULO_MAGNETS)
+
+	disposing()
+		STOP_TRACKING_CAT(TR_CAT_SINGULO_MAGNETS)
+		. = ..()
+
 	meteorhit(obj/O as obj)
 		if(prob(75))
 			qdel(src)
@@ -195,14 +203,14 @@ TYPEINFO(/obj/gravity_well_generator)
 
 	attack_hand(mob/user)
 		if (active)
-			src.visible_message("<font color='blue'>[bicon(src)] [user] deactivated the gravity well.</font>")
+			src.visible_message(SPAN_NOTICE("[bicon(src)] [user] deactivated the gravity well."), group = "gravity_well")
 
 			icon_state = "gravgen-off"
 			src.anchored = UNANCHORED
 			src.active = 0
 
 		else
-			src.visible_message("<font color='blue'>[bicon(src)] [user] activated the gravity well.</font>")
+			src.visible_message(SPAN_NOTICE("[bicon(src)] [user] activated the gravity well."), group = "gravity_well")
 
 			icon_state = "gravgen-on"
 			src.active = 1

@@ -5,7 +5,6 @@
 	icon = 'icons/obj/items/items.dmi'
 	icon_state = "wrap_paper-r"
 	item_state = "wrap_paper"
-	uses_multiple_icon_states = 1
 	amount = 20
 	desc = "Used for wrapping gifts. It's got a neat design!"
 	stamina_damage = 0
@@ -48,7 +47,7 @@
 						boutput(user, SPAN_NOTICE("You need more paper!"))
 						return
 					src.amount -= a_used
-					tooltip_rebuild = 1
+					tooltip_rebuild = TRUE
 					user.drop_item()
 					qdel(W)
 					var/obj/item/clothing/head/apprentice/A = new /obj/item/clothing/head/apprentice(src.loc)
@@ -69,7 +68,7 @@
 				return
 			else
 				src.amount -= a_used
-				tooltip_rebuild = 1
+				tooltip_rebuild = TRUE
 				user.drop_item()
 				var/obj/item/gift/G = W.gift_wrap(src.style)
 				G.add_fingerprint(user)
@@ -102,7 +101,7 @@
 			var/obj/spresent/present = new /obj/spresent (target.loc)
 			present.icon_state = "strange-[src.style]"
 			src.amount -= 2
-			tooltip_rebuild = 1
+			tooltip_rebuild = TRUE
 
 			target.set_loc(present)
 		else
@@ -137,11 +136,8 @@
 
 	user.u_equip(src)
 	user.put_in_hand_or_drop(src.gift)
-	if(istype(src.gift, /obj/item/mousetrap))
-		var/obj/item/mousetrap/MT = src.gift
-		if(MT.armed)
-			modify_christmas_cheer(-4)
-			MT.triggered(user, user.hand ? "l_hand" : "r_hand")
+	if (SEND_SIGNAL(src.gift, COMSIG_ITEM_STORAGE_INTERACTION, user))
+		modify_christmas_cheer(-4)
 
 
 	modify_christmas_cheer(2)
@@ -173,7 +169,6 @@
 						/obj/item/storage/belt/wrestling)
 
 	festive
-		EPHEMERAL_XMAS
 		icon_state = "gift2-g"
 		attack_self(mob/M as mob)
 			if (!islist(giftpaths) || !length(giftpaths))
@@ -248,7 +243,7 @@ var/global/list/generic_gift_paths = list(/obj/item/basketball,
 	/obj/item/old_grenade/spawner/banana,
 	/obj/item/old_grenade/spawner/cheese_sandwich,
 	/obj/item/old_grenade/spawner/banana_corndog,
-	/obj/item/gimmickbomb/butt,
+	/obj/item/assembly/time_ignite_butt,
 	/obj/item/instrument/bikehorn,
 	/obj/item/instrument/bikehorn/dramatic,
 	/obj/item/instrument/bikehorn/airhorn,
@@ -279,6 +274,7 @@ var/global/list/generic_gift_paths = list(/obj/item/basketball,
 	/obj/item/pen/crayon/rainbow,
 	/obj/item/storage/box/crayon,
 	/obj/item/device/light/zippo/gold,
+	/obj/item/device/speech_pro,
 	/obj/item/currency/spacecash/really_small,
 	/obj/item/rubberduck,
 	/obj/item/rubber_hammer,
@@ -316,6 +312,7 @@ var/global/list/generic_gift_paths = list(/obj/item/basketball,
 	/obj/item/clothing/shoes/moon,
 	/obj/item/clothing/suit/armor/sneaking_suit/costume,
 	/obj/item/clothing/suit/hoodie,
+	/obj/item/clothing/suit/hoodie/large,
 	/obj/item/clothing/suit/robuddy,
 	/obj/item/clothing/suit/scarf,
 	/obj/item/clothing/under/gimmick/rainbow,
@@ -333,7 +330,8 @@ var/global/list/generic_gift_paths = list(/obj/item/basketball,
 	/obj/item/storage/pill_bottle/cyberpunk,
 	/obj/item/toy/sword,
 	/obj/item/stg_box,
-	/obj/item/clothing/suit/jacket/plastic/random_color)
+	/obj/item/clothing/suit/jacket/plastic/random_color,
+	/obj/item/record/lay_egg_is_true)
 
 var/global/list/questionable_generic_gift_paths = list(/obj/item/relic,
 	/obj/item/stimpack,

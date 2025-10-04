@@ -22,27 +22,28 @@
 			return 1
 
 		// Ability holder only checks for M.stat and wizard power, we need more than that here.
-		if (M.getStatusDuration("stunned") > 0 || M.getStatusDuration("weakened") || M.getStatusDuration("paralysis") > 0 || !isalive(M) || M.restrained())
+		if (M.getStatusDuration("stunned") > 0 || M.getStatusDuration("knockdown") || M.getStatusDuration("unconscious") > 0 || !isalive(M) || M.restrained())
 			boutput(M, SPAN_ALERT("Not when you're incapacitated or restrained."))
 			return 1
 
-		if(!istype(get_area(M), /area/sim/gunsim)) // Avoid dead chat spam
-			M.say("KOHM HEIRE", FALSE, maptext_style, maptext_colors)
-		..()
-
 		var/list/staves = list()
-		var/we_hold_it = 0
+		var/we_hold_it = FALSE
 		for_by_tcl(S, /obj/item/staff/cthulhu)
 			if (M.mind && M.mind.key == S.wizard_key)
 				if (S == M.find_in_hand(S))
-					we_hold_it = 1
+					we_hold_it = TRUE
 					continue
 				if (!(S in staves))
 					staves["[S.name] #[staves.len + 1] [ismob(S.loc) ? "carried by [S.loc.name]" : "at [get_area(S)]"]"] += S
 
+		if (!we_hold_it)
+			if(!istype(get_area(M), /area/sim/gunsim)) // Avoid dead chat spam
+				M.say("KOHM HEIRE", flags = SAYFLAG_IGNORE_STAMINA, message_params = list("maptext_css_values" = src.maptext_style, "maptext_animation_colours" = src.maptext_colors))
+			..()
+
 		switch (staves.len)
 			if (-INFINITY to 0)
-				if (we_hold_it != 0)
+				if (we_hold_it)
 					boutput(M, SPAN_ALERT("You're already holding your staff."))
 					return 1 // No cooldown.
 				else
@@ -83,7 +84,7 @@
 					return 0
 				if (M.wizard_castcheck(src) == 0)
 					return 0 // Has own user feedback.
-				if (M.getStatusDuration("stunned") > 0 || M.getStatusDuration("weakened") || M.getStatusDuration("paralysis") > 0 || !isalive(M) || M.restrained())
+				if (M.getStatusDuration("stunned") > 0 || M.getStatusDuration("knockdown") || M.getStatusDuration("unconscious") > 0 || !isalive(M) || M.restrained())
 					boutput(M, SPAN_ALERT("Not when you're incapacitated or restrained."))
 					return 0
 				if (M.mind.key != S3.wizard_key)
@@ -112,7 +113,7 @@
 			return 1
 
 		if(!istype(get_area(M), /area/sim/gunsim)) // Avoid dead chat spam
-			M.say("KUH, ABAH'RAH", FALSE, maptext_style, maptext_colors)
+			M.say("KUH, ABAH'RAH", flags = SAYFLAG_IGNORE_STAMINA, message_params = list("maptext_css_values" = src.maptext_style, "maptext_animation_colours" = src.maptext_colors))
 		..()
 
 		var/list/staves = list()

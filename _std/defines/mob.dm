@@ -1,9 +1,6 @@
 //various mob_flags go here
-/// For mobs who can hear everything (mainly observer ghossts)
-#define MOB_HEARS_ALL 1
 // God Ecaps
-#define SPEECH_REVERSE (1 << 1)
-#define SPEECH_BLOB (1 << 2)		//yes
+
 #define SEE_THRU_CAMERAS (1 << 3)	//for ai eye
 #define IS_BONEY (1 << 4)			//for skeletals
 #define UNUSED_32 (1 << 5)
@@ -11,7 +8,7 @@
 #define UNUSED_128 (1 << 7)
 #define UNUSED_256 (1 << 8)
 #define UNUSED_512 (1 << 9)
-#define AT_GUNPOINT (1 << 10) 	//quick check for guns holding me at gunpoint
+
 #define IGNORE_SHIFT_CLICK_MODIFIER (1 << 11) //shift+click doesn't retrigger a SHIFT keypress - use for mobs that sprint on shift and not on mobs that use shfit for bolting doors etc
 #define LIGHTWEIGHT_AI_MOB (1 << 12)		//not a part of the normal 'mobs' list so it wont show up in searches for observe admin etc, has its own slowed update rate on Life() etc
 #define USR_DIALOG_UPDATES_RANGE (1 << 13)	//updateusrdialog will consider this mob as being able to 'attack_ai' and update its ui at range

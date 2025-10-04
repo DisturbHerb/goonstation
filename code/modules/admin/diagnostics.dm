@@ -51,6 +51,8 @@ proc/debug_map_apc_count(delim,zlim)
 /client/proc
 	map_debug_panel()
 		SET_ADMIN_CAT(ADMIN_CAT_DEBUG)
+		ADMIN_ONLY
+		SHOW_VERB_DESC
 
 		var/area_txt = "<B>APC LOCATION REPORT</B><HR>"
 		area_txt += debug_map_apc_count("<BR>")
@@ -60,7 +62,8 @@ proc/debug_map_apc_count(delim,zlim)
 
 	general_report()
 		SET_ADMIN_CAT(ADMIN_CAT_DEBUG)
-
+		ADMIN_ONLY
+		SHOW_VERB_DESC
 		if(!processScheduler)
 			usr << alert("Process Scheduler not found.")
 
@@ -80,6 +83,8 @@ proc/debug_map_apc_count(delim,zlim)
 
 	air_report()
 		SET_ADMIN_CAT(ADMIN_CAT_DEBUG)
+		ADMIN_ONLY
+		SHOW_VERB_DESC
 
 		if(!processScheduler || !air_master)
 			alert(usr,"processScheduler or air_master not found.","Air Report")
@@ -96,7 +101,7 @@ proc/debug_map_apc_count(delim,zlim)
 				active_tiles += length(group.members)
 
 		var/hotspots = 0
-		for(var/obj/hotspot/hotspot in world)
+		for(var/atom/movable/hotspot/hotspot in world)
 			hotspots++
 			LAGCHECK(LAG_LOW)
 
@@ -164,7 +169,7 @@ proc/debug_map_apc_count(delim,zlim)
 		var/burning = 0
 		if(istype(target, /turf/simulated))
 			var/turf/simulated/T = target
-			if(T.active_hotspot)
+			if(length(T.active_hotspots))
 				burning = 1
 
 		boutput(usr, "<span class='notice'>@[target.x],[target.y] ([GM.group_multiplier])<br>[MOLES_REPORT(GM)] t: [GM.temperature]&deg;K ([GM.temperature - T0C]&deg;C), [MIXTURE_PRESSURE(GM)] kPa [(burning)?("<span class='alert'>BURNING</span>"):(null)]</span>")
@@ -172,6 +177,8 @@ proc/debug_map_apc_count(delim,zlim)
 	fix_next_move()
 		SET_ADMIN_CAT(ADMIN_CAT_DEBUG)
 		set name = "Press this if everybody freezes up"
+		ADMIN_ONLY
+		SHOW_VERB_DESC
 		var/largest_click_time = 0
 		var/mob/largest_click_mob = null
 		if (disable_next_click)
@@ -206,6 +213,7 @@ proc/debug_map_apc_count(delim,zlim)
 		set name = "Open Profiler"
 
 		ADMIN_ONLY
+		SHOW_VERB_DESC
 		world.SetConfig( "APP/admin", src.key, "role=admin" )
 		winset( usr, null, "command=.profile" )
 		if (tgui_alert(usr, "Do you disable automatic profiling for 5 minutes.", "Debug",
@@ -281,15 +289,6 @@ proc/debug_map_apc_count(delim,zlim)
 			if(theTurf.loc:do_not_irradiate)
 				img.app.color = "#0f0"
 			else
-				img.app.color = "#f00"
-
-	proximity
-		name = "proximity turfs"
-		help = "Green tiles are turfs with checkinghasproximity, red tiles have neighcheckinghasproximity."
-		GetInfo(var/turf/theTurf, var/image/debugoverlay/img)
-			if(theTurf:checkinghasproximity)
-				img.app.color = "#0f0"
-			else if(theTurf:neighcheckinghasproximity)
 				img.app.color = "#f00"
 
 	areas
@@ -567,6 +566,26 @@ proc/debug_map_apc_count(delim,zlim)
 			else if(length(artists) == 1)
 				img.app.color = debug_color_of(artists[1])
 			img.app.desc = built.Join("<br/>")
+
+	turbine_shafts
+		name = "turbine shafts"
+		GetInfo(turf/theTurf, image/debugoverlay/img)
+			var/obj/turbine_shaft/shaft = locate() in theTurf
+			if (!shaft)
+				img.app.alpha = 0
+				return
+			img.app.color = debug_color_of(shaft.network)
+
+	currents
+		name = "currents"
+		GetInfo(turf/theTurf, image/debugoverlay/img)
+			var/obj/effects/current/current = locate() in theTurf
+			if (!current)
+				img.app.alpha = 0
+				return
+			img.app.icon = 'icons/effects/effects.dmi'
+			img.app.icon_state = "arrow"
+			img.app.dir = current.dir
 
 	powernet
 		name = "power networks"
@@ -993,12 +1012,6 @@ proc/debug_map_apc_count(delim,zlim)
 			else
 				img.app.alpha = 0
 
-	checkinghasproximity
-		name = "checkinghasproximity"
-		help = "Green = yes. Red = no. Yellow = next to yes."
-		GetInfo(var/turf/theTurf, var/image/debugoverlay/img)
-			img.app.color = theTurf.checkinghasproximity ? "#0f0" : (theTurf.neighcheckinghasproximity ? "#ff0" : "#f00")
-
 	blood_owner/no_items
 		name = "blood owner - no items"
 		is_ok(atom/A)
@@ -1074,7 +1087,7 @@ proc/debug_map_apc_count(delim,zlim)
 				var/next_id = beacon.codes["next_patrol"] || beacon.codes["next_tour"]
 				var/datum/packet_network/net = get_radio_connection_by_id(beacon, "navbeacon").network
 				var/datum/component/packet_connected/next_device = net.devices_by_tag[next_id][1]
-				var/datum/lineResult/R1 = drawLine(theTurf, get_turf(next_device.parent), "triangle", getCrossed = 0, mode = LINEMODE_SIMPLE)
+				var/datum/lineResult/R1 = drawLineImg(theTurf, get_turf(next_device.parent), "triangle", getCrossed = 0, mode = LINEMODE_SIMPLE)
 				R1.lineImage.color = debug_color_of(beacon.freq)
 				img.app.overlays += R1.lineImage
 				R1.lineImage.loc = null
@@ -1632,6 +1645,7 @@ proc/info_overlay_choices()
 	set name = "Debug Overlay"
 	SET_ADMIN_CAT(ADMIN_CAT_DEBUG)
 	ADMIN_ONLY
+	SHOW_VERB_DESC
 	var/list/available_overlays = info_overlay_choices()
 	activeOverlay?.OnDisabled(src)
 	if(!name || name == "REMOVE")
@@ -1669,16 +1683,17 @@ proc/info_overlay_choices()
 			var/y = text2num(splittext(offs[2], ":")[1])
 			var/image/im = usr.client.infoOverlayImages["[x]-[y]"]
 			if(im?.desc)
-				usr.client.tooltipHolder.transient.show(src, list(
-					"params" = params,
-					"title" = "Diagnostics",
-					"content" = (im.desc)
-				))
+				usr.client.tooltips.show(
+					TOOLTIP_HOVER, src,
+					mouse = params,
+					title = "Diagnostics",
+					content = (im.desc)
+				)
 		else
 			.=..()
 	MouseExited()
 		if(usr.client.activeOverlay)
-			usr.client.tooltipHolder.transient.hide()
+			usr.client.tooltips.hide(TOOLTIP_HOVER)
 		else
 			.=..()
 

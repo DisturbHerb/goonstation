@@ -18,8 +18,11 @@
 	default_material = "greymatter"
 	tooltip_flags = REBUILD_ALWAYS //fuck it, nobody examines brains that often
 
+	/// is this brain cyber incompatible?
+	var/cyber_incompatible = FALSE
+
 	disposing()
-		logTheThing(LOG_COMBAT, src, "[owner ? "(owner's ckey [owner.ckey]) " : ""]has been destroyed by [usr ? constructTarget(usr,"combat") : "???"] in [!isturf(src.loc) ? src.loc : ""][log_loc(src)]. Brain last touched by [src.fingerprintslast].")
+		logTheThing(LOG_COMBAT, src, "[owner ? "(owner's ckey [owner.ckey]) " : ""]has been destroyed by [usr ? constructTarget(usr,"combat") : "???"] in [!isturf(src.loc) ? src.loc : ""] [log_loc(src)]. Brain last touched by [src.fingerprintslast].")
 
 		if (owner && owner.brain == src)
 			owner.brain = null
@@ -37,16 +40,20 @@
 
 	Eat(mob/M, mob/user)
 		if(isghostcritter(M) || isghostcritter(user))
-			return 0
+			return FALSE
 		if(M == user)
 			if(tgui_alert(user, "Are you sure you want to eat [src]?", "Eat brain?", list("Yes", "No")) == "Yes")
+				if (!(src in user.equipped_list())) //stop remotely eating people's brains please
+					return TRUE
 				logTheThing(LOG_COMBAT, user, "tries to eat [src] (owner's ckey [owner ? owner.ckey : null]).")
 				return ..()
 		else
 			if(tgui_alert(user, "Are you sure you want to feed [src] to [M]?", "Feed brain?", list("Yes", "No")) == "Yes")
+				if (!(src in user.equipped_list()))
+					return TRUE
 				logTheThing(LOG_COMBAT, user, "tries to feed [src] (owner's ckey [owner ? owner.ckey : null]) to [constructName(M)].")
 				return ..()
-		return 0
+		return FALSE
 
 	get_desc()
 		if (usr && (usr.traitHolder?.hasTrait("training_medical") || GET_ATOM_PROPERTY(usr,PROP_MOB_EXAMINE_HEALTH)))
@@ -179,3 +186,8 @@
 	return {"[SPAN_FLOCKSAY("[SPAN_BOLD("###=- Ident confirmed, data packet received.")]<br>\
 		[SPAN_BOLD("ID:")] Computational core<br>\
 		[SPAN_BOLD("###=-")]")]"}
+
+/obj/item/organ/brain/amphibian
+	name = "amphibian brain"
+	desc = "A frog brain. Look at the size of those optic lobes!"
+	icon_state = "amphibian_brain"

@@ -58,7 +58,6 @@
 	icon = 'icons/mob/hud_human_new.dmi'
 	icon_state = "stamina_bar"
 	var/last_val = -123123
-	var/tooltipTheme = "stamina"
 	var/last_update = 0
 	layer = HUD_LAYER-1
 
@@ -78,7 +77,13 @@
 
 	proc/update_value(var/mob/living/C)
 		last_update = TIME
-		if(C.stamina_max <= 0 || abs(C.stamina - last_val) * 32 / C.stamina_max <= 1) return //No need to change anything
+
+		if (C.stamina_max <= 0)
+			return
+		// Don't change if we have barely changed stamina to begin with, but change if we just hit the max value
+		if ((abs(C.stamina - last_val) / C.stamina_max) < 0.05 \
+		    && !(C.stamina == C.stamina_max && last_val != C.stamina_max))
+			return
 		else last_val = C.stamina
 
 		if(C.stamina < 0)
@@ -105,20 +110,6 @@
 		src.desc = newDesc
 		C.update_stamina_desc(newDesc)
 		return
-
-	//WIRE TOOLTIPS
-	MouseEntered(location, control, params)
-		if (usr.client.tooltipHolder)
-			usr.client.tooltipHolder.showHover(src, list(
-				"params" = params,
-				"title" = src.name,
-				"content" = (src.desc ? src.desc : null),
-				"theme" = src.tooltipTheme
-			))
-
-	MouseExited()
-		if (usr.client.tooltipHolder)
-			usr.client.tooltipHolder.hideHover()
 
 /atom/movable/screen/intent_sel/clicked(list/params)
 	var/icon_x = text2num(params["icon-x"])
@@ -153,4 +144,4 @@
 /atom/movable/screen/clicked(list/params)
 	switch(src.name)
 		if("stamina")
-			out(usr, src.desc)
+			boutput(usr, src.desc)

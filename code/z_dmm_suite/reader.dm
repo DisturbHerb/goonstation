@@ -21,7 +21,7 @@ dmm_suite
 	default to (1, 1, world.maxz+1)
 	*/
 	read_map(dmm_text as text, coordX as num, coordY as num, coordZ as num, tag as text, flags as num)
-		UNTIL(!air_master?.is_busy)
+		UNTIL(!air_master?.is_busy, 0)
 		src.flags = flags
 		if(flags & DMM_BESPOKE_AREAS)
 			src.area_cache = list()
@@ -118,9 +118,9 @@ dmm_suite
 						for(var/posX = 1 to length(yLine)/key_len)
 							var/turf/T = locate(posX + igridCoordX - 1, posY+igridCoordY - 1, igridCoordZ)
 							for(var/x in T)
-								if(istype(x, /obj) && flags & DMM_OVERWRITE_OBJS && !istype(x, /obj/overlay))
+								if(isobj(x) && flags & DMM_OVERWRITE_OBJS && !istype(x, /obj/overlay))
 									qdel(x)
-								else if(istype(x, /mob) && flags & DMM_OVERWRITE_MOBS)
+								else if(ismob(x) && flags & DMM_OVERWRITE_MOBS)
 									qdel(x)
 								LAGCHECK(LAG_MED)
 
@@ -134,7 +134,7 @@ dmm_suite
 					)
 				sleep(-1)
 			sleep(-1)
-		//
+
 		return props
 
 	/*-- load_map ------------------------------------
@@ -180,6 +180,8 @@ dmm_suite
 				for(var/atomModel in splittext(models, comma_delim))
 					var bracketPos = findtext(atomModel, "{")
 					var atomPath = text2path(copytext(atomModel, 1, bracketPos))
+					if(!atomPath)
+						stack_trace("Attempted to load invalid type [copytext(atomModel, 1, bracketPos)]!")
 					var/list/attributes
 					if(bracketPos)
 						attributes = new()
@@ -241,6 +243,8 @@ dmm_suite
 			else
 				if(ispath(atomPath, /turf))
 					//instance = new atomPath(location)
+					location.RL_Cleanup()
+					location.RL_Reset()
 					instance = location.ReplaceWith(atomPath, keep_old_material = 0, handle_air = 0, handle_dir = 0, force = 1)
 					if(instance) // I hate that we made it so ReplaceWith can return null, it sucks so much
 						instance.set_dir(initial(instance.dir))
@@ -283,37 +287,34 @@ dmm_suite
 						key_value_regex.Find(key_str)
 						key_str = key_value_regex.group[1]
 						val_str = key_value_regex.group[2]
-						var/val = isnull(val_str) ? null : loadAttribute(trim(val_str), strings)
-						.[loadAttribute(trim(key_str), strings)] = val
+						var/val = isnull(val_str) ? null : loadAttribute(trimtext(val_str), strings)
+						.[loadAttribute(trimtext(key_str), strings)] = val
 					else
-						. += loadAttribute(trim(key_str), strings)
+						. += loadAttribute(trimtext(key_str), strings)
 
 
 //-- Preloading ----------------------------------------------------------------
 
-turf
-	var
-		dmm_suite/preloader/dmm_preloader
+turf/var/dmm_suite/preloader/dmm_preloader
 
-atom/New(turf/newLoc)
-    if(isturf(newLoc))
-        var/dmm_suite/preloader/preloader = newLoc.dmm_preloader
-        if(preloader)
-            newLoc.dmm_preloader = null
-            preloader.load(src)
-    . = ..()
+/atom/New(newLoc)
+	if(isturf(newLoc))
+		var/turf/T = newLoc
+		var/dmm_suite/preloader/preloader = T.dmm_preloader
+		if(preloader)
+			T.dmm_preloader = null
+			preloader.load(src)
+	. = ..()
 
-dmm_suite
-	preloader
-		parent_type = /datum
-		var
-			list/attributes
-		New(turf/loadLocation, list/_attributes)
-			loadLocation.dmm_preloader = src
-			attributes = _attributes
-			. = ..()
-		proc
-			load(atom/newAtom)
-				var/list/attributesMirror = attributes // apparently this is faster
-				for(var/attributeName in attributesMirror)
-					newAtom.vars[attributeName] = attributesMirror[attributeName]
+/dmm_suite/preloader
+	parent_type = /datum
+	var/list/attributes
+
+	New(turf/loadLocation, list/_attributes)
+		loadLocation.dmm_preloader = src
+		attributes = _attributes
+		. = ..()
+	proc/load(atom/newAtom)
+		var/list/attributesMirror = attributes // apparently this is faster
+		for(var/attributeName in attributesMirror)
+			newAtom.vars[attributeName] = attributesMirror[attributeName]

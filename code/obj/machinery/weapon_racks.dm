@@ -115,7 +115,7 @@
 		amount = 3
 		max_amount = 3
 		stand_type = "shotgun_rack"
-		contained_weapon = /obj/item/gun/kinetic/riotgun
+		contained_weapon = /obj/item/gun/kinetic/pumpweapon/riotgun
 		contained_weapon_name = "riot shotgun"
 		req_access = list(access_security)
 
@@ -128,10 +128,41 @@
 		stand_type = "pulserifle_rack"
 		contained_weapon = /obj/item/gun/energy/pulse_rifle
 		contained_weapon_name = "pulse rifle"
-		req_access = list(access_security)
+		req_access = list(access_armory)
 
 		recharger
 			recharges_contents = 1
+
+	phaser_rack
+		name = "phaser rack"
+		desc = "A rack that charges up to 3 phaser guns."
+		icon_state = "phaser_rack"
+		amount = 3
+		max_amount = 3
+		stand_type = "phaser_rack"
+		contained_weapon = /obj/item/gun/energy/phaser_gun/extended_mag
+		contained_weapon_name = "phaser"
+		req_access = list(access_armory)
+		recharges_contents = TRUE
+
+		valid_item(obj/item/I)
+			return istype(I, /obj/item/gun/energy/phaser_gun)
+
+	phaser_smg_rack
+		name = "phaser smg rack"
+		desc = "A rack that charges up to 3 phaser smgs."
+		icon_state = "phaser_rack"
+		amount = 3
+		max_amount = 3
+		stand_type = "phaser_rack"
+		contained_weapon = /obj/item/gun/energy/phaser_smg/extended_mag
+		contained_weapon_name = "phaser"
+		req_access = list(access_armory)
+		recharges_contents = TRUE
+
+		valid_item(obj/item/I)
+			return istype(I, /obj/item/gun/energy/phaser_smg)
+
 
 	New()
 		..()
@@ -182,6 +213,7 @@
 				src.amount ++
 				boutput(user, "You place [W] into [src].")
 				src.update()
+				logTheThing(LOG_STATION, user, "returns [W] to [src] [log_loc(src)].")
 			else return ..()
 
 //no, this isnt even an item its not allowed. if you wanna move racks around, code an unscrew behavior or something
@@ -208,10 +240,10 @@
 				var/is_uncut = src.wires & APCWireColorToFlag[rackwires[wiredesc]]
 				pdat += "[wiredesc] wire: "
 				if(!is_uncut)
-					pdat += "<a href='?src=\ref[src];cutwire=[rackwires[wiredesc]]'>Mend</a>"
+					pdat += "<a href='byond://?src=\ref[src];cutwire=[rackwires[wiredesc]]'>Mend</a>"
 				else
-					pdat += "<a href='?src=\ref[src];cutwire=[rackwires[wiredesc]]'>Cut</a> "
-					pdat += "<a href='?src=\ref[src];pulsewire=[rackwires[wiredesc]]'>Pulse</a> "
+					pdat += "<a href='byond://?src=\ref[src];cutwire=[rackwires[wiredesc]]'>Cut</a> "
+					pdat += "<a href='byond://?src=\ref[src];pulsewire=[rackwires[wiredesc]]'>Pulse</a> "
 				pdat += "<br>"
 
 			pdat += "<br>"
@@ -247,14 +279,14 @@
 				src.amount--
 			user.put_in_hand_or_drop(myWeapon)
 			boutput(user, "You take [myWeapon] out of [src].")
-			logTheThing(LOG_STATION, user, "takes [myWeapon] from the [src] [log_loc(src)].")
+			logTheThing(LOG_STATION, user, "takes [myWeapon] from [src] [log_loc(src)].")
 		else
 			if (src.amount >= 1)
 				src.amount--
 				myWeapon = new src.contained_weapon(src.loc)
 				user.put_in_hand_or_drop(myWeapon)
 				boutput(user, "You take [myWeapon] out of [src].")
-				logTheThing(LOG_STATION, user, "takes [myWeapon] from the [src] [log_loc(src)].")
+				logTheThing(LOG_STATION, user, "takes [myWeapon] from [src] [log_loc(src)].")
 		src.update()
 		myWeapon?.UpdateIcon() // let it be known that this used to be in a try-catch for some fucking reason
 		if (src.amount <= 0) //prevents a runtime if it's empty
@@ -269,7 +301,7 @@
 			for(var/obj/item/A in src) // For each item(A) in the rack(src) ...
 				if(!valid_item(A)) // Check if the item(A) is not(!) accepted in this kind of rack(contained_weapon) and then...
 					continue // It's not accepted here! Vamoose! Skidaddle! Git outta here! (Move on without executing any further code in this proc.)
-				SEND_SIGNAL(A, COMSIG_CELL_CHARGE, 10)
+				SEND_SIGNAL(A, COMSIG_CELL_CHARGE, 25)
 
 	Topic(href, href_list)
 		if(BOUNDS_DIST(usr, src) > 0 && !issilicon(usr) && !isAI(usr))
@@ -352,3 +384,9 @@
 			if(user)
 				boutput(user, "The [src] is already unlocked!")
 			return 0
+
+	overload_act()
+		if (src.hacked)
+			return FALSE
+		src.hacked = TRUE
+		return TRUE

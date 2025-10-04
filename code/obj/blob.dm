@@ -1,3 +1,5 @@
+
+/// This is the base type for all the blob tiles, normally controlled by a blob overmind.
 /obj/blob
 	name = "blob"
 	desc = "A mysterious alien blob-like organism."
@@ -13,33 +15,39 @@
 	opacity = 0
 	anchored = ANCHORED
 	event_handler_flags = USE_FLUID_ENTER
-	var/health = 30         // current health of the blob
-	var/health_max = 30     // health cap
-	var/armor = 1           // how much incoming damage gets divided by unless it bypasses armor
-	var/ideal_temp = 310    // what temperature the blob is safe at
-	var/mob/living/intangible/blob_overmind/overmind = null // who's the player controlling this blob
-	var/gen_rate_value = 0  // how much gen rate upkeep the overmind is paying on this tile
-	var/can_spread_from_this = 1
-	var/can_attack_from_this = 1
-	var/poison = 0
-	var/can_absorb = 1
-	var/special_icon = 0
-	var/spread_type = null
-	var/spread_value = 0
-	var/movable = 0
-	var/in_disposing = 0
+	var/health = 30 //! Current health of the blob
+	var/health_max = 30 //! Health cap
+	var/armor = 1 //! How much incoming damage gets divided by unless it bypasses armor
+	var/mob/living/intangible/blob_overmind/overmind = null //! Who's the player controlling this blob
+	var/gen_rate_value = 0  //! How much gen rate upkeep the overmind is paying on this tile
+	// unused?
+	var/can_spread_from_this = TRUE //! Whether or not a blob can spread from this tile
+	var/can_attack_from_this = TRUE //! Whether or not the blob can attack with this tile
+	var/can_absorb = TRUE //! This controls whether or not this specific blob tile can absorb eligible mobs inside of it
+	var/special_icon = FALSE //! Whether or not the tile is a special tile, and this has a special icon ("organ" tiles)
+	var/spread_type = null //! Controls the type of blob tile that tiles spread from this are made into. If this is null, it's set to /obj/blob
+	// unused?
+	var/spread_value = 0 //! How much this tile weighs in to a final 'spread mitigation value' to the overmind, added on attach and removed on destruction.
+	// ? unused?? horrifying concept?
+	var/movable = FALSE //! ...if a blob tile can be moved on mouse click drag
+	// prevents accidentally deleting ourselves twice
+	var/in_disposing = FALSE //! Whether or not we are currently disposing() this tile
 	var/datum/action/bar/blob_health/healthbar //Hack.
 	var/static/image/poisoned_image
-	var/fire_coefficient = 1
-	var/poison_coefficient = 1
-	var/poison_spread_coefficient = 0.5
-	var/poison_depletion = 0.75
-	var/heat_divisor = 15
-	var/temp_tolerance = 40
-	mat_changename = 0
-	mat_changedesc = 0
-	var/runOnLife = 0 //Should this obj run Life?
+	var/poison = 0 //! Stores the current __queued__ 'amount' of poison damage to apply. It does not apply this amount, instead its just referenced for how much to apply at base.
+	var/poison_coefficient = 1 //! Poison armor for blobs. 1 is full damage, 0 is invincibity.
+	var/poison_spread_coefficient = 0.5 //! Blob tiles spread poison to other tiles when they die -- This controls how much is spread. 2x for twice the damage, 0x for none.
+	// e.g. (poison_damage_2_deal -= (damage_we_dealt_rn * this_depletion_rate))
+	var/poison_depletion = 0.75 //! Multiplier for how much poison is depleted per poison damage taken
+	var/fire_coefficient = 1 //! Fire armor for blobs. 1 is full damage, 0 is invincibity.
+	var/ideal_temp = 310 KELVIN //! What temperature the blob is safe at. higher values factor in tolerance and heat divisors
+	var/heat_divisor = 15 //! Divisor for temperature, controls scaling for atmos heat damage. Blob takes 1/heat_divisor more/less damage with this
+	var/temp_tolerance = 40 KELVIN //! How much temperature (kelvin) we tolerate above our ideal temperature, factored in *before* the divisor.
+	var/runOnLife = FALSE //! Should this obj run Life? (organ tiles that normally do things get TRUE'd)
 	var/processed_on_killed = FALSE //! Whether onKilled already ran
+	var/surrounded = 0 //! Bitfield of dirs we have other blob tiles around us on
+	mat_changename = FALSE
+	mat_changedesc = FALSE
 
 	New()
 		..()
@@ -298,11 +306,13 @@
 			tolerance *= 3
 		if(temp_difference > tolerance)
 			temp_difference = abs(temp_difference - tolerance)
-
-			src.take_damage(temp_difference / heat_divisor * min(1, volume / (CELL_VOLUME/3)), 1, "burn")
+			var/damage = temp_difference / heat_divisor * min(1, volume / (CELL_VOLUME/3))
+			if(air)
+				damage *= clamp(MIXTURE_PRESSURE(air) / ONE_ATMOSPHERE, 0, 1)
+			src.take_damage(damage, 1, "burn")
 
 	attack_hand(var/mob/user)
-		user.lastattacked = src
+		user.lastattacked = get_weakref(src)
 		var/adj1
 		var/adj2 = pick_string("blob.txt", "adj2")
 		var/act1
@@ -319,11 +329,11 @@
 		act1 = pick_string("blob.txt", "act1_[adj1]")
 		adj1 = pick_string("blob.txt", "adj1_[adj1]")
 		playsound(src.loc, "sound/voice/blob/blobdamaged[rand(1, 3)].ogg", 75, 1)
-		src.visible_message(SPAN_COMBAT("<b>[user.name]</b> [adj1] [act1] [src]! That's [adj2] [act2]!"))
+		src.visible_message(SPAN_COMBAT("<b>[user.name]</b> [adj1] [act1] [src]! That's [adj2] [act2]!"), group="blobnuzzled")
 		return
 
 	attackby(var/obj/item/W, var/mob/user)
-		user.lastattacked = src
+		user.lastattacked = get_weakref(src)
 		if(ismobcritter(user) && user:ghost_spawned || isghostdrone(user))
 			src.visible_message(SPAN_COMBAT("<b>[user.name]</b> feebly attacks [src] with [W], but is too weak to harm it!"), group="blobweaklyattacked")
 			return
@@ -495,6 +505,7 @@
 				if (B)
 					dirs |= dir
 			icon_state = num2text(dirs)
+			src.surrounded = dirs
 
 		//else if(istext( special_icon ))
 		//	if(!BLOB_OVERLAYS[ special_icon ])
@@ -639,7 +650,7 @@
 			overmind.bio_points = 0
 			overmind.debuff_timestamp = world.timeofday + overmind.debuff_duration
 
-			out(overmind, SPAN_BLOBALERT("Your nucleus in [get_area(src)] has been destroyed! You feel a lot weaker for a short time..."))
+			boutput(overmind, SPAN_BLOBALERT("Your nucleus in [get_area(src)] has been destroyed! You feel a lot weaker for a short time..."))
 
 			if (prob(1))
 				src.visible_message(SPAN_BLOBALERT("With a great almighty wobble, the nucleus and nearby blob pieces wither and die! The time of jiggles is truly over."))
@@ -648,7 +659,7 @@
 
 		//all dead :(
 		else
-			out(overmind, SPAN_BLOBALERT("Your nucleus in [get_area(src)] has been destroyed!"))
+			boutput(overmind, SPAN_BLOBALERT("Your nucleus in [get_area(src)] has been destroyed!"))
 			if (prob(50))
 				playsound(src.loc, 'sound/voice/blob/blobdeploy.ogg', 100, 1)
 			else
@@ -919,7 +930,7 @@
 		. = ..()
 		dead = 1
 		if(absorbed_temp > 1000)
-			fireflash(get_turf(src), protect_range + 1, absorbed_temp + temptemp, (absorbed_temp + temptemp)/protect_range)
+			fireflash(get_turf(src), protect_range + 1, absorbed_temp + temptemp, (absorbed_temp + temptemp)/protect_range, chemfire = CHEM_FIRE_RED)
 
 
 /obj/blob/plasmaphyll
@@ -1016,7 +1027,7 @@
 	health_max = 75
 	can_absorb = 0
 	gas_impermeable = TRUE
-	flags = ALWAYS_SOLID_FLUID
+	flags = FLUID_DENSE
 
 	New()
 		..()
@@ -1046,7 +1057,7 @@
 	gas_impermeable = TRUE
 	health = 40
 	health_max = 40
-	flags = ALWAYS_SOLID_FLUID
+	flags = FLUID_DENSE
 
 	New()
 		..()

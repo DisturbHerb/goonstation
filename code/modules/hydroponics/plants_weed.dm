@@ -17,7 +17,7 @@ ABSTRACT_TYPE(/datum/plant/weed)
 	cropsize = 3
 	force_seed_on_harvest = 1
 	vending = 2
-	genome = 30
+	genome = 31
 	assoc_reagents = list("space_fungus")
 	mutations = list(/datum/plantmutation/fungus/amanita,/datum/plantmutation/fungus/psilocybin,/datum/plantmutation/fungus/cloak)
 
@@ -43,13 +43,12 @@ ABSTRACT_TYPE(/datum/plant/weed)
 		..()
 		if (.) return
 		var/datum/plant/P = POT.current
-		var/datum/plantgenes/DNA = POT.plantgenes
 
-		if (POT.growth > (P.growtime + DNA?.get_effective_value("growtime")) && prob(33))
+		if (POT.get_current_growth_stage() >= HYP_GROWTH_MATURED && prob(33))
 			for (var/mob/living/M in range(1,POT))
 				if (POT.health > P.starthealth / 2)
 					random_brute_damage(M, 8, 1)//slight bump to damage to account for everyone having 1 armor from jumpsuit, further bump to damage to make blooming lasher more difficult to cultivate
-					if (prob(20)) M.changeStatus("weakened", 3 SECONDS)
+					if (prob(20)) M.changeStatus("knockdown", 3 SECONDS)
 
 				if (POT.health <= P.starthealth / 2) POT.visible_message(SPAN_ALERT("<b>[POT.name]</b> weakly slaps [M] with a vine!"))
 				else POT.visible_message(SPAN_ALERT("<b>[POT.name]</b> slashes [M] with thorny vines!"))
@@ -57,15 +56,12 @@ ABSTRACT_TYPE(/datum/plant/weed)
 	HYPattacked_proc(var/obj/machinery/plantpot/POT,var/mob/user,var/obj/item/W)
 		..()
 		if (.) return
-		var/datum/plant/P = POT.current
-		var/datum/plantgenes/DNA = POT.plantgenes
-
-		if (POT.growth < (P.growtime + DNA?.get_effective_value("growtime"))) return 0
+		if (POT.get_current_growth_stage() < HYP_GROWTH_MATURED) return 0
 		// It's not big enough to be violent yet, so nothing happens
 
 		POT.visible_message(SPAN_ALERT("<b>[POT.name]</b> violently retaliates against [user.name]!"))
 		random_brute_damage(user, 10, 1)//see above
-		if (W && prob(50))
+		if (W && !W.cant_drop && prob(50))
 			boutput(user, SPAN_ALERT("The lasher grabs and smashes your [W]!"))
 			W.dropped(user)
 			qdel(W)
@@ -93,7 +89,7 @@ ABSTRACT_TYPE(/datum/plant/weed)
 	endurance = 80
 	special_proc = 1
 	vending = 2
-	genome = 40
+	genome = 34
 	assoc_reagents = list("radium")
 	mutations = list(/datum/plantmutation/radweed/redweed,/datum/plantmutation/radweed/safeweed)
 
@@ -101,9 +97,7 @@ ABSTRACT_TYPE(/datum/plant/weed)
 		..()
 		if (.) return
 		var/datum/plant/P = POT.current
-		var/datum/plantgenes/DNA = POT.plantgenes
-
-		if (POT.growth > (P.harvtime + DNA?.get_effective_value("harvtime")) && prob(10))
+		if (POT.get_current_growth_stage() >= HYP_GROWTH_HARVESTABLE && prob(10))
 			var/obj/overlay/B = new /obj/overlay( get_turf(POT) )
 			B.icon = 'icons/effects/hydroponics.dmi'
 			B.icon_state = "radpulse"
@@ -125,7 +119,7 @@ ABSTRACT_TYPE(/datum/plant/weed)
 				if (160 to INFINITY)
 					radstrength = 50
 					radrange = 3
-			for (var/mob/living/carbon/M in view(radrange,POT))
+			for (var/mob/living/M in view(radrange,POT))
 				if(!ON_COOLDOWN(M, "radweed_pulse", 2 SECONDS))
 					M.take_radiation_dose(radstrength/30 SIEVERTS)
 			for (var/obj/machinery/plantpot/C in range(radrange,POT))
@@ -148,7 +142,7 @@ ABSTRACT_TYPE(/datum/plant/weed)
 	endurance = 30
 	special_proc = 1
 	vending = 2
-	genome = 45
+	genome = 40
 	var/exploding = 0
 	assoc_reagents = list("toxic_slurry")
 	mutations = list(/datum/plantmutation/slurrypod/omega)
@@ -169,7 +163,7 @@ ABSTRACT_TYPE(/datum/plant/weed)
 		var/datum/plant/P = POT.current
 		var/datum/plantgenes/DNA = POT.plantgenes
 
-		if (POT.growth >= (P.harvtime + DNA?.get_effective_value("harvtime") + 50) && prob(10) && !src.exploding)
+		if (POT.growth >= (P.HYPget_growth_to_harvestable(DNA) + 50) && prob(10) && !src.exploding)
 			src.exploding = 1
 			POT.visible_message(SPAN_ALERT("<b>[POT]</b> begins to bubble and expand!"))
 			playsound(POT, 'sound/effects/bubbles.ogg', 50, TRUE)
@@ -179,7 +173,7 @@ ABSTRACT_TYPE(/datum/plant/weed)
 				playsound(POT, 'sound/impact_sounds/Slimy_Splat_1.ogg', 50, TRUE)
 
 				for (var/mob/living/carbon/human/M in view(3,POT))
-					if(istype(M.wear_suit, /obj/item/clothing/suit/bio_suit) && istype(M.head, /obj/item/clothing/head/bio_hood))
+					if(istype(M.wear_suit, /obj/item/clothing/suit/hazard/bio_suit) && istype(M.head, /obj/item/clothing/head/bio_hood))
 						boutput(M, SPAN_NOTICE("You are splashed by toxic goop, but your biosuit protects you!"))
 						continue
 					boutput(M, SPAN_ALERT("You are splashed by toxic goop!"))

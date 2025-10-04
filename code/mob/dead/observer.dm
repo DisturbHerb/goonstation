@@ -1,15 +1,23 @@
 // Observer
 
+#define GHOST_HAIR_ALPHA 192
+
+TYPEINFO(/mob/dead/observer)
+	start_listen_modifiers = list(LISTEN_MODIFIER_CHAT_CONTEXT_FLAGS)
+	start_listen_inputs = list(LISTEN_INPUT_DEADCHAT, LISTEN_INPUT_EARS_GHOST, LISTEN_INPUT_GLOBAL_HEARING_GHOST, LISTEN_INPUT_GLOBAL_HEARING_LOCAL_COUNTERPART_GHOST, LISTEN_INPUT_RADIO_GLOBAL_GHOST, LISTEN_INPUT_BLOBCHAT, LISTEN_INPUT_FLOCK_GLOBAL)
+	start_listen_languages = list(LANGUAGE_ALL)
+
 /mob/dead/observer
 	icon = 'icons/mob/mob.dmi'
 	icon_state = "ghost"
 	layer = NOLIGHT_EFFECTS_LAYER_BASE
 	plane = PLANE_NOSHADOW_ABOVE_NOWARP
-	event_handler_flags =  IMMUNE_MANTA_PUSH | IMMUNE_SINGULARITY | USE_FLUID_ENTER | MOVE_NOCLIP | IMMUNE_TRENCH_WARP
+	event_handler_flags =  IMMUNE_OCEAN_PUSH | IMMUNE_SINGULARITY | USE_FLUID_ENTER | MOVE_NOCLIP | IMMUNE_TRENCH_WARP
 	density = FALSE
 	canmove = TRUE
 	blinded = FALSE
 	anchored = ANCHORED	//  don't get pushed around
+
 	var/doubleghost = FALSE //! When a ghost gets busted they become a ghost of a ghost and this var is true
 	var/observe_round = FALSE
 	var/health_shown = FALSE
@@ -21,7 +29,7 @@
 	var/auto_tgui_open = TRUE
 	/// Observer menu TGUI datum. Can be null.
 	var/datum/observe_menu/observe_menu = null
-	mob_flags = MOB_HEARS_ALL
+	var/last_words = null //! Last words of the mob before they died
 
 /mob/dead/observer/disposing()
 	corpse = null
@@ -76,7 +84,7 @@
 	if (istype(target, /obj/decal/point))
 		return
 
-	src.visible_message("<span class='game deadsay'>[SPAN_PREFIX("DEAD:")] <b>[src]</b> points to [target].</span>")
+	src.visible_message(SPAN_DEADSAY("[SPAN_PREFIX("DEAD:")] <b>[src]</b> points to [target]."))
 
 	var/point_invisibility = src.invisibility
 #ifdef HALLOWEEN
@@ -98,44 +106,61 @@
 	if (!P.AH)
 		return
 
-	var/cust_one_state = P.AH.customization_first.id
-	var/cust_two_state = P.AH.customization_second.id
-	var/cust_three_state = P.AH.customization_third.id
+	var/is_mutantrace = FALSE
+	var/datum/trait/trait
+	for (var/trait_id in P.traitPreferences.traits_selected)
+		trait = getTraitById(trait_id)
+		if (trait.mutantRace && src.icon == initial(src.icon))
+			src.icon_state = trait.mutantRace.ghost_icon_state
+			is_mutantrace = TRUE
+			break
 
-	var/image/hair = image('icons/mob/human_hair.dmi', cust_one_state)
-	hair.color = P.AH.customization_first_color
-	hair.alpha = 192
-	overlays += hair
+	var/cust_one_state = P.AH.customizations["hair_bottom"].style.id
+	var/cust_two_state = P.AH.customizations["hair_middle"].style.id
+	var/cust_three_state = P.AH.customizations["hair_top"].style.id
+
+	var/image/hair = image(P.AH.customizations["hair_bottom"].style.icon, cust_one_state)
+	hair.color = P.AH.customizations["hair_bottom"].color
+	hair.alpha = GHOST_HAIR_ALPHA
+
+	var/force_hair = FALSE
+	if (istype(C.mob, /mob/living/carbon/human))
+		var/mob/living/carbon/human/H = C.mob
+		force_hair = H.hair_override
+	else if ("mutant_hair" in P.traitPreferences.traits_selected) //ooughh
+		force_hair = TRUE
+
+	if (!is_mutantrace || force_hair || (is_mutantrace && ("bald" in P.traitPreferences.traits_selected)))
+		src.AddOverlays(hair, "hair")
+
+		var/image/beard = image(P.AH.customizations["hair_middle"].style.icon, cust_two_state)
+		beard.color = P.AH.customizations["hair_middle"].color
+		beard.alpha = GHOST_HAIR_ALPHA
+		src.AddOverlays(beard, "beard")
+
+		var/image/detail = image(P.AH.customizations["hair_middle"].style.icon, cust_three_state)
+		detail.color = P.AH.customizations["hair_top"].color
+		detail.alpha = GHOST_HAIR_ALPHA
+		src.AddOverlays(detail, "detail")
 
 	if(cust_one_state && cust_one_state != "none")
 		wig = new
 		wig.mat_changename = 0
 		var/datum/material/wigmat = getMaterial("ectofibre")
 		wigmat = wigmat.getMutable()
-		wigmat.setColor(P.AH.customization_first_color)
+		wigmat.setColor(P.AH.customizations["hair_bottom"].color)
 		wig.setMaterial(wigmat)
 		wig.name = "ectofibre [name]'s hair"
 		wig.icon = 'icons/mob/human_hair.dmi'
 		wig.icon_state = cust_one_state
-		wig.color = P.AH.customization_first_color
+		wig.color = P.AH.customizations["hair_bottom"].color
 		wig.wear_image_icon = 'icons/mob/human_hair.dmi'
 		wig.wear_image = image(wig.wear_image_icon, wig.icon_state)
-		wig.wear_image.color = P.AH.customization_first_color
-
-
-	var/image/beard = image('icons/mob/human_hair.dmi', cust_two_state)
-	beard.color = P.AH.customization_second_color
-	beard.alpha = 192
-	overlays += beard
-
-	var/image/detail = image('icons/mob/human_hair.dmi', cust_three_state)
-	detail.color = P.AH.customization_third_color
-	detail.alpha = 192
-	overlays += detail
+		wig.wear_image.color = P.AH.customizations["hair_bottom"].color
 
 	if (!src.bioHolder) //For critter spawns
 		var/datum/bioHolder/newbio = new/datum/bioHolder(src)
-		newbio.mobAppearance.customization_first_color = hair.color
+		newbio.mobAppearance.customizations["hair_bottom"].color = hair.color
 		newbio.mobAppearance.e_color = P.AH.e_color
 		src.bioHolder = newbio
 
@@ -162,6 +187,10 @@
 	if (doubleghost|| !P.proj_data?.hits_ghosts)
 		return
 
+	if (P.proj_data && istype(P.proj_data, /datum/projectile/paintball))
+		// i wanna paint ghosts not bust em
+		return
+
 #ifdef HALLOWEEN
 	if (istype(src.abilityHolder, /datum/abilityHolder/ghost_observer))
 		var/datum/abilityHolder/ghost_observer/GH = src.abilityHolder
@@ -184,11 +213,16 @@
 	if (wig)
 		wig.set_loc(src.loc)
 	new /obj/item/reagent_containers/food/snacks/ectoplasm(get_turf(src))
-	overlays.len = 0
+	src.ClearSpecificOverlays("hair", "beard", "detail", "glasses")
 	log_shot(P,src)
 
 
 //#endif
+
+/mob/dead/observer/get_desc(dist, mob/user)
+	. = ..()
+	if (src.last_words && (user?.traitHolder?.hasTrait("training_chaplain") || istype(user, /mob/dead)))
+		. += " <span class='deadsay' style='font-weight:bold;'>[capitalize(his_or_her(src))] last words were: \"[src.last_words]\".</span>"
 
 /mob/dead/observer/Life(datum/controller/process/mobs/parent)
 #ifdef HALLOWEEN
@@ -224,11 +258,14 @@
 	. = ..()
 	APPLY_ATOM_PROPERTY(src, PROP_MOB_INVISIBILITY, src, ghost_invisibility)
 	APPLY_ATOM_PROPERTY(src, PROP_MOB_EXAMINE_ALL_NAMES, src)
+	APPLY_ATOM_PROPERTY(src, PROP_MOB_SPECTRO, src)
+
 	src.sight |= SEE_TURFS | SEE_MOBS | SEE_OBJS | SEE_SELF
 	src.see_invisible = INVIS_SPOOKY
 	src.see_in_dark = SEE_DARK_FULL
 	animate_bumble(src) // floaty ghosts  c:
 	src.verbs += /mob/dead/observer/proc/toggle_tgui_auto_open
+	src.verbs += /mob/dead/observer/proc/toggle_ghost_chem_vision
 	if (ismob(corpse))
 		src.corpse = corpse
 		src.set_loc(get_turf(corpse))
@@ -267,9 +304,11 @@
 
 	if(!isdead(src))
 		if (src.hibernating == 1)
-			var/confirm = tgui_alert(src, "Are you sure you want to ghost? You won't be able to exit cryogenic storage, and will be an observer the rest of the round.", "Observe?", list("Yes", "No"))
+			var/confirm = tgui_alert(src, "Are you sure you want to ghost? You won't be able to exit cryogenic storage, DNR status will be set, and you will be an observer the rest of the round.", "Observe?", list("Yes", "No"))
 			if(confirm == "Yes")
 				respawn_controller.subscribeNewRespawnee(src.ckey)
+				for(var/datum/antagonist/antagonist as anything in src.mind?.antagonists)
+					antagonist.handle_perma_cryo()
 				src.mind?.get_player()?.dnr = TRUE
 				src.ghostize()
 				qdel(src)
@@ -297,7 +336,7 @@
 		var/datum/mind/mind = src.mind
 
 		// step 1: either find a ghost or make one
-		var/mob/dead/our_ghost = null
+		var/mob/dead/observer/our_ghost = null
 
 		// if we already have a ghost, just go get that instead
 		if (src.ghost && !src.ghost.disposed && src.ghost.last_ckey == src.ckey)
@@ -311,11 +350,14 @@
 				our_ghost.alpha = 0
 			src.ghost = our_ghost
 
-		var/turf/T = get_turf(src)
-		if (can_ghost_be_here(src, T))
-			our_ghost.set_loc(T)
-		else
-			our_ghost.set_loc(pick_landmark(LANDMARK_OBSERVER, locate(150, 150, 1)))
+		if(isliving(src))
+			var/mob/living/living_src = src
+			if(living_src.last_words)
+				if(istype(our_ghost, /mob/dead/target_observer))
+					var/mob/dead/target_observer/our_observer = our_ghost
+					our_observer.ghost?.last_words = living_src.last_words
+				else
+					our_ghost.last_words = living_src.last_words
 
 		// step 2: make sure they actually make it to the ghost
 		if (src.mind)
@@ -323,10 +365,16 @@
 		else
 			our_ghost.key = src.key //they're probably logged out, set key so they're in the ghost when they get back
 
-		if(istype(get_area(src),/area/afterlife))
+		var/turf/T = get_turf(src)
+		if (can_ghost_be_here(our_ghost, T))
+			our_ghost.set_loc(T)
+		else
+			our_ghost.set_loc(pick_landmark(LANDMARK_OBSERVER, locate(150, 150, 1)))
+
+		if(istype(get_area(src), /area/afterlife))
 			qdel(src)
 
-		if(!istype(src, /mob/dead) && !mind?.get_player()?.dnr)
+		if(!mind?.get_player()?.dnr)
 			respawn_controller.subscribeNewRespawnee(our_ghost.ckey)
 		var/datum/respawnee/respawnee = global.respawn_controller.respawnees[our_ghost.ckey]
 		if(istype(respawnee) && istype(our_ghost, /mob/dead/observer)) // target observers don't have huds
@@ -381,45 +429,61 @@
 	if (!O)
 		return null
 
+	if (src.mutantrace)
+		O.icon_state = src.mutantrace.ghost_icon_state
+
 	. = O
 
 	if (glasses)
 		var/image/glass = image(glasses.wear_image_icon, glasses.icon_state)
 		glass.color = glasses.color
 		glass.alpha = glasses.alpha * 0.75
-		O.overlays += glass
+		O.AddOverlays(glass, "glasses")
+	else
+		O.ClearSpecificOverlays("glasses")
+
+	if (src.mutantrace && !istype(src.mutantrace, /datum/mutantrace/human) && !src.hair_override && !src.traitHolder?.hasTrait("bald"))
+		return O
 
 	if (src.bioHolder) //Not necessary for ghost appearance, but this will be useful if the ghost decides to respawn as critter.
-		var/image/hair = image('icons/mob/human_hair.dmi', src.bioHolder.mobAppearance.customization_first.id)
-		hair.color = src.bioHolder.mobAppearance.customization_first_color
-		hair.alpha = 192
-		O.overlays += hair
+		var/datum/appearanceHolder/temp_holder = null
+		if (QDELETED(src.AH_we_spawned_with))
+			if (QDELETED(src.bioHolder.mobAppearance))
+				CRASH("Ghostize called on a mob [src] with bioHolder but no non-null appearance holders")
+			else
+				temp_holder = src.bioHolder.mobAppearance
+		else
+			temp_holder = src.AH_we_spawned_with
+		var/image/hair = image(temp_holder.customizations["hair_bottom"].style.icon, temp_holder.customizations["hair_bottom"].style.id)
+		hair.color = src.bioHolder.mobAppearance.customizations["hair_bottom"].color
+		hair.alpha = GHOST_HAIR_ALPHA
+		O.AddOverlays(hair, "hair")
 
-		var/image/beard = image('icons/mob/human_hair.dmi', src.bioHolder.mobAppearance.customization_second.id)
-		beard.color = src.bioHolder.mobAppearance.customization_second_color
-		beard.alpha = 192
-		O.overlays += beard
+		var/image/beard = image(temp_holder.customizations["hair_middle"].style.icon, temp_holder.customizations["hair_middle"].style.id)
+		beard.color = src.bioHolder.mobAppearance.customizations["hair_middle"].color
+		beard.alpha = GHOST_HAIR_ALPHA
+		O.AddOverlays(beard, "beard")
 
-		var/image/detail = image('icons/mob/human_hair.dmi', src.bioHolder.mobAppearance.customization_third.id)
-		detail.color = src.bioHolder.mobAppearance.customization_third_color
-		detail.alpha = 192
-		O.overlays += detail
+		var/image/detail = image(temp_holder.customizations["hair_top"].style.icon, temp_holder.customizations["hair_top"].style.id)
+		detail.color = src.bioHolder.mobAppearance.customizations["hair_top"].color
+		detail.alpha = GHOST_HAIR_ALPHA
+		O.AddOverlays(detail, "detail")
 
-		var/cust_one = src.bioHolder.mobAppearance.customization_first.id
+		var/cust_one = src.bioHolder.mobAppearance.customizations["hair_bottom"].style.id
 		if(cust_one && cust_one != "none")
 			O.wig = new
 			O.wig.mat_changename = 0
 			var/datum/material/wigmat = getMaterial("ectofibre")
 			wigmat = wigmat.getMutable()
-			wigmat.setColor(src.bioHolder.mobAppearance.customization_first_color)
+			wigmat.setColor(src.bioHolder.mobAppearance.customizations["hair_bottom"].color)
 			O.wig.setMaterial(wigmat)
-			O.wig.name = "[O.name]'s hair"
+			O.wig.name = "[O.name]’s hair"
 			O.wig.icon = 'icons/mob/human_hair.dmi'
 			O.wig.icon_state = cust_one
-			O.wig.color = src.bioHolder.mobAppearance.customization_first_color
+			O.wig.color = src.bioHolder.mobAppearance.customizations["hair_bottom"].color
 			O.wig.wear_image_icon = 'icons/mob/human_hair.dmi'
 			O.wig.wear_image = image(O.wig.wear_image_icon, O.wig.icon_state)
-			O.wig.wear_image.color = src.bioHolder.mobAppearance.customization_first_color
+			O.wig.wear_image.color = src.bioHolder.mobAppearance.customizations["hair_bottom"].color
 
 
 	return O
@@ -510,8 +574,15 @@
 
 	. = ..()
 
+/mob/dead/observer/set_loc(atom/new_loc, new_pixel_x, new_pixel_y)
+	if (isturf(new_loc) && !can_ghost_be_here(src, new_loc) && (isnull(src.corpse) || !can_ghost_be_here(src.corpse, new_loc)))
+		var/OS = pick_landmark(LANDMARK_OBSERVER, locate(150, 150, 1))
+		src.set_loc(OS)
+		return
+	. = ..()
+
 /mob/dead/observer/mouse_drop(atom/A)
-	if (usr != src || isnull(A)) return
+	if (usr != src || isnull(A) || A == src) return
 	if (ismob(A))
 		var/mob/M = A
 		if (!M.unobservable || isadmin(src))
@@ -535,6 +606,16 @@
 	else
 		boutput(src, "Observed mob's TGUI windows will now auto-open")
 		src.auto_tgui_open = TRUE
+
+/mob/dead/observer/proc/toggle_ghost_chem_vision()
+	set category = "Ghost"
+	set name = "Toggle Chemical Analysis Vision"
+	if(HAS_ATOM_PROPERTY(src, PROP_MOB_SPECTRO))
+		boutput(src, "No longer viewing chemical composition of objects.")
+		REMOVE_ATOM_PROPERTY(src, PROP_MOB_SPECTRO, src)
+	else
+		boutput(src, "Enabled viewing chemical composition of objects")
+		APPLY_ATOM_PROPERTY(src, PROP_MOB_SPECTRO, src)
 
 /mob/dead/observer/proc/reenter_corpse()
 	set category = null
@@ -579,9 +660,6 @@
 		OnMove()
 	else
 		boutput(usr, "Couldn't find anywhere in that area to go to!")
-
-/mob/dead/observer/say_understands(var/other)
-	return 1
 
 /* //dont need this anymores
 /mob/dead/observer/verb/toggle_wide()
@@ -666,6 +744,8 @@
 	delete_on_logout = 0
 	if (target?.invisibility)
 		newobs.see_invisible = target.invisibility
+	if(HAS_ATOM_PROPERTY(src, PROP_MOB_SPECTRO))
+		APPLY_ATOM_PROPERTY(newobs, PROP_MOB_SPECTRO, newobs)
 	if (src.corpse)
 		corpse.ghost = newobs
 	if (src.mind)
@@ -702,3 +782,5 @@
 	var/turf/T = locate(x, y, z)
 	if (can_ghost_be_here(src, T))
 		src.set_loc(T)
+
+#undef GHOST_HAIR_ALPHA

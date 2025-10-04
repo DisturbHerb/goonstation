@@ -1,11 +1,5 @@
 // If the game somtimes isn't registering a win properly, then ticker.mode.check_win() isn't being called somewhere.
 
-//uncomment to disable safety checks and win conditions to allow for local testing
-//#define THE_REVOLUTION_WILL_NOT_BE_TELEVISED 1
-
-#ifdef THE_REVOLUTION_WILL_NOT_BE_TELEVISED
-#warn Revolution debug mode enabled. IF YOU COMMIT THIS TO LIVE EVERYTHING WILL BREAK AND YOUR KNEECAPS WILL BE FORFEIT!!1
-#endif
 /datum/game_mode/revolution
 	name = "Revolution"
 	config_tag = "revolution"
@@ -51,13 +45,7 @@
 /datum/game_mode/revolution/pre_setup()
 
 	var/list/revs_possible = get_possible_enemies(ROLE_HEAD_REVOLUTIONARY, 1)
-	var/num_players = 0
-	for(var/client/C)
-		var/mob/new_player/player = C.mob
-		if (!istype(player)) continue
-
-		if(player.ready)
-			num_players++
+	var/num_players = src.roundstart_player_count()
 
 	if (!revs_possible.len)
 		return 0
@@ -91,10 +79,10 @@
 /datum/game_mode/revolution/post_setup()
 	waittime = rand(waittime_l, waittime_h)
 	trackertime = rand(trackertime_min, trackertime_max)
-#ifndef THE_REVOLUTION_WILL_NOT_BE_TELEVISED
+#ifndef ME_AND_MY_40_ALT_ACCOUNTS
 	var/list/heads = get_living_heads()
 	if(!head_revolutionaries || !heads)
-		boutput(world, "<B>[SPAN_ALERT("Not enough players for revolution game mode. Restarting world in 5 seconds.")]</B>")
+		boutput(world, SPAN_ALERT("<B>Not enough players for revolution game mode. Restarting world in 5 seconds.</B>"))
 		sleep(5 SECONDS)
 		Reboot_server()
 		return
@@ -108,8 +96,8 @@
 	waittimed = TRUE
 
 /datum/game_mode/revolution/proc/send_tracker()
-	command_alert("Foreign mutiny located [station_or_ship()]wide, a program to track revolutionary leaders have been sent to all crew member PDA's.", "Central Command Security Alert", 'sound/misc/announcement_1.ogg', alert_origin = "Watchful Eye Sensor Array Update")
-	command_alert("Relevant biometric signatures of Command have been identified. To aid with the ongoing revolution, station command can now be tracked through the transmitted PDA program.", "Unregistered Signal Insertion", alert_origin = "Egeria Providence Array Broadcast")
+	command_alert("Foreign mutiny located [station_or_ship()]wide, a program to track revolutionary leaders have been sent to all crew member PDA's.", "Central Command Security Alert", 'sound/misc/announcement_1.ogg', alert_origin = ALERT_WATCHFUL_EYE)
+	command_alert("Relevant biometric signatures of Command have been identified. To aid with the ongoing revolution, station command can now be tracked through the transmitted PDA program.", "Unregistered Signal Insertion", alert_origin = ALERT_EGERIA_PROVIDENCE)
 	var/datum/signal/signal1 = get_free_signal()
 	signal1.data_file = (new /datum/computer/file/pda_program/revheadtracker)
 	signal1.data = list("command"="file_send", "file_name" = "Revolutionary Leader Locater", "file_ext" = "PPROG", "file_size" = "1", "tag" = "auto_fileshare", "sender_name"="Central Command Distribution Line", "sender"="00000000")
@@ -120,7 +108,7 @@
 	radio_controller.get_frequency(FREQ_PDA).post_packet_without_source(signal2)
 	trackertimed = TRUE
 
-#ifndef THE_REVOLUTION_WILL_NOT_BE_TELEVISED
+#ifndef ME_AND_MY_40_ALT_ACCOUNTS
 /datum/game_mode/revolution/process()
 	..()
 	if (!istype(ticker.mode, /datum/game_mode/revolution/extended) && ticker.round_elapsed_ticks >= round_limit && !gibwave_started)
@@ -167,7 +155,7 @@
 	for(var/mob/living/carbon/human/player in mobs)
 		if(player.mind && !isdead(player))
 			var/role = player.mind.assigned_role
-			if(role in list("Captain", "Head of Security", "Head of Personnel", "Chief Engineer", "Research Director", "Medical Director","Communications Officer"))
+			if(role in list("Captain", "Head of Security", "Head of Personnel", "Chief Engineer", "Research Director", "Medical Director"))
 				heads += player.mind
 
 	if(length(heads) < 1)
@@ -182,7 +170,7 @@
 	for(var/mob/player in mobs)
 		if(player.mind)
 			var/role = player.mind.assigned_role
-			if(role in list("Captain", "Head of Security", "Head of Personnel", "Chief Engineer", "Research Director", "Medical Director","Communications Officer"))
+			if(role in list("Captain", "Head of Security", "Head of Personnel", "Chief Engineer", "Research Director", "Medical Director"))
 				heads += player.mind
 
 	return heads

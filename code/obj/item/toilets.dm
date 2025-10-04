@@ -47,7 +47,7 @@ TYPEINFO(/obj/item/storage/toilet)
 				user.visible_message(SPAN_NOTICE("[user] gives [G.affecting] a swirlie!"), SPAN_NOTICE("You give [G.affecting] a swirlie. It's like Middle School all over again!"))
 		else
 			user.visible_message(SPAN_NOTICE("[user] gives [G.affecting] a swirlie!"), SPAN_NOTICE("You give [G.affecting] a swirlie. It's like Middle School all over again!"))
-
+		G.affecting.lastgasp() // --BLUH
 		playsound(src, 'sound/effects/toilet_flush.ogg', 50, TRUE)
 		if (G.affecting.hasStatus("burning"))
 			G.affecting.changeStatus("burning", -2 SECONDS)
@@ -149,9 +149,7 @@ TYPEINFO(/obj/item/storage/toilet)
 		playsound(src.loc, 'sound/impact_sounds/Liquid_Slosh_1.ogg', 25, 1)
 		src.visible_message(SPAN_NOTICE("[head] floats up out of the clogged [src.name]!"))
 		for (var/mob/living/carbon/human/O in AIviewers(head, null))
-			if (prob(33))
-				var/vomit_message = SPAN_ALERT("[O] pukes all over [himself_or_herself(O)].")
-				O.vomit(0, null, vomit_message)
+			O.nauseate(rand(7,10))
 	else
 		var/list/emergeplaces = list()
 		for_by_tcl(T, /obj/item/storage/toilet)

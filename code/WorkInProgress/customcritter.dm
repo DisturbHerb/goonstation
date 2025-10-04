@@ -1333,7 +1333,7 @@ var/global/datum/critterCreatorHolder/critter_creator_controller = new()
 				C.play_optional_sound(frenzy_attack_sound)
 				C.dodamage(atmob, attacktype, max(rand(attack_power), rand(attack_power)))
 				if (stunlocks)
-					atmob.changeStatus("weakened", (attack_cooldown / 3 * 2) SECONDS)
+					atmob.changeStatus("knockdown", (attack_cooldown / 3 * 2) SECONDS)
 				sleep(attack_cooldown)
 		return 1
 	change_configuration(var/datum/critterCreator/configurer, var/which)
@@ -1702,7 +1702,7 @@ var/global/datum/critterCreatorHolder/critter_creator_controller = new()
 			return "[null_value]"
 
 	proc/clickable_link(var/topic_name, var/curr_value, var/null_value = "(null)", var/topic_value = 1)
-		return "<a href='?src=\ref[src];[topic_name]=[topic_value]'>[clickable(curr_value, null_value)]</a>"
+		return "<a href='byond://?src=\ref[src];[topic_name]=[topic_value]'>[clickable(curr_value, null_value)]</a>"
 
 	proc/switcher(var/value, var/current_value, var/name, var/text)
 		if (value == current_value)
@@ -1812,7 +1812,7 @@ var/global/datum/critterCreatorHolder/critter_creator_controller = new()
 				template.icon = I
 				template.icon_state = null
 		else if (href_list["icon_state"])
-			template.icon_state = getEnum("icon state", "", icon_states(template.icon))
+			template.icon_state = getEnum("icon state", "", get_icon_states(template.icon))
 		else if (href_list["dead_icon"])
 			var/I = input("Select an image file.", "Image file", null) as icon|null
 			if (I)
@@ -1820,7 +1820,7 @@ var/global/datum/critterCreatorHolder/critter_creator_controller = new()
 				template.dead_icon_state = null
 		else if (href_list["dead_icon_state"])
 			if (template.dead_icon)
-				template.dead_icon_state = getEnum("icon state", "", icon_states(template.dead_icon))
+				template.dead_icon_state = getEnum("icon state", "", get_icon_states(template.dead_icon))
 			else
 				alert("Please define an icon first.")
 		else if (href_list["icon_preset"])
@@ -2000,7 +2000,7 @@ var/global/datum/critterCreatorHolder/critter_creator_controller = new()
 		output += attribute_clicker("Description", "desc", template.desc)
 		output += attribute_clicker("Health", "health", template.health)
 
-		output += "<br>[SPAN_SUBTITLE("Default AI behaviour")]<br>"
+		output += "<br><span class='subtitle'>Default AI behaviour</span><br>"
 		output += attribute_clicker("Aggressive", "aggressive", template.aggressive ? "yes" : "no")
 		output += attribute_clicker("Defensive", "defensive", template.defensive ? "yes" : "no")
 		output += attribute_clicker("Attacks carbon", "atkcarbon", template.atkcarbon ? "yes" : "no")
@@ -2008,18 +2008,18 @@ var/global/datum/critterCreatorHolder/critter_creator_controller = new()
 		output += attribute_clicker("Mobile", "mobile", template.mobile ? "yes" : "no")
 		output += attribute_clicker("Wanderer", "wanderer", template.wanderer ? "yes" : "no")
 
-		output += "<br>[SPAN_SUBTITLE("Default attack")]<br>"
+		output += "<br><span class='subtitle'>Default attack</span><br>"
 		output += attribute_clicker("Use melee", "melee", template.melee ? "yes" : "no")
 		output += attribute_clicker("Attack power", "power", template.attack_power)
 		output += attribute_clicker("Attack type", "atype", template.attack_type)
 		output += attribute_clicker("Stun chance", "stunp", "[template.stun_prob]%")
 
-		output += "<br>[SPAN_SUBTITLE("Vulnerabilities")]<br>"
+		output += "<br><span class='subtitle'>Vulnerabilities</span><br>"
 		output += attribute_clicker("Brute", "brutevuln", "[template.brutevuln * 100]%")
 		output += attribute_clicker("Burn", "firevuln", "[template.firevuln * 100]%")
 		output += attribute_clicker("Explosive", "explosivevuln", "[template.explosivevuln * 100]%")
 
-		output += "<br>[SPAN_SUBTITLE("Flavor")]<br>"
+		output += "<br><span class='subtitle'>Flavor</span><br>"
 		output += sound_link("Ambient", template.ambient_sound, "sounds", "ambient_sound")
 		output += attribute_clicker("Charge text", "anger", template.anger_text)
 		output += sound_link("Charge", template.anger_sound, "sounds", "anger_sound")
@@ -2034,9 +2034,9 @@ var/global/datum/critterCreatorHolder/critter_creator_controller = new()
 		output += attribute_clicker("Death text", "death", template.death_text)
 		output += sound_link("Death", template.death_sound, "sounds", "death_sound")
 
-		output += "<br>[SPAN_SUBTITLE("Appearance")]<br>"
+		output += "<br><span class='subtitle'>Appearance</span><br>"
 		output += "<span class='attribute-name'>Color (click box to change):</span><br>"
-		output += "<a href='?src=\ref[src];color=1' style='text-decoration:none'>"
+		output += "<a href='byond://?src=\ref[src];color=1' style='text-decoration:none'>"
 		output += "<div style='display: inline-block; width:20px; height: 20px; background-color: [template.color ? template.color : "#ffffff"]; border: 1px solid black;'>&nbsp;</div>"
 		output += "</a><br>"
 		output += "<span class='attribute-name'>Icon:</span><br/>"
@@ -2062,12 +2062,12 @@ var/global/datum/critterCreatorHolder/critter_creator_controller = new()
 		output += "<img src='preview_E.png' iconstate='[template.icon_state]' icondir='EAST' width='32' height='32' />"
 		output += "<img src='preview_W.png' iconstate='[template.icon_state]' icondir='WEST' width='32' height='32' /><br>"
 		output += "<strong>Note: </strong> The North, East and West preview images do not show up correctly for unidirectional sprites.<br>"
-		output += "<a href='?src=\ref[src];icon_preset=1'>Set to preset</a><br>"
-		output += "<a href='?src=\ref[src];icon=1'>Set icon file</a><br>"
+		output += "<a href='byond://?src=\ref[src];icon_preset=1'>Set to preset</a><br>"
+		output += "<a href='byond://?src=\ref[src];icon=1'>Set icon file</a><br>"
 		output += "To add directions, upload your icon in a .dmi format, with a single icon state with 4 directions.<br>"
 		output += attribute_clicker("Icon state", "icon_state", template.icon_state)
 		output += "<span class='attribute-name'>Dead icon:</span><br/>"
-		output += "<a href='?src=\ref[src];iconondeath=1'>[template.dead_change_icon? "Changes" : "Does not change"]</a> icon on death.<br>"
+		output += "<a href='byond://?src=\ref[src];iconondeath=1'>[template.dead_change_icon? "Changes" : "Does not change"]</a> icon on death.<br>"
 		if (template.dead_change_icon)
 			browsed_icon = icon(template.dead_icon, template.dead_icon_state)
 			if (template.color)
@@ -2079,11 +2079,11 @@ var/global/datum/critterCreatorHolder/critter_creator_controller = new()
 			output += clickable_link("dead_icon_state", template.dead_icon_state, "(null)")
 
 		output += "</td><td class='half'>"
-		output += "[SPAN_SUBTITLE("Abilities:")]<br>"
+		output += "<span class='subtitle'>Abilities:</span><br>"
 		for (var/i = 1, i <= template.abil.len, i++)
 			output += switcher(i, abilid, "ability", "[i]")
 			output += " "
-		output += "<a href='?src=\ref[src];newabil=1'>Add new</a><br><br>"
+		output += "<a href='byond://?src=\ref[src];newabil=1'>Add new</a><br><br>"
 		if (abilid)
 			var/datum/critterAbility/A = template.abil[abilid]
 			if (A)
@@ -2108,6 +2108,8 @@ var/global/datum/critterCreatorHolder/critter_creator_controller = new()
 	set name = "Critter Creator (WIP)"
 	SET_ADMIN_CAT(ADMIN_CAT_FUN)
 	set hidden = 0
+	ADMIN_ONLY
+	SHOW_VERB_DESC
 
 	var/datum/critterCreator/CR = critter_creator_controller.getCreator(src.mob)
 	if (CR)

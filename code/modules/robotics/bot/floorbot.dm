@@ -90,21 +90,22 @@
 /obj/machinery/bot/floorbot/attack_hand(mob/user, params)
 	var/dat
 	dat += "<TT><B>Automatic Station Floor Repairer v1.0</B></TT><BR><BR>"
-	dat += "Status: \[<A href='?src=\ref[src];operation=start'>[src.on ? "On" : "Off"]</A>\]<BR>"
+	dat += "Status: \[<A href='byond://?src=\ref[src];operation=start'>[src.on ? "On" : "Off"]</A>\]<BR>"
 	dat += "Tiles left: [src.amount]<BR>"
 	dat += "Behaviour controls are [src.locked ? "locked" : "unlocked"]<BR>"
 	if (!src.locked)
 		dat += "<hr>"
-		dat += "Improves floors: \[<A href='?src=\ref[src];operation=improve'>[src.improvefloors ? "Yes" : "No"]</A>\]<BR>"
-		dat += "Finds tiles: \[<A href='?src=\ref[src];operation=tiles'>[src.eattiles ? "Yes" : "No"]</A>\]<BR>"
-		dat += "Make single pieces of metal into tiles when empty: \[<A href='?src=\ref[src];operation=make'>[src.maketiles ? "Yes" : "No"]</A>\]"
+		dat += "Improves floors: \[<A href='byond://?src=\ref[src];operation=improve'>[src.improvefloors ? "Yes" : "No"]</A>\]<BR>"
+		dat += "Finds tiles: \[<A href='byond://?src=\ref[src];operation=tiles'>[src.eattiles ? "Yes" : "No"]</A>\]<BR>"
+		dat += "Make single pieces of metal into tiles when empty: \[<A href='byond://?src=\ref[src];operation=make'>[src.maketiles ? "Yes" : "No"]</A>\]"
 
-	if (user.client?.tooltipHolder)
-		user.client.tooltipHolder.showClickTip(src, list(
-			"params" = params,
-			"title" = "Repairbot v1.0 controls",
-			"content" = dat,
-		))
+	if (user.client?.tooltips)
+		user.client.tooltips.show(
+			TOOLTIP_PINNED, src,
+			mouse = params,
+			title = "Repairbot v1.0 controls",
+			content = dat,
+		)
 
 	return
 
@@ -112,7 +113,7 @@
 	if (!src.emagged)
 		if (user)
 			boutput(user, SPAN_ALERT("You short out [src]'s target assessment circuits."))
-		src.audible_message(SPAN_ALERT("<B>[src] buzzes oddly!</B>"), 1)
+		src.audible_message(SPAN_ALERT("<B>[src] buzzes oddly!</B>"))
 		src.KillPathAndGiveUp(1)
 		src.emagged = 1
 		src.on = 1
@@ -146,19 +147,15 @@
 /obj/machinery/bot/floorbot/attackby(var/obj/item/W , mob/user as mob)
 	if (istype(W, /obj/item/tile))
 		var/obj/item/tile/T = W
-		if (src.amount >= max_tiles)
+		var/space_left = src.max_tiles - src.amount
+		if (space_left < 1)
 			return
-		var/loaded = 0
-		if (src.amount + T.amount > max_tiles)
-			var/i = max_tiles - src.amount
-			src.amount += i
-			T.amount -= i
-			loaded = i
-		else
-			src.amount += T.amount
-			loaded = T.amount
-			qdel(T)
-		boutput(user, SPAN_ALERT("You load [loaded] tiles into the floorbot. He now contains [src.amount] tiles!"))
+		var/moving_tiles = space_left
+		if (space_left > T.amount)
+			moving_tiles = T.amount
+		T.change_stack_amount(moving_tiles * -1)
+		src.amount += moving_tiles
+		boutput(user, SPAN_ALERT("You load [moving_tiles] tiles into the floorbot. It now contains [src.amount] tiles!"))
 		src.UpdateIcon()
 	//Regular ID
 	else
@@ -335,7 +332,7 @@
 		while(!isnull(A) && !istype(A.loc, /turf) && !ishuman(A.loc))
 			A = A.loc
 		if (ishuman(A?.loc) && prob(30))
-			speak(pick(src.chase_lines))
+			src.say(pick(src.chase_lines))
 		src.doing_something = 1
 		src.search_range = 1
 	else
@@ -357,7 +354,7 @@
 
 /obj/machinery/bot/floorbot/proc/do_the_thing()
 	// we are there, hooray
-	if (prob(80))
+	if(!ON_COOLDOWN(src, "floorbeep", 30 SECONDS))
 		src.visible_message("[src] makes an excited booping beeping sound!")
 	if (istype(src.target, /obj/item/tile))
 		src.eattile(src.target)
@@ -390,6 +387,9 @@
 		src.target = null
 		src.repairing = 0
 		return
+	if (ismob(T.loc))
+		var/mob/M = T.loc
+		M.drop_item(T, FALSE)
 	if (src.amount + T.amount > max_tiles)
 		var/i = max_tiles - src.amount
 		src.amount += i
@@ -440,6 +440,9 @@
 /obj/machinery/bot/floorbot/active
 	on = TRUE
 
+/obj/machinery/bot/floorbot/active/improvefloors
+	improvefloors = TRUE
+
 /////////////////////////////////
 //////Floorbot Construction//////
 /////////////////////////////////
@@ -474,10 +477,7 @@
 	if(src.color_overlay)
 		A.UpdateOverlays(image(A.icon, icon_state = src.color_overlay), "coloroverlay")
 		A.color_overlay = src.color_overlay
-	if (user.r_hand == src || user.l_hand == src)
-		A.set_loc(user.loc)
-	else
-		A.set_loc(src.loc)
+	A.set_loc(get_turf(src))
 	A.on = 1 // let's just pretend they flipped the switch
 	A.update_power_overlay()
 	boutput(user, "You add the robot arm to the odd looking toolbox assembly! Boop beep!")
@@ -488,7 +488,7 @@
 	if(src.exploding) return
 	src.exploding = 1
 	src.on = 0
-	src.visible_message(SPAN_ALERT("<B>[src] blows apart!</B>"), 1)
+	src.visible_message(SPAN_ALERT("<B>[src] blows apart!</B>"))
 	playsound(src.loc, 'sound/impact_sounds/Machinery_Break_1.ogg', 40, 1)
 	elecflash(src, radius=1, power=3, exclude_center = 0)
 	new /obj/item/tile/steel(src.loc)
@@ -500,7 +500,6 @@
 /datum/action/bar/icon/floorbot_repair
 	duration = 10
 	interrupt_flags = INTERRUPT_STUNNED
-	id = "floorbot_build"
 	icon = 'icons/obj/metal.dmi'
 	icon_state = "tile"
 	var/obj/machinery/bot/floorbot/master
@@ -575,7 +574,6 @@
 /datum/action/bar/icon/floorbot_disrepair
 	duration = 10
 	interrupt_flags = INTERRUPT_STUNNED
-	id = "floorbot_ripup"
 	icon = 'icons/obj/metal.dmi'
 	icon_state = "tile"
 	var/obj/machinery/bot/floorbot/master

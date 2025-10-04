@@ -5,18 +5,9 @@
 	var/breathtimernotifredundant = 0
 	var/breathstate = 0
 
-	//consider these temporary...hopefully
-	proc/update_oxy(var/on)
-		if (human_owner)
-			human_owner.hud.update_oxy_indicator(on)
-		if (critter_owner)
-			critter_owner.hud.set_suffocating(on)
-
-	proc/update_toxy(var/on)
-		if (human_owner)
-			human_owner.hud.update_tox_indicator(on)
-		if (critter_owner)
-			critter_owner.hud.update_tox_indicator(on)
+	proc/update_breath_hud(datum/organ_status/lung/status_updates)
+		src.human_owner?.hud.update_breathing_indicators(status_updates)
+		src.critter_owner?.hud.update_breathing_indicators(status_updates)
 
 	process(var/datum/gas_mixture/environment)
 		if(isdead(owner))
@@ -25,6 +16,7 @@
 		//special (read: stupid) manual breathing stuff. weird numbers are so that messages don't pop up at the same time as manual blinking ones every time
 		if (manualbreathing && human_owner)
 			breathtimer += get_multiplier()
+			var/datum/organ_status/lung/status_updates = new
 
 			switch(breathtimer)
 				if (0 to 15)
@@ -38,12 +30,12 @@
 					if (!breathtimernotifredundant)
 						breathtimerstage = 1
 				if (52 to 61)
-					update_oxy(1)
+					status_updates.show_oxy_indicator = TRUE
 					owner.take_oxygen_deprivation(breathtimer/12)
 					if (breathtimernotifredundant < 2)
 						breathtimerstage = 2
 				if (62 to INFINITY)
-					update_oxy(1)
+					status_updates.show_oxy_indicator = TRUE
 					owner.take_oxygen_deprivation(breathtimer/6)
 					if (breathtimernotifredundant < 3)
 						breathtimerstage = 3
@@ -60,6 +52,7 @@
 					boutput(owner, SPAN_ALERT("Your lungs are burning and the need to take a breath is almost unbearable!"))
 					breathtimernotifredundant = 3
 			breathtimerstage = 0
+			src.human_owner.hud.update_breathing_indicators(status_updates)
 		else // plain old automatic breathing
 			breathe(environment)
 
@@ -70,12 +63,20 @@
 
 	proc/breathe(datum/gas_mixture/environment)
 		var/mult = get_multiplier()
+		var/datum/organ_status/lung/status_updates = new
 
 		var/atom/underwater = 0
+		var/bubble_breathing = FALSE
 		if (isturf(owner.loc))
 			var/turf/T = owner.loc
 			if (istype(T, /turf/space/fluid))
-				underwater = T
+				//this is potentially slow but I think still better than forcing bubbles to register and unregister from turfs
+				var/obj/bubble/bubble = locate() in T
+				if (bubble && bubble.scale >= 0.4)
+					environment = bubble.air_contents
+					bubble_breathing = TRUE
+				else
+					underwater = T
 			else if (T.active_liquid)
 				var/obj/fluid/F = T.active_liquid
 
@@ -89,18 +90,21 @@
 						owner.show_submerged_image(4)
 
 			else if (T.active_airborne_liquid)
+				var/exception = ismiasmaimmune(owner) ? "miasma" : null
 				if (!issmokeimmune(owner))
 					//underwater = T.active_airborne_liquid
 					var/obj/fluid/F = T.active_airborne_liquid
-					F.force_mob_to_ingest(owner, mult)
+					F.force_mob_to_ingest(owner, mult, exception)
 				else
 					if (!owner.clothing_protects_from_chems())
 						var/obj/fluid/airborne/F = T.active_airborne_liquid
-						F.just_do_the_apply_thing(owner, mult, hasmask = 1)
+						F.just_do_the_apply_thing(owner, mult, hasmask = 1, exception = exception)
 
 		else if (islivingobject(owner.loc))
+			src.update_breath_hud(status_updates)
 			return // no breathing inside possessed objects
 		else if (istype(owner.loc, /obj/machinery/atmospherics/unary/cryo_cell))
+			src.update_breath_hud(status_updates)
 			return
 		else if (istype(owner.loc, /obj/machinery/bathtub) && owner.lying)
 			var/obj/machinery/bathtub/B = owner.loc
@@ -112,6 +116,9 @@
 		//if (istype(loc, /obj/machinery/clonepod)) return
 
 		if (HAS_ATOM_PROPERTY(owner, PROP_MOB_REBREATHING))
+			src.update_breath_hud(status_updates)
+			if(owner.losebreath)
+				owner.losebreath -= (1.3 * mult) // base losebreath recovery
 			return
 
 		// Changelings generally can't take OXY/LOSEBREATH damage...except when they do.
@@ -122,6 +129,7 @@
 		// If your mutant race doesn't need oxygen from breathing, ya no losebreath
 		// so, now you do
 		if (ischangeling(owner) || HAS_ATOM_PROPERTY(owner, PROP_MOB_BREATHLESS))
+			src.update_breath_hud(status_updates)
 			if (owner.losebreath)
 				owner.losebreath = 0
 			if (owner.get_oxygen_deprivation())
@@ -130,8 +138,10 @@
 
 		if (underwater)
 			if (human_owner?.mutantrace && human_owner?.mutantrace.aquatic)
+				src.update_breath_hud(status_updates)
 				return
 			if(human_owner?.hasStatus("aquabreath"))
+				src.update_breath_hud(status_updates)
 				return
 			if (prob(25) && owner.losebreath > 0)
 				boutput(owner, SPAN_ALERT("You are drowning!"))
@@ -168,10 +178,9 @@
 					if (isobj(owner.loc))
 						var/obj/location_as_object = owner.loc
 						breath = location_as_object.handle_internal_lifeform(owner, BREATH_VOLUME, mult)
-					else if (isturf(owner.loc))
+					else if (isturf(owner.loc) || ismob(owner.loc))
 						var/breath_moles = (TOTAL_MOLES(environment) * BREATH_PERCENTAGE * mult)
-
-						breath = owner.loc.remove_air(breath_moles)
+						breath = environment?.remove(breath_moles)
 
 				else //Still give containing object the chance to interact
 					underwater = 0 // internals override underwater state
@@ -180,10 +189,13 @@
 						location_as_object.handle_internal_lifeform(owner, 0, mult)
 
 		breath?.volume = BREATH_VOLUME * mult
-		handle_breath(breath, underwater, mult = mult)
+		var/success = handle_breath(breath, underwater, mult = mult)
 
-		if (breath)
-			owner.loc.assume_air(breath)
+		if (breath && success) //only breathe out gas when we're not drowing
+			if (bubble_breathing) //we don't want to spawn more bubbles if we're breathing from a bubble
+				environment.merge(breath)
+			else
+				owner.loc.assume_air(breath)
 
 
 	proc/get_breath_grabbed_by(volume_needed)
@@ -213,9 +225,14 @@
 
 	///Return value is the number of lungs that successfully breathed
 	proc/handle_breath(datum/gas_mixture/breath, var/atom/underwater = 0, var/mult = 1) //'underwater' really applies for any reagent that gets deep enough. but what ever
-		if (owner.nodamage) return
+		var/datum/organ_status/lung/status_updates = new
 		var/area/A = get_area(owner)
-		if( A?.sanctuary )
+		if( A?.sanctuary || owner.nodamage )
+			src.update_breath_hud(status_updates)
+			if (owner.losebreath)
+				owner.losebreath = 0
+			if (owner.get_oxygen_deprivation())
+				owner.take_oxygen_deprivation(-50 * mult)
 			return
 		// Looks like we're in space
 		// or with recent atmos changes, in a room that's had a hole in it for any amount of time, so now we check src.loc
@@ -224,7 +241,7 @@
 				owner.take_oxygen_deprivation(6 * mult)
 			else
 				owner.take_oxygen_deprivation(3 * mult)
-			update_oxy(1)
+			status_updates.show_oxy_indicator = TRUE
 
 			//consume some reagents if we drowning
 			if (underwater && (owner.get_oxygen_deprivation() > 40 || underwater.type == /obj/fluid/airborne))
@@ -235,13 +252,12 @@
 					var/turf/space/fluid/F = underwater
 					F.force_mob_to_ingest(owner, mult)// * mult
 
-
+			src.update_breath_hud(status_updates)
 			return 0
 
 		if (owner.health < 0 || (human_owner?.organHolder && human_owner?.organHolder.get_working_lung_amt() == 0)) //We aren't breathing.
+			src.update_breath_hud(status_updates)
 			return 0
-
-		var/datum/organ/lung/status/status_updates = new
 
 		var/datum/gas_mixture/left_breath = breath.remove_ratio(0.5)
 		var/datum/gas_mixture/right_breath = breath.remove_ratio(1) // the rest
@@ -257,9 +273,8 @@
 		breath.merge(left_breath)
 		breath.merge(right_breath)
 
-		update_oxy(status_updates.show_oxy_indicator)
-		update_toxy(status_updates.show_tox_indicator)
-		human_owner.hud.update_fire_indicator(status_updates.show_fire_indicator)
+		src.update_breath_hud(status_updates)
+
 		for(var/emote in status_updates.emotes)
 			human_owner?.emote(emote)
 

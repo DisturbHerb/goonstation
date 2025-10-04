@@ -46,6 +46,7 @@ TYPEINFO(/obj/flock_structure/relay)
 	..()
 	logTheThing(LOG_GAMEMODE, src, "Flock relay is constructed[src.flock ? " by flock [src.flock.name]" : ""] at [log_loc(src)].")
 	if(src.flock)
+		src.flock.last_relay = src
 		src.flock.stats.built_relay = TRUE
 	src.info_tag.set_tag_offset(64, -4) // to account for 5x5 sprite
 	src.info_tag.set_info_tag("Completion time: [round(src.charge_time_length - getTimeInSecondsSinceTime(src.time_started))] seconds")
@@ -61,7 +62,7 @@ TYPEINFO(/obj/flock_structure/relay)
 			command_alert("Emergency shuttle departure delayed due to anomalous radio signal interference.")
 
 	boutput(src.flock?.flockmind, SPAN_ALERT("<b>You pull together the collective force of your Flock to transmit the Signal. If the Relay is destroyed, you're dead!</b>"))
-	flock_speak(null, "RELAY CONSTRUCTED! DEFEND THE RELAY!!", src.flock)
+	src.flock.system_say_source.say("RELAY CONSTRUCTED! DEFEND THE RELAY!!")
 	play_sound()
 	SPAWN(10 SECONDS)
 		var/msg = "Overwhelming anomalous power signatures detected on station. This is an existential threat to the station. All personnel must contain this event."
@@ -92,13 +93,16 @@ TYPEINFO(/obj/flock_structure/relay)
 	if (!src.shuttle_departure_delayed)
 		emergency_shuttle.disabled = SHUTTLE_CALL_ENABLED
 
+/obj/flock_structure/relay/proc/get_time_left()
+	return max(0, round(src.charge_time_length - getTimeInSecondsSinceTime(src.time_started)))
+
 /obj/flock_structure/relay/get_desc()
-	var/time_remaining = round(src.charge_time_length - getTimeInSecondsSinceTime(src.time_started))
+	var/time_remaining = src.get_time_left()
 	if(time_remaining > 0)
 		return "<br><span class='flocksay bold'>\[[time_remaining] second[s_es(time_remaining)] remaining until broadcast.\]</span>"
 
 /obj/flock_structure/relay/building_specific_info()
-	var/time_remaining = round(src.charge_time_length - getTimeInSecondsSinceTime(src.time_started))
+	var/time_remaining = src.get_time_left()
 	if(time_remaining > 0)
 		return "<b>Approximately [SPAN_ITALIC("[time_remaining]")] second[time_remaining == 1 ? "" : "s"] left until broadcast.</b>"
 	else
@@ -152,7 +156,7 @@ TYPEINFO(/obj/flock_structure/relay)
 	var/turf/location = get_turf(src)
 	overlays += "structure-relay-sparks"
 	desc = "Your life is flashing before your eyes. Looks like this is the end."
-	flock_speak(null, "!!! TRANSMITTING SIGNAL !!!", src.flock)
+	src.flock.system_say_source.say("!!! TRANSMITTING SIGNAL !!!")
 	src.visible_message("<span class='flocksay bold'>[src] begins sparking wildly! The air is charged with static!</span>")
 
 	SPAWN(0)
@@ -185,12 +189,7 @@ TYPEINFO(/obj/flock_structure/relay)
 
 ///Brick every headset noisily
 /obj/flock_structure/relay/proc/destroy_radios()
-	// mid-tier jank, but it's a nice easy way to get the radio network
-	var/obj/item/device/radio/headset/entrypoint = new()
-	var/list/obj/radios = get_radio_connection_by_id(entrypoint, "main").network.analog_devices
-	for (var/obj/item/device/radio/radio in radios)
-		if (!istype(radio))
-			continue
+	for_by_tcl(radio, /obj/item/device/radio)
 		if (prob(30)) //give it a slight cascading effect
 			sleep(0.1 SECONDS)
 		playsound(radio, "sound/effects/radio_sweep[rand(1,5)].ogg", 70, 1, pitch = 0.4)
@@ -202,7 +201,7 @@ TYPEINFO(/obj/flock_structure/relay)
 		radio.frequency = rand(R_FREQ_MINIMUM, 10000)
 		radio.secure_frequencies = list()
 		radio.set_secure_frequencies()
-	qdel(entrypoint)
+		no_more_radios = TRUE
 
 /obj/flock_structure/relay/takeDamage(var/damageType, var/amount)
 	..()

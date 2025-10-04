@@ -14,7 +14,7 @@
 		if(!holder)
 			return
 		if(!istype(get_area(holder.owner), /area/sim/gunsim))
-			holder.owner.say("ERATH QUUK")
+			holder.owner.say("ERATH QUUK", flags = SAYFLAG_IGNORE_STAMINA, message_params = list("maptext_css_values" = src.maptext_style, "maptext_animation_colours" = src.maptext_colors))
 		..()
 
 		playsound(holder.owner.loc, 'sound/effects/exlow.ogg', 25, 1, -1)
@@ -32,7 +32,8 @@
 			if(check_target_immunity( A )) continue
 			affected += A
 			//animate_shockwave(A)
-			if(hasvar(A, "weakened")) A:weakened += 3
+			if (ismob(A))
+				A.changeStatus("knockdown", 3)
 			if(istype(A, /atom/movable))
 				if(!isturf(A) && hasvar(A, "anchored") && !A:anchored)
 					SPAWN(0) A:throw_at(get_edge_cheap(A, get_dir(holder.owner, A)), 30, 1)
@@ -42,7 +43,8 @@
 			if(check_target_immunity( A )) continue
 			affected += A
 			//animate_shockwave(A)
-			if(hasvar(A, "weakened")) A:weakened += 3
+			if (ismob(A))
+				A.changeStatus("knockdown", 3)
 			if(istype(A, /atom/movable))
 				if(!isturf(A) && hasvar(A, "anchored") && !A:anchored)
 					SPAWN(0) A:throw_at(get_edge_cheap(A, get_dir(holder.owner, A)), 30, 1)
@@ -52,7 +54,8 @@
 			if(check_target_immunity( A )) continue
 			affected += A
 			//animate_shockwave(A)
-			if(hasvar(A, "weakened")) A:weakened += 3
+			if (ismob(A))
+				A.changeStatus("knockdown", 3)
 			if(istype(A, /atom/movable))
 				if(!isturf(A) && hasvar(A, "anchored") && !A:anchored)
 					SPAWN(0) A:throw_at(get_edge_cheap(A, get_dir(holder.owner, A)), 30, 1)

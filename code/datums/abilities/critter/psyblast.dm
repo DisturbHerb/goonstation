@@ -33,7 +33,7 @@
 			boutput(holder.owner, SPAN_ALERT("That target is protected against psyblasts."))
 		else
 			boutput(MT, SPAN_ALERT("You are blasted by psychic energy!"))
-			MT.changeStatus("paralysis", 7 SECONDS)
+			MT.changeStatus("unconscious", 7 SECONDS)
 			MT.stuttering += 60
 			MT.take_brain_damage(20)
 			MT.TakeDamage("head", 0, 5, 0, DAMAGE_BURN)
@@ -43,5 +43,5 @@
 		cast(atom/target)
 			if (..())
 				return 1
-			holder.owner.say("PSYBLAST!", 1)
+			holder.owner.say("PSYBLAST!", flags = SAYFLAG_IGNORE_STAMINA)
 			return 0

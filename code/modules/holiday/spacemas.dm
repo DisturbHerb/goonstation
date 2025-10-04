@@ -143,22 +143,14 @@ var/static/list/santa_snacks = list(/obj/item/reagent_containers/food/drinks/egg
 	return
 
 // Grandma, no! you picked the wrong one!
+TYPEINFO(/obj/machinery/bot/guardbot/bootleg)
+	start_speech_modifiers = list(SPEECH_MODIFIER_BOT_BOOTLEG)
+
 /obj/machinery/bot/guardbot/bootleg
 	name = "Super Protector Friend III"
 	desc = "The label on the back reads 'New technology! Blinking light action!'."
 	icon = 'icons/obj/bots/robuddy/super-protector-friend.dmi'
 
-	speak(var/message)
-		var/fontmode = rand(1,4)
-		switch(fontmode)
-			if(1) return ..("<font face='Comic Sans MS' size=3>[uppertext(message)]!!</font>")
-			if(2) return ..("<font face='Curlz MT'size=3>[uppertext(message)]!!</font>")
-			if(3) return ..("<font face='System'size=3>[uppertext(message)]!!</font>")
-			else
-				var/honk = pick("WACKA", "QUACK","QUACKY","GAGGLE")
-				if(!ON_COOLDOWN(src, "bootleg_sound", 15 SECONDS))
-					playsound(src.loc, 'sound/misc/amusingduck.ogg', 50, 0)
-				return ..("<font face='Comic Sans MS' size=3>[honk]!!</font>")
 	Move()
 		if(..())
 			pixel_x = rand(-6, 6)
@@ -169,21 +161,20 @@ var/static/list/santa_snacks = list(/obj/item/reagent_containers/food/drinks/egg
 				SPAWN(2 SECONDS) if (sparks) qdel(sparks)
 			return TRUE
 
+TYPEINFO(/obj/machinery/bot/guardbot/xmas)
+	start_speech_modifiers = list(SPEECH_MODIFIER_BOT_XMAS)
+
 /obj/machinery/bot/guardbot/xmas
 	name = "Jinglebuddy"
 	desc = "Festive!"
 	skin_icon_state = "xmasbuddy"
 	setup_default_tool_path = /obj/item/device/guardbot_tool/xmas
 
-	speak(var/message)
-		message = ("<font face='Segoe Script'><i><b>[message]</b></i></font>")
-		. = ..()
-
 	explode()
 		if(src.exploding) return
 		src.exploding = 1
 		var/death_message = pick("I'll be back again some day!", "And to all a good night!", "A buddy is never truly happy until it is loved by a child. ", "I guess Spacemas isn't coming this year.", "Ho ho hFATAL ERROR")
-		speak(death_message)
+		src.say(death_message)
 		src.visible_message(SPAN_COMBAT("<b>[src] blows apart!</b>"))
 		var/turf/T = get_turf(src)
 		if(src.mover)
@@ -288,12 +279,12 @@ var/static/list/santa_snacks = list(/obj/item/reagent_containers/food/drinks/egg
 			boutput(O, "Brrr!")
 
 		if (!O.is_hulk())
-			O.changeStatus("weakened", 10 SECONDS)
+			O.changeStatus("knockdown", 10 SECONDS)
 
 #ifdef USE_STAMINA_DISORIENT
-			O.do_disorient(120, weakened = 100, disorient = 80)
+			O.do_disorient(120, knockdown = 100, disorient = 80)
 #else
-			O.changeStatus("weakened", 10 SECONDS)
+			O.changeStatus("knockdown", 10 SECONDS)
 #endif
 
 		O.bodytemperature = max(0, O.bodytemperature - 5)
@@ -309,8 +300,8 @@ proc/compare_ornament_score(list/a, list/b)
 	EPHEMERAL_XMAS
 	name = "Spacemas tree"
 	desc = "O Spacemas tree, O Spacemas tree, Much p- Huh, there's a bunch of crayons and canvases under it, try clicking it?"
-	icon = 'icons/effects/160x160.dmi'
-	icon_state = "xmastree_2022"
+	icon = 'icons/obj/xmastree.dmi'
+	icon_state = "xmastree_2023"
 	anchored = ANCHORED
 	layer = NOLIGHT_EFFECTS_LAYER_BASE
 	pixel_x = -64
@@ -366,6 +357,9 @@ proc/compare_ornament_score(list/a, list/b)
 	worst_ornaments
 		ornament_sort = "worst"
 
+	fewest_votes
+		ornament_sort = "fewest_votes"
+
 	random_ornaments
 		ornament_sort = "random"
 
@@ -417,6 +411,11 @@ proc/compare_ornament_score(list/a, list/b)
 					var/list/ornament = ornament_list[ornament_name]
 					ornament["score"] = -src.bound_of_wilson_score_confidence_interval_for_a_bernoulli_parameter_of_an_ornament(ornament, which_bound=1)
 				ornament_list = sortList(ornament_list, /proc/compare_ornament_score, associative=TRUE)
+			if("fewest_votes")
+				for(var/ornament_name in ornament_list)
+					var/list/ornament = ornament_list[ornament_name]
+					ornament["score"] = -(length(ornament["upvoted"]) + length(ornament["downvoted"]))
+				ornament_list = sortList(ornament_list, /proc/compare_ornament_score, associative=TRUE)
 			if("weighted_random")
 				var/list/ornament_weights = list()
 				for(var/ornament_name in ornament_list)
@@ -432,7 +431,7 @@ proc/compare_ornament_score(list/a, list/b)
 				var/list/sorted_by_least_votes = list()
 				for(var/ornament_name in ornament_weights)
 					var/list/ornament = original_ornament_list[ornament_name]
-					var/votes = length(ornament["upvoted"]) + length(ornament["downvoted"])
+					var/votes = length(ornament["upvoted"]) + length(ornament["downvoted"]) * 2.5
 					sorted_by_least_votes[ornament_name] = ornament
 					ornament["score"] = -votes
 				sorted_by_least_votes = sortList(sorted_by_least_votes, /proc/compare_ornament_score, associative=TRUE)
@@ -612,7 +611,7 @@ proc/compare_ornament_score(list/a, list/b)
 		if (!M || !isliving(M))
 			return
 		var/mob/living/L = M
-		L.bodytemperature -= rand(1, 10)
+		L.changeBodyTemp(-rand(1, 10) KELVIN)
 		L.show_text("That was chilly!", "blue")
 		..()
 
@@ -624,7 +623,7 @@ proc/compare_ornament_score(list/a, list/b)
 		M.change_eye_blurry(25)
 		M.make_dizzy(rand(0, 5))
 		M.stuttering += rand(0, 1)
-		M.bodytemperature -= rand(1, 10)
+		M.changeBodyTemp(-rand(1, 10) KELVIN)
 		if (message)
 			M.visible_message(SPAN_ALERT("<b>[M]</b> is hit by [src]!"),\
 			SPAN_ALERT("You get hit by [src]![pick("", " Brr!", " Ack!", " Cold!")]"))
@@ -672,6 +671,7 @@ proc/compare_ornament_score(list/a, list/b)
 	icon_state = "garland"
 	layer = 5
 	anchored = ANCHORED
+	mouse_opacity = FALSE
 
 /obj/decal/tinsel
 	plane = PLANE_DEFAULT
@@ -754,11 +754,6 @@ proc/compare_ornament_score(list/a, list/b)
 
 // Santa Stuff
 
-/obj/item/card/id/captains_spare/santa
-	name = "Spacemas Card"
-	registered = "Santa Claus"
-	assignment = "Spacemas Spirit"
-
 /mob/living/carbon/human/santa
 	New()
 		..()
@@ -773,7 +768,6 @@ proc/compare_ornament_score(list/a, list/b)
 		src.equip_new_if_possible(/obj/item/clothing/head/helmet/space/santahat, SLOT_HEAD)
 		src.equip_new_if_possible(/obj/item/storage/backpack/red, SLOT_BACK)
 		src.equip_new_if_possible(/obj/item/device/radio/headset, SLOT_EARS)
-		src.equip_new_if_possible(/obj/item/card/id/captains_spare/santa, SLOT_WEAR_ID)
 
 		var/datum/abilityHolder/HS = src.add_ability_holder(/datum/abilityHolder/santa)
 		HS.addAbility(/datum/targetable/santa/heal)
@@ -784,12 +778,12 @@ proc/compare_ornament_score(list/a, list/b)
 		HS.addAbility(/datum/targetable/santa/banish)
 
 	initializeBioholder()
-		bioHolder.mobAppearance.customization_first = new /datum/customization_style/hair/short/balding
-		bioHolder.mobAppearance.customization_second = new /datum/customization_style/beard/fullbeard
-		bioHolder.mobAppearance.customization_third = new /datum/customization_style/eyebrows/eyebrows
-		bioHolder.mobAppearance.customization_first_color = "#FFFFFF"
-		bioHolder.mobAppearance.customization_second_color = "#FFFFFF"
-		bioHolder.mobAppearance.customization_third_color = "#FFFFFF"
+		bioHolder.mobAppearance.customizations["hair_bottom"].style =  new /datum/customization_style/hair/short/balding
+		bioHolder.mobAppearance.customizations["hair_middle"].style =  new /datum/customization_style/beard/fullbeard
+		bioHolder.mobAppearance.customizations["hair_top"].style =  new /datum/customization_style/eyebrows/eyebrows
+		bioHolder.mobAppearance.customizations["hair_bottom"].color = "#FFFFFF"
+		bioHolder.mobAppearance.customizations["hair_middle"].color = "#FFFFFF"
+		bioHolder.mobAppearance.customizations["hair_top"].color = "#FFFFFF"
 		. = ..()
 
 
@@ -808,7 +802,6 @@ proc/compare_ornament_score(list/a, list/b)
 	icon_state = "hunter"
 	human_compatible = 0
 	uses_human_clothes = 0
-	voice_message = "bellows"
 	jerk = 1
 
 	sight_modifier()
@@ -833,9 +826,9 @@ proc/compare_ornament_score(list/a, list/b)
 		bioHolder.AddEffect("cold_resist")
 
 	initializeBioholder()
-		bioHolder.mobAppearance.customization_first = new /datum/customization_style/none
-		bioHolder.mobAppearance.customization_second = new /datum/customization_style/none
-		bioHolder.mobAppearance.customization_third = new /datum/customization_style/none
+		bioHolder.mobAppearance.customizations["hair_bottom"].style =  new /datum/customization_style/none
+		bioHolder.mobAppearance.customizations["hair_middle"].style =  new /datum/customization_style/none
+		bioHolder.mobAppearance.customizations["hair_top"].style =  new /datum/customization_style/none
 		. = ..()
 
 
@@ -861,7 +854,7 @@ proc/compare_ornament_score(list/a, list/b)
 					shake_camera(C, 8, 16)
 					C.show_message(SPAN_ALERT("<B>[src] tramples right over [M]!</B>"), 1)
 				M.changeStatus("stunned", 8 SECONDS)
-				M.changeStatus("weakened", 5 SECONDS)
+				M.changeStatus("knockdown", 5 SECONDS)
 				random_brute_damage(M, 10,1)
 				M.take_brain_damage(rand(5,10))
 				playsound(M.loc, 'sound/impact_sounds/Flesh_Break_2.ogg', attack_volume, 1, -1)
@@ -875,7 +868,7 @@ proc/compare_ornament_score(list/a, list/b)
 					for (var/mob/C in viewers(src))
 						shake_camera(C, 8, 16)
 						C.show_message(SPAN_ALERT("<B>[src] [attack_text] on [O]!</B>"), 1)
-					if(istype(O, /obj/window) || istype(O, /obj/grille) || istype(O, /obj/machinery/door) || istype(O, /obj/structure/girder) || istype(O, /obj/foamedmetal))
+					if(istype(O, /obj/window) || istype(O, /obj/mesh/grille) || istype(O, /obj/machinery/door) || istype(O, /obj/structure/girder) || istype(O, /obj/foamedmetal))
 						qdel(O)
 					else
 						O.ex_act(attack_strength)
@@ -1066,7 +1059,7 @@ proc/compare_ornament_score(list/a, list/b)
 							return
 						random_brute_damage(H, 10,1)
 						H.changeStatus("stunned", 8 SECONDS)
-						H.changeStatus("weakened", 5 SECONDS)
+						H.changeStatus("knockdown", 5 SECONDS)
 						if (H.health < 0)
 							src.visible_message(SPAN_ALERT("<B>[H] bursts like a ripe melon! Holy shit!</B>"))
 							H.gib()
@@ -1159,7 +1152,7 @@ proc/compare_ornament_score(list/a, list/b)
 			boutput(user, SPAN_ALERT("There is a pissed off snake in the stocking! It bites you! What the hell?!"))
 			modify_christmas_cheer(-5)
 			if (user.reagents)
-				user.reagents.add_reagent("venom", 5)
+				user.reagents.add_reagent("cytotoxin", 5)
 		else
 			modify_christmas_cheer(2)
 			var/dangerous = 0
@@ -1209,7 +1202,8 @@ proc/get_spacemas_ornaments(only_if_loaded=FALSE)
 	RETURN_TYPE(/list)
 	var/static/spacemas_ornament_data = null
 	if(isnull(spacemas_ornament_data) && !only_if_loaded)
-		spacemas_ornament_data = world.load_intra_round_value("tree_ornaments") || list()
+		var/year = BUILD_TIME_MONTH < 12 ? BUILD_TIME_YEAR - 1 : BUILD_TIME_YEAR
+		spacemas_ornament_data = world.load_intra_round_value("tree_ornaments_[year]") || list()
 	. = spacemas_ornament_data
 
 /obj/item/canvas/tree_ornament
@@ -1248,10 +1242,10 @@ proc/get_spacemas_ornaments(only_if_loaded=FALSE)
 		if(user.ckey in src.downvoted)
 			highlight_down = "font-weight: 900;"
 		. += {"<br>
-		<a href='?src=\ref[src];upvote=1' style='color:#88ff88;[highlight_up]'>👍 (like)</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		<a href='?src=\ref[src];downvote=1' style='color:#ff8888;[highlight_down]'>👎 (dislike)</a>"}
+		<a href='byond://?src=\ref[src];upvote=1' style='color:#88ff88;[highlight_up]'>👍 (like)</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<a href='byond://?src=\ref[src];downvote=1' style='color:#ff8888;[highlight_down]'>👎 (dislike)</a>"}
 		if(user?.client?.holder?.level >= LEVEL_SA)
-			. += "<br><a href='?src=\ref[src];remove_ornament=1' style='color:red;'>Annihilate ornament</a>"
+			. += "<br><a href='byond://?src=\ref[src];remove_ornament=1' style='color:red;'>Annihilate ornament</a>"
 
 	Topic(href, href_list)
 		if(href_list["remove_ornament"])
@@ -1272,7 +1266,7 @@ proc/get_spacemas_ornaments(only_if_loaded=FALSE)
 				if(usr.ckey == src.main_artist)
 					boutput(usr, SPAN_ALERT("You can't upvote your own ornament."))
 					return
-				if(usr.client?.player?.rounds_participated <= 10)
+				if(usr.client?.player?.get_rounds_participated() <= 10)
 					boutput(usr, SPAN_ALERT("You need to play at least 10 rounds to be able to downvote ornaments."))
 					return
 				if(usr.ckey in src.downvoted)
@@ -1298,7 +1292,7 @@ proc/get_spacemas_ornaments(only_if_loaded=FALSE)
 				if(usr.ckey == src.main_artist)
 					boutput(usr, SPAN_ALERT("You can't downvote your own ornament."))
 					return
-				if(usr.client?.player?.rounds_participated <= 10)
+				if(usr.client?.player?.get_rounds_participated() <= 10)
 					boutput(usr, SPAN_ALERT("You need to play at least 10 rounds to be able to downvote ornaments."))
 					return
 				if(usr.ckey in src.upvoted)
@@ -1382,14 +1376,14 @@ proc/get_spacemas_ornaments(only_if_loaded=FALSE)
 		var/new_color = input(user, "Choose a color:", "Ornament paintbrush", src.font_color) as color|null
 		if(new_color)
 			src.font_color = new_color
-			boutput(user, SPAN_NOTICE("You twirl the paintbrush and the Spacemas spirit changes it to this color: <a href='?src=\ref[src];setcolor=[copytext(src.font_color, 2)]' style='color: [src.font_color]'>[src.font_color]</a>."))
+			boutput(user, SPAN_NOTICE("You twirl the paintbrush and the Spacemas spirit changes it to this color: <a href='byond://?src=\ref[src];setcolor=[copytext(src.font_color, 2)]' style='color: [src.font_color]'>[src.font_color]</a>."))
 			src.UpdateIcon()
 
 	Topic(href, href_list)
 		. = ..()
 		if(href_list["setcolor"] && can_reach(usr, src) && can_act(usr, 1))
 			src.font_color = "#" + href_list["setcolor"]
-			boutput(usr, SPAN_NOTICE("You twirl the paintbrush and the Spacemas spirit changes it to this color again: <a href='?src=\ref[src];setcolor=[copytext(src.font_color, 2)]' style='color: [src.font_color]'>[src.font_color]</a>."))
+			boutput(usr, SPAN_NOTICE("You twirl the paintbrush and the Spacemas spirit changes it to this color again: <a href='byond://?src=\ref[src];setcolor=[copytext(src.font_color, 2)]' style='color: [src.font_color]'>[src.font_color]</a>."))
 			src.UpdateIcon()
 
 	afterattack(atom/target, mob/user)
@@ -1419,3 +1413,17 @@ proc/get_spacemas_ornaments(only_if_loaded=FALSE)
 	max_wclass = 1
 	can_hold = list(/obj/item/canvas/tree_ornament, /obj/item/pen/ornament_paintbrush, /obj/item/pen/ornament_eraser)
 	spawn_contents = list(/obj/item/canvas/tree_ornament, /obj/item/pen/ornament_paintbrush, /obj/item/pen/ornament_eraser)
+
+/obj/item/spacemas_card
+	name = "spacemas card"
+	desc = null
+	icon = 'icons/obj/items/items.dmi'
+	icon_state = "mail-1"
+	item_state = "gift"
+	w_class = W_CLASS_TINY
+
+	New()
+		..()
+		desc = "Dear [pick("comrade", "colleague", "friend", "crewmate")], wishing you [pick("many large and valuable presents!", "a satisfactory festive annual event!", "a wonderful holiday!", "a merry spacemas!", "happy holidays!")] From [pick("your friends back home", "your local Syndicate cell", "a mysterious benefactor", "all of us on-station", "your best buddy", "Nanotrasen Central Command")]."
+		var/n = rand(1,6)
+		icon_state = "card-[n]"

@@ -54,14 +54,16 @@ ADMIN_INTERACT_PROCS(/obj/item/genetics_injector/dna_injector, proc/admin_comman
 
 	dna_injector
 		name = "dna injector"
-		desc = "A syringe designed to safely insert or remove genetic structures to and from a living organism."
+		desc = "A syringe designed to safely insert genetic structures into a living organism."
 		var/datum/bioEffect/BE = null
 
 		injected(var/mob/living/carbon/user,var/mob/living/carbon/target)
 			if (..())
 				return
 
-			target.bioHolder.AddEffectInstance(BE,1)
+			var/datum/bioEffect/NEW = new BE.type()
+			copy_datum_vars(BE, NEW, blacklist=list("owner", "holder", "dnaBlocks"))
+			target.bioHolder.AddEffectInstance(NEW,1)
 			src.uses--
 			src.update_appearance()
 
@@ -110,7 +112,6 @@ ADMIN_INTERACT_PROCS(/obj/item/genetics_injector/dna_injector, proc/admin_comman
 /datum/action/bar/icon/genetics_injector
 	duration = 20
 	interrupt_flags = INTERRUPT_MOVE | INTERRUPT_ACT | INTERRUPT_STUNNED | INTERRUPT_ACTION
-	id = "genetics_injector"
 	icon = 'icons/obj/syringe.dmi'
 	icon_state = "injector_1"
 	var/mob/living/carbon/target = null
@@ -154,7 +155,7 @@ ADMIN_INTERACT_PROCS(/obj/item/genetics_injector/dna_injector, proc/admin_comman
 	icon = 'icons/obj/items/tools/screwdriver.dmi'
 	inhand_image_icon = 'icons/mob/inhand/tools/screwdriver.dmi'
 	icon_state = "screwdriver"
-	flags = FPRINT | TABLEPASS | CONDUCT
+	flags = TABLEPASS | CONDUCT
 	object_flags = NO_GHOSTCRITTER
 	w_class = W_CLASS_TINY
 	hide_attack = ATTACK_FULLY_HIDDEN
@@ -228,30 +229,23 @@ ADMIN_INTERACT_PROCS(/obj/item/genetics_injector/dna_injector, proc/admin_comman
 			boutput(user, SPAN_ALERT("The [name] is expended and has no more uses."))
 			return
 
-		if(target == user)
+		logTheThing(LOG_COMBAT, user, "injects [constructTarget(target,"combat")] with [src.name] at [log_loc(user)]")
 
-			if(use_mode == SCRAMBLER_MODE_COPY)
-				src.copy_identity(user,user)
-				user.visible_message(SPAN_ALERT("<b>You inject yourself with the [src]! Your appearance has been copied to the [src].</b>"))
-				return
+		if(use_mode == SCRAMBLER_MODE_COPY)
+			user.tri_message(target,\
+			SPAN_ALERT("<b>[user]</b> stabs [target] with the DNA injector!"),\
+			SPAN_ALERT("<b>You stab [target] with the DNA injector. [target]'s appearance has been copied to the [src].</b>"),\
+			SPAN_ALERT("<b>[user]</b> stabs you with the DNA injector!"))
+			src.copy_identity(user,target)
+			return
 
-			if(use_mode == SCRAMBLER_MODE_PASTE)
-				src.paste_identity(user,user)
-				user.visible_message(SPAN_ALERT("<b>You inject yourself with the [src]! The [src] has been totally used up.</b>"))
-				return
-
-		else
-			logTheThing(LOG_COMBAT, user, "injects [constructTarget(target,"combat")] with [src.name] at [log_loc(user)]")
-
-			if(use_mode == SCRAMBLER_MODE_COPY)
-				src.copy_identity(user,target)
-				user.visible_message(SPAN_ALERT("<b>You stab [target] with the DNA injector. [target]'s appearance has been copied to the [src].</b>"))
-				return
-
-			if(use_mode == SCRAMBLER_MODE_PASTE)
-				src.paste_identity(user,target)
-				user.visible_message(SPAN_ALERT("<b>You stab [target] with the DNA injector. The [src] has been totally used up.</b>"))
-				return
+		if(use_mode == SCRAMBLER_MODE_PASTE)
+			user.tri_message(target,\
+			SPAN_ALERT("<b>[user]</b> stabs [target] with the DNA injector!"),\
+			SPAN_ALERT("<b>You stab [target] with the DNA injector. The [src] has been totally used up.</b>"),\
+			SPAN_ALERT("<b>[user]</b> stabs you with the DNA injector!"))
+			src.paste_identity(user,target)
+			return
 
 	proc/copy_identity(var/mob/living/carbon/user,var/mob/living/carbon/target)
 		if (ishuman(target))
@@ -260,6 +254,8 @@ ADMIN_INTERACT_PROCS(/obj/item/genetics_injector/dna_injector, proc/admin_comman
 			src.bioHolder.CopyOther(target.bioHolder)
 			stored_name = target.real_name
 			randomize_look(target)
+			target.bioHolder.Uid = target.bioHolder.CreateUid() // forensics stuff, new blood dna and fingerprints
+			target.bioHolder.build_fingerprints()
 			UpdateIcon()
 
 	proc/paste_identity(var/mob/living/carbon/user,var/mob/living/carbon/target)

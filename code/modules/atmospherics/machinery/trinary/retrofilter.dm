@@ -10,7 +10,7 @@
 
 /obj/machinery/atmospherics/trinary/retrofilter
 	icon = 'icons/obj/atmospherics/retro_filter.dmi'
-	icon_state = "intact_off"
+	icon_state = "off-map"
 	name = "Gas filter"
 
 	req_access = list(access_engineering_atmos)
@@ -31,11 +31,13 @@
 	var/emagged = FALSE
 
 /obj/machinery/atmospherics/trinary/retrofilter/update_icon()
-	if(src.node1&&src.node2&&src.node3)
-		src.icon_state = "intact_[(src.status & NOPOWER)?("off"):("on")]"
-	else
-		src.icon_state = "" //bad but am lazy to make icons rn planning for a later retrofilter pr
+	if(!(src.node1 && src.node2 && src.node3))
 		src.status |= NOPOWER
+
+	src.icon_state = "[(src.status & NOPOWER)?("off"):("on")]"
+	SET_PIPE_UNDERLAY(src.node1, turn(src.dir, -180), "long", issimplepipe(src.node1) ?  src.node1.color : null, FALSE)
+	SET_PIPE_UNDERLAY(src.node2, src.flipped ? turn(src.dir, 90) : turn(src.dir, -90), "long", issimplepipe(src.node2) ?  src.node2.color : null, FALSE)
+	SET_PIPE_UNDERLAY(src.node3, src.dir, "long", issimplepipe(src.node3) ?  src.node3.color : null, FALSE)
 
 /obj/machinery/atmospherics/trinary/retrofilter/attack_hand(mob/user)
 	if(..())
@@ -50,7 +52,7 @@
 		if (!issilicon(user) && src.locked)
 			dat += "[gases[i]]: [(src.filter_mode & (1 << (i - 1))) ? "Releasing" : "Passing"]<br>"
 		else
-			dat += "[gases[i]]: <a href='?src=\ref[src];toggle_gas=[1 << (i - 1)]'>[(src.filter_mode & (1 << (i - 1))) ? "Releasing" : "Passing"]</a><br>"
+			dat += "[gases[i]]: <a href='byond://?src=\ref[src];toggle_gas=[1 << (i - 1)]'>[(src.filter_mode & (1 << (i - 1))) ? "Releasing" : "Passing"]</a><br>"
 
 	var/pressure = MIXTURE_PRESSURE(src.air1)
 	var/total_moles = TOTAL_MOLES(src.air1)
@@ -77,7 +79,7 @@
 	else
 		dat += "Nitrogen: 0%<br>Oxygen: 0%<br>Carbon Dioxide: 0%<br>Plasma: 0%<br>"
 
-	dat += "<br><A href='?src=\ref[src];close=1'>Close</A>"
+	dat += "<br><A href='byond://?src=\ref[src];close=1'>Close</A>"
 
 	user.Browse(dat, "window=pipefilter;size=300x365")
 	onclose(user, "pipefilter")

@@ -35,15 +35,7 @@ var/global/datum/controller/camera_coverage/camera_coverage_controller
 		T.aiImage.appearance = ma
 		T.aiImage.dir = pick(alldirs)
 		T.aiImage.loc = T
-
-
-		if(istype(T, /turf/space))
-			aiImagesLowPriority += T.aiImage
-		else
-			aiImages += T.aiImage
-		for_by_tcl(M, /mob/living/silicon/ai)
-			if (M.client)
-				M << T.aiImage
+		T.aiImage.override = TRUE
 
 		donecount++
 		thispct = round(donecount / totalcount)
@@ -51,7 +43,7 @@ var/global/datum/controller/camera_coverage/camera_coverage_controller
 			lastpct = thispct
 			game_start_countdown?.update_status("Updating cameras...\n[thispct]%")
 
-		LAGCHECK(LAG_HIGH)
+		LAGCHECK_IF_LIVE(LAG_INIT)
 
 	game_start_countdown?.update_status("Updating cameras...\nCoverage...")
 	src.update_all_emitters()

@@ -2,23 +2,27 @@
  * Playable bots
  */
 ABSTRACT_TYPE(/mob/living/critter/robotic/bot)
+TYPEINFO(/mob/living/critter/robotic/bot)
+	start_listen_inputs = list(LISTEN_INPUT_EARS, LISTEN_INPUT_SILICONCHAT, LISTEN_INPUT_GHOSTLY_WHISPER)
+	start_speech_outputs = list(SPEECH_OUTPUT_SPOKEN, SPEECH_OUTPUT_SILICONCHAT, SPEECH_OUTPUT_EQUIPPED)
+
 /mob/living/critter/robotic/bot
 	name = "base bot mob (you should never see me)"
 	icon = 'icons/obj/bots/aibots.dmi'
 	blood_id = "oil"
-	speechverb_say = "beeps"
-	speechverb_gasp = "warbles"
-	speechverb_stammer = "bleeps"
-	speechverb_exclaim = "boops"
-	speechverb_ask = "bloops"
+	speech_verb_say = "beeps"
+	speech_verb_gasp = "warbles"
+	speech_verb_stammer = "bleeps"
+	speech_verb_exclaim = "boops"
+	speech_verb_ask = "bloops"
 	stepsound = "step_plating"
-	robot_talk_understand = TRUE
 	hand_count = 1
 	can_burn = FALSE
 	dna_to_absorb = 0
 	metabolizes = FALSE
 	custom_gib_handler = /proc/robogibs
 	stepsound = null
+	ailment_immune = TRUE
 	/// defined in new, this is the base of the icon_state with the suffix removed, i.e. "cleanbot" without the "1"
 	var/icon_state_base = null
 	var/brute_hp = 25
@@ -28,7 +32,6 @@ ABSTRACT_TYPE(/mob/living/critter/robotic/bot)
 	New()
 		. = ..()
 		remove_lifeprocess(/datum/lifeprocess/blindness)
-		remove_lifeprocess(/datum/lifeprocess/viruses)
 		remove_lifeprocess(/datum/lifeprocess/blood)
 		remove_lifeprocess(/datum/lifeprocess/radiation)
 		new /obj/item/implant/access/infinite/assistant(src)
@@ -82,7 +85,6 @@ ABSTRACT_TYPE(/mob/living/critter/robotic/bot)
 
 	cleanbot
 		name = "cleanbot"
-		real_name = "cleanbot"
 		desc = "A little cleaning robot, he looks so excited!"
 		icon_state = "cleanbot1"
 		icon_state_base = "cleanbot"
@@ -130,6 +132,21 @@ ABSTRACT_TYPE(/mob/living/critter/robotic/bot)
 				src.abilityHolder.addAbility(/datum/targetable/critter/bot/fill_with_chem/phlogiston_dust)
 
 ABSTRACT_TYPE(/datum/targetable/critter/bot)
+/datum/targetable/critter/bot
+
+	/// Propel user in opposite direction
+	proc/propel_bot(var/turf/target)
+		var/mob/bot = holder.owner
+		if (istype(bot.loc, /turf/space))
+			bot.inertia_dir = get_dir_accurate(target, bot)
+			step(bot, bot.inertia_dir)
+		else if(bot.buckled && !bot.buckled.anchored )
+			var/wooshdir = get_dir_accurate(target, bot)
+			SPAWN(0)
+				for(var/i = 1, (bot?.buckled && !bot.buckled.anchored && i <= rand(3,5)), i++)
+					step(bot.buckled, wooshdir)
+					sleep(rand(1,3))
+
 /datum/targetable/critter/bot/mop_floor
 	name = "Mop Floor"
 	desc = "Clean the floor of dirt and other grime."
@@ -142,6 +159,7 @@ ABSTRACT_TYPE(/datum/targetable/critter/bot)
 	cast(atom/target)
 		if(!holder?.owner)
 			return TRUE
+		. = ..()
 		actions.start(new/datum/action/bar/icon/mob_cleanbot_clean(holder.owner, target), holder.owner)
 
 ABSTRACT_TYPE(/datum/targetable/critter/bot/fill_with_chem)
@@ -154,6 +172,7 @@ ABSTRACT_TYPE(/datum/targetable/critter/bot/fill_with_chem)
 	cast(atom/target)
 		if(!holder?.owner?.reagents)
 			return TRUE
+		. = ..()
 		holder.owner.reagents.add_reagent(reagent_id, 30)
 		playsound(holder.owner.loc, 'sound/effects/zzzt.ogg', 50, 1, -6)
 	lube
@@ -175,10 +194,12 @@ ABSTRACT_TYPE(/datum/targetable/critter/bot/fill_with_chem)
 	cooldown = 5 SECONDS
 	icon_state = "clean_scan"
 	var/reagent_id = null
+	do_logs = FALSE
 
 	cast(atom/target)
 		if(!holder?.owner?.reagents)
 			return TRUE
+		. = ..()
 		boutput(holder.owner, "[scan_reagents(holder.owner, visible = 1)]")
 
 /datum/targetable/critter/bot/dump_reagents
@@ -191,6 +212,7 @@ ABSTRACT_TYPE(/datum/targetable/critter/bot/fill_with_chem)
 	cast()
 		if (!holder?.owner?.reagents)
 			return TRUE
+		. = ..()
 		holder.owner.setStatus("resting", INFINITE_STATUS) // flop over to spill the reagents
 		holder.owner.force_laydown_standup()
 		holder.owner.reagents.reaction(get_turf(holder.owner), TOUCH)
@@ -199,7 +221,6 @@ ABSTRACT_TYPE(/datum/targetable/critter/bot/fill_with_chem)
 /datum/action/bar/icon/mob_cleanbot_clean
 	duration = 1 SECOND
 	interrupt_flags = INTERRUPT_MOVE | INTERRUPT_STUNNED | INTERRUPT_ATTACKED
-	id = "mob_cleanbot_clean"
 	icon = 'icons/obj/janitor.dmi'
 	icon_state = "mop"
 	var/mob/master
@@ -256,7 +277,6 @@ ABSTRACT_TYPE(/datum/targetable/critter/bot/fill_with_chem)
 
 /mob/living/critter/robotic/bot/firebot
 	name = "firebot"
-	real_name = "firebot"
 	desc = "A little fire-fighting robot!  He looks so darn chipper."
 	icon_state = "firebot1"
 	icon_state_base = "firebot"
@@ -315,7 +335,8 @@ ABSTRACT_TYPE(/datum/targetable/critter/bot/fill_with_chem)
 	cast(atom/target)
 		if(!holder?.owner)
 			return TRUE
-		flick("firebot-c", holder.owner)
+		. = ..()
+		FLICK("firebot-c", holder.owner)
 		playsound(get_turf(holder.owner), 'sound/effects/spray.ogg', 50, 1, -3)
 
 		var/direction = get_dir(holder.owner,target)
@@ -336,6 +357,8 @@ ABSTRACT_TYPE(/datum/targetable/critter/bot/fill_with_chem)
 				R.add_reagent(reagent_key, spray_reagents[reagent_key], temp_new = spray_temperature)
 			W.spray_at(my_target, R, 1)
 
+		src.propel_bot(T)
+
 	fuel
 		name = "Spray Burning Fuel"
 		desc = "Spray burning fuel all over the place. Highly flammable but near useless in flooded areas."
@@ -355,7 +378,7 @@ ABSTRACT_TYPE(/datum/targetable/critter/bot/fill_with_chem)
 			for(var/mob/living/carbon/human/H in view(1, target))
 				var/atom/targetTurf = get_edge_target_turf(H, get_dir(holder.owner, get_step_away(H, holder.owner)))
 				boutput(H, SPAN_ALERT("<b>[holder.owner] knocks you back!</b>"))
-				H.changeStatus("weakened", 2 SECONDS)
+				H.changeStatus("knockdown", 2 SECONDS)
 				H.throw_at(targetTurf, 200, 4)
 
 
@@ -377,7 +400,7 @@ ABSTRACT_TYPE(/datum/targetable/critter/bot/fill_with_chem)
 
 		var/turf/T = get_turf(target)
 		var/list/affected_turfs = getline(holder.owner, T)
-		flick("firebot-c", holder.owner)
+		FLICK("firebot-c", holder.owner)
 		playsound(holder.owner.loc, 'sound/effects/mag_fireballlaunch.ogg', 50, 0)
 		var/turf/currentturf
 		var/turf/previousturf
@@ -392,5 +415,7 @@ ABSTRACT_TYPE(/datum/targetable/critter/bot/fill_with_chem)
 				continue
 			if (GET_DIST(holder.owner,F) > max_fire_range)
 				continue
-			fireflash(F,0.5,temp)
+			fireflash(F,0.5,temp, chemfire = CHEM_FIRE_RED)
+
+		src.propel_bot(T)
 

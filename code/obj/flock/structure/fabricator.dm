@@ -21,9 +21,9 @@
 				src.resources_to_produce += get_initial_item_health(product.product_path) * product.product_amount
 		else if (istype(content_holder, /obj/machinery/manufacturer))
 			var/obj/machinery/manufacturer/fab = content_holder
-			if (fab.free_resource_amt)
-				for (var/obj/item/material_piece/mat as anything in fab.free_resources)
-					src.resources_to_produce += get_initial_item_health(mat) * fab.free_resource_amt
+			if (length(fab.free_resources) > 0)
+				for (var/obj/item/material_piece/mat_type as anything in fab.free_resources)
+					src.resources_to_produce += get_initial_item_health(mat_type) * fab.free_resources[mat_type]
 			else
 				for (var/obj/item/material_piece/mat in fab.contents)
 					src.resources_to_produce += get_initial_item_health(mat) * mat.amount
@@ -46,7 +46,7 @@
 		if (!src.resources_to_produce)
 			SPAWN(0.1 SECONDS)
 				if (src)
-					flock_speak(src, "ALERT: No resources available to produce.", src.flock)
+					src.say("ALERT: No resources available to produce.")
 					src.icon_state = "reclaimer-off" // placeholder
 		else
 			ON_COOLDOWN(src, "resource_production", 10 SECONDS)
@@ -68,7 +68,7 @@
 		src.info_tag.set_info_tag("Resources left: [src.resources_to_produce]")
 
 		if (!src.resources_to_produce)
-			flock_speak(src, "ALERT: No resources left to produce", src.flock)
+			src.say("ALERT: No resources left to produce")
 			src.icon_state = "reclaimer-off" // placeholder
 
 	gib(atom/location)

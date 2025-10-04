@@ -15,7 +15,6 @@
 	var/stealth_hide_fakekey = 0
 	var/alt_key = 0
 	var/flourish = 0
-	var/pray_l = 0
 	var/fakekey = null
 	var/observing = 0
 	var/warned = 0
@@ -23,9 +22,6 @@
 	var/player_mode_asay = 0
 	var/player_mode_ahelp = 0
 	var/player_mode_mhelp = 0
-	var/only_local_looc = 0
-	var/deadchatoff = 0
-	var/mute_ghost_radio = FALSE
 	var/queued_click = 0
 	var/joined_date = null
 	var/adventure_view = 0
@@ -70,14 +66,13 @@
 
 	var/list/datum/compid_info_list = list()
 
-	var/login_success = 0
-
 	var/view_tint
 
 	/// saturation_matrix: the client's game saturation
 	/// color_matrix: the client's game color (tint)
 	var/saturation_matrix = COLOR_MATRIX_IDENTITY
 	var/color_matrix = COLOR_MATRIX_IDENTITY
+	var/colorblind_matrix = COLOR_MATRIX_IDENTITY
 
 	perspective = EYE_PERSPECTIVE
 	// please ignore this for now thanks in advance - drsingh
@@ -85,15 +80,23 @@
 	var/proc_logging = 0
 #endif
 
-	// authenticate = 0
+	// Turn off BYOND Hub authentication if using another auth provider
+	#if CLIENT_AUTH_PROVIDER_CURRENT == CLIENT_AUTH_PROVIDER_BYOND
+	authenticate = TRUE
+	#else
+	authenticate = FALSE
+	#endif
+
+	var/authenticated = FALSE
+
 	// comment out the line below when debugging locally to enable the options & messages menu
 	control_freak = 1
 
 	var/datum/chatOutput/chatOutput = null
 	var/resourcesLoaded = 0 //Has this client done the mass resource downloading yet?
-	var/datum/tooltipHolder/tooltipHolder = null
+	var/datum/tooltips/tooltips = null
 
-	var/chui/window/keybind_menu/keybind_menu = null
+	var/datum/keybind_menu/keybind_menu = null
 
 	var/delete_state = DELETE_STOP
 
@@ -113,8 +116,16 @@
 
 	var/hand_ghosts = 1 //pickup ghosts inhand
 
+	var/dark_screenflash = FALSE
+
+	var/protanopia_toggled = FALSE
+	var/deuteranopia_toggled = FALSE
+	var/tritanopia_toggled = FALSE
+
 /client/proc/audit(var/category, var/message, var/target)
 	if(src.holder && (src.holder.audit & category))
+		logTheThing(LOG_AUDIT, src, message)
+	else if (!src.holder)
 		logTheThing(LOG_AUDIT, src, message)
 
 /client/proc/updateXpRewards()
@@ -131,7 +142,8 @@
 	return
 
 /client/Del()
-	clients -= src
+	global.clients -= src
+	global.pre_auth_clients -= src
 
 	try
 		// technically not disposing but it really should be here for feature parity
@@ -141,7 +153,7 @@
 
 	src.mob?.move_dir = 0
 
-	if (player_capa && src.login_success)
+	if (player_capa && src.authenticated)
 		player_cap_grace[src.ckey] = TIME + 2 MINUTES
 	/* // THIS THING IS BREAKING THE REST OF THE PROC FOR SOME REASON AND I HAVE NO IDEA WHY
 	if (current_state < GAME_STATE_FINISHED)
@@ -192,356 +204,200 @@
 
 /client/New()
 	Z_LOG_DEBUG("Client/New", "New connection from [src.ckey] from [src.address] via [src.connection]")
-	logTheThing(LOG_DIARY, null, "Login attempt: [src.ckey] from [src.address] via [src.connection], compid [src.computer_id]", "access")
+	logTheThing(LOG_ADMIN, null, "Login attempt: [src.ckey] from [src.address] via [src.connection], compid [src.computer_id], Byond version: [src.byond_version].[src.byond_build]")
+	logTheThing(LOG_DIARY, null, "Login attempt: [src.ckey] from [src.address] via [src.connection], compid [src.computer_id], Byond version: [src.byond_version].[src.byond_build]", "access")
 
-	login_success = 0
+	// TODO: is this necessary?
+	if (config.rsc) src.preload_rsc = config.rsc
 
-	if(findtext(src.key, "Telnet @"))
-		boutput(src, "<h1 class='alert'>Sorry, this game does not support Telnet.</span>")
-		preferences = new
-		sleep(5 SECONDS)
-		del(src)
-		return
-
-	logTheThing(LOG_ADMIN, src, " has connected.")
-
-	Z_LOG_DEBUG("Client/New", "[src.ckey] - Connected")
-
-	src.player = make_player(key)
-	src.player.client = src
-
-	if(config.rsc)
-		src.preload_rsc = config.rsc
-
-	if (!isnewplayer(src.mob) && !isnull(src.mob)) //playtime logging stuff
-		src.player.log_join_time()
-
-	Z_LOG_DEBUG("Client/New", "[src.ckey] - Player set ([player])")
-
-	// moved preferences from new_player so it's accessible in the client scope
-	if (!preferences)
-		preferences = new
-
-
-	//Assign custom interface datums
-	src.chatOutput = new /datum/chatOutput(src)
-	//src.chui = new /datum/chui(src)
-
-	if (!isnewplayer(src.mob))
-		src.loadResources()
-
+	if (!src.preferences) src.preferences = new
 	src.volumes = default_channel_volumes.Copy()
+	src.chatOutput = new /datum/chatOutput(src)
 
-	Z_LOG_DEBUG("Client/New", "[src.ckey] - Running parent new")
+	var/client_auth_status = src.auth()
 
-	..()
+	// Creates or assigns the client's mob
+	. = ..()
 
-	if (join_motd)
-		boutput(src, "<div class='motd'>[join_motd]</div>")
+	if (client_auth_status == CLIENT_AUTH_FAILED)
+		src.on_auth_failed()
+		return FALSE
 
-	if (IsGuestKey(src.key))
-		if(!(!src.address || src.address == world.host || src.address == "127.0.0.1")) // If you're a host or a developer locally, ignore this check.
-			var/gueststring = {"
-							<!doctype html>
-							<html>
-								<head>
-									<title>No guest logins allowed!</title>
-									<style>
-										h1, .banreason {
-											font-color:#F00;
-										}
+	global.pre_auth_clients += src
 
-									</style>
-								</head>
-								<body>
-									<h1>Guest Login Denied</h1>
-									Don't forget to log in to your byond account prior to connecting to this server.
-								</body>
-							</html>
-						"}
-			src.mob.Browse(gueststring, "window=getout")
-			sleep(10)
-			if (src)
-				del(src)
-			return
+	src.sync_dark_mode()
+	src.player = make_player(src.key, client=src)
 
-	if (world.time < 7 SECONDS)
-		if (config.whitelistEnabled && !(admins.Find(src.ckey) && admins[src.ckey] != "Inactive"))
-			if (!(src.ckey in whitelistCkeys))
-				sleep(3 SECONDS) //silly wait period bandaid so clients arent booted before whitelist load (probably)
-
-	//We're limiting connected players to a whitelist of ckeys (but let active admins in)
-	if (config.whitelistEnabled && !(admins.Find(src.ckey) && admins[src.ckey] != "Inactive"))
-		//Key not in whitelist, show them a vaguely sassy message and boot them
-		if (!(src.ckey in whitelistCkeys))
-			var/whitelistString = {"
-							<!doctype html>
-							<html>
-								<head>
-									<title>Server Whitelist Enabled</title>
-									<style>
-										h1, .banreason {
-											font-color:#F00;
-										}
-
-									</style>
-								</head>
-								<body>
-									<h1>Server whitelist enabled</h1>
-									This server has a player whitelist ON. You are not on the whitelist and will now be forcibly disconnected.
-								</body>
-							</html>
-						"}
-			src.mob.Browse(whitelistString, "window=whiteout")
-			sleep(10)
-			if (src)
-				del(src)
-			return
-
-	Z_LOG_DEBUG("Client/New", "[src.ckey] - Checking bans")
-	var/isbanned = checkBan(src.ckey, src.computer_id, src.address, record = 1)
-
-	if (isbanned)
-		Z_LOG_DEBUG("Client/New", "[src.ckey] - Banned!!")
-		logTheThing(LOG_DIARY, null, "Failed Login: [constructTarget(src,"diary")] - Banned", "access")
-		if (announce_banlogin) message_admins(SPAN_INTERNAL("Failed Login: <a href='?src=%admin_ref%;action=notes;target=[src.ckey]'>[src]</a> - Banned (IP: [src.address], ID: [src.computer_id])"))
-		var/banstring = {"
-							<!doctype html>
-							<html>
-								<head>
-									<title>BANNED!</title>
-									<style>
-										h1, .banreason {
-											font-color:#F00;
-										}
-
-									</style>
-								</head>
-								<body>
-									<h1>You have been banned.</h1>
-									[SPAN_BANREASON("Reason: [isbanned].")]<br>
-									If you believe you were unjustly banned, head to <a target="_blank" href=\"https://forum.ss13.co\">the forums</a> and post an appeal.<br>
-									<b>If you believe this ban was not meant for you then please appeal regardless of what the ban message or length says!</b>
-								</body>
-							</html>
-						"}
-		src.mob.Browse(banstring, "window=ripyou")
-		sleep(10)
-		if (src)
-			del(src)
-		return
-
-	Z_LOG_DEBUG("Client/New", "[src.ckey] - Ban check complete")
-
-	if (!src.chatOutput.loaded)
-		//Load custom chat
-		SPAWN(-1)
-			src.chatOutput.start()
-
-	//admins and mentors can enter a server through player caps.
-	if (init_admin())
-		boutput(src, "<span class='ooc adminooc'>You are an admin! Time for crime.</span>")
-	else if (player.mentor)
-		boutput(src, "<span class='ooc mentorooc'>You are a mentor!</span>")
-		if (!src.holder)
-			src.verbs += /client/proc/toggle_mentorhelps
-	else if (player_capa && (total_clients_for_cap() >= player_cap) && (src.ckey in bypassCapCkeys))
-		boutput(src, "<span class='ooc adminooc'>Welcome! The server has reached the player cap of [player_cap], but you are allowed to bypass the player cap!</span>")
-	else if (player_capa && (total_clients_for_cap() >= player_cap) && client_has_cap_grace(src))
-		boutput(src, "<span class='ooc adminooc'>Welcome! The server has reached the player cap of [player_cap], but you were recently disconnected and were caught by the grace period!</span>")
-	else if(player_capa && (total_clients_for_cap() >= player_cap) && !src.holder)
-		boutput(src, "<span class='ooc adminooc'>I'm sorry, the player cap of [player_cap] has been reached for this server. You will now be forcibly disconnected</span>")
-		tgui_alert(src.mob, "I'm sorry, the player cap of [player_cap] has been reached for this server. You will now be forcibly disconnected", "SERVER FULL")
-		del(src)
-		return
-
-	Z_LOG_DEBUG("Client/New", "[src.ckey] - Adding to clients")
-
-	clients += src
-
-	SPAWN(0) // to not lock up spawning process
-		src.has_contestwinner_medal = src.player.has_medal("Too Cool")
-
+	src.loadResources()
 	src.initSizeHelpers()
+	src.tooltips = new /datum/tooltips(src)
+	src.initialize_interface()
 
-	src.tooltipHolder = new /datum/tooltipHolder(src)
-	src.tooltipHolder.clearOld()
+	if (isnewplayer(src.mob))
+		var/mob/new_player/new_player = src.mob
+		new_player.blocked_from_joining = TRUE
+
+	if (client_auth_status == CLIENT_AUTH_SUCCESS)
+		src.on_auth()
+
+/client/proc/post_auth()
+	global.pre_auth_clients -= src
+	global.clients += src
+
+	logTheThing(LOG_ADMIN, null, "Login: [constructTarget(src.mob,"diary")] from [src.address]")
+	logTheThing(LOG_DIARY, null, "Login: [constructTarget(src.mob,"diary")] from [src.address]", "access")
+
+	src.authenticated = TRUE
+	src.chatOutput.start()
+	src.send_lobby_text()
+	SEND_GLOBAL_SIGNAL(COMSIG_GLOBAL_CLIENT_NEW, src)
+
+	src.player = make_player(src.key, client=src)
+	src.player.id = src.client_auth_intent.player_id || src.player.id
+	if (!src.client_auth_intent.can_skip_player_login) src.player.record_login()
+	src.player.on_client_authenticated()
+
+	if (isnewplayer(src.mob))
+		var/mob/new_player/new_player = src.mob
+		new_player.blocked_from_joining = FALSE
+		new_player.new_player_panel()
+
+	src.init_admin()
+
+	if (!isnull(src.mob) && !isnewplayer(src.mob)) src.player.log_join_time()
+
+	if (join_motd) boutput(src, "<div class='motd'>[join_motd]</div>")
+
+	if (isadmin(src))
+		boutput(src, "<span class='ooc adminooc'>You are an admin! Time for crime.</span>")
+	else if (src.is_mentor())
+		boutput(src, "<span class='ooc mentorooc'>You are a mentor!</span>")
+		src.verbs += /client/proc/toggle_mentorhelps
+
+	var/list/active_polls = global.poll_manager.get_active_poll_names()
+	if (length(active_polls))
+		boutput(src, "<h2 style='color: red'>There are polls running!</h2>")
+		boutput(src, SPAN_BOLD("🗳️Active polls: [english_list(active_polls)] - <a href='byond://winset?command=Player-Polls'>Click here to vote!</a>🗳️"))
 
 	createRenderSourceHolder()
 	screen += renderSourceHolder
 
-	for(var/key in globalImages)
+	for (var/key in globalImages)
 		var/image/I = globalImages[key]
 		src << I
-
-
-	Z_LOG_DEBUG("Client/New", "[src.ckey] - ok mostly done")
-
-	SPAWN(0)
-		updateXpRewards()
-
-	//tg controls stuff
 
 	tg_controls = winget( src, "menu.tg_controls", "is-checked" ) == "true"
 	tg_layout = winget( src, "menu.tg_layout", "is-checked" ) == "true"
 
-	SPAWN(3 SECONDS)
-#ifndef IM_TESTING_SHIT_STOP_BARFING_CHANGELOGS_AT_ME
-		var/is_newbie = 0
-#endif
-		// new player logic, moving some of the preferences handling procs from new_player.Login
-		Z_LOG_DEBUG("Client/New", "[src.ckey] - 3 sec spawn stuff")
+	add_to_donator_list(src.ckey)
 
-		if (!preferences)
-			preferences = new
-		if (istype(src.mob, /mob/new_player))
-			Z_LOG_DEBUG("Client/New", "[src.ckey] - new player crap")
-
-			//Load the preferences up here instead.
-			if(!preferences.savefile_load(src))
-#ifndef IM_TESTING_SHIT_STOP_BARFING_CHANGELOGS_AT_ME
-				//preferences.randomizeLook()
-				preferences.ShowChoices(src.mob)
-				tgui_alert(src, content_window = "tgControls", do_wait = FALSE)
-				boutput(src, SPAN_ALERT("Welcome! You don't have a character profile saved yet, so please create one. If you're new, check out the <a target='_blank' href='https://wiki.ss13.co/Getting_Started#Fundamentals'>quick-start guide</a> for how to play!"))
-				//hey maybe put some 'new player mini-instructional' prompt here
-				//ok :)
-				is_newbie = 1
-#endif
-			else if(!src.holder)
-				preferences.sanitize_name()
-
-			if (noir)
-				animate_fade_grayscale(src, 50)
-#ifndef IM_TESTING_SHIT_STOP_BARFING_CHANGELOGS_AT_ME
-			if (!changes && preferences.view_changelog && !is_newbie)
-				if (!cdn)
-					//src << browse_rsc(file("browserassets/images/changelog/postcardsmall.jpg"))
-					src << browse_rsc(file("browserassets/images/changelog/88x31.png"))
-				changes()
-
-			if (src.holder && rank_to_level(src.holder.rank) >= LEVEL_MOD) // No admin changelog for goat farts (Convair880).
-				admin_changes()
-#endif
-		else
-			if (noir)
-				animate_fade_grayscale(src, 1)
-			preferences.savefile_load(src)
-			load_antag_tokens()
-			load_persistent_bank()
-
-#ifdef LIVE_SERVER
-		// check client version validity
-		if (src.byond_version < 514 || src.byond_build < 1584)
-			logTheThing(LOG_ADMIN, src, "connected with outdated client version [byond_version].[byond_build]. Request to update client sent to user.")
-			if (tgui_alert(src, "Please update BYOND to the latest version! Would you like to be taken to the download page now? Make sure to download the stable release.", "ALERT", list("Yes", "No"), 30 SECONDS) == "Yes")
-				src << link("http://www.byond.com/download/")
-	#if (BUILD_TIME_UNIX < 1682899200) //cut off may 1st, 2023
-			else
-				tgui_alert(src, "Version enforcement will be enabled May 1st, 2023. To avoid interruption to gameplay please be sure to update as soon as you can.", "ALERT", timeout = 30 SECONDS)
-	#else
-			// kick out of date clients
-			tgui_alert(src, "Version enforcement is enabled, you will now be forcibly booted. Please be sure to update your client before attempting to rejoin", "ALERT", timeout = 30 SECONDS)
-			del(src)
-			tgui_process.close_user_uis(src.mob)
-			return
-	#endif
-		if (src.byond_version >= 515)
-			if (alert(src, "Please DOWNGRADE BYOND to version 514.1589! Many things will break otherwise. Would you like to be taken to the download page?", "ALERT", "Yes", "No") == "Yes")
-				src << link("http://www.byond.com/download/")
-#endif
-
-		Z_LOG_DEBUG("Client/New", "[src.ckey] - setjoindate")
-		setJoinDate()
-
-		if (winget(src, null, "hwmode") != "true")
-			tgui_alert(src, "Hardware rendering is disabled. This may cause errors displaying lighting, manifesting as BIG WHITE SQUARES.\nPlease enable hardware rendering from the byond preferences menu.", "Potential Rendering Issue")
-
-		ircbot.event("login", src.key)
-		//Cloud data
-#ifdef LIVE_SERVER
-		if (cdn)
-			if(!cloud_available())
-				src.player.cloud_fetch()
-#else
-		// dev server, uses local save file to simulate clouddata
-		if (src.player.cloud_fetch()) // might needlessly reload, but whatever.
-#endif
-			if(cloud_available())
-				src.load_antag_tokens()
-				src.load_persistent_bank()
-				var/decoded = cloud_get("audio_volume")
-				if(decoded)
-					var/list/old_volumes = volumes.Copy()
-					volumes = json_decode(decoded)
-					for(var/i = length(volumes) + 1; i <= length(old_volumes); i++) // default values for channels not in the save
-						if(i - 1 == VOLUME_CHANNEL_EMOTE) // emote channel defaults to game volume
-							volumes += src.getRealVolume(VOLUME_CHANNEL_GAME)
-						else
-							volumes += old_volumes[i]
-
-				// Show login notice, if one exists
-				src.show_login_notice()
-
-				// Set screen saturation
-				src.set_saturation(text2num(cloud_get("saturation")))
-
-		src.mob.reset_keymap()
-
-		if(current_state <= GAME_STATE_PREGAME && src.antag_tokens)
-			boutput(src, "<b>You have [src.antag_tokens] antag tokens!</b>")
-
-		if(istype(src.mob, /mob/new_player))
-			var/mob/new_player/M = src.mob
-			M.new_player_panel() // update if tokens available
-
-#if defined(RP_MODE) && !defined(IM_TESTING_SHIT_STOP_BARFING_CHANGELOGS_AT_ME)
-		src.verbs += /client/proc/cmd_rp_rules
-		if (istype(src.mob, /mob/new_player) && src.player.get_rounds_participated_rp() <= 10)
-			src.cmd_rp_rules()
-#endif
-
-	if(do_compid_analysis)
+	if (do_compid_analysis)
 		do_computerid_test(src) //Will ban yonder fucker in case they are prix
 		check_compid_list(src) 	//Will analyze their computer ID usage patterns for aberrations
 
-	src.initialize_interface()
-
 	src.reputations = new(src)
-
-	if(src.holder && src.holder.level >= LEVEL_ADMIN)
-		src.control_freak = 0
-
-	if (browse_item_initial_done)
-		SPAWN(0)
-			sendItemIcons(src)
 
 	// fixing locked ability holders
 	var/datum/abilityHolder/ability_holder = src.mob.abilityHolder
 	ability_holder?.locked = FALSE
 	var/datum/abilityHolder/composite/composite = ability_holder
-	if(istype(composite))
+	if (istype(composite))
 		for(var/datum/abilityHolder/inner_holder in composite.holders)
 			inner_holder.locked = FALSE
 
-	if(spooky_light_mode)
+	if (spooky_light_mode)
 		var/atom/plane_parent = src.get_plane(PLANE_LIGHTING)
 		plane_parent.color = list(255, 0, 0, 0, 255, 0, 0, 0, 255, -spooky_light_mode, -spooky_light_mode - 1, -spooky_light_mode - 2)
 		src.set_color(normalize_color_to_matrix("#AAAAAA"))
 
-	logTheThing(LOG_DIARY, null, "Login: [constructTarget(src.mob,"diary")] from [src.address]", "access")
-
 	if (config.log_access)
 		src.ip_cid_conflict_check()
 
-	if(src.holder)
+	if (isadmin(src))
 		// when an admin logs in check all clients again per Mordent's request
-		for(var/client/C)
+		for (var/client/C in clients)
 			C.ip_cid_conflict_check(log_it=FALSE, alert_them=FALSE, only_if_first=TRUE, message_who=src)
-	winset(src, null, "rpanewindow.left=infowindow")
-	Z_LOG_DEBUG("Client/New", "[src.ckey] - new() finished.")
 
-	login_success = 1
+	// Put stuff that doesn't sleep here
+	SPAWN(0)
+		Z_LOG_DEBUG("Client/New", "[src.ckey] - spawn stuff")
+
+		#ifndef IM_TESTING_SHIT_STOP_BARFING_CHANGELOGS_AT_ME
+		var/is_newbie = 0
+		#endif
+
+		// new player logic
+		if (!preferences) preferences = new
+		var/loaded_savefile = preferences.savefile_load(src)
+
+		if (isnewplayer(src.mob))
+			Z_LOG_DEBUG("Client/New", "[src.ckey] - new player crap")
+
+			if (!loaded_savefile)
+				#ifndef IM_TESTING_SHIT_STOP_BARFING_CHANGELOGS_AT_ME
+				preferences.ShowChoices(src.mob)
+				tgui_alert(src, content_window = "tgControls", do_wait = FALSE)
+				boutput(src, SPAN_ALERT("Welcome! You don't have a character profile saved yet, so please create one. If you're new, check out the <a target='_blank' href='https://wiki.ss13.co/Getting_Started#Fundamentals'>quick-start guide</a> for how to play!"))
+				is_newbie = 1
+				#endif
+			else if (!isadmin(src))
+				preferences.sanitize_name()
+
+			if (noir)
+				animate_fade_grayscale(src, 50)
+
+			#ifndef IM_TESTING_SHIT_STOP_BARFING_CHANGELOGS_AT_ME
+			if (!changes && preferences.view_changelog && !is_newbie)
+				changes()
+
+			if (isadmin(src) && rank_to_level(src.holder.rank) >= LEVEL_MOD) // No admin changelog for goat farts (Convair880).
+				admin_changes()
+			#endif
+		else
+			if (noir)
+				animate_fade_grayscale(src, 1)
+
+		if (winget(src, null, "hwmode") != "true")
+			tgui_alert(src, "Hardware rendering is disabled. This may cause errors displaying lighting, manifesting as BIG WHITE SQUARES.\nPlease enable hardware rendering from the byond preferences menu.", "Potential Rendering Issue")
+
+		// Stuff reliant on cloudsaves
+		var/audioVolume = src.player?.cloudSaves.getData("audio_volume")
+		if (audioVolume)
+			var/list/old_volumes = src.volumes.Copy()
+			src.volumes = json_decode(audioVolume)
+			for (var/i = length(src.volumes) + 1; i <= length(old_volumes); i++) // default values for channels not in the save
+				if (i - 1 == VOLUME_CHANNEL_EMOTE) // emote channel defaults to game volume
+					src.volumes += src.getRealVolume(VOLUME_CHANNEL_GAME)
+				else
+					src.volumes += old_volumes[i]
+
+		src.load_persistent_bank()
+		src.show_login_notice()
+		src.set_saturation(text2num(src.player?.cloudSaves.getData("saturation")))
+		src.mob.reset_keymap()
+		src.antag_tokens = src.player?.get_antag_tokens()
+
+		if (current_state <= GAME_STATE_PREGAME && src.antag_tokens)
+			boutput(src, "<b>You have [src.antag_tokens] antag tokens!</b>")
+			if (isnewplayer(src.mob))
+				var/mob/new_player/M = src.mob
+				M.new_player_panel() // update if tokens available
+
+		#if defined(RP_MODE) && !defined(IM_TESTING_SHIT_STOP_BARFING_CHANGELOGS_AT_ME)
+		src.verbs += /client/proc/cmd_rp_rules
+		if (isnewplayer(src.mob) && src.player.get_rounds_participated_rp() <= 10 && !src.player.cloudSaves.getData("bypass_round_reqs"))
+			src.cmd_rp_rules()
+		#endif
+		// End stuff reliant on cloudsaves
+
+	// Put stuff that sleeps here
+	SPAWN(0)
+		if (global.browse_item_initial_done) sendItemIcons(src)
+		ircbot.event("login", src.key)
+		src.has_contestwinner_medal = src.player.has_medal("Too Cool")
+		src.setJoinDate()
+		src.updateXpRewards()
+
 
 /client/proc/initialize_interface()
 	set waitfor = FALSE
@@ -567,11 +423,9 @@
 
 		set_splitter_orientation(0, splitter_value)
 		src.set_widescreen(1, splitter_value)
-		winset( src, "menu", "horiz_split.is-checked=true" )
+		winset( src, "menu.horiz_split", "is-checked=true" )
 
 	//End widescreen stuff
-
-	src.sync_dark_mode()
 
 	//blendmode stuff
 
@@ -587,12 +441,14 @@
 	if(winget(src, "menu.hide_menu", "is-checked") == "true")
 		winset(src, null, "mainwindow.menu='';menub.is-visible = true")
 
-	// cursed darkmode end
-
-	//tg controls end
-
-	use_chui = winget( src, "menu.use_chui", "is-checked" ) == "true"
-	use_chui_custom_frames = winget( src, "menu.use_chui_custom_frames", "is-checked" ) == "true"
+	if (src.byond_version >= 516)
+		use_chui = FALSE
+		winset(src, "use_chui", "is-checked=false")
+		use_chui_custom_frames = FALSE
+		winset(src, "use_chui_custom_frames", "is-checked=false")
+	else
+		use_chui = winget( src, "menu.use_chui", "is-checked" ) == "true"
+		use_chui_custom_frames = winget( src, "menu.use_chui_custom_frames", "is-checked" ) == "true"
 
 	//wow its the future we can choose between 3 fps values omg
 	if (winget( src, "menu.fps_chunky", "is-checked" ) == "true")
@@ -617,6 +473,13 @@
 
 	// Set view tint
 	view_tint = winget( src, "menu.set_tint", "is-checked" ) == "true"
+
+	dark_screenflash = winget( src, "menu.toggle_dark_screenflashes", "is-checked") == "true"
+
+	winset(src, null, "rpanewindow.left=infowindow")
+
+	if (byond_version >= 516)
+		winset(src, null, list("browser-options" = "find,refresh,byondstorage,zoom,devtools"))
 
 /client/proc/ip_cid_conflict_check(log_it=TRUE, alert_them=TRUE, only_if_first=FALSE, message_who=null)
 	var/static/list/list/ip_to_ckeys = list()
@@ -667,24 +530,28 @@
 
 
 /client/proc/init_admin()
-	if(!address || (world.address == src.address))
-		admins[src.ckey] = "Host"
+	if (IsLocalClient(src)) admins[src.ckey] = "Host"
+	if (admins.Find(src.ckey) && !src.holder)
+		src.make_admin()
+		return 1
+	return 0
+
+/client/proc/make_admin()
 	if (admins.Find(src.ckey) && !src.holder)
 		src.holder = new /datum/admins(src)
 		src.holder.rank = admins[src.ckey]
+		src.control_freak = 0
 		update_admins(admins[src.ckey])
 		onlineAdmins |= (src)
 		if (!NT.Find(src.ckey))
 			NT.Add(src.ckey)
-		return 1
-
-	return 0
 
 /client/proc/clear_admin()
 	if(src.holder)
 		src.holder.dispose()
 		src.holder = null
 		src.clear_admin_verbs()
+		src.control_freak = 1
 		onlineAdmins -= src
 
 /client/proc/checkScreenAspect(list/params)
@@ -694,7 +561,7 @@
 		SPAWN(6 SECONDS)
 			if(tgui_alert(src, "You appear to be using a 4:3 aspect ratio! The Horizontal Split option is recommended for your display. Activate Horizontal Split?", "Recommended option", list("Yes", "No")) == "Yes")
 				set_splitter_orientation(0)
-				winset( src, "menu", "horiz_split.is-checked=true" )
+				winset( src, "menu.horiz_split", "is-checked=true" )
 
 /client/proc/checkHiRes(list/params)
 	if(!length(params))
@@ -704,35 +571,10 @@
 
 /client/Command(command)
 	command = html_encode(command)
-	out(src, SPAN_ALERT("Command \"[command]\" not recognised"))
-
-/client/proc/load_antag_tokens()
-	var/savefile/AT = LoadSavefile("data/AntagTokens.sav")
-	if (!AT)
-		if( cloud_available() )
-			antag_tokens = cloud_get( "antag_tokens" ) ? text2num(cloud_get( "antag_tokens" )) : 0
-		return
-
-	var/ATtoken
-	AT[ckey] >> ATtoken
-	if (!ATtoken)
-		antag_tokens = cloud_get( "antag_tokens" ) ? text2num(cloud_get( "antag_tokens" )) : 0
-		return
-	else
-		antag_tokens = ATtoken
-	if( cloud_available() )
-		antag_tokens += text2num( cloud_get( "antag_tokens" ) || "0" )
-		var/failed = cloud_put( "antag_tokens", antag_tokens )
-		if( failed )
-			logTheThing(LOG_DEBUG, src, "Failed to store antag tokens in the ~cloud~: [failed]")
-		else
-			AT[ckey] << null
+	boutput(src, SPAN_ALERT("Command \"[command]\" not recognised"))
 
 /client/proc/set_antag_tokens(amt as num)
-	antag_tokens = amt
-	if( cloud_available() )
-		cloud_put( "antag_tokens", amt )
-		. = TRUE
+	src.player.set_antag_tokens(amt)
 	/*
 	var/savefile/AT = LoadSavefile("data/AntagTokens.sav")
 	if (!AT) return
@@ -745,25 +587,16 @@
 
 
 /client/proc/load_persistent_bank()
-	persistent_bank_valid = cloud_available()
 
-	persistent_bank = cloud_get("persistent_bank") ? text2num(cloud_get("persistent_bank")) : FALSE
-
-	if(!persistent_bank && cloud_available())
-		logTheThing(LOG_DEBUG, src, "first cloud_get failed but cloud is available!")
-		persistent_bank += text2num( cloud_get("persistent_bank") || "0" )
-		var/failed = cloud_put( "persistent_bank", persistent_bank )
-		if(failed)
-			logTheThing(LOG_DEBUG, src, "Failed to store persistent cash in the ~cloud~: [failed]")
-
-	persistent_bank_item = cloud_get("persistent_bank_item")
-
-	if(!persistent_bank_item && cloud_available())
-		persistent_bank_item = cloud_get("persistent_bank_item")
-		var/failed = cloud_put( "persistent_bank_item", persistent_bank_item )
-		if(failed)
-			logTheThing(LOG_DEBUG, src, "Failed to store persistent bank item in the ~cloud~: [failed]")
-
+#ifdef BONUS_POINTS
+	persistent_bank = 99999999
+#else
+	if (!src.player?.cloudSaves.loaded) return
+	var/cPersistentBank = src.player?.cloudSaves.getData("persistent_bank")
+	persistent_bank = cPersistentBank ? text2num(cPersistentBank) : FALSE
+#endif
+	persistent_bank_valid = TRUE //moved down to below api call so if it runtimes it won't be considered valid
+	persistent_bank_item = src.player?.cloudSaves.getData("persistent_bank_item")
 
 //MBC TODO : PERSISTENTBANK_VERSION_MIN, MAX FOR BANKING SO WE CAN WIPE AWAY EVERYONE'S HARD WORK WITH A SINGLE LINE OF CODE CHANGE
 // defines are already set, just do the checks here ok
@@ -772,17 +605,14 @@
 /client/proc/set_last_purchase(datum/bank_purchaseable/purchase)
 	if (!purchase || purchase == 0 || !purchase.carries_over)
 		persistent_bank_item = "none"
-		if( cloud_available() )
-			cloud_put( "persistent_bank_item", "none" )
+		src.player?.cloudSaves.putData( "persistent_bank_item", "none" )
 	else
 		persistent_bank_item = purchase.name
-		if( cloud_available() )
-			cloud_put( "persistent_bank_item", persistent_bank_item )
+		src.player?.cloudSaves.putData( "persistent_bank_item", persistent_bank_item )
 
 /client/proc/set_persistent_bank(amt as num)
 	persistent_bank = amt
-	if( cloud_available() )
-		cloud_put( "persistent_bank", amt )
+	src.player?.cloudSaves.putData( "persistent_bank", amt )
 	/*
 	var/savefile/PB = LoadSavefile("data/PersistentBank.sav")
 	if (!PB) return
@@ -795,15 +625,14 @@
 		load_persistent_bank()
 		if(!persistent_bank_valid)
 			return
-	var/list/earnings = list((ckey) = list("persistent_bank" = list("command" = "add", "value" = amt)))
-	cloud_put_bulk(json_encode(earnings))
 	persistent_bank += amt
+	src.player?.cloudSaves.putData("persistent_bank", persistent_bank)
 
 /client/proc/sub_from_bank(datum/bank_purchaseable/purchase)
 	add_to_bank(-purchase.cost)
 
 /client/proc/bank_can_afford(amt as num)
-	player.cloud_fetch_data_only()
+	player?.cloudSaves.fetch()
 	load_persistent_bank()
 	var/new_bank_value = persistent_bank - amt
 	if (new_bank_value >= 0)
@@ -855,18 +684,19 @@ var/global/curr_day = null
 		var/cid = computer_id
 		SPAWN(0)
 			if (geoip_check(addr))
-				var/addData[] = new()
-				addData["ckey"] = ck
-				addData["compID"] = cid
-				addData["ip"] = addr
-				addData["reason"] = "Ban evader: computer ID collision." // haha get fucked
-				addData["akey"] = "Marquesas"
-				addData["mins"] = 0
 				var/slt = rand(600, 3000)
 				logTheThing(LOG_ADMIN, null, "Evasion geoip autoban triggered on [key], will execute in [slt / 10] seconds.")
 				message_admins("Autobanning evader [key] in [slt / 10] seconds.")
 				sleep(slt)
-				addBan(addData)
+				bansHandler.add(
+					"bot",
+					null,
+					ck,
+					cid,
+					addr,
+					"Ban evader: computer ID collision.",
+					FALSE
+				)
 
 /proc/geoip_check(var/addr)
 	set background = 1
@@ -890,13 +720,20 @@ var/global/curr_day = null
 	return 0
 
 /client/proc/setJoinDate()
+#ifndef LIVE_SERVER
+	UNLINT(return) //shut uppp
+#endif
+#if CLIENT_AUTH_PROVIDER_CURRENT != CLIENT_AUTH_PROVIDER_BYOND
+	UNLINT(return)
+#endif
+
 	joined_date = ""
 
 	// Get join date from BYOND members page
 	var/datum/http_request/request = new()
 	request.prepare(RUSTG_HTTP_METHOD_GET, "http://byond.com/members/[src.ckey]?format=text", "", "")
 	request.begin_async()
-	UNTIL(request.is_complete())
+	UNTIL(request.is_complete(), 10 SECONDS)
 	var/datum/http_response/response = request.into_response()
 
 	if (response.errored || !response.body)
@@ -908,6 +745,7 @@ var/global/curr_day = null
 	save.cd = "general"
 	joined_date = save["joined"]
 	jd_warning(joined_date)
+	. = save
 
 /client/verb/ping()
 	set name = "Ping"
@@ -915,20 +753,14 @@ var/global/curr_day = null
 
 #ifdef RP_MODE
 /client/proc/cmd_rp_rules()
-	set name = "RP Rules"
+	set name = "Rules - RP"
 	set category = "Commands"
 
-	src.Browse( {"<center><h2>Goonstation RP Server Guidelines and Rules</h2></center><hr>
-	Welcome to [station_name(1)]!<br>The roleplay servers use our main rules and unique roleplay rules listed below. If you do not agree to this second set of rules, please play on our Classic servers.<hr>
-		<ol><li><b>Make an effort to roleplay.</b> Play a coherent, believable character. Playing a violent or racist character is not allowed. Play your character as though they wish to keep their job at Nanotrasen. This includes listening to security and the chain of command and, if you are a member of command, taking your job as a leader seriously in-character. Only minor crime is permitted for non-antagonists. Avoid memes (e.g. sus, pog, amogus), txt spk (e.g. lol, wtf), and out of game terminology when you are playing your character. LOOC is available if you need to communicate out of character.</li>
-		<li><b>Escalate through roleplay before attacking other players.</b> The goal of the roleplay server is character interaction and interesting scenarios. Both crew and antagonists are expected to roleplay escalation before engaging in hostilities. As an antagonist, your goal is to increase, not decrease, roleplay opportunities. Give people a sense of dread, an obvious motive, or some means of roleplaying and reacting, before you harm them. As security, your priority is the crew’s safety and maintaining the peace. You should treat criminals fairly and determine appropriate consequences for their actions. Enemies to Nanotrasen such as confirmed non-human antagonists and open syndicate members may be treated harshly.</li>
-		<li><b>After you’ve selected a job, be sure to stay in your lane.</b> While you are capable of doing anything within the game mechanics, allow those who have selected the relevant job to attempt the task first. As an example, breaking into medical and treating yourself when there are medical staff present is not okay. Choosing captain just to go and work the genetics machine all round is not acceptable.</li>
-		<li><b>As an antagonist you are free to kill and grief, provided you escalate per rule 2.</b> You are not required to be evil, but you do have a broad toolset to push the round forward and make things exciting. Treat your role as an interesting challenge and not an excuse to destroy other people’s game experiences. Your objectives do not allow you to ignore any rule, RP or otherwise. As an antagonist, you are not protected against being murdered or griefed, but it is expected that the crew roleplays and does not kill you just for the sake of killing an antagonist.</li>
-		<li><b>Do not use out of game information in game.</b> Only use in-game information; the things your character can perceive or could know. While we have no hard rule on what a character can and cannot know, be reasonable about your character’s knowledge and capabilities. Do not call out antagonists based on information that is only obvious as a player. For example, the drowsiness effects on your screen are not a good in-character basis to call out a changeling. The debris and adventure zones are for enhancing roleplay. Rushing through them for the sake of items alone is prohibited. It is reasonable for the crew to assume people with syndicate gear such as red space suits are antagonists.</li>
-		<li><b>Be kind to other players.</b> Be respectful and considerate of other players, as their experiences are just as important as your own. Do not use LOOC or other means of communication to put down other players or accuse them of rulebreaking. If your problem with another player extends to rulebreaking, press F1 to contact the admins. It is your responsibility to respect the boundaries of others when you RP. If you feel uncomfortable, or worry that people are uncomfortable, don’t be afraid to use LOOC to communicate. Furthermore, do not advantage your friends in game or exclude others from roleplaying opportunities without good cause.</li>
-		<li><b>These rules are extra rules for the roleplay server.</b> The core rules still apply to the roleplay server. Do not argue with the administration about the RP rules or core rules.</li></ol>
-<p><br /></p><center>
-"}, "window=rprules;title=RP+Rules" )
+	var/cant_interact_time = null
+	if (isnewplayer(src.mob) && src.player.get_rounds_participated_rp() <= 10 && !src.player.cloudSaves.getData("bypass_round_reqs"))
+		cant_interact_time = 15 SECONDS
+
+	tgui_alert(src, content_window = "rpRules", do_wait = FALSE, cant_interact = cant_interact_time)
 #endif
 
 /client/verb/changeServer(var/server as text)
@@ -936,9 +768,13 @@ var/global/curr_day = null
 	set hidden = 1
 	var/datum/game_server/game_server = global.game_servers.find_server(server)
 
-	if (server)
-		boutput(usr, "<h3 class='success'>You are being redirected to [game_server.name]...</span>")
-		usr << link(game_server.url)
+	if (game_server)
+		if (tgui_alert(src, "Are you sure you want to switch to [game_server.name]?", "Server Change Confirmation", list("Yes", "No"), 30 SECONDS) == "Yes")
+			if (istype(src.mob, /mob/new_player)) // just in case
+				boutput(src, "<h3>[SPAN_SUCCESS("You are being redirected to [game_server.name]...")]</h3>")
+				src << link(game_server.url)
+			else
+				boutput(src, "<h3>[SPAN_ALERT("You're already in the round, switch servers the normal way!")]</h3>")
 
 /client/verb/download_sprite(atom/A as null|mob|obj|turf in view(1))
 	set name = "Download Sprite"
@@ -985,7 +821,7 @@ var/global/curr_day = null
 			if( !A.mouse_opacity || A.invisibility > mob.see_invisible ) continue
 			stat( A )
 
-	if (!src.holder)//todo : maybe give admins a toggle
+	if (!src.holder || src.holder.slow_stat)
 		sleep(1.2 SECONDS) //and make this number larger
 	else
 		sleep(0.1 SECONDS)
@@ -1038,7 +874,7 @@ var/global/curr_day = null
 					if (C.player_mode && !C.player_mode_ahelp)
 						continue
 					else
-						boutput(K, SPAN_AHELP("<b>PM: [src_keyname][(src.mob.real_name ? "/"+src.mob.real_name : "")] <A HREF='?src=\ref[C.holder];action=adminplayeropts;targetckey=[src.ckey]' class='popt'><i class='icon-info-sign'></i></A> <i class='icon-arrow-right'></i> [target] (Discord)</b>: [t]"))
+						boutput(K, SPAN_AHELP("<b>PM: [src_keyname][(src.mob.real_name ? "/"+src.mob.real_name : "")] <A HREF='byond://?src=\ref[C.holder];action=adminplayeropts;targetckey=[src.ckey]' class='popt'><i class='icon-info-sign'></i></A> <i class='icon-arrow-right'></i> [target] (Discord)</b>: [t]"))
 
 		if ("priv_msg")
 			do_admin_pm(href_list["target"], usr, previous_msgid=href_list["msgid"]) // See \admin\adminhelp.dm, changed to work off of ckeys instead of mobs.
@@ -1077,7 +913,7 @@ var/global/curr_day = null
 						if (C.player_mode && !C.player_mode_mhelp)
 							continue
 						else //Message admins
-							boutput(C, SPAN_MHELP("<b>MENTOR PM: [src_keyname][(src.mob.real_name ? "/"+src.mob.real_name : "")] <A HREF='?src=\ref[C.holder];action=adminplayeropts;targetckey=[src.ckey]' class='popt'><i class='icon-info-sign'></i></A> <i class='icon-arrow-right'></i> [target] (Discord)</b>: [SPAN_MESSAGE("[t]")]"))
+							boutput(C, SPAN_MHELP("<b>MENTOR PM: [src_keyname][(src.mob.real_name ? "/"+src.mob.real_name : "")] <A HREF='byond://?src=\ref[C.holder];action=adminplayeropts;targetckey=[src.ckey]' class='popt'><i class='icon-info-sign'></i></A> <i class='icon-arrow-right'></i> [target] (Discord)</b>: [SPAN_MESSAGE("[t]")]"))
 					else //Message mentors
 						boutput(C, mentormsg)
 
@@ -1114,15 +950,15 @@ var/global/curr_day = null
 
 				if (src.holder)
 					boutput(M, SPAN_MHELP("<b>MENTOR PM: FROM [src_keyname]</b>: [SPAN_MESSAGE("[t]")]"))
-					M.playsound_local_not_inworld('sound/misc/mentorhelp.ogg', 100, flags = SOUND_IGNORE_SPACE, channel = VOLUME_CHANNEL_MENTORPM)
-					boutput(src.mob, SPAN_MHELP("<b>MENTOR PM: TO [target_keyname][(M.real_name ? "/"+M.real_name : "")] <A HREF='?src=\ref[src.holder];action=adminplayeropts;targetckey=[M.ckey]' class='popt'><i class='icon-info-sign'></i></A></b>: [SPAN_MESSAGE("[t]")]"))
+					M.playsound_local_not_inworld('sound/misc/mentorhelp.ogg', 100, flags = SOUND_IGNORE_SPACE | SOUND_SKIP_OBSERVERS | SOUND_IGNORE_DEAF, channel = VOLUME_CHANNEL_MENTORPM)
+					boutput(src.mob, SPAN_MHELP("<b>MENTOR PM: TO [target_keyname][(M.real_name ? "/"+M.real_name : "")] <A HREF='byond://?src=\ref[src.holder];action=adminplayeropts;targetckey=[M.ckey]' class='popt'><i class='icon-info-sign'></i></A></b>: [SPAN_MESSAGE("[t]")]"))
 				else
 					if (M.client && M.client.holder)
-						boutput(M, SPAN_MHELP("<b>MENTOR PM: FROM [src_keyname][(src.mob.real_name ? "/"+src.mob.real_name : "")] <A HREF='?src=\ref[M.client.holder];action=adminplayeropts;targetckey=[src.ckey]' class='popt'><i class='icon-info-sign'></i></A></b>: [SPAN_MESSAGE("[t]")]"))
-						M.playsound_local_not_inworld('sound/misc/mentorhelp.ogg', 100, flags = SOUND_IGNORE_SPACE, channel = VOLUME_CHANNEL_MENTORPM)
+						boutput(M, SPAN_MHELP("<b>MENTOR PM: FROM [src_keyname][(src.mob.real_name ? "/"+src.mob.real_name : "")] <A HREF='byond://?src=\ref[M.client.holder];action=adminplayeropts;targetckey=[src.ckey]' class='popt'><i class='icon-info-sign'></i></A></b>: [SPAN_MESSAGE("[t]")]"))
+						M.playsound_local_not_inworld('sound/misc/mentorhelp.ogg', 100, flags = SOUND_IGNORE_SPACE | SOUND_SKIP_OBSERVERS | SOUND_IGNORE_DEAF, channel = VOLUME_CHANNEL_MENTORPM)
 					else
 						boutput(M, SPAN_MHELP("<b>MENTOR PM: FROM [src_keyname]</b>: [SPAN_MESSAGE("[t]")]"))
-						M.playsound_local_not_inworld('sound/misc/mentorhelp.ogg', 100, flags = SOUND_IGNORE_SPACE, channel = VOLUME_CHANNEL_MENTORPM)
+						M.playsound_local_not_inworld('sound/misc/mentorhelp.ogg', 100, flags = SOUND_IGNORE_SPACE | SOUND_SKIP_OBSERVERS | SOUND_IGNORE_DEAF, channel = VOLUME_CHANNEL_MENTORPM)
 					boutput(usr, SPAN_MHELP("<b>MENTOR PM: TO [target_keyname]</b>: [SPAN_MESSAGE("[t]")]"))
 
 				logTheThing(LOG_MHELP, src.mob, "Mentor PM'd [constructTarget(M,"mentor_help")]: [t]")
@@ -1135,7 +971,7 @@ var/global/curr_day = null
 							if (C.player_mode && !C.player_mode_mhelp)
 								continue
 							else
-								boutput(C, SPAN_MHELP("<b>MENTOR PM: [src_keyname][(src.mob.real_name ? "/"+src.mob.real_name : "")] <A HREF='?src=\ref[C.holder];action=adminplayeropts;targetckey=[src.ckey]' class='popt'><i class='icon-info-sign'></i></A> <i class='icon-arrow-right'></i> [target_keyname]/[M.real_name] <A HREF='?src=\ref[C.holder];action=adminplayeropts;targetckey=[M.ckey]' class='popt'><i class='icon-info-sign'></i></A></b>: [SPAN_MESSAGE("[t]")]"))
+								boutput(C, SPAN_MHELP("<b>MENTOR PM: [src_keyname][(src.mob.real_name ? "/"+src.mob.real_name : "")] <A HREF='byond://?src=\ref[C.holder];action=adminplayeropts;targetckey=[src.ckey]' class='popt'><i class='icon-info-sign'></i></A> <i class='icon-arrow-right'></i> [target_keyname]/[M.real_name] <A HREF='byond://?src=\ref[C.holder];action=adminplayeropts;targetckey=[M.ckey]' class='popt'><i class='icon-info-sign'></i></A></b>: [SPAN_MESSAGE("[t]")]"))
 						else
 							boutput(C, mentormsg)
 
@@ -1144,10 +980,6 @@ var/global/curr_day = null
 			var/t1 = text("window=[window]")
 			usr.remove_dialogs()
 			usr.Browse(null, t1)
-			//Special cases
-			switch (window)
-				if ("aialerts")
-					usr:viewalerts = 0
 
 		//A thing for the chat output to call so that links open in the user's default browser, rather than IE
 		if ("openLink")
@@ -1192,77 +1024,26 @@ var/global/curr_day = null
 		return 0
 	return (src.ckey in muted_keys) && muted_keys[src.ckey]
 
-/// Sets a cloud key value pair and sends it to goonhub
-/client/proc/cloud_put(key, value)
-	return src.player.cloud_put(key, value)
+/client/proc/desuss_zap(source, datum/say_message/message)
+	if (!forced_desussification)
+		return
 
-/// Returns some cloud data on the client
-/client/proc/cloud_get(key)
-	return src.player.cloud_get(key)
+	if (!phrase_log.is_sussy(message.original_content))
+		return
 
-/// Returns 1 if you can set or retrieve cloud data on the client
-/client/proc/cloud_available()
-	return src.player.cloud_available()
+	arcFlash(message.speaker, message.speaker, forced_desussification)
+	if (issilicon(message.speaker))
+		var/mob/M = message.speaker
+		M.apply_flash(20, knockdown = 2, stamina_damage = 20, disorient_time = 3)
+
+	if (forced_desussification_worse)
+		forced_desussification *= 1.1
 
 /client/proc/message_one_admin(source, message)
 	if(!src.holder)
 		return
 	boutput(src, replacetext(replacetext(message, "%admin_ref%", "\ref[src.holder]"), "%client_ref%", "\ref[src]"))
 
-/proc/add_test_screen_thing()
-	var/client/C = input("For who", "For who", null) in clients
-	var/wavelength_shift = input("Shift wavelength bounds by <x> nm, should be in the range of -370 to 370", "Wavelength shift", 0) as num
-	if (wavelength_shift < -370 || wavelength_shift > 370)
-		boutput(usr, SPAN_ADMIN("Invalid value."))
-		return
-	var/s_r = 0
-	var/s_g = 0
-	var/s_b = 0
-
-	// total range: 380 - 750 (range: 370nm)
-	// red: 570 - 750 (range: 180nm)
-	if (wavelength_shift < 0)
-		s_r = min(-wavelength_shift / 180 * 255, 255)
-	else if (wavelength_shift > 190)
-		s_r = min((wavelength_shift - 190) / 180 * 255, 255)
-	// green: 490 - 620 (range: 130nm)
-	if (wavelength_shift < -130)
-		s_g = min(-(wavelength_shift + 130) / 130 * 255, 255)
-	else if (wavelength_shift > 110)
-		s_g = min((wavelength_shift - 110) / 130 * 255, 255)
-	// blue: 380 - 500 (range: 120nm)
-	if (wavelength_shift < -250)
-		s_b = min(-(wavelength_shift + 250) / 120 * 255, 255)
-	else if (wavelength_shift > 0)
-		s_b = min(wavelength_shift / 120 * 255, 255)
-
-	var/subtr_color = rgb(s_r, s_g, s_b)
-
-	var/si_r = clamp(input("Red spectrum intensity (0-1)", "Intensity", 1.0) as num, 0, 1)
-	var/si_g = clamp(input("Green spectrum intensity (0-1)", "Intensity", 1.0) as num, 0, 1)
-	var/si_b = clamp(input("Blue spectrum intensity (0-1)", "Intensity", 1.0) as num, 0, 1)
-
-	var/multip_color = rgb(si_r * 255, si_g * 255, si_b * 255)
-
-	var/atom/movable/screen/S = new
-	S.icon = 'icons/mob/whiteview.dmi'
-	S.blend_mode = BLEND_SUBTRACT
-	S.color = subtr_color
-	S.layer = HUD_LAYER - 0.2
-	S.screen_loc = "SOUTH,WEST"
-	S.mouse_opacity = 0
-
-	C.screen += S
-
-	var/atom/movable/screen/M = new
-	M.icon = 'icons/mob/whiteview.dmi'
-	M.blend_mode = BLEND_MULTIPLY
-	M.color = multip_color
-	M.layer = HUD_LAYER - 0.1
-	M.screen_loc = "SOUTH,WEST"
-	M.mouse_opacity = 0
-
-	C.screen += M
 
 /client/verb/apply_depth_shadow()
 	set hidden = 1
@@ -1276,12 +1057,10 @@ var/global/curr_day = null
 
 	if ((winget(src, "menu.toggle_parallax", "is-checked") == "true") && parallax_enabled)
 		qdel(src.parallax_controller)
-		src.parallax_controller = new(null, src)
-		src.mob?.register_parallax_signals()
+		src.parallax_controller = new(src)
 
 	else if (src.parallax_controller)
 		qdel(src.parallax_controller)
-		src.mob?.unregister_parallax_signals()
 
 /client/verb/apply_view_tint()
 	set hidden = 1
@@ -1291,6 +1070,12 @@ var/global/curr_day = null
 	if (src.mob?.respect_view_tint_settings)
 		src.set_color(length(src.mob.active_color_matrix) ? src.mob.active_color_matrix : COLOR_MATRIX_IDENTITY, src.mob.respect_view_tint_settings)
 
+/client/verb/toggle_dark_screenflashes()
+	set hidden = 1
+	set name = "toggle-dark-screenflashes"
+
+	dark_screenflash = !dark_screenflash
+
 /client/verb/adjust_saturation()
 	set hidden = TRUE
 	set name = "adjust-saturation"
@@ -1298,8 +1083,24 @@ var/global/curr_day = null
 	var/s = input("Enter a saturation % from 50-150. Default is 100.", "Saturation %", 100) as num
 	s = clamp(s, 50, 150) / 100
 	src.set_saturation(s)
-	src.cloud_put("saturation", s)
+	src.player?.cloudSaves.putData("saturation", s)
 	boutput(usr, SPAN_NOTICE("You have changed your game saturation to [s * 100]%."))
+
+
+/client/verb/toggle_camera_recoil()
+	set hidden = 1
+	set name = "toggle-camera-recoil"
+
+	if (!src.recoil_controller)
+		src.recoil_controller = new/datum/recoil_controller(src)
+
+	if ((winget(src, "menu.toggle_camera_recoil", "is-checked") == "true"))
+		src.recoil_controller?.enable()
+
+	else
+		src.recoil_controller?.disable()
+
+
 
 /client/proc/set_view_size(var/x, var/y)
 	//These maximum values make for a near-fullscreen game view at 32x32 tile size, 1920x1080 monitor resolution.
@@ -1323,12 +1124,12 @@ var/global/curr_day = null
 	widescreen = wide
 	if (widescreen)
 		src.view = "[WIDE_TILE_WIDTH]x[SQUARE_TILE_WIDTH]"
-		winset( src, "menu", "set_wide.is-checked=true" )
+		winset( src, "menu.set_wide", "is-checked=true" )
 		if (vert_split)
 			winset( src, "mainwindow.mainvsplit", "splitter=[splitter_value ? splitter_value : 70]" )
 	else
 		src.view = 7
-		winset( src, "menu", "set_wide.is-checked=false" )
+		winset( src, "menu.set_wide", "is-checked=false" )
 		if (vert_split)
 			winset( src, "mainwindow.mainvsplit", "splitter=[splitter_value ? splitter_value : 50]" )
 
@@ -1370,7 +1171,7 @@ var/global/curr_day = null
 
 /client/proc/set_controls(var/tg)
 	tg_controls = tg
-	winset( src, "menu", "tg_controls.is-checked=[tg ? "true" : "false"]" )
+	winset( src, "menu.tg_controls", "is-checked=[tg ? "true" : "false"]" )
 
 	src.mob.reset_keymap()
 
@@ -1383,7 +1184,7 @@ var/global/curr_day = null
 
 /client/proc/set_layout(var/tg)
 	tg_layout = tg
-	winset( src, "menu", "tg_layout.is-checked=[tg ? "true" : "false"]" )
+	winset( src, "menu.tg_layout", "is-checked=[tg ? "true" : "false"]" )
 
 	if (istype(mob,/mob/living/carbon/human))
 		var/mob/living/carbon/human/H = mob
@@ -1411,6 +1212,8 @@ var/global/curr_day = null
 		if(H.sims)
 			H.sims.add_hud()
 		H.update_equipment_screen_loc()
+		for (var/datum/hud/storage/S in H.huds)
+			S.update(H)
 
 /client/verb/set_tg_layout()
 	set hidden = 1
@@ -1441,6 +1244,10 @@ var/global/curr_day = null
 /client/verb/set_chui()
 	set hidden = 1
 	set name = "set-chui"
+	if (byond_version >= 516)
+		tgui_alert(mob, "Error: Chui is deprecated in BYOND 516+ and cannot be enabled.", "Chui Deprecation")
+		winset(src, "use_chui", "is-checked=false")
+		return
 	if (src.use_chui)
 		src.use_chui = 0
 	else
@@ -1449,6 +1256,10 @@ var/global/curr_day = null
 /client/verb/set_chui_custom_frames()
 	set hidden = 1
 	set name = "set-chui-custom-frames"
+	if (byond_version >= 516)
+		tgui_alert(mob, "Error: Chui is deprecated in BYOND 516+ and cannot be enabled.", "Chui Deprecation")
+		winset(src, "use_chui_custom_frames", "is-checked=false")
+		return
 	if (src.use_chui_custom_frames)
 		src.use_chui_custom_frames = 0
 	else
@@ -1479,11 +1290,92 @@ var/global/curr_day = null
 	else
 		src.ignore_sound_flags |= SOUND_VOX
 
-
 /client/verb/set_hand_ghosts()
 	set hidden = 1
 	set name = "set-hand-ghosts"
 	hand_ghosts = winget( src, "menu.use_hand_ghosts", "is-checked" ) == "true"
+
+/client/verb/set_tooltip_option(val as text)
+	set hidden = 1
+	set name = "set-tooltip-option"
+	if (val == "always")
+		src.preferences.tooltip_option = TOOLTIP_ALWAYS
+	else if (val == "alt")
+		src.preferences.tooltip_option = TOOLTIP_ALT
+	else if (val == "never")
+		src.preferences.tooltip_option = TOOLTIP_NEVER
+
+/client/verb/disable_colorblind_modes()
+	set hidden = TRUE
+	set name = "disable-colorblind-modes"
+
+	if (src.protanopia_toggled)
+		src.toggle_protanopia_mode()
+	else if (src.deuteranopia_toggled)
+		src.toggle_deuteranopia_mode()
+	else if (src.tritanopia_toggled)
+		src.toggle_tritanopia_mode()
+	src.mob?.update_active_matrix()
+
+/client/verb/toggle_protanopia_mode()
+	set hidden = TRUE
+	set name = "toggle-protanopia-mode"
+
+	if (src.deuteranopia_toggled)
+		src.toggle_deuteranopia_mode()
+	else if (src.tritanopia_toggled)
+		src.toggle_tritanopia_mode()
+
+	if (!src.protanopia_toggled)
+		src.colorblind_matrix = COLOR_MATRIX_PROTANOPIA_ACCESSIBILITY
+	else
+		src.colorblind_matrix = COLOR_MATRIX_IDENTITY
+	src.set_color()
+	src.protanopia_toggled = !src.protanopia_toggled
+	src.deuteranopia_toggled = FALSE
+	src.tritanopia_toggled = FALSE
+
+	src.mob?.update_active_matrix()
+
+/client/verb/toggle_deuteranopia_mode()
+	set hidden = TRUE
+	set name = "toggle-deuteranopia-mode"
+
+	if (src.protanopia_toggled)
+		src.toggle_protanopia_mode()
+	else if (src.tritanopia_toggled)
+		src.toggle_tritanopia_mode()
+
+	if (!src.deuteranopia_toggled)
+		src.colorblind_matrix = COLOR_MATRIX_DEUTERANOPIA_ACCESSIBILITY
+	else
+		src.colorblind_matrix = COLOR_MATRIX_IDENTITY
+	src.set_color()
+	src.deuteranopia_toggled = !src.deuteranopia_toggled
+	src.protanopia_toggled = FALSE
+	src.tritanopia_toggled = FALSE
+
+	src.mob?.update_active_matrix()
+
+/client/verb/toggle_tritanopia_mode()
+	set hidden = TRUE
+	set name = "toggle-tritanopia-mode"
+
+	if (src.protanopia_toggled)
+		src.toggle_protanopia_mode()
+	else if (src.deuteranopia_toggled)
+		src.toggle_deuteranopia_mode()
+
+	if (!src.tritanopia_toggled)
+		src.colorblind_matrix = COLOR_MATRIX_TRITANOPIA_ACCESSIBILITY
+	else
+		src.colorblind_matrix = COLOR_MATRIX_IDENTITY
+	src.set_color()
+	src.tritanopia_toggled = !src.tritanopia_toggled
+	src.protanopia_toggled = FALSE
+	src.deuteranopia_toggled = FALSE
+
+	src.mob?.update_active_matrix()
 
 //These size helpers are invisible browser windows that help with getting client screen dimensions
 /client/proc/initSizeHelpers()
@@ -1494,7 +1386,7 @@ var/global/curr_day = null
 	set hidden = 1
 	set name = "window-resize-event"
 
-	src.resizeTooltipEvent()
+	src.tooltips?.onResize()
 
 	//tell the interface helpers to recompute data
 	src.mapSizeHelper?.update()
@@ -1561,7 +1453,6 @@ var/global/curr_day = null
 		<!doctype HTML>
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <style type="text/css">
 * { margin: 0px; padding: 0px; width: 100%; height: 100%; }
 </style>
@@ -1597,6 +1488,10 @@ browseb.background-color=[_SKIN_BG];\
 browseb.text-color=[_SKIN_TEXT];\
 infob.background-color=[_SKIN_BG];\
 infob.text-color=[_SKIN_TEXT];\
+outputwindow.background-color=[_SKIN_BG];\
+outputwindow.text-color=[_SKIN_TEXT];\
+browserwindow.background-color=[_SKIN_BG];\
+browserwindow.text-color=[_SKIN_TEXT];\
 menub.background-color=[_SKIN_BG];\
 menub.text-color=[_SKIN_TEXT];\
 bugreportb.background-color=[_SKIN_BG];\
@@ -1629,7 +1524,8 @@ mainwindow.hovertooltip.text-color=[_SKIN_TEXT];\
 
 /client/verb/sync_dark_mode()
 	set hidden=1
-	if(winget(src, "menu.dark_mode", "is-checked") == "true")
+	src.darkmode = winget(src, "menu.dark_mode", "is-checked") == "true"
+	if (src.darkmode)
 #define _SKIN_BG "#28292c"
 #define _SKIN_INFO_TAB_BG "#28292c"
 #define _SKIN_INFO_BG "#28292c"
@@ -1637,7 +1533,6 @@ mainwindow.hovertooltip.text-color=[_SKIN_TEXT];\
 #define _SKIN_COMMAND_BG "#28294c"
 		winset(src, null, SKIN_TEMPLATE)
 		chatOutput.changeTheme("theme-dark")
-		src.darkmode = TRUE
 #undef _SKIN_BG
 #undef _SKIN_INFO_TAB_BG
 #undef _SKIN_INFO_BG
@@ -1651,10 +1546,16 @@ mainwindow.hovertooltip.text-color=[_SKIN_TEXT];\
 	else
 		winset(src, null, SKIN_TEMPLATE)
 		chatOutput.changeTheme("theme-default")
-		src.darkmode = FALSE
 #undef _SKIN_BG
 #undef _SKIN_INFO_TAB_BG
 #undef _SKIN_INFO_BG
 #undef _SKIN_TEXT
 #undef _SKIN_COMMAND_BG
 #undef SKIN_TEMPLATE
+
+/// Flashes the window in the Windows titlebar
+/client/proc/flash_window(times = -1)
+	winset(src, "mainwindow", "flash=[times]")
+
+/client/proc/set_text_mode(value = FALSE)
+	winset(src, "mapwindow.map", "text-mode=[value ? "true" : "false"]")

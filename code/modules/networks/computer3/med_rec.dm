@@ -28,8 +28,9 @@
 #define FIELDNUM_ALGDET 16
 #define FIELDNUM_DISEASE 17
 #define FIELDNUM_DISDET 18
-#define FIELDNUM_TRAITS 19
-#define FIELDNUM_NOTES  20
+#define FIELDNUM_CLDEF 19
+#define FIELDNUM_CLDET 20
+#define FIELDNUM_NOTES  21
 
 #define FIELDNUM_DELETE "d"
 #define FIELDNUM_NEWREC 99
@@ -40,18 +41,17 @@
 	req_access = list(access_medical)
 	var/tmp/menu = MENU_MAIN
 	var/tmp/field_input = 0
-	var/tmp/authenticated = null //Are we currently logged in?
 	var/datum/record_database/record_database = null
-	var/datum/computer/file/user_data/account = null
 	var/datum/db_record/active_general = null //General record
 	var/datum/db_record/active_medical = null //Medical record
 	var/log_string = null //Log usage of record system, can be dumped to a text file.
 	var/list/datum/db_record/possible_active = null
 
-	var/setup_acc_filepath = "/logs/sysusr"//Where do we look for login data?
 	var/setup_logdump_name = "medlog" //What name do we give our logdump textfile?
 
 	initialize()
+		if (..())
+			return TRUE
 /*
 		var/title_art = {"<pre>
   __  __        _     _____          _
@@ -59,27 +59,14 @@
  | |\\/| / -_) _` |___| | | | '_/ _` | / /
  |_|  |_\\___\\__,_|     |_| |_| \\__,_|_\\_\\</pre>"}
 */
-		src.authenticated = null
 		src.record_database = data_core.general
 		src.master.temp = null
 		src.menu = MENU_MAIN
 		src.field_input = 0
-		//src.print_text(" [title_art]")
-		if(!src.find_access_file()) //Find the account information, as it's essentially a ~digital ID card~
-			src.print_text("<b>Error:</b> Cannot locate user file.  Quitting...")
-			src.master.unload_program(src) //Oh no, couldn't find the file.
-			return
 
-		if(!src.check_access(src.account.access))
-			src.print_text("User [src.account.registered] does not have needed access credentials.<br>Quitting...")
-			src.master.unload_program(src)
-			return
-
-		src.authenticated = src.account.registered
 		src.log_string += "<br><b>LOGIN:</b> [src.authenticated]"
 
 		src.print_text(mainmenu_text())
-		return
 
 
 	input_text(text)
@@ -105,7 +92,7 @@
 						src.print_index()
 
 					if (2) //Search records
-						src.print_text("Please enter target name, ID, DNA, rank, or fingerprint.")
+						src.print_text("<br>Please enter target name, ID, DNA, rank, or fingerprint.")
 
 						src.menu = MENU_SEARCH_INPUT
 						return
@@ -190,9 +177,10 @@
 							<br><br>Details: [src.active_medical["ma_dis_d"]]
 							<br><br><br>Allergies: [src.active_medical["alg"]]
 							<br><br>Details: [src.active_medical["alg_d"]]
-							<br><br><br>Current Diseases: [src.active_medical["cdi"]] (per disease info placed in log/comment section)
-							<br>Details: [src.active_medical["cdi_d"]]<br><br><br>
-							<br>Traits: [src.active_medical["traits"]]<br><br><br>
+							<br><br><br>Current Diseases: [src.active_medical["cdi"]]
+							<br><br>Details: [src.active_medical["cdi_d"]]
+							<br><br><br>Cloner Defects: [src.active_medical["cl_def"]]
+							<br><br>Details: [src.active_medical["cl_def_d"]]
 							Important Notes:<br>
 							<br>&emsp;[src.active_medical["notes"]]<br>"}
 
@@ -247,16 +235,17 @@
 						R["id"] = src.active_general["id"]
 						R["bioHolder.bloodType"] = "Unknown"
 						R["mi_dis"] = "None"
-						R["mi_dis_d"] = "No minor disabilities have been declared."
+						R["mi_dis_d"] = MEDREC_DISABILITY_MINOR_DEFAULT
 						R["ma_dis"] = "None"
-						R["ma_dis_d"] = "No major disabilities have been diagnosed."
+						R["ma_dis_d"] = MEDREC_DISABILITY_MAJOR_DEFAULT
 						R["alg"] = "None"
-						R["alg_d"] = "No allergies have been detected in this patient."
+						R["alg_d"] = MEDREC_ALLERGY_DEFAULT
 						R["cdi"] = "None"
-						R["cdi_d"] = "No diseases have been diagnosed at the moment."
+						R["cdi_d"] = MEDREC_DISEASE_DEFAULT
+						R["cl_def"] = "None"
+						R["cl_def_d"] = MEDREC_CLONE_DEFECT_DEFAULT
 						R["notes"] = "No notes."
-						R["h_imp"] = "No health implant detected."
-						R["traits"] = "No known traits."
+						R["h_imp"] = MEDREC_NO_IMPLANT
 						data_core.medical.add_record(R)
 						src.active_medical = R
 
@@ -469,14 +458,26 @@
 						else
 							return
 
-					if (FIELDNUM_TRAITS)
+					if (FIELDNUM_CLDEF)
 						if (!src.active_medical)
 							src.print_text("No medical record loaded!")
 							src.menu = MENU_IN_RECORD
 							return
 
 						if (ckey(inputText))
-							src.active_medical["traits"] = copytext(inputText, 1, MAX_MESSAGE_LEN)
+							src.active_medical["cl_def"] = copytext(inputText, 1, MAX_MESSAGE_LEN)
+						else
+							return
+
+
+					if (FIELDNUM_CLDET)
+						if (!src.active_medical)
+							src.print_text("No medical record loaded!")
+							src.menu = MENU_IN_RECORD
+							return
+
+						if (ckey(inputText))
+							src.active_medical["cl_def_d"] = copytext(inputText, 1, MAX_MESSAGE_LEN)
 						else
 							return
 
@@ -521,8 +522,10 @@
 
 			if (MENU_SEARCH_PICK)
 				var/input = text2num_safe(ckey(strip_html(text)))
-				if(isnull(input) || input < 0 || input >> length(src.possible_active))
-					src.print_text("Cancelled")
+				if(isnull(input) || input < 1 || input >> length(src.possible_active))
+					src.master.temp = null
+					src.print_text(mainmenu_text())
+					src.print_text("<br>Search operation cancelled.")
 					src.menu = MENU_MAIN
 					return
 
@@ -700,28 +703,39 @@
 
 	proc
 		mainmenu_text()
-			var/dat = {"<center>M E D T R A K</center><br>
-			Welcome to Medtrak 5.1<br>
-			<b>Commands:</b>
-			<br>(1) View medical records.
-			<br>(2) Search for a record.
-			<br>(3) View viral database.
-			<br>(0) Quit."}
+			var/dat = ""
+
+			dat += @{"<center> __  __        _       _____          _   </center>"}
+			dat += @{"<center>|  \/  |___ __| | ___ |_   _|_ _ __ _| |__</center>"}
+			dat += @{"<center>| |\/| / -_) _` ||___|  | | | '_/ _` | / /</center>"}
+			dat += @{"<center>|_|  |_\___\__,_|       |_| |_| \__,_|_\_\</center>"}
+
+			dat += {"\
+				<br>\
+				<br>Welcome to Medtrak 5.1\
+				<br><b>Commands:</b>\
+				<br>(1) View medical records.\
+				<br>(2) Search for a record.\
+				<br>(3) View viral database.\
+				<br>(0) Quit.\
+			"}
 
 			return dat
 
 		virusmenu_text()
-			var/dat = {"<b>Known Diseases:</b><br>
-					(01) GBS<br>
-					(02) Common Cold<br>
-					(03) Flu<br>
-					(04) Monkey Madness<br>
-					(05) Clowning Around<br>
-					(06) Space Rhinovirus<br>
-					(07) Robot Transformation<br>
-					(08) Teleportitis<br>
-					(09) Berserker<br>
-					Enter virus number or 0 to return."}
+			var/dat = {"\
+				<b>Known Diseases:</b>\
+				<br>(01) GBS\
+				<br>(02) Common Cold\
+				<br>(03) Flu\
+				<br>(04) Monkey Madness\
+				<br>(05) Clowning Around\
+				<br>(06) Space Rhinovirus\
+				<br>(07) Robot Transformation\
+				<br>(08) Teleportitis\
+				<br>(09) Berserker\
+				<br>Enter virus number or 0 to return.\
+			"}
 
 			return dat
 
@@ -731,48 +745,55 @@
 				return 0
 			src.master.temp = null
 
-			var/view_string = {"
-			\[01]Name: [src.active_general["name"]] ID: [src.active_general["id"]]
-			<br>\[02]Full Name: [src.active_general["full_name"]]
-			<br>\[03]<b>Sex:</b> [src.active_general["sex"]]
-			<br>\[04]<b>Pronouns:</b> [src.active_general["pronouns"]]
-			<br>\[05]<b>Age:</b> [src.active_general["age"]]
-			<br>\[__]<b>Rank:</b> [src.active_general["rank"]]
-			<br>\[06]<b>Fingerprint:</b> [src.active_general["fingerprint"]]
-			<br>\[07]<b>DNA:</b> [src.active_general["dna"]]
-			<br>\[__]Photo: [istype(src.active_general["file_photo"], /datum/computer/file/image) ? "On File" : "None"]
-			<br>\[08]Physical Status: [src.active_general["p_stat"]]
-			<br>\[09]Mental Status: [src.active_general["m_stat"]]"}
+			var/view_string = {"\
+				<br><center><b>Record Data</b></center>\
+				<br>\[01\]<b>Name</b>:        [src.active_general["name"]]\
+				<br>\[__\]<b>ID</b>:          [src.active_general["id"]]\
+				<br>\[02\]<b>Full Name</b>:   [src.active_general["full_name"]]\
+				<br>\[03\]<b>Sex:</b>         [src.active_general["sex"]]\
+				<br>\[04\]<b>Pronouns:</b>    [src.active_general["pronouns"]]\
+				<br>\[05\]<b>Age:</b>         [src.active_general["age"]]\
+				<br>\[__\]<b>Rank:</b>        [src.active_general["rank"]]\
+				<br>\[06\]<b>Fingerprint:</b> [src.active_general["fingerprint"]]\
+				<br>\[07\]<b>DNA:</b>         [src.active_general["dna"]]\
+				<br>\[__\]<b>Photo</b>:       [istype(src.active_general["file_photo"], /datum/computer/file/image) ? "On File" : "None"]\
+				<br>\[08\]<b>Phys Status</b>: [src.active_general["p_stat"]]\
+				<br>\[09\]<b>Ment Status</b>: [src.active_general["m_stat"]]\
+			"}
 
 			if ((istype(src.active_medical, /datum/db_record) && data_core.medical.has_record(src.active_medical)))
-				view_string += {"<br><center><b>Medical Data:</b></center>
-				<br>\[__]Current Health: [src.active_medical["h_imp"]]
-				<br>\[10]Blood Type: [src.active_medical["bioHolder.bloodType"]]
-				<br>\[11]Minor Disabilities: [src.active_medical["mi_dis"]]
-				<br>\[12]Details: [src.active_medical["mi_dis_d"]]
-				<br>\[13]<br>Major Disabilities: [src.active_medical["ma_dis"]]
-				<br>\[14]Details: [src.active_medical["ma_dis_d"]]
-				<br>\[15]<br>Allergies: [src.active_medical["alg"]]
-				<br>\[16]Details: [src.active_medical["alg_d"]]
-				<br>\[17]<br>Current Diseases: [src.active_medical["cdi"]] (per disease info placed in log/comment section)
-				<br>\[18]Details: [src.active_medical["cdi_d"]]
-				<br>\[19]Traits: [src.active_medical["traits"]]
-				<br>\[20]Important Notes:
-				<br>&emsp;[src.active_medical["notes"]]"}
+				view_string += {"<br>\
+					<br><center><b>Medical Data</b></center>\
+					<br>\[__\]<b>Current Health:</b>     [src.active_medical["h_imp"]]\
+					<br>\[10\]<b>Blood Type:</b>         [src.active_medical["bioHolder.bloodType"]]\
+					<br>\[11\]<b>Minor Disabilities:</b> [src.active_medical["mi_dis"]]\
+					<br>\[12\]<b>Details:</b>            [src.active_medical["mi_dis_d"]]\
+					<br>\[13\]<b>Major Disabilities:</b> [src.active_medical["ma_dis"]]\
+					<br>\[14\]<b>Details:</b>            [src.active_medical["ma_dis_d"]]\
+					<br>\[15\]<b>Allergies:</b>          [src.active_medical["alg"]]\
+					<br>\[16\]<b>Details:</b>            [src.active_medical["alg_d"]]\
+					<br>\[17\]<b>Current Diseases:</b>   [src.active_medical["cdi"]] (per disease info placed in log/comment section)\
+					<br>\[18\]<b>Details:</b>            [src.active_medical["cdi_d"]]\
+					<br>\[19\]<b>Cloner Defects:</b>     [src.active_medical["cl_def"]]\
+					<br>\[20\]<b>Details:</b>            [src.active_medical["cl_def_d"]]\
+					<br>\[21\]<b>Important Notes:</b>    [src.active_medical["notes"]]\
+				"}
 			else
-				view_string += "<br><br><b>Medical Record Lost!</b>"
-				view_string += "<br>\[99] Create New Medical Record.<br>"
+				view_string += {"<br>\
+					<br><b>Medical Record Lost!</b>\
+					<br>\[99\] Create New Medical Record.\
+				"}
 
-			view_string += "<br>Enter field number to edit a field<br>(R) Redraw (D) Delete (P) Print (0) Return to index."
+			view_string += "<br><br>Enter field number to edit a field:<br>(R) Redraw (D) Delete (P) Print (0) Return to index."
 
-			src.print_text("<b>Record Data:</b><br>[view_string]")
+			src.print_text(view_string)
 			return 1
 
 		print_index()
 			src.master.temp = null
 			var/dat = ""
 			if(!src.record_database || !length(src.record_database.records))
-				src.print_text("<b>Error:</b> No records found in database.")
+				dat += "<b>Error:</b> No records found in database."
 
 			else
 				dat = "Please select a record:"
@@ -780,27 +801,15 @@
 				for(var/x = 1, x <= src.record_database.records.len, x++)
 					var/datum/db_record/R = src.record_database.records[x]
 					if(!R || !istype(R))
-						dat += "<br><b>\[[add_zero("[x]",leadingZeroCount)]]</b><font color=red>ERR: REDACTED</font>"
+						dat += "<br><b>\[[add_zero("[x]",leadingZeroCount)]\]</b><font color=red>ERR: REDACTED</font>"
 						continue
 
-					dat += "<br><b>\[[add_zero("[x]",leadingZeroCount)]]</b>[R["id"]]: [R["name"]]"
+					dat += "<br><b>\[[add_zero("[x]",leadingZeroCount)]\]</b>[R["id"]]: [R["name"]]"
 
 			dat += "<br><br>Enter record number, or 0 to return."
 
 			src.print_text(dat)
 			return 1
-
-		find_access_file() //Look for the whimsical account_data file
-			var/datum/computer/folder/accdir = src.holder.root
-			if(src.master.host_program) //Check where the OS is, preferably.
-				accdir = src.master.host_program.holder.root
-
-			var/datum/computer/file/user_data/target = parse_file_directory(setup_acc_filepath, accdir)
-			if(target && istype(target))
-				src.account = target
-				return 1
-
-			return 0
 
 #undef MENU_MAIN
 #undef MENU_INDEX
@@ -829,7 +838,6 @@
 #undef FIELDNUM_ALGDET
 #undef FIELDNUM_DISEASE
 #undef FIELDNUM_DISDET
-#undef FIELDNUM_TRAITS
 #undef FIELDNUM_NOTES
 
 #undef FIELDNUM_DELETE

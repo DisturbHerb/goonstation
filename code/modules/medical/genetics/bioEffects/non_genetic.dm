@@ -1,7 +1,8 @@
+ABSTRACT_TYPE(/datum/bioEffect/hidden)
 /datum/bioEffect/hidden
-	name = "Miner Training"
-	desc = "Subject is trained in geological and metallurgical matters."
-	id = "training_miner"
+	name = "Hidden bioeffect parent"
+	desc = "You should not see this."
+	id = "hidden"
 	occur_in_genepools = 0
 	probability = 0
 	scanner_visibility = 0
@@ -54,14 +55,18 @@
 	can_copy = 0
 
 	OnMobDraw()
+		if (..())
+			return
 		if(ishuman(owner))
 			owner:body_standing:overlays += image('icons/mob/human.dmi', "husk")
 
 	OnAdd()
 		if (ishuman(owner))
 			owner:set_body_icon_dirty()
+		. = ..()
 
 	OnRemove()
+		. = ..()
 		if (ishuman(owner))
 			owner:set_body_icon_dirty()
 
@@ -74,15 +79,21 @@
 	can_copy = 0
 
 	OnMobDraw()
+		if (..())
+			return
 		if (ishuman(owner) && !owner:decomp_stage)
-			owner:body_standing:overlays += image('icons/mob/human_decomp.dmi', "decomp1")
-		return
+			if (isskeleton(owner))
+				owner:body_standing:overlays += image('icons/mob/human_decomp.dmi', "decomp4")
+			else
+				owner:body_standing:overlays += image('icons/mob/human_decomp.dmi', "decomp1")
 
 	OnAdd()
 		if (ishuman(owner))
 			owner:set_body_icon_dirty()
+		. = ..()
 
 	OnRemove()
+		. = ..()
 		if (ishuman(owner))
 			owner:set_body_icon_dirty()
 
@@ -106,13 +117,14 @@
 	msgLose = "You are no longer rotting."
 
 	OnAdd()
+		. = ..()
 		owner.set_mutantrace(/datum/mutantrace/zombie)
-		return
+
 
 	OnRemove()
 		if (istype(owner:mutantrace, /datum/mutantrace/zombie))
 			owner.set_mutantrace(null)
-		return
+		. = ..()
 
 	OnLife()
 		if(..()) return
@@ -153,11 +165,10 @@
 			holder.RemoveEffect(id)
 
 		if (outOfPod)
-			if (probmult(6))
-				var/vomit_message = SPAN_ALERT("[owner.name] suddenly and violently vomits!")
-				owner.vomit(0, null, vomit_message)
+			if (probmult(20))
+				owner.nauseate(1)
 
-			else if (probmult(2) && !owner.reagents?.has_reagent("promethazine"))
+			else if (probmult(2) && !HAS_ATOM_PROPERTY(owner, PROP_MOB_CANNOT_VOMIT))
 				owner.visible_message(SPAN_ALERT("[owner.name] vomits blood!"))
 				playsound(owner.loc, 'sound/impact_sounds/Slimy_Splat_1.ogg', 50, 1)
 				random_brute_damage(owner, rand(5,8))
@@ -194,11 +205,6 @@
 	occur_in_genepools = 0
 	var/personalized_stink = null
 
-	New()
-		..()
-		if (prob(5))
-			src.personalized_stink = stinkString()
-
 	OnAdd()
 		. = ..()
 		holder.owner?.UpdateParticles(new/particles/stink_lines, "stink_lines", KEEP_APART | RESET_TRANSFORM)
@@ -210,17 +216,15 @@
 				if (C == owner)
 					continue
 				if (ispug(C))
-					boutput(C, SPAN_ALERT("Wow, [owner] sure [pick("stinks", "smells", "reeks")]!"))
-				else if (src.personalized_stink)
-					boutput(C, SPAN_ALERT("[src.personalized_stink]"))
+					boutput(C, SPAN_ALERT("Wow, [owner] sure [pick("stinks", "smells", "reeks")]!"), "stink_message")
 				else
-					boutput(C, SPAN_ALERT("[stinkString()]"))
+					boutput(C, SPAN_ALERT("[stinkStringHygiene(owner)]"), "stink_message")
 	OnRemove()
 		holder.owner?.ClearSpecificParticles("stink_lines")
 		. = ..()
 
 // Magnetic Random Event
-
+ABSTRACT_TYPE(/datum/bioEffect/hidden/magnetic)
 /datum/bioEffect/hidden/magnetic
 	name = "magnetic charge parent"
 	desc = "This shouldn't be used."

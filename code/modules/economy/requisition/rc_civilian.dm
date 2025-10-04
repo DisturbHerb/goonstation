@@ -10,7 +10,7 @@ ABSTRACT_TYPE(/datum/req_contract/civilian)
 /datum/req_contract/civilian/event_catering
 	name = "Event Catering"
 	payout = PAY_IMPORTANT*10
-	weight = 60
+	weight = 40
 	var/list/desc_event = list("reception","formal event","welcoming party","going-away party","commemorative dinner","dinner")
 	var/list/desc_honorific = list("an esteemed","an infamous","a famous","a renowned")
 	var/list/desc_origin = list(" Nanotrasen"," Martian"," freelancing"," frontier"," - if only barely -"," retired")
@@ -178,7 +178,7 @@ ABSTRACT_TYPE(/datum/rc_entry/reagent/caterdrink)
 		var/task = pick(desc_task) //subvariation
 		src.flavor_desc = "An affiliated [task] [pick(desc_place)] requires sets of attire for newly [pick(desc_hiring)] [pick(desc_noobs)]."
 
-		var/crewcount = rand(4,12)
+		var/crewcount = rand(3,8)
 		src.payout += rand(3,4) * 10 * crewcount
 
 		//uniform pickin
@@ -269,14 +269,14 @@ ABSTRACT_TYPE(/datum/rc_entry/reagent/caterdrink)
 /datum/rc_entry/reagent/water
 	name = "water"
 	chem_ids = "water"
-	feemod = PAY_UNTRAINED/10
+	feemod = PAY_UNTRAINED/15
 
 
 /datum/req_contract/civilian/birthdaybash
 	//name = "Birthday Party"
 	payout = PAY_TRADESMAN*10*2
 	hide_item_payouts = TRUE
-	weight = 70
+	weight = 60
 	var/list/namevary = list("Birthday Party","Birthday Bash","Surprise Party","One Year Older")
 	var/list/desc_event = list("party","celebration","gathering","party","event") //yes party twice
 
@@ -308,7 +308,7 @@ ABSTRACT_TYPE(/datum/rc_entry/reagent/caterdrink)
 		src.payout += rand(0,50) * 10
 
 		if (prob(70)) //pizza party
-			src.rc_entries += rc_buildentry(/datum/rc_entry/food/pizza,rand(2,3)*6)
+			src.rc_entries += rc_buildentry(/datum/rc_entry/food/pizza,rand(2,3)*12)
 			src.rc_entries += rc_buildentry(/datum/rc_entry/reagent/cola,rand(10,20)*10)
 
 		switch (rand(1, 50)) //Special Outcomes Zone
@@ -398,7 +398,7 @@ ABSTRACT_TYPE(/datum/rc_entry/reagent/caterdrink)
 	feemod = PAY_TRADESMAN*2
 
 /datum/rc_entry/food/pizza
-	name = "slices' worth of pizza"
+	name = "bites' worth of whole pizza"
 	commodity = /datum/commodity/
 	typepath = /obj/item/reagent_containers/food/snacks/pizza
 	food_integrity = FOOD_REQ_BY_BITE
@@ -428,7 +428,7 @@ ABSTRACT_TYPE(/datum/rc_entry/reagent/caterdrink)
 
 /datum/rc_entry/item/cannabis
 	name = "cannabis"
-	commodity = /datum/commodity/drugs/cannabis
+	commodity = /datum/commodity/drugs/buy/cannabis
 	feemod = 420
 
 /datum/rc_entry/reagent/glitter
@@ -475,7 +475,7 @@ ABSTRACT_TYPE(/datum/rc_entry/reagent/caterdrink)
 			if("stone")
 				src.rc_entries += rc_buildentry(/datum/rc_entry/stack/rock,rand(8,14)*2*req_quant)
 			if("turf seed")
-				src.rc_entries += rc_buildentry(/datum/rc_entry/seed/grass,rand(20,30)*req_quant)
+				src.rc_entries += rc_buildentry(/datum/rc_entry/plant/seed/grass,rand(20,30)*req_quant)
 			if("window treatment")
 				src.rc_entries += rc_buildentry(/datum/rc_entry/reagent/silicate,rand(3,10)*10*req_quant)
 			if("wood")
@@ -493,7 +493,7 @@ ABSTRACT_TYPE(/datum/rc_entry/reagent/caterdrink)
 				if("stone")
 					src.rc_entries += rc_buildentry(/datum/rc_entry/stack/rock,rand(8,14)*2)
 				if("turf seed")
-					src.rc_entries += rc_buildentry(/datum/rc_entry/seed/grass,rand(20,30))
+					src.rc_entries += rc_buildentry(/datum/rc_entry/plant/seed/grass,rand(20,30))
 				if("window treatment")
 					src.rc_entries += rc_buildentry(/datum/rc_entry/reagent/silicate,rand(3,10)*10)
 				if("wood")
@@ -514,7 +514,7 @@ ABSTRACT_TYPE(/datum/rc_entry/reagent/caterdrink)
 	typepath = /obj/item/raw_material/rock
 	feemod = PAY_UNTRAINED
 
-/datum/rc_entry/seed/grass
+/datum/rc_entry/plant/seed/grass
 	name = "grass seed"
 	cropname = "Grass"
 	feemod = PAY_TRADESMAN
@@ -651,12 +651,11 @@ ABSTRACT_TYPE(/datum/rc_entry/reagent/caterdrink)
 	typepath = /obj/item/cell
 	feemod = PAY_IMPORTANT
 
-	rc_eval(atom/eval_item)
-		. = ..()
-		if(!.)
-			return
+	extra_eval(atom/eval_item)
+		. = FALSE
 		var/obj/item/cell/cell = eval_item
-		return cell.maxcharge >= 15000
+		if(cell.maxcharge >= 15000)
+			return TRUE
 
 /datum/rc_entry/item/borgmodule
 	name = "cyborg module"
@@ -689,10 +688,9 @@ ABSTRACT_TYPE(/datum/rc_entry/reagent/caterdrink)
 		src.payout += rand(0,40) * 10
 
 		if(prob(80)) src.rc_entries += rc_buildentry(/datum/rc_entry/item/engine_component,1)
-		if(prob(50)) src.rc_entries += rc_buildentry(/datum/rc_entry/item/pod_engine,1)
-		if(prob(80)) src.rc_entries += rc_buildentry(/datum/rc_entry/item/pod_circuitry,1)
+		if(prob(50)) src.rc_entries += rc_buildentry(/datum/rc_entry/item/pod_mining,1)
+		if(prob(80)) src.rc_entries += rc_buildentry(/datum/rc_entry/item/pod_tank,1)
 		if(prob(70) || length(src.rc_entries) < 2) src.rc_entries += rc_buildentry(/datum/rc_entry/item/pod_armor,1)
-		if(prob(80)) src.rc_entries += rc_buildentry(/datum/rc_entry/item/pod_control,1)
 		if(prob(60) || length(src.rc_entries) < 4) src.rc_entries += rc_buildentry(/datum/rc_entry/item/pod_tool,1)
 		if(prob(50)) src.rc_entries += rc_buildentry(/datum/rc_entry/item/pod_secondary,1)
 
@@ -713,22 +711,42 @@ ABSTRACT_TYPE(/datum/rc_entry/reagent/caterdrink)
 				feemod = PAY_DOCTORATE*5
 		..()
 
-/datum/rc_entry/item/pod_engine
-	name = "pod engine manifold"
-	typepath = /obj/item/pod/engine
-	feemod = PAY_TRADESMAN*3
+/datum/rc_entry/item/pod_mining
+	name = "pod mining accessory"
 
 	New()
-		src.feemod += rand(0,20) * 10
+		switch(rand(1, 10))
+			if(1 to 6)
+				name = "magnet link array"
+				typepath = /obj/item/shipcomponent/communications/mining
+				feemod = PAY_TRADESMAN*4
+			if(7 to 9)
+				name = "pod-mounted ore scoop with hold"
+				typepath = /obj/item/shipcomponent/secondary_system/orescoop
+				feemod = PAY_TRADESMAN*5
+			if(10)
+				name = "pod-mounted geological scanner"
+				typepath = /obj/item/shipcomponent/sensor/mining
+				feemod = PAY_TRADESMAN*12
 		..()
 
-/datum/rc_entry/item/pod_circuitry
-	name = "pod circuitry kit"
-	typepath = /obj/item/pod/boards
-	feemod = PAY_TRADESMAN*2
+/datum/rc_entry/item/pod_tank
+	name = "pod atmospheric tank"
 
 	New()
-		src.feemod += rand(0,20) * 10
+		switch(rand(1, 10))
+			if(1 to 6)
+				name = "pod-compatible gas tank"
+				typepath = /obj/item/tank
+				feemod = PAY_TRADESMAN*2
+			if(7 to 9)
+				name = "pod air tank"
+				typepath = /obj/item/tank/air
+				feemod = PAY_TRADESMAN*5
+			if(10)
+				name = "pod fuel tank"
+				typepath = /obj/item/tank/plasma
+				feemod = PAY_TRADESMAN*8
 		..()
 
 /datum/rc_entry/item/pod_armor
@@ -750,14 +768,6 @@ ABSTRACT_TYPE(/datum/rc_entry/reagent/caterdrink)
 				feemod = PAY_TRADESMAN*12
 		..()
 
-/datum/rc_entry/item/pod_control
-	name = "pod control interface"
-	typepath = /obj/item/pod/control
-	feemod = PAY_TRADESMAN*3
-
-	New()
-		src.feemod += rand(0,20) * 10
-		..()
 
 /datum/rc_entry/item/pod_tool
 	name = "youshouldn'tseemium cannon"
@@ -793,4 +803,93 @@ ABSTRACT_TYPE(/datum/rc_entry/reagent/caterdrink)
 			if(8 to 10)
 				name = "ship's navigation GPS"
 				typepath = /obj/item/shipcomponent/secondary_system/gps
+		..()
+
+
+/datum/req_contract/civilian/botanical
+	payout = PAY_TRADESMAN*15*2
+	var/list/namevary = list("Diplomatic Meal Preparation","High-Grade Dinner Prep","Captain's Meal Ingredients","NT-Official Kitchen","NT Pantry Stocking")
+	var/list/desc_wherebuying = list(
+		"A nearby outpost hosting an NT official",
+		"A passing high-class cruiser",
+		"A VIP shuttle",
+		"A \[redacted\]", // military vessel commanders probably also have gourmet appetites
+		"Central command's kitchen",
+		"The kitchen staff of an affiliated station",
+		"The kitchen staff of an affiliated vessel",
+		"A luxury exploratory vessel"
+	)
+	var/list/desc_plants = list("high-quality produce","upscale fruit and veg","gourmet produce","high-grade ingredients",
+								"artisan fruits and greens","boutique ingredients")
+	var/list/desc_bonusflavor = list(
+		null,
+		" Ensure all produce is free from blemishes or signs of spoilage.",
+		" Double-check that no substandard crops are included before packaging.",
+		" Certify that produce has been grown without synthetic fertilisers.",
+		" Individually wrapping each item will ensure maximum freshness.",
+		" Shipment should include detailed cultivation records for quality assurance.",
+		" Ensure any fruits will be fully ripened prior to reception."
+	)
+
+	New()
+		src.name = pick(namevary)
+		src.flavor_desc = "[pick(desc_wherebuying)] is stocking [pick(desc_plants)] with very particular genetically-inclined flavour profiles. [pick(desc_bonusflavor)]"
+		src.payout += rand(0,30) * 10
+		var/quant = 0
+		var/randm = rand(1, 100)
+		if (randm > 50)
+			quant = 2
+		else if (randm > 5)
+			quant = 1
+		else
+			quant = 3
+			src.payout += 8000
+
+		for (var/i = 1; i <= quant; i++)
+			src.rc_entries += GetFruitOrVegEntry()
+		src.item_rewarders += new /datum/rc_itemreward/large_satchel
+		if(prob(30))
+			src.item_rewarders += new /datum/rc_itemreward/strange_seed
+		else if (prob(60))
+			src.item_rewarders += new /datum/rc_itemreward/tumbleweed
+
+		..()
+
+	proc/GetFruitOrVegEntry()
+		if (prob(50))
+			return rc_buildentry(/datum/rc_entry/plant/civilian/fruit,rand(4,10))
+		else
+			return rc_buildentry(/datum/rc_entry/plant/civilian/veg,rand(4,10))
+
+/datum/rc_entry/plant/civilian
+	name = "genetically fussy plant"
+	cropname = "Durian"
+	feemod = PAY_DOCTORATE
+	// This worked for seeds, but it only works for produce because all fruits and veg products are members of
+	// obj/item/reagent_containers/food/snacks/plant and thus have plant genes. As long as that remains a hard-stuck rule though, this should be fine.
+	var/crop_genpath = /datum/plant
+
+	fruit
+		crop_genpath = /datum/plant/fruit
+	veg
+		crop_genpath = /datum/plant/veg
+	crop
+		crop_genpath = /datum/plant/crop
+
+	New()
+		var/datum/plant/plantalyze = pick(concrete_typesof(crop_genpath))
+		src.cropname = initial(plantalyze.name)
+
+		switch(rand(1,7))
+			if(1) src.gene_reqs["Maturation"] = rand(10,20)
+			if(2) src.gene_reqs["Production"] = rand(10,20)
+			if(3)
+				src.gene_reqs["Production"] = rand(5,10)
+				src.gene_reqs["Potency"] = rand(3,5)
+			if(4) src.gene_reqs["Yield"] = rand(3,5)
+			if(5) src.gene_reqs["Potency"] = rand(3,5)
+			if(6) src.gene_reqs["Endurance"] = rand(3,5)
+			if(7)
+				src.gene_reqs["Maturation"] = rand(5,10)
+				src.gene_reqs["Production"] = rand(5,10)
 		..()

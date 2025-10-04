@@ -13,6 +13,7 @@
 	voice_fem = 'sound/voice/wizard/CluwneFem.ogg'
 	voice_other = 'sound/voice/wizard/CluwneLoud.ogg'
 	maptext_colors = list("#3fb54f", "#9eee80", "#d3cb21", "#b97517")
+	voice_on_cast_start = FALSE
 
 	cast(mob/target)
 		if(!holder)
@@ -28,6 +29,7 @@
 
 		var/mob/living/carbon/human/H = target
 
+		. = ..()
 		if (targetSpellImmunity(H, TRUE, 2))
 			return 1
 
@@ -35,9 +37,8 @@
 		actions.start(new/datum/action/bar/icon/cluwne_spell(usr, target, src), holder.owner)
 
 /datum/action/bar/icon/cluwne_spell
-	duration = 1.5 SECONDS
+	duration = 3 SECONDS
 	interrupt_flags = INTERRUPT_MOVE | INTERRUPT_ACT | INTERRUPT_STUNNED | INTERRUPT_ACTION
-	id = "cluwne_spell"
 	icon = 'icons/ui/actions.dmi'
 	icon_state = "cluwne"
 
@@ -69,7 +70,7 @@
 		..()
 
 		if(!istype(get_area(M), /area/sim/gunsim))
-			M.say("NWOLC EGNEVER", FALSE, spell.maptext_style, spell.maptext_colors)
+			M.say("NWOLC EGNEVER", flags = SAYFLAG_IGNORE_STAMINA, message_params = list("maptext_css_values" = spell.maptext_style, "maptext_animation_colours" = spell.maptext_colors))
 		if(ishuman(M))
 			var/mob/living/carbon/human/H = M
 			if(spell.voice_grim && H && istype(H.wear_suit, /obj/item/clothing/suit/wizrobe/necro) && istype(H.head, /obj/item/clothing/head/wizard/necro))
@@ -83,7 +84,7 @@
 		smoke.set_up(5, 0, target.loc)
 		smoke.attach(target)
 		smoke.start()
-		logTheThing(LOG_COMBAT, M, "casts a Cluwne spell on [constructTarget(target,"combat")] at [log_loc(target)].")
+		logTheThing(LOG_COMBAT, M, "successfully casts a Cluwne spell on [constructTarget(target,"combat")] at [log_loc(target)].")
 		if (target.job != "Cluwne")
 			boutput(target, SPAN_ALERT("<B>You HONK painfully!</B>"))
 			target.take_brain_damage(50)
@@ -134,18 +135,18 @@
 			if(the_id && the_id:registered == target.real_name)
 				if (istype(the_id, /obj/item/card/id))
 					the_id:assignment = "Lawyer"
-					the_id:name = "[target.real_name]'s ID Card (Lawyer)"
+					the_id:name = "[target.real_name]’s ID Card (Lawyer)"
 				else if (istype(the_id, /obj/item/device/pda2))
 					the_id:assignment = "Lawyer"
 					the_id:ID_card:assignment = "Lawyer"
-					the_id:ID_card:name = "[target.real_name]'s ID Card (Lawyer)"
+					the_id:ID_card:name = "[target.real_name]’s ID Card (Lawyer)"
 				else if (istype(the_id, /obj/item/clothing/lanyard))
 					the_id:assignment = "Lawyer"
 					var/obj/item/clothing/lanyard/lanyard = the_id
 					var/obj/item/card/id/id_card = lanyard.get_stored_id()
 					if (id_card)
 						id_card.assignment = "Lawyer"
-						id_card.name = "[target.real_name]'s ID Card (Lawyer)"
+						id_card.name = "[target.real_name]’s ID Card (Lawyer)"
 				target.wear_id = the_id
 
 			for(var/obj/item/W in target)

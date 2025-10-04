@@ -39,7 +39,7 @@
 		var/mob/new_player/player = C.mob
 		if (!istype(player)) continue
 
-		if (player.ready)
+		if (player.ready_play)
 			player.close_spawn_windows()
 
 	var/datum/job/special/station_builder/C = new /datum/job/special/station_builder()
@@ -131,7 +131,7 @@
 						new /obj/item/mining_tool(T)
 						picks++
 					var/count = pick(prob(50); 0, 1, prob(25); 2, prob(10); 3)
-					for (var/i = 0, i < count; i++)
+					for (var/i = 0; i < count; i++)
 						var/item_class = pick(1, prob(50); 2, prob(25); 3, prob(10); 4)
 						switch (item_class)
 							if (1)
@@ -258,10 +258,10 @@
 			var/image/ore_overlay = image('icons/turf/walls/asteroid.dmi',"[ORE.name][AST.orenumber]")
 			ore_overlay.filters += filter(type="alpha", icon=icon('icons/turf/walls/asteroid.dmi',"mask-side_[AST.icon_state]"))
 			ore_overlay.layer = ASTEROID_TOP_OVERLAY_LAYER // so meson goggle nerds can still nerd away
-			AST.UpdateOverlays(ore_overlay, "ast_ore")
+			AST.AddOverlays(ore_overlay, "ast_ore")
 
 #ifndef UNDERWATER_MAP // We don't want fullbright ore underwater.
-			AST.UpdateOverlays(new /image/fullbright, "fullbright")
+			AST.AddOverlays(new /image/fullbright, "fullbright")
 #endif
 
 			ORE.onGenerate(AST)

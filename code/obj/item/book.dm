@@ -18,7 +18,7 @@ Custom Books
 	//cogwerks - burn vars
 	burn_point = 400
 	burn_output = 1100
-	burn_possible = 1
+	burn_possible = TRUE
 	health = 4
 	//
 
@@ -69,7 +69,8 @@ Custom Books
 	desc = "A condensed guide of job responsibilities and tips for new crewmembers."
 
 	medical
-		name = "Medbay Pocket Guide"
+		name = "Medbay Pocket Guide, Second Edition"
+		desc = "A condensed guide of job responsibilities and tips for new crewmembers."
 		icon_state = "mediguide"
 		file_path = "strings/books/medbay_pocket_guide.txt"
 
@@ -131,6 +132,11 @@ Custom Books
 	icon_state = "mechcompguide"
 	desc = "A Book on how to use the wireless Components of the Mechanic's lab"
 	file_path = "strings/books/mechanicbook.txt"
+
+/obj/item/paper/book/from_file/text_to_music_com // based off the revised Player Piano book
+	name = "Text to Music Component Manual"
+	desc = "Details the use of the Text to Music Component."
+	file_path = "strings/books/text_to_music_com.txt"
 
 /obj/item/paper/book/from_file/teg_guide //By Azrun, part of the February 2021 Contest
 	name = "Thermo-electric Power Generation"
@@ -275,8 +281,8 @@ Custom Books
 				user.visible_message(SPAN_ALERT("<B>[user] fumbles the catch and is clonked on the head!</B>"))
 				playsound(user.loc, 'sound/impact_sounds/Flesh_Break_1.ogg', 50, 1)
 				user.changeStatus("stunned", 2 SECONDS)
-				user.changeStatus("weakened", 2 SECONDS)
-				user.changeStatus("paralysis", 2 SECONDS)
+				user.changeStatus("knockdown", 2 SECONDS)
+				user.changeStatus("unconscious", 2 SECONDS)
 				user.force_laydown_standup()
 			else
 				src.Attackhand(usr)
@@ -348,13 +354,12 @@ Custom Books
 	examine(mob/user)
 		if (!issilicon(user))
 			. = list("What...what is this? It's written entirely in barcodes or something, cripes. You can't make out ANY of this.")
-			var/mob/living/carbon/jerk = user
+			var/mob/living/carbon/human/jerk = user
 			if (!istype(jerk))
 				return
 
-			var/datum/db_record/S = data_core.security.find_record("id", jerk.datacore_id)
-			S?["criminal"] = "*Arrest*"
-			S?["mi_crim"] = "Reading highly-confidential private information."
+			jerk.traitHolder?.addTrait("wasitsomethingisaid")
+			jerk.apply_automated_arrest("Reading highly-confidential private information.", requires_camera_seen = FALSE, use_visible_name = FALSE)
 		else
 			return list("It appears to be heavily encrypted information.")
 
@@ -451,8 +456,8 @@ Custom Books
 	file_path = "strings/books/syndies_guide.txt"
 
 	New()
-		..()
 		START_TRACKING_CAT(TR_CAT_NUKE_OP_STYLE)
+		..()
 
 	disposing()
 		STOP_TRACKING_CAT(TR_CAT_NUKE_OP_STYLE)
@@ -546,7 +551,8 @@ soon the light of the unwaking will rise and the shining ones will not be prepar
 			else if (!src.book_cover)
 				src.book_cover = "book0"
 			src.icon_state = src.book_cover
-		src.info = "<span style=\"color:[src.ink_color]\">[src.info]</span>"
+		if(!findtext(src.info, "<span style=\"color:[src.ink_color]\">", 1, 50))
+			src.info = "<span style=\"color:[src.ink_color]\">[src.info]</span>"
 
 /obj/item/paper/spaceodyssey
 	name = "strange printout"

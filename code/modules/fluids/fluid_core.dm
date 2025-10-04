@@ -18,8 +18,9 @@ ADMIN_INTERACT_PROCS(/obj/fluid, proc/admin_clear_fluid)
 	anchored = ANCHORED_ALWAYS
 	mouse_opacity = FALSE
 	layer = FLUID_LAYER
+	flags = UNCRUSHABLE | OPENCONTAINER
 
-	event_handler_flags = IMMUNE_MANTA_PUSH
+	event_handler_flags = IMMUNE_OCEAN_PUSH
 
 	var/finalcolor = "#ffffff"
 	color = "#ffffff"
@@ -56,7 +57,7 @@ ADMIN_INTERACT_PROCS(/obj/fluid, proc/admin_clear_fluid)
 	var/last_depth_level = 0
 	var/touched_channel = 0
 
-	var/list/wall_overlay_images = 0 //overlay bits onto a wall to make the water look deep. This is a cache of those overlays.
+	var/list/wall_overlay_images = null //overlay bits onto a wall to make the water look deep. This is a cache of those overlays.
 	//var/list/floated_atoms = 0 //list of atoms we triggered a float anim on (cleanup later on qdel())
 
 	var/is_setup = 0
@@ -79,10 +80,6 @@ ADMIN_INTERACT_PROCS(/obj/fluid, proc/admin_clear_fluid)
 			if (!waterflow_enabled)
 				src.removed()
 				return
-
-		flags |= OPENCONTAINER | UNCRUSHABLE
-
-		//src.floated_atoms = list()
 
 		for (var/dir in cardinal)
 			blocked_perspective_objects["[dir]"] = 0
@@ -213,7 +210,7 @@ ADMIN_INTERACT_PROCS(/obj/fluid, proc/admin_clear_fluid)
 		if (A.event_handler_flags & USE_FLUID_ENTER)
 			A.EnteredFluid(src, A.last_turf)
 
-	proc/force_mob_to_ingest(var/mob/M, var/mult = 1)//called when mob is drowning
+	proc/force_mob_to_ingest(var/mob/M, var/mult = 1, var/exception = null)//called when mob is drowning
 		if (!M) return
 		if (!src.group || !src.group.reagents || !src.group.reagents.reagent_list) return
 
@@ -222,7 +219,7 @@ ADMIN_INTERACT_PROCS(/obj/fluid, proc/admin_clear_fluid)
 		if (M.reagents)
 			react_volume = min(react_volume, abs(M.reagents.maximum_volume - M.reagents.total_volume)) //don't push out other reagents if we are full
 		src.group.reagents.reaction(M, INGEST, react_volume,1,src.group.members.len)
-		src.group.reagents.trans_to(M, react_volume)
+		src.group.reagents.trans_to(M, react_volume, exception = exception)
 
 	Uncrossed(atom/movable/AM)
 
@@ -256,7 +253,7 @@ ADMIN_INTERACT_PROCS(/obj/fluid, proc/admin_clear_fluid)
 			var/mob/M = AM
 			M.set_clothing_icon_dirty()
 
-	temperature_expose(datum/gas_mixture/air, exposed_temperature, exposed_volume)
+	temperature_expose(datum/gas_mixture/air, exposed_temperature, exposed_volume, cannot_be_cooled = FALSE)
 		..()
 		if (!src.group || !src.group.reagents || !length(src.group.members)) return
 		src.group.last_temp_change = world.time
@@ -332,7 +329,7 @@ ADMIN_INTERACT_PROCS(/obj/fluid, proc/admin_clear_fluid)
 						push_thing = thing
 
 					if (found)
-						if( thing.density || (thing.flags & FLUID_DENSE) )
+						if( thing.density || (thing.flags & FLUID_DENSE_ALWAYS) )
 							suc=0
 							blocked_dirs++
 							if (IS_PERSPECTIVE_BLOCK(thing))
@@ -560,8 +557,11 @@ ADMIN_INTERACT_PROCS(/obj/fluid, proc/admin_clear_fluid)
 		if ((color_changed || last_icon != icon_state) && last_spread_was_blocked)
 			src.update_perspective_overlays()
 
+		if (src.icon_state == "15" && src.last_depth_level >= 2)
+			src.icon_state = "15-lines"
+
 	proc/update_perspective_overlays() // fancy perspective overlaying
-		if (icon_state != "15") return
+		if (icon_state != "15" && icon_state != "15-lines") return
 		var/blocked = 0
 		for( var/dir in cardinal )
 			if (dir == SOUTH) //No south perspective
@@ -607,13 +607,17 @@ ADMIN_INTERACT_PROCS(/obj/fluid, proc/admin_clear_fluid)
 		overlay.pixel_y = poy
 		wall_overlay_images[overlay_key] = overlay
 
-		src.UpdateOverlays(overlay, overlay_key)
+		src.AddOverlays(overlay, overlay_key)
 
 	proc/clear_overlay(var/key = 0)
 		if (!key)
 			src.ClearAllOverlays()
 		else if(key && wall_overlay_images && wall_overlay_images[key])
 			src.ClearSpecificOverlays(key)
+
+		if (!src.last_depth_level < 2)
+			if (src.icon_state == "15-lines")
+				src.icon_state = "15"
 
 	proc/debug_search()
 		var/list/C = src.get_connected_fluids()
@@ -679,7 +683,27 @@ ADMIN_INTERACT_PROCS(/obj/fluid, proc/admin_clear_fluid)
 			I.color = F.finalcolor
 			I.alpha = F.finalalpha
 		src.show_submerged_image(F.my_depth_level)
+
+	if (F.my_depth_level == 1 && !HAS_ATOM_PROPERTY(src, PROP_ATOM_FLOATING) && !src.throwing)
+		new /obj/decal/puddle_ripple(null, F)
+
 	..()
+
+/obj/decal/puddle_ripple
+	icon = 'icons/obj/fluid.dmi'
+	icon_state = "ripple"
+	plane = PLANE_DEFAULT
+	blend_mode = BLEND_INSET_OVERLAY
+
+	New(newLoc, obj/fluid/fluid)
+		..()
+		src.pixel_x += rand(-10, 10)
+		src.pixel_y += rand(-10, 10)
+		src.loc = fluid
+		fluid.vis_contents += src
+		SPAWN(1 SECOND)
+			fluid.vis_contents -= src
+			qdel(src)
 
 /mob/living/ExitedFluid(obj/fluid/F as obj)
 	if (src.is_submerged == 0) return
@@ -722,14 +746,14 @@ ADMIN_INTERACT_PROCS(/obj/fluid, proc/admin_clear_fluid)
 						SPAN_ALERT("You slip on [F]!"))
 				if(-1) //space lube. this code bit is shit but i'm too lazy to make it Real right now. the proper implementation should also make exceptions for ice and stuff.
 					src.remove_pulling()
-					src.changeStatus("weakened", 3.5 SECONDS)
+					src.changeStatus("knockdown", 3.5 SECONDS)
 					boutput(src, SPAN_NOTICE("You slipped on [F]!"))
 					playsound(T, 'sound/misc/slip.ogg', 50, TRUE, -3)
 					var/atom/target = get_edge_target_turf(src, src.dir)
 					src.throw_at(target, 12, 1, throw_type = THROW_SLIP)
 				if(-2) //superlibe
 					src.remove_pulling()
-					src.changeStatus("weakened", 6 SECONDS)
+					src.changeStatus("knockdown", 6 SECONDS)
 					playsound(T, 'sound/misc/slip.ogg', 50, TRUE, -3)
 					boutput(src, SPAN_NOTICE("You slipped on [F]!"))
 					var/atom/target = get_edge_target_turf(src, src.dir)
@@ -790,6 +814,8 @@ ADMIN_INTERACT_PROCS(/obj/fluid, proc/admin_clear_fluid)
 	if (F.my_depth_level == 1)
 		if(!src.lying && src.shoes && src.shoes.hasProperty ("chemprot") && (src.shoes.getProperty("chemprot") >= 5)) //sandals do not help
 			do_reagent_reaction = 0
+			if (!src.wear_suit || !(src.wear_suit.c_flags & SPACEWEAR)) // suits can go over shoes
+				F.group.reagents.reaction(src.shoes, TOUCH, F.group.amt_per_tile, can_spawn_fluid = FALSE)
 
 	if (entered_group) //if entered_group == 1, it may not have been set yet
 		if (isturf(oldloc))

@@ -6,7 +6,8 @@
 /client/proc/debug_global_variable(var/S as text)
 	SET_ADMIN_CAT(ADMIN_CAT_DEBUG)
 	set name = "View Global Variable"
-
+	ADMIN_ONLY
+	SHOW_VERB_DESC
 	if( !src.holder || src.holder.level < LEVEL_ADMIN)
 		boutput( src, SPAN_ALERT("Get down from there!!") )
 		return
@@ -44,7 +45,6 @@
 <html>
 <head>
 	<title>[title]</title>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 [Make_view_variabls_style()]
 </head>
@@ -67,7 +67,8 @@
 	SET_ADMIN_CAT(ADMIN_CAT_DEBUG)
 	set name = "View Ref Variables"
 	set desc = "(reference) Enter a ref to view its variables"
-
+	ADMIN_ONLY
+	SHOW_VERB_DESC
 	if (src.holder?.level < LEVEL_ADMIN)
 		src.audit(AUDIT_ACCESS_DENIED, "tried to call debug_ref_variables while being below Administrator rank.")
 		tgui_alert(src.mob, "You must be at least an Administrator to use this command.", "Access Denied")
@@ -116,7 +117,9 @@
 		return
 	#endif
 
-	if(D != "GLOB")
+	if (D == world)
+		src.audit(AUDIT_VIEW_VARIABLES, "is viewing variables on world")
+	else if (D != "GLOB")
 		src.audit(AUDIT_VIEW_VARIABLES, "is viewing variables on [D]: [D.type] [istype(D, /atom) ? "at [D:x], [D:y], [D:z]" : ""]")
 	else
 		src.audit(AUDIT_VIEW_VARIABLES, "is viewing global variables")
@@ -137,6 +140,8 @@
 		#endif
 	if(D == "GLOB")
 		title = "Global Variables"
+	else if (D == world)
+		title = "World Variables"
 	else
 		title = "[D][src.holder.level >= LEVEL_ADMIN ? " (\ref[D])" : ""] = [D.type]"
 
@@ -182,7 +187,6 @@
 <html>
 <head>
 	<title>[title]</title>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 [Make_view_variabls_style()]</head>
 <body>
@@ -215,6 +219,8 @@
 
 	if (A)
 		html += " &middot; <a href='byond://?src=\ref[src];JumpToThing=\ref[D]'>Jump To</a>"
+		html += " &middot; <a href='byond://?src=\ref[src.holder];action=accessspeechtree;target=\ref[D]'>Speech Tree</a>"
+		html += " &middot; <a href='byond://?src=\ref[src.holder];action=accesslistentree;target=\ref[D]'>Listen Tree</a>"
 		if (ismob(D) || isobj(D))
 			html += " &middot; <a href='byond://?src=\ref[src];GetThing=\ref[D]'>Get (turf)</a> &middot; <a href='byond://?src=\ref[src];GetThing_Insert=\ref[D]'>Get (loc)</a>"
 			if (ismob(D))
@@ -223,7 +229,6 @@
 		html += " &middot; <a href='byond://?src=\ref[src];AddComponent=\ref[D]'>Add Component</a>"
 		html += " &middot; <a href='byond://?src=\ref[src];RemoveComponent=\ref[D]'>Remove Component</a>"
 	html += "<br><a href='byond://?src=\ref[src];Delete=\ref[D]'>Delete</a>"
-	html += " &middot; <a href='byond://?src=\ref[src];HardDelete=\ref[D]'>Hard Delete</a>"
 	if (A || istype(D, /image))
 		html += " &middot; <a href='byond://?src=\ref[src];Display=\ref[D]'>Display In Chat</a>"
 		html += " &middot; <a href='byond://?src=\ref[src];DebugOverlays=\ref[D]'>Debug Overlays</a>"
@@ -232,7 +237,6 @@
 		html += "<br><a href='byond://?src=\ref[src];CheckReactions=\ref[D]'>Check Possible Reactions</a>"
 		html += " &middot; <a href='byond://?src=\ref[src];ReplaceExplosive=\ref[D]'>Replace with Explosive</a>"
 		html += " &middot; <a href='byond://?src=\ref[src];Possess=\ref[D]'>Possess</a>"
-		html += " &middot; <a href='byond://?src=\ref[src];AddPathogen=\ref[D]'>Add Random Pathogens Reagent</a>"
 
 
 		if (isitem(D))
@@ -601,15 +605,6 @@
 		else
 			audit(AUDIT_ACCESS_DENIED, "tried to delete something all rude-like.")
 		return
-	if (href_list["HardDelete"])
-		USR_ADMIN_ONLY
-		if(holder && src.holder.level >= LEVEL_PA)
-			var/datum/D = locate(href_list["HardDelete"])
-			if(alert(src, "Are you sure you want to delete [D] of type [D.type]?",,"Yes","No") == "Yes")
-				del(D)
-		else
-			audit(AUDIT_ACCESS_DENIED, "tried to delete something all rude-like.")
-		return
 	if (href_list["Display"])
 		USR_ADMIN_ONLY
 		if(holder && src.holder.level >= LEVEL_PA)
@@ -637,14 +632,6 @@
 				O.AddComponent(/datum/component/explode_on_touch, explosion_size, gib, delete_object, limbs_to_remove, turf_safe_explosion)
 		else
 			audit(AUDIT_ACCESS_DENIED, "tried to replace explosive replica all rude-like.")
-		return
-	if (href_list["AddPathogen"])
-		USR_ADMIN_ONLY
-		if(holder && src.holder.level >= LEVEL_PA)
-			var/obj/O = locate(href_list["AddPathogen"])
-			O.addpathogens()
-		else
-			audit(AUDIT_ACCESS_DENIED, "tried to add random pathogens all rude-like.")
 		return
 	if (href_list["KillCritter"])
 		USR_ADMIN_ONLY
@@ -729,11 +716,21 @@
 	else
 		..()
 
+/// a list of things that no one has any business varediting ever
+#define VAREDIT_ABSOLUTELY_NOT_CHECK(D, var, value) (\
+	var == "holder" ||\
+	(var == "key" || var == "ckey") && istype(D, /client) ||\
+	istype(value, /datum/admins) ||\
+	istype(D, /datum/admins) ||\
+	value == logs ||\
+	value == logs["audit"]\
+)
+
 /client/proc/set_all(datum/D, variable, val)
 	if(!variable || !D || !(variable in D.vars))
 		return
 	#ifndef I_AM_HACKERMAN
-	if(variable == "holder")
+	if (VAREDIT_ABSOLUTELY_NOT_CHECK(D, variable, val))
 		boutput(src, "Access denied.")
 		return
 	#endif
@@ -770,7 +767,7 @@
 
 	var/var_value = D == "GLOB" ? global.vars[variable] : D.vars[variable]
 	#ifndef I_AM_HACKERMAN
-	if( istype(var_value, /datum/admins) || istype(D, /datum/admins) || var_value == logs || var_value == logs["audit"] )
+	if(VAREDIT_ABSOLUTELY_NOT_CHECK(D, variable, null))
 		src.audit(AUDIT_ACCESS_DENIED, "tried to assign a value to a forbidden variable.")
 		boutput(src, "You can't set that value.")
 		return
@@ -802,11 +799,11 @@
 		else
 			original_name = D:name
 
-	var/datum/data_input_result/result = src.input_data(list(DATA_INPUT_TEXT, DATA_INPUT_NUM, DATA_INPUT_NUM_ADJUST, DATA_INPUT_TYPE, \
-											DATA_INPUT_MOB_REFERENCE, DATA_INPUT_TURF_BY_COORDS, DATA_INPUT_REFPICKER, DATA_INPUT_NEW_INSTANCE, \
-											DATA_INPUT_ICON, DATA_INPUT_FILE, DATA_INPUT_COLOR, DATA_INPUT_LIST_EDIT, DATA_INPUT_JSON, \
-											DATA_INPUT_LIST_BUILD, DATA_INPUT_MATRIX, DATA_INPUT_NULL, DATA_INPUT_REF, DATA_INPUT_RESTORE, \
-											DATA_INPUT_PARTICLE_EDITOR, DATA_INPUT_FILTER_EDITOR, DATA_INPUT_COLOR_MATRIX_EDITOR), \
+	var/datum/data_input_result/result = src.input_data(list(DATA_INPUT_TEXT, DATA_INPUT_NUM, DATA_INPUT_NUM_ADJUST, DATA_INPUT_BITFIELD,
+											DATA_INPUT_TYPE, DATA_INPUT_MOB_REFERENCE, DATA_INPUT_TURF_BY_COORDS, DATA_INPUT_REFPICKER, \
+											DATA_INPUT_NEW_INSTANCE, DATA_INPUT_ICON, DATA_INPUT_FILE, DATA_INPUT_COLOR, DATA_INPUT_LIST_EDIT, \
+											DATA_INPUT_JSON, DATA_INPUT_LIST_BUILD, DATA_INPUT_MATRIX, DATA_INPUT_NULL, DATA_INPUT_REF, \
+											DATA_INPUT_RESTORE, DATA_INPUT_PARTICLE_EDITOR, DATA_INPUT_FILTER_EDITOR, DATA_INPUT_COLOR_MATRIX_EDITOR), \
 											default = var_value, default_type = default)
 
 	switch(result.output_type) // specified cases are special handling. everything in the `else` is generic cases
@@ -884,6 +881,8 @@
 		D.onVarChanged(variable, var_value, D.vars[variable])
 	if(src.refresh_varedit_onchange)
 		src.debug_variables(D)
+
+#undef VAREDIT_ABSOLUTELY_NOT_CHECK
 
 /mob/proc/Delete(atom/A in view())
 	set category = "Debug"

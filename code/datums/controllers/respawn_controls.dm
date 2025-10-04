@@ -26,9 +26,6 @@ var/datum/respawn_controls/respawn_controller
 	- Most respawns done through this controller
 
 */
-#define RESPAWNEE_STATE_WAITING 0
-#define RESPAWNEE_STATE_ELIGIBLE 1
-#define RESPAWNEE_STATE_ALIVE 2
 
 /datum/respawn_controls
 	var/respawn_time = DEFAULT_RESPAWN_TIME
@@ -135,6 +132,8 @@ var/datum/respawn_controls/respawn_controller
 		else if(istype(the_client?.mob, /mob/dead/target_observer))
 			var/mob/dead/target_observer/target_observer = the_client?.mob
 			observer = target_observer.ghost
+		else if(istype(the_client?.mob.ghost, /mob/dead/observer))
+			observer = the_client?.mob.ghost
 		if(time_left > 0)
 			observer?.hud?.get_respawn_timer().set_time_left(time_left)
 		else
@@ -154,10 +153,13 @@ var/datum/respawn_controls/respawn_controller
 				if(isnull(the_client))
 					return RESPAWNEE_STATE_WAITING
 
+			if (!the_client.authenticated)
+				return RESPAWNEE_STATE_WAITING
+
 			src.update_time_display()
 
-			// Check that the client is currently dead
-			if(isobserver(the_client.mob) || isdead(the_client.mob))
+			// Check that the client is currently dead or in the afterlife bar
+			if(isobserver(the_client.mob) || isdead(the_client.mob) || inafterlifebar(the_client.mob))
 				return RESPAWNEE_STATE_ELIGIBLE
 		else
 			src.update_time_display()
@@ -166,7 +168,7 @@ var/datum/respawn_controls/respawn_controller
 	proc/notifyAndGrantVerb()
 		if(!client_processed && checkValid())
 			// Send a message to the client
-			the_client.mob.playsound_local(the_client.mob, 'sound/misc/respawn.ogg', 70, flags=SOUND_IGNORE_SPACE)
+			the_client.mob.playsound_local(the_client.mob, 'sound/misc/respawn.ogg', 70, flags=SOUND_IGNORE_SPACE | SOUND_IGNORE_DEAF)
 
 			boutput(the_client.mob, "<h2>You are now eligible for a <a href='byond://winset?command=Respawn-As-New-Character'>respawn (click here)</a>!</h1>")
 			if(master.rp_alert)
@@ -184,7 +186,17 @@ var/datum/respawn_controls/respawn_controller
 		var/is_round_observer = FALSE
 		if (istype(usr, /mob/dead/observer))
 			var/mob/dead/observer/ghost = usr
+			ghost.last_ckey = null
 			is_round_observer = ghost.observe_round
+		else if (usr.ghost)	// ghost is on /mob
+			var/mob/dead/observer/ghost = usr.ghost
+			ghost.last_ckey = null
+			is_round_observer = ghost?.observe_round
+			if (isliving(usr) && inafterlife(usr))
+				var/mob/living/oldmob = usr
+				SPAWN(1)
+					// if you're in the afterlife your mob is raptured
+					heavenly_spawn(oldmob, reverse = TRUE)
 		logTheThing(LOG_DEBUG, usr, "used a timed respawn[is_round_observer ? " after joining as an observer" : ""].")
 		logTheThing(LOG_DIARY, usr, "used a timed respawn[is_round_observer ? " after joining as an observer" : ""].", "game")
 
@@ -228,10 +240,6 @@ var/datum/respawn_controls/respawn_controller
 			time_text = "<span style='color:#f88;'>[time2text(time, "hh:mm:ss", 0)]</span>"
 		maptext = {"<span class='pixel c ol' style='font-size:16px;'>Respawn in [time_text]</span>"}
 
-#undef RESPAWNEE_STATE_WAITING
-#undef RESPAWNEE_STATE_ELIGIBLE
-#undef RESPAWNEE_STATE_ALIVE
-
 /atom/movable/screen/join_other
 	screen_loc = "CENTER, NORTH-1"
 	maptext_height = 32 * 2
@@ -254,4 +262,4 @@ var/datum/respawn_controls/respawn_controller
 			src.server_name = server_name
 		if (server_id == config.server_id)
 			return
-		maptext = {"<span class='pixel c ol' style='font-size:16px;'>Dead? No worries. <a style='color:red;background-color:black;' href="?src=\ref[src]&action=close">X</a><br><a style='color:#8f8;text-decoration:underline;' href='byond://winset?command=Change-Server [server_id]'>Click here to join<br>[server_name]!</a></span>"}
+		maptext = {"<span class='pixel c ol' style='font-size:16px;'>Dead? No worries. <a style='color:red;background-color:black;' href="byond://?src=\ref[src]&action=close">X</a><br><a style='color:#8f8;text-decoration:underline;' href='byond://winset?command=Change-Server [server_id]'>Click here to join<br>[server_name]!</a></span>"}

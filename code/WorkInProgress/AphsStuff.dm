@@ -9,8 +9,8 @@
 	density = 1
 
 	attackby(obj/item/W, mob/user)
-		user.lastattacked = src
-		src.visible_message("<B>[src]</B> screams!",1)
+		user.lastattacked = get_weakref(src)
+		src.visible_message("<B>[src]</B> screams!")
 		playsound(src, 'sound/voice/screams/monkey_scream.ogg', 10, TRUE, -1, channel=VOLUME_CHANNEL_EMOTE)
 		..()
 		return
@@ -71,7 +71,7 @@
 		if(!ai.on) return
 		if(!ai.ready_for_tapes) return
 		if(src.loaded)
-			src.visible_message("[user] ejects the tape from the databank.",1)
+			src.visible_message("[user] ejects the tape from the databank.")
 			playsound(src, 'sound/machines/driveclick.ogg', 80,TRUE)
 			tape.set_loc(user.loc)
 			tape.layer = 3
@@ -87,7 +87,7 @@
 				return
 
 			if(!ai.on)
-				src.visible_message("[user] prods the databank's tape slot with [W]. Nothing happens.",1)
+				src.visible_message("[user] prods the databank's tape slot with [W]. Nothing happens.")
 				return
 
 			else if(!ai.ready_for_tapes)
@@ -100,15 +100,23 @@
 			src.loaded = 1
 			var/tape_no = tape.tape_no
 			playsound(src, 'sound/machines/driveclick.ogg', 80,TRUE)
-			src.visible_message("The databank begins loading the tape.",1)
+			src.visible_message("The databank begins loading the tape.")
 			src.icon_state = "oldai_mem-1"
 			sleep(1 SECOND)
 			src.icon_state = "oldai_mem-2"
 			SPAWN(5 SECONDS) src.icon_state = "oldai_mem-1"
 			if(ai) ai.load_tape(tape_no)
 		else
-			src.visible_message("[user] prods the databank's tape slot with [W]. Nothing happens.",1)
+			src.visible_message("[user] prods the databank's tape slot with [W]. Nothing happens.")
 
+
+TYPEINFO(/obj/machinery/derelict_aiboss/ai)
+	start_listen_effects = list(LISTEN_EFFECT_BRADBURY)
+	start_listen_modifiers = null
+	start_listen_inputs = list(LISTEN_INPUT_OUTLOUD)
+	start_listen_languages = list(LANGUAGE_ALL)
+	start_speech_modifiers = list(SPEECH_MODIFIER_BRADBURY)
+	start_speech_outputs = list(SPEECH_OUTPUT_SPOKEN)
 
 // will probably redo the code for this guy at some point, so expect some hacks here and there for now - aph
 /obj/machinery/derelict_aiboss/ai
@@ -121,12 +129,18 @@
 	layer = EFFECTS_LAYER_UNDER_1
 	pixel_x = -32
 	pixel_y = -32
+
+	speech_verb_say = "beeps"
+	default_speech_output_channel = SAY_CHANNEL_OUTLOUD
+	say_language = LANGUAGE_ENGLISH
+
 	var/datum/light/light
 	var/on = 1
 	var/ready_for_tapes = 1
 	var/teaser_enabled = 0
 	var/image/face = null
 	var/tapes_loaded = 0
+
 	New()
 		..()
 		light = new /datum/light/point
@@ -136,18 +150,6 @@
 
 		return
 
-	proc/speak(var/message, var/dectalk = 1) // borrowed from bots .dm because i'm a lazy fuck
-		if (!src.on || !message)
-			return
-		if(dectalk)
-			var/list/audio = dectalk("\[_<500,1>\][message]")
-			for (var/mob/O in hearers(src, null))
-				if (!O.client)
-					continue
-				ehjax.send(O.client, "browseroutput", list("dectalk" = audio["audio"]))
-		src.audible_message("<span class='game say'>[SPAN_NAME("[src]")] beeps, \"[message]\"")
-		return
-
 	attackby(obj/item/W, mob/living/user)
 		if(istype(W,/obj/item/paper/brad_punchcard))
 
@@ -155,21 +157,12 @@
 
 			if((src.ready_for_tapes) && (src.on))
 				src.teaser_enabled = 1
-				src.visible_message("[user] loads the punchcard into Bradbury II.",1)
+				src.visible_message("[user] loads the punchcard into Bradbury II.")
 				qdel(W)
 				src.do_teaser()
 		else
 
-			src.visible_message("[user] prods Bradbury II with [W]. Nothing happens.",1)
-		return
-
-	hear_talk(var/mob/living/carbon/speaker, messages, real_name, lang_id)
-		if (!src.on)
-			return
-
-		if(prob(5))
-			speak(messages[1], 0) // spooky!!!
-			playsound(src, 'sound/machines/modem.ogg', 80,TRUE)
+			src.visible_message("[user] prods Bradbury II with [W]. Nothing happens.")
 		return
 
 	power_change()
@@ -204,12 +197,12 @@
 		sleep(1 SECOND)
 		src.change_face("face_fade02")
 		sleep(1 SECOND)
-		speak("BRADBURY II IS NOW ONLINE.", 0)
+		src.say("BRADBURY II IS NOW ONLINE.", 0)
 		src.change_face("face_fade01")
 		sleep(1 SECOND)
 		src.change_face("face_talking")
 		sleep(3.5 SECONDS)
-		speak("THE TIME IS 01/01/1971.", 0)
+		src.say("THE TIME IS 01/01/1971.", 0)
 		sleep(7.5 SECONDS)
 		src.change_face("static")
 		elecflash(src,power=6)
@@ -227,9 +220,9 @@
 		sleep(1 SECOND)
 		src.change_face("static")
 		sleep(1 SECOND)
-		speak("DANGER", 0)
+		src.say("DANGER", 0)
 		sleep(2.5 SECONDS)
-		speak("Dddddddahhhngggggerrrrrrrrrrrrrrr.rrr.......", 0)
+		src.say("Dddddddahhhngggggerrrrrrrrrrrrrrr.rrr.......", 0)
 		src.change_face("dot")
 		sleep(2.5 SECONDS)
 		src.ready_for_tapes = 1
@@ -396,7 +389,7 @@
 	appearanceString = "servo"
 	max_health = 40
 	handlistPart = "armR-light"
-	robot_movement_modifier = /datum/movement_modifier/robot_part/head
+	robot_movement_modifier = /datum/movement_modifier/robot_part/light_head
 
 /obj/item/parts/robot_parts/arm/left/servotron
 	name = "servotron left arm"
@@ -405,7 +398,7 @@
 	appearanceString = "servo"
 	max_health = 40
 	handlistPart = "armL-light"
-	robot_movement_modifier = /datum/movement_modifier/robot_part/arm_left
+	robot_movement_modifier = /datum/movement_modifier/robot_part/light_arm_left
 
 /obj/item/parts/robot_parts/head/servotron
 	name = "servotron head"
@@ -413,7 +406,7 @@
 	icon_state = "head-servo"
 	appearanceString = "servo"
 	max_health = 87
-	robot_movement_modifier = /datum/movement_modifier/robot_part/arm_right
+	robot_movement_modifier = /datum/movement_modifier/robot_part/light_arm_right
 
 /obj/item/parts/robot_parts/chest/servotron
 	name = "servotron chest"

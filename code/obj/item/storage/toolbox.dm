@@ -8,7 +8,7 @@ ABSTRACT_TYPE(/obj/item/storage/toolbox)
 	inhand_image_icon = 'icons/mob/inhand/hand_storage.dmi'
 	icon_state = "red"
 	item_state = "toolbox-red"
-	flags = FPRINT | TABLEPASS | CONDUCT | NOSPLASH
+	flags = TABLEPASS | CONDUCT | NOSPLASH
 	force = 8
 	throwforce = 10
 	throw_speed = 1
@@ -20,7 +20,7 @@ ABSTRACT_TYPE(/obj/item/storage/toolbox)
 	//cogwerks - burn vars
 	burn_point = 4500
 	burn_output = 4800
-	burn_type = 1
+	burn_remains = BURN_REMAINS_MELT
 	stamina_damage = 50
 	stamina_cost = 20
 	stamina_crit_chance = 10
@@ -59,6 +59,7 @@ ABSTRACT_TYPE(/obj/item/storage/toolbox)
 
 			user.drop_item(src)
 			src.set_loc(B)
+			src.storage.hide_all_huds()
 			boutput(user, "You add the tiles into the empty toolbox. They stick oddly out the top.")
 			return
 
@@ -167,6 +168,10 @@ ABSTRACT_TYPE(/obj/item/storage/toolbox)
 
 /* -------------------- Memetic Toolbox -------------------- */
 
+TYPEINFO(/obj/item/storage/toolbox/memetic)
+	start_listen_effects = list(LISTEN_EFFECT_MEMETIC_TOOLBOX)
+	start_listen_inputs = list(LISTEN_INPUT_OUTLOUD)
+
 /obj/item/storage/toolbox/memetic
 	name = "artistic toolbox"
 	desc = "His Grace."
@@ -213,7 +218,7 @@ ABSTRACT_TYPE(/obj/item/storage/toolbox)
 		if(istype(W, /obj/item/grab))	// It will devour people! It's an evil thing!
 			var/obj/item/grab/G = W
 			if(!G.affecting) return
-			if(!G.affecting.stat && !G.affecting.restrained() && !G.affecting.getStatusDuration("weakened"))
+			if(!G.affecting.stat && !G.affecting.restrained() && !G.affecting.getStatusDuration("knockdown"))
 				boutput(user, SPAN_ALERT("[capitalize(hes_or_shes(G.affecting))] moving too much to feed to His Grace!"))
 				return
 			user.visible_message(SPAN_ALERT("<b>[user] is trying to feed [G.affecting] to [src]!</b>"))
@@ -290,31 +295,18 @@ ABSTRACT_TYPE(/obj/item/storage/toolbox)
 		..()
 		return
 
-	hear_talk(var/mob/living/carbon/speaker, messages, real_name, lang_id)
-		if(!speaker || !messages)
-			return
-		if(src.loc != speaker) return
-		for(var/datum/ailment_data/A in src.servantlinks)
-			var/mob/living/M = A.affected_mob
-			if(!M || M == speaker)
-				continue
-
-			boutput(M, "<i><b><font color=blue face = Tempus Sans ITC>[messages[1]]</font></b></i>")
-
-		return
-
 /mob/living/proc/contract_memetic_madness(var/obj/item/storage/toolbox/memetic/newprogenitor)
 	if(src.find_ailment_by_type(/datum/ailment/disability/memetic_madness))
 		return
 
 	src.resistances -= /datum/ailment/disability/memetic_madness
 	// just going to have to set it up manually i guess
-	var/datum/ailment_data/memetic_madness/AD = new /datum/ailment_data/memetic_madness
+	var/datum/ailment_data/memetic_madness/AD = get_disease_from_path(/datum/ailment/disability/memetic_madness).setup_strain()
 
 	if(istype(newprogenitor,/obj/item/storage/toolbox/memetic/))
 		AD.progenitor = newprogenitor
-		src.ailments += AD
 		AD.affected_mob = src
+		src.contract_disease(/datum/ailment/disability/memetic_madness, null, AD, TRUE)
 		newprogenitor.servantlinks.Add(AD)
 		newprogenitor.force += 4
 		newprogenitor.throwforce += 4
@@ -335,7 +327,7 @@ ABSTRACT_TYPE(/obj/item/storage/toolbox)
 		acount++
 	src.playsound_local(src.loc,'sound/effects/screech.ogg', 50, 1)
 	shake_camera(src, 20, 16)
-	boutput(src, "<span class='alert'>[screamstring]</span>")
+	boutput(src, SPAN_ALERT("[screamstring]"))
 	boutput(src, "<i><b><font face = Tempus Sans ITC>His Grace accepts thee, spread His will! All who look close to the Enlightened may share His gifts.</font></b></i>")
 	return
 
@@ -369,10 +361,11 @@ ABSTRACT_TYPE(/obj/item/storage/toolbox)
 
 /datum/ailment/disability/memetic_madness
 	name = "Memetic Kill Agent"
-	cure = "Unknown"
+	cure_flags = CURE_UNKNOWN
 	affected_species = list("Human")
 	max_stages = 4
 	stage_prob = 8
+	strain_type = /datum/ailment_data/memetic_madness
 
 	stage_act(var/mob/living/affected_mob,var/datum/ailment_data/D,mult,var/obj/item/storage/toolbox/memetic/progenitor)
 		if (..())
@@ -383,9 +376,7 @@ ABSTRACT_TYPE(/obj/item/storage/toolbox)
 			affected_mob:HealDamage("All", 12 * mult, 12 * mult)
 			if(affected_mob.get_toxin_damage())
 				affected_mob.take_toxin_damage(-5 * mult)
-			affected_mob.delStatus("stunned")
-			affected_mob.delStatus("weakened")
-			affected_mob.delStatus("paralysis")
+			affected_mob.remove_stuns()
 			affected_mob.dizziness = max(0,affected_mob.dizziness-10 * mult)
 			affected_mob.changeStatus("drowsy", -20 * mult SECONDS)
 			affected_mob:sleeping = 0

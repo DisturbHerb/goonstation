@@ -1,10 +1,18 @@
 /atom/movable/screen/hud/robotstorage
 	MouseEntered(location, control, params)
+		// there is no reason for master to ever be something other than /datum/hud/silicon here
+		// and yet
+		if(istype(src.master, /datum/hud/silicon/robot))
+			var/datum/hud/silicon/robot/hud = src.master
+			if(usr != hud.silicon) return
 		if (src.name)
 			src.maptext_x = 34
 			src.maptext_width = 128
 			src.maptext = "<span class='vm l pixel sh'>[src.name]</span>"
 	MouseExited(location, control, params)
+		if(istype(src.master, /datum/hud/silicon/robot))
+			var/datum/hud/silicon/robot/hud = src.master
+			if(usr != hud.silicon) return
 		src.maptext = null
 
 /datum/hud/silicon/robot
@@ -82,11 +90,12 @@
 				remove_screen(prev)
 				remove_screen(next)
 				return
+			var/list/tools = master.get_tools()
 			var x = 1, y = 10, sx = 1, sy = 10
 			if (!boxes)
 				return
-			if (items_screen + 6 > master.module.tools.len)
-				items_screen = max(master.module.tools.len - 6, 1)
+			if (items_screen + 6 > length(tools))
+				items_screen = max(length(tools) - 6, 1)
 			if (items_screen < 1)
 				items_screen = 1
 			boxes.screen_loc = "[x], [y] to [x+sx-1], [y-sy+1]"
@@ -116,7 +125,7 @@
 
 			var/sid = 1
 			var/i_max = items_screen + 7
-			if (i_max <= master.module.tools.len)
+			if (i_max <= length(tools))
 				next.icon_state = "down"
 				next.color = COLOR_MATRIX_IDENTITY
 			else
@@ -124,9 +133,9 @@
 				next.color = COLOR_MATRIX_GRAYSCALE
 
 			for (var/i = items_screen, i < i_max, i++)
-				if (i > master.module.tools.len)
+				if (i > length(tools))
 					break
-				var/obj/item/I = master.module.tools[i]
+				var/obj/item/I = tools[i]
 				var/atom/movable/screen/hud/S = screen_tools[sid]
 
 				if (!I) // if the item has been deleted, just show an empty slot.
@@ -157,44 +166,41 @@
 				sid++
 
 		try_equip_at(var/i)
-			if (!master || !master.cell || master.cell.charge <= 100)
+			if (!master)
+				update_equipment()
+				return
+			if (!master.cell || master.cell.charge <= ROBOT_BATTERY_DISTRESS_THRESHOLD)
+				boutput(master, SPAN_ALERT("You don't have enough power to equip this!"))
 				update_equipment()
 				return
 			if (!master.module || !show_items)
 				update_equipment()
 				return
+			if (master.hasStatus("lockdown_robot"))
+				boutput(master, SPAN_ALERT("Your equipment is locked down!"))
+				update_equipment()
+				return
 			var/content_id = items_screen + i - 1
-			if (content_id > master.module.tools.len || content_id < 1)
+			var/list/tools = master.get_tools()
+			if (content_id > length(tools) || content_id < 1)
 				boutput(usr, SPAN_ALERT("An error occurred. Please notify a coder immediately. (Content ID: [content_id].)"))
-			var/obj/item/O = master.module.tools[content_id]
-			if(!O || O.loc != master.module)
+			var/obj/item/O = tools[content_id]
+			if(!O || (O.loc != master.module && O.loc != master))
 				return
 			if(!master.module_states[1] && istype(master.part_arm_l,/obj/item/parts/robot_parts/arm/))
-				master.module_states[1] = O
-				O.set_loc(master)
-				O.pickup(master) // Handle light datums and the like.
+				master.equip_slot(1, O)
 			else if(!master.module_states[2])
-				master.module_states[2] = O
-				O.set_loc(master)
-				O.pickup(master)
+				master.equip_slot(2, O)
 			else if(!master.module_states[3] && istype(master.part_arm_r,/obj/item/parts/robot_parts/arm/))
-				master.module_states[3] = O
-				O.set_loc(master)
-				O.pickup(master)
+				master.equip_slot(3, O)
 			else
 				master.uneq_active()
 				if(!master.module_states[1] && istype(master.part_arm_l,/obj/item/parts/robot_parts/arm/))
-					master.module_states[1] = O
-					O.set_loc(master)
-					O.pickup(master)
+					master.equip_slot(1, O)
 				else if(!master.module_states[2])
-					master.module_states[2] = O
-					O.set_loc(master)
-					O.pickup(master)
+					master.equip_slot(2, O)
 				else if(!master.module_states[3] && istype(master.part_arm_r,/obj/item/parts/robot_parts/arm/))
-					master.module_states[3] = O
-					O.set_loc(master)
-					O.pickup(master)
+					master.equip_slot(3, O)
 			update_equipment()
 			update_tools()
 
@@ -564,7 +570,7 @@
 
 			var/dmg = part.dmg_blunt + part.dmg_burns
 			var/pct = 100 - clamp(dmg / part.max_health * 100, 0, 100)
-			return "<span style='color: [rgb(255 * clamp((100 - pct) / 50, 0, 1), 255 * clamp(pct / 50, 1, 0), 0)];'>[!mini_health ? "[add_lspace(round(pct), 3)]%" : "[add_lspace(round(part.max_health - dmg), 3)]</span>/<span style='color: #ffffff;'>[add_lspace(round(part.max_health), 3)]"]</span>"
+			return "<span style='color: [rgb(255 * clamp((100 - pct) / 50, 0, 1), 255 * clamp(pct / 50, 1, 0), 0)];'>[!mini_health ? "[pad_leading(round(pct), 3)]%" : "[pad_leading(round(part.max_health - dmg), 3)]</span>/<span style='color: #ffffff;'>[pad_leading(round(part.max_health), 3)]"]</span>"
 
 
 		update_pulling()

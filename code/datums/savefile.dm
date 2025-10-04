@@ -18,10 +18,7 @@
 	// returnSaveFile returns the file rather than writing it
 	// used for cloud saves
 	savefile_save(key, profileNum = 1, returnSavefile = 0)
-		if (key)
-			if (IsGuestKey(key))
-				return 0
-		else if (!returnSavefile) // if we don't have a user and we're trying to write it, it isn't going to work
+		if (!key && !returnSavefile) // if we don't have a user and we're trying to write it, it isn't going to work
 			CRASH("Tried to write a preferences savefile with no user specified.")
 
 		profileNum = clamp(profileNum, 1, SAVEFILE_PROFILES_MAX)
@@ -46,6 +43,7 @@
 		F["[profileNum]_name_first"] << src.name_first
 		F["[profileNum]_name_middle"] << src.name_middle
 		F["[profileNum]_name_last"] << src.name_last
+		F["[profileNum]_hyphenate_name"] << src.hyphenate_name
 		F["[profileNum]_robot_name"] << src.robot_name
 		F["[profileNum]_gender"] << src.gender
 		F["[profileNum]_age"] << src.age
@@ -54,6 +52,8 @@
 		F["[profileNum]_voicetype"] << AH.voicetype
 		F["[profileNum]_PDAcolor"] << src.PDAcolor
 		F["[profileNum]_pda_ringtone_index"] << src.pda_ringtone_index
+		F["[profileNum]_use_satchel"] << src.use_satchel
+		F["[profileNum]_preferred_uplink"] << src.preferred_uplink
 		F["[profileNum]_random_blood"] << src.random_blood
 		F["[profileNum]_blood_type"] << src.blType
 
@@ -72,14 +72,14 @@
 		if (src.AH)
 			F["[profileNum]_pronouns"] << (isnull(AH.pronouns) ? "" : AH.pronouns.name)
 			F["[profileNum]_eye_color"] << AH.e_color
-			F["[profileNum]_hair_color"] << AH.customization_first_color
-			F["[profileNum]_facial_color"] << AH.customization_second_color
-			F["[profileNum]_detail_color"] << AH.customization_third_color
+			F["[profileNum]_hair_color"] << AH.customizations["hair_bottom"].color
+			F["[profileNum]_facial_color"] << AH.customizations["hair_middle"].color
+			F["[profileNum]_detail_color"] << AH.customizations["hair_top"].color
 			F["[profileNum]_skin_tone"] << AH.s_tone
 			F["[profileNum]_special_style"] << AH.special_style
-			F["[profileNum]_hair_style_name"] << AH.customization_first
-			F["[profileNum]_facial_style_name"] << AH.customization_second
-			F["[profileNum]_detail_style_name"] << AH.customization_third
+			F["[profileNum]_hair_style_name"] << AH.customizations["hair_bottom"].style
+			F["[profileNum]_facial_style_name"] << AH.customizations["hair_middle"].style
+			F["[profileNum]_detail_style_name"] << AH.customizations["hair_top"].style
 			F["[profileNum]_underwear_style_name"] << AH.underwear
 			F["[profileNum]_underwear_color"] << AH.u_color
 
@@ -111,11 +111,13 @@
 		F["[profileNum]_hud_style"] << src.hud_style
 		F["[profileNum]_tcursor"] << src.target_cursor
 
-		if(src.traitPreferences.isValid())
+		if(src.traitPreferences.isValid(src.traitPreferences.traits_selected, src.custom_parts))
 			F["[profileNum]_traits"] << src.traitPreferences.traits_selected
-
+			F["[profileNum]_custom_parts"] << src.custom_parts
 		// Global options
 		F["tooltip"] << (src.tooltip_option ? src.tooltip_option : TOOLTIP_ALWAYS)
+		F["scrollwheel_limb_targeting"] << src.scrollwheel_limb_targeting
+		F["middle_mouse_swap"] << src.middle_mouse_swap
 		F["changelog"] << src.view_changelog
 		F["score"] << src.view_score
 		F["tickets"] << src.view_tickets
@@ -152,9 +154,6 @@
 		if (user) // bypass these checks if we're loading from a savefile and don't have a user
 			if (!isclient(user))
 				CRASH("[user] isnt a client. please give me a client. please. i beg you.")
-
-			if (IsGuestKey(user.key))
-				return 0
 
 		var/savefile/F
 		var/path
@@ -215,6 +214,7 @@
 		F["[profileNum]_name_first"] >> src.name_first
 		F["[profileNum]_name_middle"] >> src.name_middle
 		F["[profileNum]_name_last"] >> src.name_last
+		F["[profileNum]_hyphenate_name"] >> src.hyphenate_name
 		F["[profileNum]_robot_name"] >> src.robot_name
 		F["[profileNum]_gender"] >> src.gender
 		F["[profileNum]_age"] >> src.age
@@ -223,6 +223,8 @@
 		F["[profileNum]_voicetype"] >> AH.voicetype
 		F["[profileNum]_PDAcolor"] >> src.PDAcolor
 		F["[profileNum]_pda_ringtone_index"] >> src.pda_ringtone_index
+		F["[profileNum]_use_satchel"] >> src.use_satchel
+		F["[profileNum]_preferred_uplink"] >> src.preferred_uplink
 		F["[profileNum]_random_blood"] >> src.random_blood
 		F["[profileNum]_blood_type"] >> src.blType
 
@@ -247,35 +249,36 @@
 					AH.pronouns = pronouns
 					break
 			F["[profileNum]_eye_color"] >> AH.e_color
-			F["[profileNum]_hair_color"] >> AH.customization_first_color
-			F["[profileNum]_hair_color"] >> AH.customization_first_color_original
-			F["[profileNum]_facial_color"] >> AH.customization_second_color
-			F["[profileNum]_facial_color"] >> AH.customization_second_color_original
-			F["[profileNum]_detail_color"] >> AH.customization_third_color
-			F["[profileNum]_detail_color"] >> AH.customization_third_color_original
+			F["[profileNum]_hair_color"] >> AH.customizations["hair_bottom"].color
+			F["[profileNum]_hair_color"] >> AH.customizations["hair_bottom"].color_original
+			F["[profileNum]_facial_color"] >> AH.customizations["hair_middle"].color
+			F["[profileNum]_facial_color"] >> AH.customizations["hair_middle"].color_original
+			F["[profileNum]_detail_color"] >> AH.customizations["hair_top"].color
+			F["[profileNum]_detail_color"] >> AH.customizations["hair_top"].color_original
 			F["[profileNum]_skin_tone"] >> AH.s_tone
 			F["[profileNum]_skin_tone"] >> AH.s_tone_original
 			F["[profileNum]_special_style"] >> AH.special_style
-			F["[profileNum]_hair_style_name"] >> AH.customization_first
-			F["[profileNum]_hair_style_name"] >> AH.customization_first_original
-			F["[profileNum]_facial_style_name"] >> AH.customization_second
-			F["[profileNum]_facial_style_name"] >> AH.customization_second_original
-			F["[profileNum]_detail_style_name"] >> AH.customization_third
-			F["[profileNum]_detail_style_name"] >> AH.customization_third_original
+			F["[profileNum]_hair_style_name"] >> AH.customizations["hair_bottom"].style
+			F["[profileNum]_hair_style_name"] >> AH.customizations["hair_bottom"].style_original
+			F["[profileNum]_facial_style_name"] >> AH.customizations["hair_middle"].style
+			F["[profileNum]_facial_style_name"] >> AH.customizations["hair_middle"].style_original
+			F["[profileNum]_detail_style_name"] >> AH.customizations["hair_top"].style
+			F["[profileNum]_detail_style_name"] >> AH.customizations["hair_top"].style_original
 			F["[profileNum]_underwear_style_name"] >> AH.underwear
 			F["[profileNum]_underwear_color"] >> AH.u_color
-			if(!istype(src.AH.customization_first,/datum/customization_style))
-				src.AH.customization_first = find_style_by_name(src.AH.customization_first)
-			if(!istype(src.AH.customization_second,/datum/customization_style))
-				src.AH.customization_second = find_style_by_name(src.AH.customization_second)
-			if(!istype(src.AH.customization_third,/datum/customization_style))
-				src.AH.customization_third = find_style_by_name(src.AH.customization_third)
-			if(!istype(src.AH.customization_first_original,/datum/customization_style))
-				src.AH.customization_first_original = find_style_by_name(src.AH.customization_first_original)
-			if(!istype(src.AH.customization_second_original,/datum/customization_style))
-				src.AH.customization_second_original = find_style_by_name(src.AH.customization_second_original)
-			if(!istype(src.AH.customization_third_original,/datum/customization_style))
-				src.AH.customization_third_original = find_style_by_name(src.AH.customization_third_original)
+
+			if(!istype(src.AH.customizations["hair_bottom"].style, /datum/customization_style))
+				src.AH.customizations["hair_bottom"].style = find_style_by_name(src.AH.customizations["hair_bottom"].style, no_gimmick_hair=TRUE)
+			if(!istype(src.AH.customizations["hair_middle"].style, /datum/customization_style))
+				src.AH.customizations["hair_middle"].style = find_style_by_name(src.AH.customizations["hair_middle"].style, no_gimmick_hair=TRUE)
+			if(!istype(src.AH.customizations["hair_top"].style, /datum/customization_style))
+				src.AH.customizations["hair_top"].style = find_style_by_name(src.AH.customizations["hair_top"].style, no_gimmick_hair=TRUE)
+			if(!istype(src.AH.customizations["hair_bottom"].style_original, /datum/customization_style))
+				src.AH.customizations["hair_bottom"].style_original = find_style_by_name(src.AH.customizations["hair_bottom"].style_original, no_gimmick_hair=TRUE)
+			if(!istype(src.AH.customizations["hair_middle"].style_original, /datum/customization_style))
+				src.AH.customizations["hair_middle"].style_original = find_style_by_name(src.AH.customizations["hair_middle"].style_original, no_gimmick_hair=TRUE)
+			if(!istype(src.AH.customizations["hair_top"].style_original, /datum/customization_style))
+				src.AH.customizations["hair_top"].style_original = find_style_by_name(src.AH.customizations["hair_top"].style_original, no_gimmick_hair=TRUE)
 
 		// Job prefs
 		F["[profileNum]_job_prefs_1"] >> src.job_favorite
@@ -306,10 +309,15 @@
 		F["[profileNum]_tcursor"] >> src.target_cursor
 
 		F["[profileNum]_traits"] >> src.traitPreferences.traits_selected
+		F["[profileNum]_custom_parts"] >> src.custom_parts
 
 
 		// Game setting options, not per-profile
 		F["tooltip"] >> src.tooltip_option
+		F["scrollwheel_limb_targeting"] >> src.scrollwheel_limb_targeting
+		F["middle_mouse_swap"] >> src.middle_mouse_swap
+		if (isnull(src.scrollwheel_limb_targeting))
+			src.scrollwheel_limb_targeting = SCROLL_TARGET_ALWAYS
 		F["changelog"] >> src.view_changelog
 		F["score"] >> src.view_score
 		F["tickets"] >> src.view_tickets
@@ -343,6 +351,19 @@
 			// Welp, you get a random name then.
 			src.randomize_name()
 
+		//macros save me from infinite var hell
+#define FIX_NAME(name_var) var/fixed_##name_var = remove_bad_name_characters(src.##name_var);\
+		if (fixed_##name_var != src.##name_var){\
+			src.##name_var = fixed_##name_var;\
+			src.profile_modified = TRUE;\
+		}
+
+		FIX_NAME(name_first)
+		FIX_NAME(name_last)
+		FIX_NAME(name_middle)
+		FIX_NAME(real_name)
+
+#undef FIX_NAME
 		// Clean up invalid / default preferences
 		if (isnull(AH.fartsound))
 			AH.fartsound = "default"
@@ -364,14 +385,44 @@
 			src.target_cursor = "Default"
 
 
+		if (isnull(src.custom_parts))
+			src.custom_parts = list(
+				"l_arm" = "arm_default_left",
+				"r_arm" = "arm_default_right",
+				"l_leg" = "leg_default_left",
+				"r_leg" = "leg_default_right",
+				"left_eye" = "eye_default_left",
+				"right_eye" = "eye_default_right",
+			)
+		if (length(src.custom_parts) < 6) // aa a aaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+			src.custom_parts["l_arm"] = src.custom_parts["l_arm"] || "arm_default_left"
+			src.custom_parts["r_arm"] = src.custom_parts["r_arm"] || "arm_default_right"
+			src.custom_parts["l_leg"] = src.custom_parts["l_leg"] || "leg_default_left"
+			src.custom_parts["r_leg"] = src.custom_parts["r_leg"] || "leg_default_right"
+			src.custom_parts["left_eye"] = src.custom_parts["left_eye"] || "eye_default_left"
+			src.custom_parts["right_eye"] = src.custom_parts["right_eye"] || "eye_default_right"
+
 		// Validate trait choices
 		if (src.traitPreferences.traits_selected == null)
 			src.traitPreferences.traits_selected = list()
 
 		for (var/T as anything in src.traitPreferences.traits_selected)
-			if (!(T in traitList)) src.traitPreferences.traits_selected.Remove(T)
+			if (!(T in traitList))
+				src.traitPreferences.traits_selected.Remove(T)
+				//migration for removed traits
+				if (T == "roboarms")
+					src.custom_parts["l_arm"] = "arm_robo_left"
+					src.custom_parts["r_arm"] = "arm_robo_right"
+					src.profile_modified = TRUE
+				else if (T == "syntharms")
+					src.custom_parts["l_arm"] = "arm_plant_left"
+					src.custom_parts["r_arm"] = "arm_plant_right"
+					src.profile_modified = TRUE
+				else if (T == "onearmed")
+					src.custom_parts["l_arm"] = "arm_missing_left"
+					src.profile_modified = TRUE
 
-		if (!src.traitPreferences.isValid())
+		if (!src.traitPreferences.isValid(src.traitPreferences.traits_selected, src.custom_parts))
 			src.traitPreferences.traits_selected.Cut()
 			tgui_alert(user, "Your traits couldn't be loaded. Please reselect your traits.", "Reselect traits")
 
@@ -399,15 +450,15 @@
 		src.tooltip_option = (src.tooltip_option ? src.tooltip_option : TOOLTIP_ALWAYS) //For fucks sake.
 		src.keybind_prefs_updated(user)
 
+		winset(user, "tooltip_option_always", "is-checked=[src.tooltip_option == TOOLTIP_ALWAYS]")
+		winset(user, "tooltip_option_alt", "is-checked=[src.tooltip_option == TOOLTIP_ALT]")
+		winset(user, "tooltip_option_never", "is-checked=[src.tooltip_option == TOOLTIP_NEVER]")
 
 		return 1
 
 
 	//This might be a bad way of doing it IDK
 	savefile_get_profile_name(client/user, var/profileNum = 1)
-		if (IsGuestKey(user.key))
-			return 0
-
 		LAGCHECK(LAG_REALTIME)
 
 		var/path = savefile_path(user.ckey)
@@ -431,78 +482,20 @@
 
 		return profile_name
 
-	/// Save a character profile to the cloud.
-	/// load_from (if not null) is the ckey to load this profile from. Can be used to load profiles from another ckey.
-	cloudsave_load(client/user, var/name, var/load_from)
-		if (user) // bypass these checks if we're loading from an arbitrary key
-			if(user && isnull( user.player.cloudsaves ))
-				return "Failed to retrieve cloud data, try rejoining."
-
-			if (IsGuestKey(user.key))
-				return 0
-
-		// Fetch via HTTP from goonhub
-		var/datum/http_request/request = new()
-		request.prepare(RUSTG_HTTP_METHOD_GET, "[config.spacebee_api_url]/api/cloudsave?get&ckey=[ckey(load_from) || user.ckey]&name=[url_encode(name)]&api_key=[config.spacebee_api_key]", "", "")
-		request.begin_async()
-		UNTIL(request.is_complete())
-		var/datum/http_response/response = request.into_response()
-
-		if (response.errored || !response.body)
-			logTheThing(LOG_DEBUG, null, "<b>cloudsave_load:</b> Failed to contact goonhub. u: [user.ckey]")
-			return
-
-		var/list/ret = json_decode(response.body)
-		if( ret["status"] == "error" )
-			return ret["error"]["error"]
+	/// Load a character profile from the cloud.
+	cloudsave_load(client/user, name)
+		var/cloudSaveData = user.player?.cloudSaves.getSave(name)
 
 		var/savefile/save = new
-		save.ImportText( "/", ret["savedata"] )
+		save.ImportText( "/", cloudSaveData )
 		return src.savefile_load(user, 1, save)
 
 	/// Save a character profile to the cloud.
-	/// save_to (if not null) is the ckey to save this profile to. Can be used to save profiles to another ckey.
-	cloudsave_save(client/user, var/name, var/save_to)
-		if (user) // bypass these checks if we're saving to an arbitrary key
-			if(isnull( user.player.cloudsaves ))
-				return "Failed to retrieve cloud data, try rejoining."
-			if (IsGuestKey( user.key ))
-				return 0
-			if (save_to)
-				CRASH("Tried to save a cloud save with a client and a key to save to specified- need one or the other")
-
-		var/savefile/save = src.savefile_save(ckey(save_to) || user.ckey, 1, 1)
+	cloudsave_save(client/user, name)
+		var/savefile/save = src.savefile_save(user.ckey, 1, 1)
 		var/exported = save.ExportText()
 
-		// Fetch via HTTP from goonhub
-		var/datum/http_request/request = new()
-		request.prepare(RUSTG_HTTP_METHOD_GET, "[config.spacebee_api_url]/api/cloudsave?put&ckey=[ckey(save_to) || user.ckey]&name=[url_encode(name)]&api_key=[config.spacebee_api_key]&data=[url_encode(exported)]", "", "")
-		request.begin_async()
-		UNTIL(request.is_complete())
-		var/datum/http_response/response = request.into_response()
+		return user.player?.cloudSaves.putSave(name, exported)
 
-		if (response.errored || !response.body)
-			logTheThing(LOG_DEBUG, null, "<b>cloudsave_load:</b> Failed to contact goonhub. u: [save_to || user.ckey]")
-			return
-
-		var/list/ret = json_decode(response.body)
-		if( ret["status"] == "error" )
-			return ret["error"]["error"]
-		user?.player.cloudsaves[ name ] = length( exported )
-		return 1
-
-	cloudsave_delete( client/user, var/name )
-
-		// Request deletion via HTTP from goonhub
-		var/datum/http_request/request = new()
-		request.prepare(RUSTG_HTTP_METHOD_GET, "[config.spacebee_api_url]/api/cloudsave?delete&ckey=[user.ckey]&name=[url_encode(name)]&api_key=[config.spacebee_api_key]", "", "")
-		request.begin_async()
-		UNTIL(request.is_complete())
-		var/datum/http_response/response = request.into_response()
-
-		if (response.errored || !response.body)
-			logTheThing(LOG_DEBUG, null, "<b>cloudsave_delete:</b> Failed to contact goonhub. u: [user.ckey]")
-			return
-
-		user.player.cloudsaves.Remove( name )
-		return 1
+	cloudsave_delete(client/user, name)
+		return user.player?.cloudSaves.deleteSave(name)

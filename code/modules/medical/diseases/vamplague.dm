@@ -2,8 +2,7 @@
 	name = "Grave Fever"
 	max_stages = 4
 	spread = "Non-Contagious"
-	cure = "Antibiotics"
-	recureprob = 20
+	cure_flags = CURE_ANTIBIOTICS
 	associated_reagent = "grave dust"
 	affected_species = list("Human")
 
@@ -24,10 +23,11 @@
 			boutput(affected_mob, SPAN_ALERT("You feel sickly and weak."))
 			affected_mob.changeStatus("slowed", 3 SECONDS, (D.stage-1) * 3)
 		affected_mob.take_toxin_damage(toxdamage)
+		affected_mob.organHolder?.damage_organ(tox=toxdamage, organ=pick("heart", "left_lung", "right_lung", "left_kidney", "right_kidney", "liver", "stomach", "intestines", "spleen", "pancreas", "appendix"))
 
 	if (probmult(10))
 		boutput(affected_mob, SPAN_ALERT("Your joints ache horribly!"))
-		affected_mob.changeStatus("weakened", stuntime SECONDS)
+		affected_mob.changeStatus("knockdown", stuntime SECONDS)
 		affected_mob.changeStatus("stunned", stuntime SECONDS)
 		affected_mob.take_toxin_damage(toxdamage * 2)
 
@@ -37,7 +37,7 @@
 	max_stages = 3
 	stage_prob = 9
 	spread = "Non-Contagious"
-	cure = "None"
+	cure_flags = CURE_UNKNOWN
 	associated_reagent = "vampire_serum"
 	affected_species = list("Human")
 

@@ -278,11 +278,33 @@
 /datum/computer/file/clone
 	name = "Clone Record"
 	extension = "DNA"
-	size = 8
+	size = 24 //come on, it's an entire human genome, gotta be at least 24 kilobytes
 	var/list/fields = list()
 
+/datum/computer/file/clone/proc/operator[](key)
+	return src.fields[key]
+
+/datum/computer/file/clone/proc/operator[]=(key, value)
+	src.fields[key] = value
+
+/datum/computer/file/clone/disposing()
+	fields = null
+	. = ..()
+
+/datum/computer/file/lrt_data
+	name = "Galactic Position Record"
+	extension = "GPR"
+	size = 8
+	var/place_name
+	var/md5_value
+
+	asText()
+		if(!md5_value)
+			md5_value = md5(place_name)
+		return "[copytext(md5_value, 1,16)]l[copytext(md5_value, 17,32)]b|n"
+
 	disposing()
-		fields = null
+		place_name = null
 		. = ..()
 
 

@@ -3,14 +3,16 @@
 
 ABSTRACT_TYPE(/obj/machinery/power/power_wheel)
 TYPEINFO(/obj/machinery/power/power_wheel)
-	mats = list("CON-1"=5, "MET-1"=25, "INS-1"=3, "POW-2"=10)
-
+	mats = list("conductive" = 5,
+				"metal" = 25,
+				"insulated" = 3,
+				"energy_high" = 10)
 /obj/machinery/power/power_wheel
 	name = "Kinetic Generator"
 	desc = "A large wheel used to generate power."
 	icon = 'icons/obj/power.dmi'
 	icon_state = ""
-	anchored = 0
+	anchored = UNANCHORED
 	density = 1
 	p_class = 3
 	soundproofing = 0
@@ -49,6 +51,7 @@ TYPEINFO(/obj/machinery/power/power_wheel)
 			occupant.Attackhand(user)
 			if(user.a_intent == INTENT_DISARM || user.a_intent == INTENT_GRAB)
 				eject_occupant()
+			user.lastattacked = get_weakref(src)
 		else
 			. = ..()
 
@@ -59,7 +62,7 @@ TYPEINFO(/obj/machinery/power/power_wheel)
 				playsound(src.loc, 'sound/items/Ratchet.ogg', 75, 1)
 				boutput(user, "You secure the external reinforcing bolts to the floor.")
 				desc = "[initial(desc)]  It has been bolted to the floor."
-				src.anchored = 1
+				src.anchored = ANCHORED
 				return
 
 			else if(state == WRENCHED)
@@ -67,12 +70,12 @@ TYPEINFO(/obj/machinery/power/power_wheel)
 				playsound(src.loc, 'sound/items/Ratchet.ogg', 75, 1)
 				boutput(user, "You undo the external reinforcing bolts.")
 				desc = initial(desc)
-				src.anchored = 0
+				src.anchored = UNANCHORED
 				return
 		else if(src.occupant && W.force)
 			W.attack(src.occupant, user)
-			user.lastattacked = src
-			if (occupant.hasStatus(list("weakened", "paralysis", "stunned")))
+			user.lastattacked = get_weakref(src)
+			if (occupant.hasStatus(list("knockdown", "unconscious", "stunned")))
 				eject_occupant()
 			W.visible_message(SPAN_ALERT("[user] swings at [src.occupant] with [W]!"))
 		else if(!src.occupant && isgrab(W))
@@ -137,7 +140,7 @@ TYPEINFO(/obj/machinery/power/power_wheel)
 		else
 			..()
 
-	temperature_expose(datum/gas_mixture/air, exposed_temperature, exposed_volume)
+	temperature_expose(datum/gas_mixture/air, exposed_temperature, exposed_volume, cannot_be_cooled = FALSE)
 		..()
 		// Simulate hotspot Crossed/Process so turfs engulfed in flames aren't simply ignored in vehicles
 		if (isliving(src.occupant) && exposed_volume > (CELL_VOLUME * 0.5) && exposed_temperature > FIRE_MINIMUM_TEMPERATURE_TO_SPREAD)
@@ -190,6 +193,9 @@ TYPEINFO(/obj/machinery/power/power_wheel)
 	proc/eject_occupant()
 		if(src.occupant?.loc == src)
 			src.occupant.set_loc(get_turf(src))
+
+		for (var/atom/movable/AM in src.contents)
+			AM.set_loc(get_turf(src))
 
 		if(src.occupant)
 			occupant.vis_flags = occupant_vis_flags
@@ -276,8 +282,8 @@ TYPEINFO(/obj/machinery/power/power_wheel)
 	proc/tumble(mob/user)
 		user.show_text(SPAN_ALERT("You weren't able to keep up with [src]!"))
 		animate_spin(user, was_running == WEST ? "L" : "R", 1, 0)
-		user.changeStatus("paralysis", 2 SECONDS)
-		user.changeStatus("weakened", 2 SECONDS)
+		user.changeStatus("unconscious", 2 SECONDS)
+		user.changeStatus("knockdown", 2 SECONDS)
 		src.visible_message(SPAN_ALERT("<b>[user]</b> loses their footing and tumbles inside of [src]."))
 		animate_storage_thump(src)
 		return TRUE
@@ -364,7 +370,7 @@ TYPEINFO(/obj/machinery/power/power_wheel)
 
 	tumble(mob/user)
 		user.show_text(SPAN_ALERT("You weren't able to keep up with [src]!"))
-		user.changeStatus("weakened", 2 SECONDS)
+		user.changeStatus("knockdown", 2 SECONDS)
 		src.visible_message(SPAN_ALERT("<b>[user]</b> loses their footing and slides off [src]."))
 		eject_occupant()
 		var/dx = 2

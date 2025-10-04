@@ -7,7 +7,7 @@ ABSTRACT_TYPE(/datum/artifact/bomb)
 	rarity_weight = 0
 	validtypes = list("ancient","eldritch","precursor")
 	validtriggers = list(/datum/artifact_trigger/force,/datum/artifact_trigger/electric,/datum/artifact_trigger/heat,
-	/datum/artifact_trigger/cold,/datum/artifact_trigger/radiation)
+	/datum/artifact_trigger/cold,/datum/artifact_trigger/radiation, /datum/artifact_trigger/language)
 	fault_blacklist = list(ITEM_ONLY_FAULTS, TOUCH_ONLY_FAULTS) // can't sting you at range
 	react_xray = list(12,75,30,11,"COMPLEX")
 	var/explode_delay = 600
@@ -45,7 +45,7 @@ ABSTRACT_TYPE(/datum/artifact/bomb)
 		var/turf/T = get_turf(O)
 		src.detonation_time = TIME + src.explode_delay
 		if(recharge_delay && ON_COOLDOWN(O, "bomb_cooldown", recharge_delay))
-			T.visible_message("<b>[SPAN_ALERT("[O] [text_cooldown]")]</b>")
+			T.visible_message(SPAN_ALERT("<b>[O] [text_cooldown]</b>"))
 			playsound(T, sound_cooldown, 100, TRUE)
 			SPAWN(3 SECONDS)
 				O.ArtifactDeactivated() // lol get rekt spammer
@@ -59,6 +59,7 @@ ABSTRACT_TYPE(/datum/artifact/bomb)
 		if (doAlert)
 			var/area/A = get_area(O)
 			command_alert("An extremely unstable object of [artitype.type_name] origin has been detected in [A]. The crew is advised to dispose of it immediately.", "Station Threat Detected", alert_origin = ALERT_ANOMALY)
+		message_ghosts("<b>An artifact [src.type_name]</b> has just been triggered in [log_loc(T, ghostjump=TRUE)].")
 		O.add_simple_light("artbomb", lightColor)
 		animate(O, pixel_y = rand(-3,3), pixel_y = rand(-3,3),time = 1,loop = src.explode_delay + 10 SECONDS, easing = ELASTIC_EASING, flags=ANIMATION_PARALLEL)
 		animate(O.simple_light, flags=ANIMATION_PARALLEL, time = src.explode_delay + 10 SECONDS, transform = matrix() * animationScale)
@@ -91,6 +92,7 @@ ABSTRACT_TYPE(/datum/artifact/bomb)
 			SPAWN(10 SECONDS)
 				if (!O.disposed && src.activated)
 					blewUp = 1
+					message_ghosts("<b>An artifact [src.type_name]</b> has just detonated in [log_loc(T, ghostjump=TRUE)].")
 					deploy_payload(O)
 
 	effect_deactivate(obj/O)
@@ -207,6 +209,12 @@ ABSTRACT_TYPE(/datum/artifact/bomb)
 			O.ArtifactDestroyed()
 
 // chemical bombs
+// different types of bombs for "payload_type"
+#define CHEMBOMB_FOAMY 0
+#define CHEMBOMB_SMOKEY 1
+#define CHEMBOMB_CLASSICAL_GAS 2
+#define CHEMBOMB_FLUIDY 3
+
 
 /obj/machinery/artifact/bomb/chemical
 	name = "artifact chemical bomb"
@@ -236,20 +244,20 @@ ABSTRACT_TYPE(/datum/artifact/bomb)
 		payload_type = rand(0,3)
 		var/payload_type_name = "unknown"
 		switch (payload_type)
-			if (0)
-				payload_type_name = "smoke"
-			if (1)
+			if (CHEMBOMB_FOAMY)
 				payload_type_name = "foam"
-			if (2)
+			if (CHEMBOMB_SMOKEY)
+				payload_type_name = "smoke"
+			if (CHEMBOMB_CLASSICAL_GAS)
 				payload_type_name = "propellant"
-			if (3)
+			if (CHEMBOMB_FLUIDY)
 				payload_type_name = "fluid"
 
 		var/list/potential_reagents = list()
 		switch(artitype.name)
 			if ("ancient")
 				// industrial heavy machinery kinda stuff
-				potential_reagents = list("nanites","liquid plasma","mercury","lithium","plasma","radium","uranium","phlogiston",
+				potential_reagents = list("nanites","activated plasma","mercury","lithium","plasma","radium","uranium","phlogiston",
 				"silicon","gypsum","sodium_sulfate","diethylamine","pyrosium","thermite","fuel","acid","silicate","lube","cryostylane",
 				"ash","clacid","oil","acetone","ammonia")
 			if ("martian")
@@ -257,14 +265,14 @@ ABSTRACT_TYPE(/datum/artifact/bomb)
 				potential_reagents = list("charcoal","styptic_powder","salbutamol","anti_rad","silver_sulfadiazine","synaptizine",
 				"omnizine","synthflesh","saline","salicylic_acid","menthol","calomel","penteticacid","antihistamine","atropine","solipsizine",
 				"perfluorodecalin","ipecac","mutadone","insulin","epinephrine","cyanide","ketamine","toxin","neurotoxin","neurodepressant","mutagen",
-				"fake_initropidril","toxic_slurry","jenkem","space_fungus","blood","vomit","gvomit","urine","meat_slurry","grease","butter","spaceglue")
+				"fake_initropidril","toxic_slurry","space_fungus","blood","vomit","gvomit","meat_slurry","grease","butter","spaceglue", "ants")
 			if ("eldritch")
 				// all the worst stuff. all of it
 				potential_reagents = list("chlorine","fluorine","lithium","mercury","plasma","radium","uranium","strange_reagent",
 				"phlogiston","thermite","infernite","foof","fuel","blackpowder","acid","amanitin","coniine","cyanide","curare",
 				"formaldehyde","lipolicide","initropidril","cholesterol","itching","pacid","pancuronium","polonium",
-				"sodium_thiopental","ketamine","sulfonal","toxin","venom","neurotoxin","mutagen","wolfsbane",
-				"toxic_slurry","histamine","saxitoxin","viper_venom","ricin")
+				"sodium_thiopental","ketamine","sulfonal","toxin","cytotoxin","neurotoxin","mutagen","wolfsbane",
+				"toxic_slurry","histamine","saxitoxin","hemotoxin","ricin","tetrodotoxin")
 			else
 				// absolutely everything
 				potential_reagents = all_functional_reagent_ids
@@ -279,7 +287,7 @@ ABSTRACT_TYPE(/datum/artifact/bomb)
 						continue
 				looper--
 				payload_reagents += reagent
-			log_addendum = "Payload: [payload_type_name], [kText.list2text(payload_reagents, ", ")]"
+			log_addendum = "Payload: [payload_type_name], [jointext(payload_reagents, ", ")]"
 
 		recharge_delay = rand(300,800)
 
@@ -303,15 +311,17 @@ ABSTRACT_TYPE(/datum/artifact/bomb)
 
 		var/turf/location = get_turf(O)
 		switch(payload_type)
-			if(0)
+			if(CHEMBOMB_FOAMY)
 				var/datum/effects/system/foam_spread/s = new()
 				s.set_up(O.reagents.total_volume, location, O.reagents, 0)
 				s.start()
-			if(1)
+			if(CHEMBOMB_SMOKEY)
+				// normal smoke
 				O.reagents.smoke_start(50)
-			if(2)
+			if(CHEMBOMB_CLASSICAL_GAS)
+				// "classic" smoke
 				O.reagents.smoke_start(50,1)
-			if(3)
+			if(CHEMBOMB_FLUIDY)
 				location.fluid_react(O.reagents, O.reagents.total_volume)
 				var/datum/fluid_group/FG = location.active_liquid?.group
 				if(FG)
@@ -325,6 +335,12 @@ ABSTRACT_TYPE(/datum/artifact/bomb)
 		SPAWN(recharge_delay)
 			if (O)
 				O.ArtifactDeactivated()
+
+// undef chembomb payload_type types
+#undef CHEMBOMB_FOAMY
+#undef CHEMBOMB_SMOKEY
+#undef CHEMBOMB_CLASSICAL_GAS
+#undef CHEMBOMB_FLUIDY
 
 // matter transmutation bomb
 
@@ -378,7 +394,6 @@ ABSTRACT_TYPE(/datum/artifact/bomb)
 					100;"silver",
 					100;"cobryl",
 					50;"miracle",
-					50;"soulsteel",
 					50;"hauntium",
 					50;"ectoplasm",
 					10;"ectofibre",
@@ -496,7 +511,7 @@ ABSTRACT_TYPE(/datum/artifact/bomb)
 			var/range_squared = range**2
 			var/turf/T = get_turf(O)
 			for(var/atom/G in range(range, T))
-				if(istype(G, /obj/overlay) || istype(G, /obj/effects) || istype(G, /turf/space) || istype(G, /obj/fluid))
+				if(istype(G, /obj/overlay) || istype(G, /obj/effects) || istype(G, /turf/space) || istype(G, /obj/fluid) || istype(G, /obj/particle))
 					continue
 				var/dist = GET_SQUARED_EUCLIDEAN_DIST(O, G)
 				var/distPercent = (dist/range_squared)*100
@@ -529,3 +544,51 @@ ABSTRACT_TYPE(/datum/artifact/bomb)
 #undef NO_EFFECT
 #undef MAKE_HUMAN_MATERIAL
 #undef MAKE_HUMAN_STATUE
+
+// radioactive bomb
+
+/obj/machinery/artifact/bomb/radioactive
+	name = "artifact radioactive bomb"
+	associated_datum = /datum/artifact/bomb/radioactive
+
+/datum/artifact/bomb/radioactive
+	associated_object = /obj/machinery/artifact/bomb/radioactive
+	type_name = "Bomb (radioactive)"
+	rarity_weight = 90
+	react_xray = list(12,75,30,11,"SHIELDED")
+	touch_descriptors = list("Your fingers continue to tingle after touching it.")
+	var/explosion_strength = 1
+	var/nuclear_fallout_cooldown = 10 SECONDS
+	var/nuclear_fallout_amount = 5
+	var/nuclear_fallout_decay_rate = 0.90
+
+	New()
+		..()
+		src.explosion_strength = rand(25, 75)
+		src.nuclear_fallout_cooldown = rand(1, 10) SECONDS
+		src.nuclear_fallout_amount = rand(6, 30)
+
+	post_setup()
+		. = ..()
+		src.react_xray[1] = round(src.explosion_strength/3, 1)
+
+	deploy_payload(var/obj/O)
+		if (..())
+			return
+		explosion_new(O, get_turf(O), src.explosion_strength, TRUE, 0, 360, TRUE, flash_radiation_multiplier=1)
+		//Big blast of neutrons when it explodes.
+		for(var/i = 1 to src.nuclear_fallout_amount * 10)
+			shoot_projectile_XY(O, new /datum/projectile/neutron(100), rand(-10,10), rand(-10,10))
+
+	effect_process(var/obj/O)
+		if(..())
+			return
+		if(src.blewUp)
+			if(!ON_COOLDOWN(O, "nuclear_fallout", src.nuclear_fallout_cooldown))
+				var/turf/location = get_turf(O)
+				location.visible_message("<b>[O]</b> spews out radiation!")
+				for(var/i = 1 to floor(src.nuclear_fallout_amount))
+					shoot_projectile_XY(O, new /datum/projectile/neutron(100), rand(-10,10), rand(-10,10))
+				src.nuclear_fallout_amount = src.nuclear_fallout_amount * src.nuclear_fallout_decay_rate
+				if(floor(src.nuclear_fallout_amount) < 1)
+					O.ArtifactDestroyed()

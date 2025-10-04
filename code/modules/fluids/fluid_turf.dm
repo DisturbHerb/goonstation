@@ -11,10 +11,6 @@
 #define SPAWN_HOSTILE 128
 #define SPAWN_ACID_DOODADS 256
 
-
-/turf/proc/make_light() //dummyproc so we can inherit
-	.=0
-
 /turf/space/fluid
 	name = "ocean floor"
 	icon = 'icons/turf/outdoors.dmi'
@@ -40,18 +36,8 @@
 
 	turf_flags = FLUID_MOVE
 
-	var/datum/light/point/light = 0
-	var/light_r = 0.16
-	var/light_g = 0.6
-	var/light_b = 0.8
-
-	var/light_brightness = 0.8
-	var/light_height = 3
-
 	var/spawningFlags = SPAWN_DECOR | SPAWN_PLANTS | SPAWN_FISH
 	var/randomIcon = 1
-
-	var/generateLight = 1 //do we sometimes generate a special light?
 
 	var/captured = 0 //Thermal vent collector on my tile? (messy i know, but faster lookups later)
 
@@ -98,54 +84,11 @@
 		src.name = ocean_name
 		#endif
 
-		if(ocean_color)
-			var/fluid_color = hex_to_rgb_list(ocean_color)
-			light_r = fluid_color[1] / 255
-			light_g = fluid_color[2] / 255
-			light_b = fluid_color[3] / 255
+	remove_air(amount)
+		return null
 
-		//let's replicate old behavior
-		if (generateLight)
-			generateLight = 0
-			if (z != 3) //nono z3
-				for (var/dir in alldirs)
-					var/turf/T = get_step(src,dir)
-					if (istype(T, /turf/simulated))
-						generateLight = 1
-						break
-
-		if (generateLight)
-			START_TRACKING_CAT(TR_CAT_LIGHT_GENERATING_TURFS)
-
-	Del()
-		. = ..()
-		if (generateLight)
-			STOP_TRACKING_CAT(TR_CAT_LIGHT_GENERATING_TURFS)
-
-	make_light()
-		if (!light)
-			light = new
-			light.attach(src)
-		light.set_brightness(light_brightness)
-		light.set_color(light_r, light_g, light_b)
-		light.set_height(light_height)
-		light.enable()
-
-	proc/bake_light()
-
-
-		sleep(0.1 SECONDS)
-		for(var/obj/overlay/tile_effect/lighting/L in src)
-			src.icon = getFlatIcon(L)
-			qdel(L)
-
-	proc/update_light()
-		if (light)
-			light.disable()
-			light.set_brightness(light_brightness)
-			light.set_color(light_r, light_g, light_b)
-			light.set_height(light_height)
-			light.enable()
+	assume_air(datum/gas_mixture/giver)
+		new /obj/bubble(src, giver)
 
 //space/fluid/ReplaceWith() this is for future ctrl Fs
 	ReplaceWith(var/what, var/keep_old_material = 1, var/handle_air = 1, var/handle_dir = NORTH, force = 0)
@@ -168,25 +111,25 @@
 				if (prob(1))
 					new /obj/item/seashell(src)
 			else
-				if (prob(5))
+				if (prob(2))
 					new /obj/item/seashell(src)
 
 		if (spawningFlags & SPAWN_PLANTS)
-			if (prob(8))
+			if (prob(4))
 				var/obj/plant = pick( src.z == 5 ? childrentypesof(/obj/sea_plant) : (childrentypesof(/obj/sea_plant) - /obj/sea_plant/anemone/lit) )
 				var/obj/sea_plant/P = new plant(src)
 				//mbc : bleh init() happens BFORRE this, most likely
 				P.initialize()
 
 		if (spawningFlags & SPAWN_PLANTSMANTA)
-			if (prob(8))
+			if (prob(4))
 				var/obj/plant = pick( src.z == 5 ? childrentypesof(/obj/sea_plant_manta) : (childrentypesof(/obj/sea_plant_manta) - /obj/sea_plant_manta/anemone/lit) )
 				var/obj/sea_plant_manta/P = new plant(src)
 				//mbc : bleh init() happens BFORRE this, most likely
 				P.initialize()
 
 		if (spawningFlags & SPAWN_ACID_DOODADS)
-			if (prob(8))
+			if (prob(4))
 				var/obj/doodad = pick( childrentypesof(/obj/nadir_doodad) )
 				var/obj/nadir_doodad/D = new doodad(src)
 				D.initialize()
@@ -197,7 +140,7 @@
 				new /obj/critter/gunbot/drone/buzzdrone/fish(src)
 			else if (src.z == 5 && prob(1) && prob(4))
 				new /obj/critter/gunbot/drone/gunshark(src)
-			else if (prob(1) && prob(20))
+			else if (prob(1) && prob(15))
 				var/mob/fish = pick(childrentypesof(/mob/living/critter/aquatic/fish))
 				new fish(src)
 			else if (src.z == 5 && prob(1) && prob(9) && prob(90))
@@ -249,9 +192,7 @@
 		if(notifier.ocean_canpass())
 			processing_fluid_turfs |= src
 		else
-			if (processing_fluid_turfs.Remove(src))
-				if (src.light)
-					src.light.disable()
+			processing_fluid_turfs.Remove(src)
 
 	Entered(atom/movable/A as mob|obj) //MBC : I was too hurried and lazy to make this actually apply reagents on touch. this is a note to myself. FUCK YOUUU
 		..()
@@ -306,15 +247,13 @@
 
 	name = "deep hole"
 	icon_state = "pit"
-	var/list/L = list()
 	spawningFlags = 0
-	randomIcon = 0
-	generateLight = 0
+	randomIcon = FALSE
 
-	allow_hole = 0
+	allow_hole = FALSE
 
 	color = OCEAN_COLOR
-	fullbright = 1
+	fullbright = TRUE
 
 	occlude_foreground_parallax_layers = TRUE
 	fulltile_foreground_parallax_occlusion_overlay = TRUE
@@ -328,6 +267,14 @@
 		var/r2 = text2num(rustg_noise_get_at_coordinates("[global.server_start_time + 123465]", "[src.x / noise_scale]", "[src.y / noise_scale]"))
 		var/col = rgb(255 * (1 - r1 - r2), 255 * r2, 255 * r1)
 		UpdateIcon(90, col)
+		src.initialise_component()
+
+	proc/initialise_component()
+		src.AddComponent(/datum/component/pitfall/target_area,\
+			BruteDamageMax = 6,\
+			FallTime = 0.3 SECONDS,\
+			DeleteFlotsam = TRUE,\
+			TargetArea = /area/trench_landing)
 
 	edge
 		icon_state = "pit_wall"
@@ -340,81 +287,24 @@
 			STOP_TRACKING
 			. = ..()
 
-	proc/try_build_turf_list()
-		if (!L || length(L) == 0)
-			for(var/turf/T in get_area_turfs(/area/trench_landing))
-				L+=T
-
-	Entered(var/atom/movable/AM)
-		. = ..()
-		if (HAS_FLAG(AM.event_handler_flags, IMMUNE_TRENCH_WARP))
-			return
-		if (locate(/obj/lattice) in src)
-			return
-		if (AM.anchored == ANCHORED_ALWAYS)
-			return
-		if (ismob(AM))
-			var/mob/M = AM
-			if (M.client?.flying)
-				return
-		return_if_overlay_or_effect(AM)
-
-		try_build_turf_list()
-
-		if (length(L))
-			SPAWN(0.3 SECONDS)//you can 'jump' over a hole by running real fast or being thrown!!
-				if (istype(AM.loc, /turf/space/fluid/warp_z5))
-					visible_message(SPAN_ALERT("[AM] falls down [src]!"))
-
-					if (istype(AM, /obj/machinery/vehicle))
-						var/obj/machinery/vehicle/V = AM
-						var/turf/target_turf = V.go_home()
-						if (V.going_home && target_turf)
-							V.going_home = 0
-							AM.set_loc(target_turf)
-							return
-
-					if (ismob(AM))
-						var/mob/M = AM
-						random_brute_damage(M, 6)
-						M.changeStatus("weakened", 2 SECONDS)
-						playsound(M.loc, 'sound/impact_sounds/Flesh_Break_1.ogg', 10, 1)
-						M.emote("scream")
-
-					AM.set_loc(pick(L))
-
-
 /turf/space/fluid/warp_z5/realwarp
 	New()
 		..()
-		if (get_step(src, NORTH).type != /turf/space/fluid/warp_z5/realwarp)
+		src.initialise_component()
+		if (!istype(get_step(src, NORTH), /turf/space/fluid/warp_z5/realwarp))
 			icon_state = "pit_wall"
 
 		var/turf/space/fluid/under = get_step(src, SOUTH)
-		if (under.type == /turf/space/fluid/warp_z5/realwarp)
+		if (istype(under, /turf/space/fluid/warp_z5/realwarp))
 			under.icon_state = "pit"
 
-	try_build_turf_list()
-		if (!L || length(L) == 0)
-			for(var/turf/space/fluid/T in range(8,locate(src.x,src.y,5)))
-				L += T
-				break
-
-			if(length(L))
-				var/needlink = 1
-				var/turf/space/fluid/picked_turf = pick(L)
-
-				for(var/turf/space/fluid/T in range(5,picked_turf))
-					if(T.linked_hole)
-						needlink = 0
-						break
-
-				if(needlink)
-					if(!picked_turf.linked_hole)
-						picked_turf.linked_hole = src
-						src.add_simple_light("trenchhole", list(120, 120, 120, 120))
-
-		..()
+	initialise_component()
+		src.AddComponent(/datum/component/pitfall/target_coordinates,\
+			BruteDamageMax = 6,\
+			FallTime = 0.3 SECONDS,\
+			DeleteFlotsam = TRUE,\
+			TargetZ = 5,\
+			LandingRange = 8)
 
 
 //trench floor
@@ -423,7 +313,6 @@
 	temperature = TRENCH_TEMP
 	fullbright = 0
 	luminosity = 1
-	generateLight = 0
 	allow_hole = 0
 #ifdef MAP_OVERRIDE_NADIR
 	spawningFlags = SPAWN_LOOT | SPAWN_HOSTILE | SPAWN_ACID_DOODADS
@@ -439,7 +328,8 @@
 					T.blow_hole()
 					var/turf/space/fluid/warp_z5/hole = locate(x, y, 1)
 					if(istype(hole))
-						hole.L = list(src)
+						var/datum/component/pitfall/target_coordinates/getcomp = hole.GetComponent(/datum/component/pitfall/target_coordinates)
+						getcomp.TargetList = list(src)
 						src.linked_hole = hole
 						src.add_simple_light("trenchhole", list(120, 120, 120, 120))
 						break
@@ -472,7 +362,6 @@
 /turf/space/fluid/cenote
 	fullbright = 0
 	luminosity = 1
-	generateLight = 0
 	spawningFlags = null
 	allow_hole = 0
 	icon_state = "cenote"
@@ -495,79 +384,52 @@
 //Manta
 /turf/space/fluid/manta
 	luminosity = 1
-	generateLight = 0
 	spawningFlags = SPAWN_PLANTSMANTA
-	turf_flags = CAN_BE_SPACE_SAMPLE | MANTA_PUSH
+	turf_flags = MANTA_PUSH
 
 //Manta
 /turf/space/fluid/manta/nospawn
 	spawningFlags = null
 
-/turf/simulated/floor/specialroom/sea_elevator_shaft
+TYPEINFO(/turf/simulated/floor/auto/elevator_shaft)
+TYPEINFO_NEW(/turf/simulated/floor/auto/elevator_shaft)
+	. = ..()
+	connects_to = typecacheof(/turf/simulated/floor/auto/elevator_shaft)
+/turf/simulated/floor/auto/elevator_shaft
 	name = "elevator shaft"
 	desc = "It looks like it goes down a long ways."
-	icon_state = "moon_shaft"
-	var/const/area_type = /area/shuttle/sea_elevator/upper
-
-	New()
-		..()
-
-		var/turf/n = get_step(src,NORTH)
-		var/turf/e = get_step(src,EAST)
-		var/turf/w = get_step(src,WEST)
-		var/turf/s = get_step(src,SOUTH)
-
-		if (!istype(get_area(n),area_type))
-			n = null
-		if (!istype(get_area(e),area_type))
-			e = null
-		if (!istype(get_area(w),area_type))
-			w = null
-		if (!istype(get_area(s),area_type))
-			s = null
-
-		if (e && s)
-			set_dir(SOUTH)
-			e.set_dir(NORTH)
-			s.set_dir(WEST)
-		else if (e && n)
-			set_dir(WEST)
-			e.set_dir(EAST)
-			n.set_dir(SOUTH)
-		else if (w && s)
-			set_dir(NORTH)
-			w.set_dir(SOUTH)
-			s.set_dir(EAST)
-		else if (w && n)
-			set_dir(EAST)
-			w.set_dir(WEST)
-			n.set_dir(NORTH)
+	icon = 'icons/turf/elevator_shaft.dmi'
+	icon_state = "shaft0"
+	mod = "shaft"
 
 	ex_act(severity)
 		return
 
-	Entered(atom/movable/AM as mob|obj)
-		if (istype(AM, /datum/projectile/))
-			return
-		if (HAS_FLAG(AM.event_handler_flags, IMMUNE_TRENCH_WARP))
-			return ..()
-		var/turf/T = pick_landmark(LANDMARK_FALL_SEA)
-		if (isturf(T))
-			visible_message(SPAN_ALERT("[AM] falls down [src]!"))
-			if (ismob(AM))
-				var/mob/M = AM
-				random_brute_damage(M, 25)
-				M.changeStatus("weakened", 5 SECONDS)
-				M.emote("scream")
-				playsound(M.loc, 'sound/impact_sounds/Flesh_Break_1.ogg', 50, 1)
-			AM.set_loc(T)
-			return
-		else ..()
+/turf/simulated/floor/auto/elevator_shaft/sea
+	New()
+		..()
+		src.AddComponent(/datum/component/pitfall/target_landmark,\
+			BruteDamageMax = 25,\
+			FallTime = 0 SECONDS,\
+			TargetLandmark = LANDMARK_FALL_SEA)
+
+/turf/simulated/floor/auto/elevator_shaft/biodome
+	New()
+		..()
+		src.AddComponent(/datum/component/pitfall/target_landmark,\
+			BruteDamageMax = 50,\
+			FallTime = 0 SECONDS,\
+			TargetLandmark = LANDMARK_FALL_BIO_ELE)
+
+	Entered(atom/A as mob|obj)
+		if (istype(A, /mob) && !istype(A, /mob/dead))
+			bioele_accident()
+		..()
+
 
 /turf/space/fluid/acid
 	name = "acid sea floor"
 	spawningFlags = SPAWN_ACID_DOODADS
-	generateLight = 0
 	temperature = TRENCH_TEMP
 
 	clear

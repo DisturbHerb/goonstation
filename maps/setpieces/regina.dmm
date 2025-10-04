@@ -40,7 +40,7 @@
 /turf/simulated/drawbridge/floor,
 /area/regina)
 "aL" = (
-/obj/grille/catwalk{
+/obj/mesh/catwalk{
 	dir = 4
 	},
 /turf/simulated/floor/airless/plating/catwalk{
@@ -48,7 +48,7 @@
 	},
 /area/space)
 "aQ" = (
-/obj/npc/trader/random,
+/obj/landmark/spawner/random_trader,
 /obj/stool/chair/comfy,
 /turf/unsimulated/floor/shuttle{
 	icon_state = "floor2"
@@ -86,8 +86,7 @@
 /area/space)
 "cc" = (
 /obj/machinery/atmospherics/unary/vent_pump{
-	dir = 8;
-	
+	dir = 8
 	},
 /obj/decal/tile_edge/stripe/extra_big{
 	dir = 4
@@ -138,7 +137,7 @@
 /turf/simulated/floor/airless/engine,
 /area/shuttle/merchant_shuttle/left_centcom/destiny)
 "dY" = (
-/obj/grille/catwalk,
+/obj/mesh/catwalk,
 /turf/simulated/floor/airless/plating,
 /area/regina)
 "ek" = (
@@ -146,6 +145,12 @@
 	dir = 4
 	},
 /area/space)
+"es" = (
+/obj/indestructible/shuttle_corner{
+	dir = 8
+	},
+/turf/simulated/floor/airless/engine/vacuum,
+/area/regina)
 "et" = (
 /obj/decoration/vent/vent2,
 /turf/simulated/wall/auto/shuttle{
@@ -207,7 +212,7 @@
 /area/shuttle/merchant_shuttle/right_centcom/cogmap2)
 "fG" = (
 /obj/mapping_helper/wingrille_spawn/bulletproof,
-/obj/decal/fakeobjects/shuttleengine{
+/obj/fakeobject/shuttleengine{
 	dir = 1;
 	icon_state = "alt_heater-R"
 	},
@@ -240,7 +245,7 @@
 /turf/simulated/floor/airless/engine,
 /area/space)
 "gp" = (
-/obj/decal/fakeobjects/teleport_pad,
+/obj/fakeobject/teleport_pad,
 /turf/unsimulated/floor/shuttle{
 	icon_state = "floor2"
 	},
@@ -266,9 +271,15 @@
 /obj/mapping_helper/wingrille_spawn/auto,
 /turf/unsimulated/floor/plating,
 /area/shuttle/merchant_shuttle/diner_centcom)
+"gM" = (
+/obj/indestructible/shuttle_corner{
+	dir = 8
+	},
+/turf/simulated/floor/airless/engine,
+/area/regina)
 "gP" = (
 /obj/stool/chair/comfy,
-/obj/npc/trader/random,
+/obj/landmark/spawner/random_trader,
 /turf/unsimulated/floor/shuttle{
 	icon_state = "floor2"
 	},
@@ -364,10 +375,11 @@
 /turf/simulated/grimycarpet,
 /area/regina)
 "hS" = (
-/turf/simulated/shuttle/wall{
+/obj/indestructible/shuttle_corner{
 	dir = 1;
-	icon_state = "wall3_space"
+	icon_state = "wall3_trans"
 	},
+/turf/simulated/floor/airless/engine,
 /area/regina)
 "hV" = (
 /obj/window/reinforced/east,
@@ -402,12 +414,13 @@
 	},
 /area/regina)
 "ir" = (
-/obj/decal/fakeobjects/pipe{
+/obj/fakeobject/pipe{
 	desc = "Part of a system for hauling oversized crates.";
 	dir = 9;
-	name = "actuating frame"
+	name = "actuating frame";
+	color = "b4b4b4"
 	},
-/obj/decal/fakeobjects/shuttleengine{
+/obj/fakeobject/shuttleengine{
 	desc = "An electromagnetic clamping mechanism for hauling large cargo containers.";
 	name = "mag-clamps"
 	},
@@ -474,6 +487,12 @@
 	dir = 4
 	},
 /area/regina)
+"jC" = (
+/obj/indestructible/shuttle_corner{
+	dir = 1
+	},
+/turf/simulated/floor/airless/engine/vacuum,
+/area/regina)
 "jD" = (
 /obj/decal/tile_edge/line/black{
 	dir = 8;
@@ -489,7 +508,7 @@
 	dir = 4;
 	icon_state = "lattice-dir"
 	},
-/turf/space,
+/turf/simulated/floor/airless/engine,
 /area/regina)
 "jG" = (
 /obj/indestructible/shuttle_corner{
@@ -526,7 +545,7 @@
 /obj/indestructible/shuttle_corner{
 	dir = 1
 	},
-/turf/space,
+/turf/simulated/floor/airless/engine/vacuum,
 /area/regina)
 "kK" = (
 /obj/indestructible/shuttle_corner{
@@ -538,7 +557,7 @@
 /area/shuttle/merchant_shuttle/left_centcom/destiny)
 "kL" = (
 /obj/stool/chair/comfy,
-/obj/npc/trader/random,
+/obj/landmark/spawner/random_trader,
 /obj/machinery/light/small/floor,
 /turf/unsimulated/floor/shuttle{
 	icon_state = "floor2"
@@ -552,7 +571,7 @@
 /turf/unsimulated/wall/auto/adventure/shuttle/dark,
 /area/shuttle/merchant_shuttle/left_centcom/cogmap2)
 "kQ" = (
-/obj/decal/fakeobjects/teleport_pad,
+/obj/fakeobject/teleport_pad,
 /turf/unsimulated/floor/shuttle{
 	icon_state = "floor2"
 	},
@@ -573,19 +592,20 @@
 /area/space)
 "lp" = (
 /obj/mapping_helper/wingrille_spawn/bulletproof,
-/obj/decal/fakeobjects/shuttleengine{
+/obj/fakeobject/shuttleengine{
 	dir = 1;
 	icon_state = "alt_heater-L"
 	},
 /turf/simulated/floor/plating,
 /area/space)
 "lu" = (
-/obj/decal/fakeobjects/pipe{
+/obj/fakeobject/pipe{
 	desc = "Part of a system for hauling oversized crates.";
 	dir = 5;
-	name = "actuating frame"
+	name = "actuating frame";
+	color = "b4b4b4"
 	},
-/obj/decal/fakeobjects/shuttleengine{
+/obj/fakeobject/shuttleengine{
 	desc = "An electromagnetic clamping mechanism for hauling large cargo containers.";
 	name = "mag-clamps"
 	},
@@ -623,7 +643,7 @@
 /turf/simulated/floor/shuttlebay,
 /area/regina)
 "mu" = (
-/obj/decal/fakeobjects/mantacontainer/upwards/yellow{
+/obj/fakeobject/mantacontainer/upwards/yellow{
 	dir = 1
 	},
 /turf/simulated/floor/airless/engine/vacuum,
@@ -636,7 +656,7 @@
 /turf/simulated/floor/airless/engine,
 /area/space)
 "mA" = (
-/obj/decal/fakeobjects/shuttleengine{
+/obj/fakeobject/shuttleengine{
 	dir = 1;
 	icon_state = "alt_heater"
 	},
@@ -671,7 +691,7 @@
 /turf/simulated/floor/airless/engine,
 /area/shuttle/merchant_shuttle/left_centcom/cogmap)
 "mN" = (
-/obj/decal/fakeobjects/teleport_pad,
+/obj/fakeobject/teleport_pad,
 /obj/marker/supplymarker,
 /obj/machinery/light/small/floor,
 /turf/unsimulated/floor/shuttle{
@@ -686,7 +706,7 @@
 /turf/simulated/floor/airless/engine,
 /area/shuttle/merchant_shuttle/right_centcom/cogmap)
 "nh" = (
-/obj/decal/fakeobjects/teleport_pad,
+/obj/fakeobject/teleport_pad,
 /obj/machinery/light/small/floor,
 /turf/unsimulated/floor/shuttle{
 	icon_state = "floor2"
@@ -739,7 +759,7 @@
 /turf/unsimulated/floor/minitiles/black,
 /area/regina)
 "oq" = (
-/obj/grille/catwalk{
+/obj/mesh/catwalk{
 	dir = 4
 	},
 /turf/simulated/floor/airless/plating,
@@ -779,10 +799,11 @@
 /turf/simulated/grimycarpet,
 /area/regina)
 "oP" = (
-/obj/decal/fakeobjects/pipe{
+/obj/fakeobject/pipe{
 	desc = "Part of a system for hauling oversized crates.";
 	dir = 10;
-	name = "actuating frame"
+	name = "actuating frame";
+	color = "b4b4b4"
 	},
 /turf/simulated/floor/airless/engine,
 /area/regina)
@@ -841,10 +862,11 @@
 /area/regina)
 "pC" = (
 /obj/item/electronics/capacitor,
-/obj/decal/fakeobjects/pipe{
+/obj/fakeobject/pipe{
 	desc = "Part of a system for hauling oversized crates.";
 	dir = 10;
-	name = "actuating frame"
+	name = "actuating frame";
+	color = "b4b4b4"
 	},
 /turf/simulated/floor/airless/engine,
 /area/regina)
@@ -864,7 +886,7 @@
 	},
 /area/shuttle/merchant_shuttle/left_centcom/cogmap)
 "pK" = (
-/obj/decal/fakeobjects/mantacontainer/upwards{
+/obj/fakeobject/mantacontainer/upwards{
 	dir = 1
 	},
 /turf/simulated/floor/airless/engine/vacuum,
@@ -928,10 +950,10 @@
 	dir = 1;
 	icon_state = "alt_propulsion"
 	},
-/turf/unsimulated/floor/arctic/snow/ice,
+/turf/simulated/floor/airless/engine,
 /area/shuttle/merchant_shuttle/right_centcom/destiny)
 "ri" = (
-/obj/decal/fakeobjects/teleport_pad,
+/obj/fakeobject/teleport_pad,
 /obj/machinery/light/small/floor,
 /turf/unsimulated/floor/shuttle{
 	icon_state = "floor2"
@@ -947,7 +969,7 @@
 	},
 /area/regina)
 "rw" = (
-/obj/grille/catwalk{
+/obj/mesh/catwalk{
 	dir = 4
 	},
 /turf/simulated/floor/airless/plating,
@@ -960,7 +982,7 @@
 	},
 /area/regina)
 "sc" = (
-/obj/decal/fakeobjects/mantacontainer/upwards/yellow,
+/obj/fakeobject/mantacontainer/upwards/yellow,
 /turf/simulated/floor/airless/engine/vacuum,
 /area/space)
 "sr" = (
@@ -998,7 +1020,7 @@
 /turf/unsimulated/floor/engine,
 /area/shuttle/merchant_shuttle/left_centcom/cogmap2)
 "sZ" = (
-/obj/decal/fakeobjects/shuttlethruster{
+/obj/fakeobject/shuttlethruster{
 	dir = 5
 	},
 /turf/space,
@@ -1018,7 +1040,7 @@
 /obj/indestructible/shuttle_corner{
 	dir = 4
 	},
-/turf/space,
+/turf/simulated/floor/airless/engine,
 /area/regina)
 "tk" = (
 /obj/indestructible/shuttle_corner{
@@ -1057,7 +1079,7 @@
 	},
 /area/regina)
 "tX" = (
-/obj/decal/fakeobjects/teleport_pad,
+/obj/fakeobject/teleport_pad,
 /obj/marker/supplymarker,
 /obj/machinery/light/small/floor,
 /turf/unsimulated/floor/shuttle{
@@ -1077,12 +1099,6 @@
 	},
 /turf/simulated/floor/airless/engine,
 /area/shuttle/merchant_shuttle/right_centcom/donut2)
-"up" = (
-/turf/simulated/shuttle/wall{
-	dir = 1;
-	icon_state = "wall3_space"
-	},
-/area/space)
 "ur" = (
 /turf/simulated/floor/caution/north,
 /area/regina)
@@ -1140,6 +1156,16 @@
 	icon_state = "floor2"
 	},
 /area/shuttle/merchant_shuttle/left_centcom/cogmap2)
+"vC" = (
+/obj/lattice{
+	dir = 8;
+	icon_state = "lattice-dir"
+	},
+/obj/rail{
+	dir = 4
+	},
+/turf/simulated/floor/airless/engine/vacuum,
+/area/regina)
 "vY" = (
 /obj/decal/tile_edge/line/black{
 	dir = 4;
@@ -1170,13 +1196,13 @@
 	dir = 10;
 	icon_state = "lattice-dir"
 	},
-/turf/space,
+/turf/simulated/floor/airless/engine/vacuum,
 /area/regina)
 "wh" = (
 /turf/simulated/grimycarpet,
 /area/regina)
 "ws" = (
-/obj/decal/fakeobjects/shuttlethruster{
+/obj/fakeobject/shuttlethruster{
 	dir = 1
 	},
 /turf/simulated/floor/airless/engine,
@@ -1185,10 +1211,10 @@
 /obj/indestructible/shuttle_corner{
 	dir = 0
 	},
-/turf/space,
+/turf/simulated/floor/airless/engine/vacuum,
 /area/space)
 "wL" = (
-/obj/decal/fakeobjects/teleport_pad,
+/obj/fakeobject/teleport_pad,
 /obj/marker/supplymarker,
 /obj/machinery/light/small/floor,
 /turf/unsimulated/floor/shuttle{
@@ -1197,7 +1223,7 @@
 /area/shuttle/merchant_shuttle/right_centcom/cogmap2)
 "wR" = (
 /obj/stool/chair/comfy,
-/obj/npc/trader/random,
+/obj/landmark/spawner/random_trader,
 /turf/unsimulated/floor/shuttle{
 	icon_state = "floor2"
 	},
@@ -1221,7 +1247,7 @@
 /turf/simulated/floor/airless/engine,
 /area/regina)
 "xe" = (
-/obj/decal/fakeobjects/teleport_pad,
+/obj/fakeobject/teleport_pad,
 /obj/machinery/light/small/floor,
 /turf/unsimulated/floor/shuttle{
 	icon_state = "floor2"
@@ -1325,20 +1351,39 @@
 /turf/simulated/grimycarpet,
 /area/regina)
 "yB" = (
-/obj/decal/fakeobjects/shuttlethruster{
+/obj/fakeobject/shuttlethruster{
 	dir = 5
 	},
 /turf/simulated/floor/airless/engine/caution/north,
 /area/space)
-"yN" = (
-/obj/indestructible/shuttle_corner{
-	dir = 1
+"yH" = (
+/obj/lattice{
+	dir = 10;
+	icon_state = "lattice-dir"
 	},
+/obj/rail{
+	dir = 4
+	},
+/obj/indestructible/shuttle_corner{
+	dir = 8
+	},
+/turf/simulated/floor/airless/engine/vacuum,
+/area/regina)
+"yK" = (
+/obj/indestructible/shuttle_corner{
+	dir = 4
+	},
+/turf/simulated/floor/airless/engine,
+/area/regina)
+"yN" = (
 /obj/lattice{
 	dir = 4;
 	icon_state = "lattice-dir"
 	},
-/turf/space,
+/obj/indestructible/shuttle_corner{
+	dir = 1
+	},
+/turf/simulated/floor/airless/engine/vacuum,
 /area/regina)
 "yU" = (
 /obj/machinery/sleeper{
@@ -1357,16 +1402,17 @@
 /turf/simulated/floor/airless/damaged5,
 /area/space)
 "yW" = (
-/obj/decal/fakeobjects/teleport_pad,
+/obj/fakeobject/teleport_pad,
 /turf/unsimulated/floor/shuttle{
 	icon_state = "floor2"
 	},
 /area/shuttle/merchant_shuttle/left_centcom/cogmap)
 "zd" = (
-/obj/decal/fakeobjects/pipe{
+/obj/fakeobject/pipe{
 	desc = "Part of a system for hauling oversized crates.";
 	dir = 9;
-	name = "actuating frame"
+	name = "actuating frame";
+	color = "b4b4b4"
 	},
 /turf/simulated/floor/airless/engine,
 /area/regina)
@@ -1394,7 +1440,7 @@
 /obj/indestructible/shuttle_corner{
 	dir = 0
 	},
-/turf/space,
+/turf/simulated/floor/airless/engine/vacuum,
 /area/regina)
 "zY" = (
 /obj/machinery/shuttle/engine/heater{
@@ -1602,7 +1648,7 @@
 /obj/indestructible/shuttle_corner{
 	dir = 0
 	},
-/turf/space,
+/turf/simulated/floor/airless/engine/vacuum,
 /area/regina)
 "EQ" = (
 /turf/unsimulated/floor/shuttle{
@@ -1615,7 +1661,7 @@
 /area/space)
 "Fc" = (
 /obj/stool/chair/comfy,
-/obj/npc/trader/random,
+/obj/landmark/spawner/random_trader,
 /turf/unsimulated/floor/shuttle{
 	icon_state = "floor2"
 	},
@@ -1628,7 +1674,10 @@
 /obj/indestructible/shuttle_corner{
 	dir = 4
 	},
-/turf/space,
+/obj/indestructible/shuttle_corner{
+	dir = 4
+	},
+/turf/simulated/floor/airless/engine/caution/south,
 /area/regina)
 "Fi" = (
 /obj/lattice{
@@ -1641,7 +1690,7 @@
 /obj/indestructible/shuttle_corner{
 	dir = 0
 	},
-/turf/space,
+/turf/simulated/floor/airless/engine/vacuum,
 /area/regina)
 "Fk" = (
 /turf/simulated/wall/auto/shuttle,
@@ -1656,7 +1705,7 @@
 	},
 /area/regina)
 "Fp" = (
-/obj/decal/fakeobjects/shuttlethruster{
+/obj/fakeobject/shuttlethruster{
 	dir = 5
 	},
 /turf/simulated/floor/airless/engine,
@@ -1685,7 +1734,7 @@
 /obj/indestructible/shuttle_corner{
 	dir = 8
 	},
-/turf/space,
+/turf/simulated/floor/airless/engine,
 /area/regina)
 "FM" = (
 /obj/machinery/shuttle/engine/propulsion{
@@ -1710,18 +1759,11 @@
 /turf/simulated/floor/circuit/red,
 /area/space)
 "GO" = (
-/obj/decal/fakeobjects/teleport_pad,
+/obj/fakeobject/teleport_pad,
 /turf/unsimulated/floor/shuttle{
 	icon_state = "floor2"
 	},
 /area/shuttle/merchant_shuttle/right_centcom/cogmap)
-"GR" = (
-/obj/indestructible/shuttle_corner{
-	dir = 1;
-	icon_state = "wall3_trans"
-	},
-/turf/space,
-/area/space)
 "GT" = (
 /obj/mapping_helper/wingrille_spawn/bulletproof,
 /turf/simulated/floor/plating,
@@ -1765,7 +1807,7 @@
 /turf/simulated/floor/airless/engine/caution/north,
 /area/regina)
 "HS" = (
-/obj/decal/fakeobjects/shuttlethruster{
+/obj/fakeobject/shuttlethruster{
 	dir = 1
 	},
 /turf/space,
@@ -1780,15 +1822,17 @@
 	},
 /area/regina)
 "If" = (
-/obj/decal/fakeobjects/pipe{
+/obj/fakeobject/pipe{
 	desc = "Part of a system for hauling oversized crates.";
 	dir = 9;
-	name = "actuating frame"
+	name = "actuating frame";
+	color = "b4b4b4"
 	},
-/obj/decal/fakeobjects/pipe{
+/obj/fakeobject/pipe{
 	desc = "Part of a system for hauling oversized crates.";
 	dir = 9;
-	name = "actuating frame"
+	name = "actuating frame";
+	color = "b4b4b4"
 	},
 /turf/simulated/floor/airless/engine,
 /area/regina)
@@ -1808,13 +1852,13 @@
 	dir = 8;
 	icon_state = "lattice-dir"
 	},
-/turf/space,
+/turf/simulated/floor/airless/engine/vacuum,
 /area/regina)
 "IV" = (
 /obj/indestructible/shuttle_corner{
 	dir = 8
 	},
-/turf/space,
+/turf/simulated/floor/airless/engine/caution/south,
 /area/regina)
 "Jo" = (
 /obj/storage/crate/xmas,
@@ -1837,7 +1881,7 @@
 /area/regina)
 "Ki" = (
 /obj/stool/chair/comfy,
-/obj/npc/trader/random,
+/obj/landmark/spawner/random_trader,
 /turf/unsimulated/floor/shuttle{
 	icon_state = "floor2"
 	},
@@ -1846,10 +1890,11 @@
 /turf/simulated/floor/airless/damaged3,
 /area/regina)
 "Km" = (
-/turf/simulated/shuttle/wall{
+/obj/indestructible/shuttle_corner{
 	dir = 8;
-	icon_state = "wall3_space"
+	icon_state = "wall3_trans"
 	},
+/turf/simulated/floor/airless/engine,
 /area/regina)
 "Kw" = (
 /obj/lattice{
@@ -1888,6 +1933,12 @@
 	},
 /turf/simulated/floor/airless/engine,
 /area/space)
+"KU" = (
+/obj/indestructible/shuttle_corner{
+	dir = 1
+	},
+/turf/simulated/floor/airless/engine/caution/north,
+/area/regina)
 "KV" = (
 /obj/machinery/door/airlock/pyro/external{
 	dir = 4
@@ -1906,13 +1957,6 @@
 	},
 /turf/simulated/floor/airless/engine,
 /area/shuttle/merchant_shuttle/right_centcom/cogmap2)
-"Lh" = (
-/obj/indestructible/shuttle_corner{
-	dir = 8;
-	icon_state = "wall3_trans"
-	},
-/turf/space,
-/area/space)
 "Ln" = (
 /obj/indestructible/shuttle_corner{
 	icon_state = "wall3_trans"
@@ -1923,8 +1967,7 @@
 /area/shuttle/merchant_shuttle/right_centcom/cogmap2)
 "Ls" = (
 /obj/machinery/atmospherics/unary/vent_pump{
-	dir = 2;
-	
+	dir = 2
 	},
 /turf/simulated/floor/caution/north,
 /area/regina)
@@ -1957,7 +2000,7 @@
 /area/shuttle/merchant_shuttle/left_centcom/destiny)
 "LP" = (
 /obj/mapping_helper/wingrille_spawn/bulletproof,
-/obj/decal/fakeobjects/shuttleengine{
+/obj/fakeobject/shuttleengine{
 	dir = 1;
 	icon_state = "alt_heater-M"
 	},
@@ -1977,7 +2020,7 @@
 /turf/unsimulated/floor/minitiles/black,
 /area/regina)
 "LY" = (
-/obj/decal/fakeobjects/teleport_pad,
+/obj/fakeobject/teleport_pad,
 /obj/marker/supplymarker,
 /turf/unsimulated/floor/shuttle{
 	icon_state = "floor2"
@@ -2071,13 +2114,13 @@
 	dir = 4;
 	icon_state = "lattice-dir"
 	},
-/turf/space,
+/turf/simulated/floor/airless/engine/vacuum,
 /area/regina)
 "NB" = (
 /turf/unsimulated/floor/engine,
 /area/space)
 "NX" = (
-/obj/decal/fakeobjects/shuttlethruster,
+/obj/fakeobject/shuttlethruster,
 /turf/simulated/floor/airless/engine,
 /area/regina)
 "Oj" = (
@@ -2094,13 +2137,6 @@
 	icon_state = "floor2"
 	},
 /area/shuttle/merchant_shuttle/left_centcom/donut2)
-"OH" = (
-/obj/stool/chair/comfy/shuttle/brown,
-/obj/machinery/computer/shuttle_bus/embedded/south,
-/turf/simulated/floor/shuttle{
-	icon_state = "floor2"
-	},
-/area/regina)
 "OM" = (
 /obj/decal/poster/wallsign/hazard_danger,
 /turf/simulated/wall/auto/shuttle,
@@ -2151,10 +2187,10 @@
 	dir = 4;
 	icon_state = "lattice-dir"
 	},
-/turf/space,
+/turf/simulated/floor/airless/engine/vacuum,
 /area/regina)
 "Qf" = (
-/obj/npc/trader/random,
+/obj/landmark/spawner/random_trader,
 /obj/stool/chair/comfy,
 /turf/unsimulated/floor/shuttle{
 	icon_state = "floor2"
@@ -2244,7 +2280,7 @@
 /turf/simulated/wall/auto/shuttle,
 /area/regina)
 "Sb" = (
-/obj/decal/fakeobjects/teleport_pad,
+/obj/fakeobject/teleport_pad,
 /obj/marker/supplymarker,
 /obj/machinery/light/small/floor,
 /turf/unsimulated/floor/shuttle{
@@ -2252,7 +2288,7 @@
 	},
 /area/shuttle/merchant_shuttle/left_centcom/cogmap2)
 "Sm" = (
-/obj/decal/fakeobjects/teleport_pad,
+/obj/fakeobject/teleport_pad,
 /obj/machinery/light/small/floor,
 /turf/unsimulated/floor/shuttle{
 	icon_state = "floor2"
@@ -2358,18 +2394,12 @@
 /turf/simulated/floor/airless/engine,
 /area/regina)
 "Uh" = (
-/obj/decal/fakeobjects/teleport_pad,
+/obj/fakeobject/teleport_pad,
 /obj/marker/supplymarker,
 /turf/unsimulated/floor/shuttle{
 	icon_state = "floor2"
 	},
 /area/shuttle/merchant_shuttle/right_centcom/cogmap)
-"Un" = (
-/turf/simulated/shuttle/wall{
-	dir = 8;
-	icon_state = "wall3_space"
-	},
-/area/space)
 "Uq" = (
 /obj/indestructible/shuttle_corner{
 	dir = 8;
@@ -2413,7 +2443,7 @@
 /area/regina)
 "Vv" = (
 /obj/stool/chair/comfy,
-/obj/npc/trader/random,
+/obj/landmark/spawner/random_trader,
 /turf/unsimulated/floor/shuttle{
 	icon_state = "floor2"
 	},
@@ -2436,21 +2466,22 @@
 /turf/unsimulated/floor/arctic/snow/ice,
 /area/space)
 "VX" = (
-/obj/decal/fakeobjects/mantacontainer/upwards,
+/obj/fakeobject/mantacontainer/upwards,
 /turf/simulated/floor/airless/engine/vacuum,
 /area/regina)
 "Wi" = (
-/obj/decal/fakeobjects/mantacontainer/upwards/yellow,
+/obj/fakeobject/mantacontainer/upwards/yellow,
 /turf/simulated/floor/airless/engine/vacuum,
 /area/regina)
 "Wn" = (
 /turf/simulated/floor/airless/engine,
 /area/regina)
 "Wt" = (
-/obj/decal/fakeobjects/pipe{
+/obj/fakeobject/pipe{
 	desc = "Part of a system for hauling oversized crates.";
 	dir = 6;
-	name = "actuating frame"
+	name = "actuating frame";
+	color = "b4b4b4"
 	},
 /turf/simulated/floor/airless/engine,
 /area/regina)
@@ -2467,10 +2498,16 @@
 /turf/simulated/floor/airless/engine,
 /area/space)
 "WM" = (
-/obj/grille/catwalk{
+/obj/mesh/catwalk{
 	dir = 4
 	},
 /turf/simulated/floor/airless/engine/vacuum,
+/area/regina)
+"WO" = (
+/obj/indestructible/shuttle_corner{
+	dir = 0
+	},
+/turf/simulated/floor/airless/engine/caution/north,
 /area/regina)
 "Xb" = (
 /turf/unsimulated/wall/auto/adventure/hospital/interior,
@@ -2483,7 +2520,7 @@
 /area/shuttle/merchant_shuttle/diner_centcom)
 "Xm" = (
 /obj/machinery/light/small/floor,
-/obj/decal/fakeobjects/teleport_pad,
+/obj/fakeobject/teleport_pad,
 /turf/unsimulated/floor/shuttle{
 	icon_state = "floor2"
 	},
@@ -2540,7 +2577,7 @@
 	},
 /area/regina)
 "XR" = (
-/obj/decal/fakeobjects/teleport_pad,
+/obj/fakeobject/teleport_pad,
 /obj/marker/supplymarker,
 /obj/machinery/light/small/floor,
 /turf/unsimulated/floor/shuttle{
@@ -2548,7 +2585,7 @@
 	},
 /area/shuttle/merchant_shuttle/right_centcom/destiny)
 "XU" = (
-/obj/grille/catwalk{
+/obj/mesh/catwalk{
 	dir = 4
 	},
 /turf/simulated/floor/airless/plating/catwalk{
@@ -2556,10 +2593,11 @@
 	},
 /area/regina)
 "XW" = (
-/obj/decal/fakeobjects/pipe{
+/obj/fakeobject/pipe{
 	desc = "Part of a system for hauling oversized crates.";
 	dir = 5;
-	name = "actuating frame"
+	name = "actuating frame";
+	color = "b4b4b4"
 	},
 /turf/simulated/floor/airless/engine,
 /area/regina)
@@ -2572,7 +2610,7 @@
 /area/regina)
 "Ys" = (
 /obj/machinery/light/small/floor,
-/obj/decal/fakeobjects/teleport_pad,
+/obj/fakeobject/teleport_pad,
 /obj/marker/supplymarker,
 /turf/unsimulated/floor/shuttle{
 	icon_state = "floor2"
@@ -2600,7 +2638,7 @@
 	},
 /area/shuttle/merchant_shuttle/left_centcom/destiny)
 "YS" = (
-/obj/decal/fakeobjects/mantacontainer/upwards/yellow{
+/obj/fakeobject/mantacontainer/upwards/yellow{
 	dir = 4
 	},
 /turf/simulated/floor/airless/engine/vacuum,
@@ -2644,10 +2682,10 @@
 /obj/indestructible/shuttle_corner{
 	dir = 1
 	},
-/turf/space,
+/turf/simulated/floor/airless/engine,
 /area/regina)
 "Zs" = (
-/obj/decal/fakeobjects/teleport_pad,
+/obj/fakeobject/teleport_pad,
 /obj/marker/supplymarker,
 /obj/machinery/light/small/floor,
 /turf/unsimulated/floor/shuttle{
@@ -2689,7 +2727,7 @@
 /area/shuttle/merchant_shuttle/diner_centcom)
 "ZW" = (
 /obj/stool/chair/comfy,
-/obj/npc/trader/random,
+/obj/landmark/spawner/random_trader,
 /turf/unsimulated/floor/shuttle{
 	icon_state = "floor2"
 	},
@@ -3472,7 +3510,7 @@ WE
 sN
 pi
 pi
-Fh
+yK
 Wn
 pR
 TV
@@ -3560,7 +3598,7 @@ Uu
 oN
 oN
 WE
-Fh
+yK
 pR
 TV
 dR
@@ -3630,7 +3668,7 @@ TB
 aI
 aI
 UG
-Ey
+WO
 iU
 Vf
 wh
@@ -3891,18 +3929,18 @@ TB
 aI
 aI
 UG
-Zj
+KU
 sN
 jE
 Tm
 qd
 Ug
 nQ
-Zj
+jC
 yc
 iV
 yc
-IV
+es
 nQ
 Tm
 qd
@@ -4763,7 +4801,7 @@ jd
 Rm
 xf
 Wn
-wU
+vC
 WM
 dY
 dY
@@ -5198,7 +5236,7 @@ jd
 Rm
 xf
 Wn
-wU
+vC
 XU
 im
 im
@@ -5293,7 +5331,7 @@ rw
 Ug
 Zj
 mp
-IV
+gM
 Tm
 rw
 im
@@ -5473,7 +5511,7 @@ rw
 Za
 Za
 XU
-FK
+yH
 Wn
 pR
 TV
@@ -5523,7 +5561,7 @@ Wn
 Km
 lu
 zd
-Un
+KR
 lu
 If
 Wn
@@ -5958,7 +5996,7 @@ Wn
 hS
 ir
 XW
-up
+hH
 ir
 XW
 Wn
@@ -6822,7 +6860,7 @@ UO
 UO
 UO
 TO
-Lh
+KR
 pv
 pv
 pv
@@ -7170,7 +7208,7 @@ UO
 UO
 UO
 TO
-GR
+hH
 pv
 pv
 pv
@@ -9126,7 +9164,7 @@ hv
 hv
 aG
 MG
-OH
+AM
 La
 tp
 pT

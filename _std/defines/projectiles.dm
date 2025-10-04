@@ -35,7 +35,9 @@
 
 #define AMMO_SHOTGUN_LOW "shotgun_low"
 #define AMMO_SHOTGUN_HIGH "shotgun_high"
-#define AMMO_SHOTGUN_ALL AMMO_SHOTGUN_LOW, AMMO_SHOTGUN_HIGH
+#define AMMO_SHOTGUN_PIPE "pipe" // for break action guns only
+#define AMMO_SHOTGUN_AUTOMATIC AMMO_SHOTGUN_LOW, AMMO_SHOTGUN_HIGH
+#define AMMO_SHOTGUN_ALL AMMO_SHOTGUN_LOW, AMMO_SHOTGUN_HIGH, AMMO_SHOTGUN_PIPE
 
 
 #define AMMO_REVOLVER_SYNDICATE "revolver_syndicate"
@@ -73,6 +75,8 @@
 #define AMMO_ROCKET_MRL "rocket_mrl"
 #define AMMO_ROCKET_ALL AMMO_ROCKET_SING, AMMO_ROCKET_RPG, AMMO_ROCKET_MRL
 
+#define AMMO_FOUR_BORE "four_bore"
+
 #define AMMO_FOAMDART "foamdart"
 #define AMMO_AIRZOOKA "airzooka"
 
@@ -83,6 +87,7 @@
 #define AMMO_FLECHETTE "flechette"
 #define AMMO_BLOWDART "blowdart"
 #define AMMO_STAPLE "staple"
+#define AMMO_WEBLEY "webley"
 
 #define AMMO_DART_ALL AMMO_FOAMDART,AMMO_BLOWDART
 

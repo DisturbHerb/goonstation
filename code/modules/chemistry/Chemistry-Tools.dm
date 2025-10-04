@@ -11,7 +11,7 @@ ABSTRACT_TYPE(/obj/item/reagent_containers)
 	icon = 'icons/obj/chemical.dmi'
 	icon_state = null
 	w_class = W_CLASS_TINY
-	flags = FPRINT | TABLEPASS | SUPPRESSATTACK
+	flags = TABLEPASS | SUPPRESSATTACK
 	var/rc_flags = RC_VISIBLE | RC_FULLNESS | RC_SPECTRO
 	tooltip_flags = REBUILD_SPECTRO | REBUILD_DIST
 	var/amount_per_transfer_from_this = 5
@@ -67,8 +67,6 @@ ABSTRACT_TYPE(/obj/item/reagent_containers)
 			src.reagents.add_reagent(src.initial_reagents, initial_volume)
 		src.initial_reagents = null // no mo, no mooooo
 
-	attack_self(mob/user as mob)
-		return
 	attack(mob/target, mob/user, def_zone, is_special = FALSE, params = null)
 		return
 	attackby(obj/item/I, mob/user)
@@ -76,16 +74,17 @@ ABSTRACT_TYPE(/obj/item/reagent_containers)
 			try_to_apply_lid(I, user)
 		if (reagents)
 			reagents.physical_shock(I.force)
-		return
+		return ..()
 	afterattack(obj/target, mob/user , flag)
 		return
 
 	get_desc(dist, mob/user)
+		. = ..()
 		if (dist > 2)
 			return
 		if (!reagents)
 			return
-		. = "<br>[SPAN_NOTICE("[reagents.get_description(user,rc_flags)]")]"
+		. += "<br>[SPAN_NOTICE("[reagents.get_description(user,rc_flags)]")]"
 
 	mouse_drop(atom/over_object as obj)
 		if (isintangible(usr))
@@ -94,6 +93,8 @@ ABSTRACT_TYPE(/obj/item/reagent_containers)
 			return
 		if(over_object == src)
 			return
+		if (!src.is_open_container(FALSE))
+			return ..()
 		if(!istype(usr.loc, /turf))
 			var/atom/target_loc = usr.loc
 			var/ok = 1
@@ -116,7 +117,7 @@ ABSTRACT_TYPE(/obj/item/reagent_containers)
 		if (!istype(src, /obj/item/reagent_containers/glass) && !istype(src, /obj/item/reagent_containers/food/drinks))
 			return ..()
 
-		if (usr.stat || usr.getStatusDuration("weakened") || BOUNDS_DIST(usr, src) > 0 || BOUNDS_DIST(usr, over_object) > 0)  //why has this bug been in since i joined goonstation and nobody even looked here yet wtf -ZeWaka
+		if (usr.stat || usr.getStatusDuration("knockdown") || BOUNDS_DIST(usr, src) > 0 || BOUNDS_DIST(usr, over_object) > 0)  //why has this bug been in since i joined goonstation and nobody even looked here yet wtf -ZeWaka
 			boutput(usr, SPAN_ALERT("That's too far!"))
 			return
 
@@ -135,6 +136,7 @@ ABSTRACT_TYPE(/obj/item/reagent_containers)
 
 	proc/apply_lid(obj/item/beaker_lid/lid, mob/user) //todo: add a sound?
 		src.set_open_container(FALSE)
+		REMOVE_FLAG(src.flags, ACCEPTS_MOUSEDROP_REAGENTS)
 		current_lid = lid
 		user.u_equip(lid)
 		lid.set_loc(src)
@@ -146,6 +148,7 @@ ABSTRACT_TYPE(/obj/item/reagent_containers)
 
 	proc/remove_current_lid(mob/user)
 		src.set_open_container(TRUE)
+		ADD_FLAG(src.flags, ACCEPTS_MOUSEDROP_REAGENTS)
 		user.put_in_hand_or_drop(src.current_lid)
 		current_lid = null
 		src.UpdateOverlays(null, "lid")
@@ -173,7 +176,7 @@ proc/ui_describe_reagents(atom/A)
 			var/datum/reagent/current_reagent = R.reagent_list[reagent_id]
 
 			contents.Add(list(list(
-				name = reagents_cache[reagent_id],
+				name = current_reagent.name,
 				id = reagent_id,
 				colorR = current_reagent.fluid_r,
 				colorG = current_reagent.fluid_g,
@@ -190,7 +193,7 @@ proc/ui_describe_reagents(atom/A)
 /obj/item/reagent_containers/glass
 	name = " "
 	desc = " "
-	icon = 'icons/obj/chemical.dmi'
+	icon = 'icons/obj/items/chemistry_glassware.dmi'
 	inhand_image_icon = 'icons/mob/inhand/hand_medical.dmi'
 	icon_state = "null"
 	item_state = "null"
@@ -199,11 +202,33 @@ proc/ui_describe_reagents(atom/A)
 	var/splash_all_contents = 1
 	///For internal tanks and other things that definitely should not shatter
 	var/shatter_immune = FALSE
-	flags = FPRINT | TABLEPASS | OPENCONTAINER | SUPPRESSATTACK | ACCEPTS_MOUSEDROP_REAGENTS
+	flags = TABLEPASS | OPENCONTAINER | SUPPRESSATTACK | ACCEPTS_MOUSEDROP_REAGENTS
+	item_function_flags = OBVIOUS_INTERACTION_BAR //no hidden splashing of acid on stuff
+
+	/// The icon file that this container should for fluid overlays.
+	var/container_icon = 'icons/obj/items/chemistry_glassware.dmi'
+	/// The icon state that this container should for fluid overlays.
+	var/container_style = null
+	/// The number of fluid overlay states that this container has.
+	var/fluid_overlay_states = 0
+	/// The scaling that this container's fluid overlays should use.
+	var/fluid_overlay_scaling = RC_REAGENT_OVERLAY_SCALING_LINEAR
+
+	New()
+		. = ..()
+		src.container_style ||= src.icon_state
+		if (src.fluid_overlay_states > 0)
+			src.AddComponent( \
+				/datum/component/reagent_overlay, \
+				reagent_overlay_icon = src.container_icon, \
+				reagent_overlay_icon_state = src.container_style, \
+				reagent_overlay_states = src.fluid_overlay_states, \
+				reagent_overlay_scaling = src.fluid_overlay_scaling, \
+			)
 
 	// this proc is a mess ow
 	afterattack(obj/target, mob/user , flag)
-		user.lastattacked = target
+		user.lastattacked = get_weakref(target)
 
 		// this shit sucks but this is an if-else so there's no space to fit a cast in there
 		var/turf/target_turf = CHECK_LIQUID_CLICK(target) ? get_turf(target) : null
@@ -263,7 +288,7 @@ proc/ui_describe_reagents(atom/A)
 				F.group.update_amt_per_tile()
 				var/amt = min(F.group.amt_per_tile, reagents.maximum_volume - reagents.total_volume)
 				boutput(user, SPAN_NOTICE("You fill [src] with [amt] units of [F]."))
-				F.group.drain(F, amt / F.group.amt_per_tile, src) // drain uses weird units
+				if (amt) F.group.drain(F, amt / F.group.amt_per_tile, src) // drain uses weird units
 			else //trans_to to the FLOOR of the liquid, not the liquid itself. will call trans_to() for turf which has a little bit that handles turf application -> fluids
 				logTheThing(LOG_CHEMISTRY, user, "transfers chemicals from [src] [log_reagents(src)] to [F] at [log_loc(user)].") // Added reagents (Convair880).
 				var/trans = src.reagents.trans_to(target_turf, src.splash_all_contents ? src.reagents.total_volume : src.amount_per_transfer_from_this)
@@ -271,7 +296,7 @@ proc/ui_describe_reagents(atom/A)
 
 			playsound(src.loc, 'sound/impact_sounds/Liquid_Slosh_1.ogg', 25, 1, 0.3)
 
-		else if ((is_reagent_dispenser(target) || (target.is_open_container() == -1 && target.reagents)) && src.is_open_container() && !(istype(target, /obj/reagent_dispensers/chemicalbarrel) && target:funnel_active)) //A dispenser. Transfer FROM it TO us.
+		else if ((is_reagent_dispenser(target) || (target.is_open_container() == -1 && target.reagents)) && src.is_open_container(TRUE) && !(istype(target, /obj/reagent_dispensers/chemicalbarrel) && target:funnel_active)) //A dispenser. Transfer FROM it TO us.
 			if (target.reagents && !target.reagents.total_volume)
 				boutput(user, SPAN_ALERT("[target] is empty."))
 				return
@@ -443,7 +468,7 @@ proc/ui_describe_reagents(atom/A)
 		else if (istype(I, /obj/item/ammo/bullets/bullet_22HP) ||istype(I, /obj/item/ammo/bullets/bullet_22) || istype(I, /obj/item/ammo/bullets/a38) || istype(I, /obj/item/ammo/bullets/custom) || (I.type == /obj/item/handcuffs) || istype(I,/datum/projectile/bullet/revolver_38))
 			if ("silver" in src.reagents.reaction(I, react_volume = src.reagents.total_volume))
 				user.visible_message(SPAN_ALERT("<b>[user]</b> dips [I] into [src] coating it in silver. Watch out, evil creatures!"))
-				I.tooltip_rebuild = 1
+				I.tooltip_rebuild = TRUE
 			else
 				if(istype(I, /obj/item/ammo/bullets))
 					var/obj/item/ammo/A = I
@@ -488,7 +513,8 @@ proc/ui_describe_reagents(atom/A)
 		. = ..()
 		if (src.is_open_container() && src.reagents && src.reagents.total_volume > 0)
 			if(user.mind.assigned_role == "Bartender")
-				. = ("You deftly [pick("spin", "twirl")] [src] managing to keep all the contents inside.")
+				user.visible_message("[user] deftly [pick("spins, twirls")] [src], managing to keep all the contents inside.",
+				 "You deftly [pick("spin", "twirl")] [src], managing to keep all the contents inside.")
 			else
 				user.visible_message(SPAN_ALERT("<b>[user] spills the contents of [src] all over [him_or_her(user)]self!</b>"))
 				src.reagents.reaction(get_turf(user), TOUCH)
@@ -517,6 +543,21 @@ proc/ui_describe_reagents(atom/A)
 		if(..() && !GET_ATOM_PROPERTY(src, PROP_ITEM_IN_CHEM_DISPENSER))
 			return 1
 
+	get_chemical_effect_position()
+		switch(src.container_style)
+			if("beaker")
+				return 4
+			if("large_beaker")
+				return 9
+			if("conical_flask")
+				return 9
+			if("round_flask")
+				return 9
+			if("large_flask")
+				return 10
+			if("dropper_funnel")
+				return 10
+
 /* =================================================== */
 /* -------------------- Sub-Types -------------------- */
 /* =================================================== */
@@ -530,7 +571,7 @@ proc/ui_describe_reagents(atom/A)
 	item_state = "bucket"
 	amount_per_transfer_from_this = 10
 	initial_volume = 120
-	flags = FPRINT | OPENCONTAINER | SUPPRESSATTACK
+	flags = OPENCONTAINER | SUPPRESSATTACK
 	rc_flags = RC_FULLNESS | RC_VISIBLE | RC_SPECTRO
 	can_recycle = FALSE
 	var/helmet_bucket_type = /obj/item/clothing/head/helmet/bucket
@@ -669,25 +710,24 @@ proc/ui_describe_reagents(atom/A)
 /obj/item/reagent_containers/glass/dispenser
 	name = "reagent glass"
 	desc = "A reagent glass."
-	icon = 'icons/obj/chemical.dmi'
 	icon_state = "beaker"
 	initial_volume = 50
 	amount_per_transfer_from_this = 10
 	rc_flags = RC_SCALE | RC_VISIBLE | RC_SPECTRO
-	flags = FPRINT | TABLEPASS | OPENCONTAINER | SUPPRESSATTACK
+	flags = TABLEPASS | OPENCONTAINER | SUPPRESSATTACK
 
 /obj/item/reagent_containers/glass/large
 	name = "large reagent glass"
 	desc = "A large reagent glass."
-	icon = 'icons/obj/chemical.dmi'
-	icon_state = "beakerlarge"
+	icon_state = "large_beaker"
 	item_state = "beaker"
 	rc_flags = RC_SCALE | RC_VISIBLE | RC_SPECTRO
 	amount_per_transfer_from_this = 10
-	flags = FPRINT | TABLEPASS | OPENCONTAINER | SUPPRESSATTACK
+	flags = TABLEPASS | OPENCONTAINER | SUPPRESSATTACK
 
 /obj/item/reagent_containers/glass/dispenser/surfactant
 	name = "reagent glass (surfactant)"
+	icon = 'icons/obj/chemical.dmi'
 	icon_state = "liquid"
 	initial_reagents = list("fluorosurfactant"=20)
 
@@ -699,7 +739,7 @@ proc/ui_describe_reagents(atom/A)
 /obj/item/beaker_lid
 	name = "beaker lid"
 	desc = "A one-size fits all beaker lid, capable of an airtight seal on any compatible beaker."
-	icon = 'icons/obj/chemical.dmi'
+	icon = 'icons/obj/items/chemistry_glassware.dmi'
 	icon_state = "lid"
 	w_class = W_CLASS_TINY
 
@@ -707,22 +747,13 @@ proc/ui_describe_reagents(atom/A)
 		if (istype(container))
 			container.try_to_apply_lid(src, user)
 
-/obj/item/reagent_containers/glass/condenser
-	name = "chemical condenser"
-	desc = "A set of glass tubes useful for seperating reactants from products. Can be hooked up to many types of containers."
-	icon = 'icons/obj/chemical.dmi'
-	icon_state = "condenser"
+/obj/item/reagent_containers/glass/plumbing
+	name = "abstract glass plumbing object"
+	desc = "A set of glass tubes mysteriously spelling 'Call 1-800-CODER'."
 	amount_per_transfer_from_this = 10
 	incompatible_with_chem_dispensers = TRUE //could maybe be ok? idk
 	can_recycle = FALSE //made of glass, but would be a waste and almost certainly accidental so no
-	splash_all_contents = FALSE
-	object_flags = FPRINT | OPENCONTAINER | SUPPRESSATTACK
-	initial_volume = 100
-	accepts_lid = TRUE
-	//prefix for fluid icon state
-	var/fluid_prefix = "condenser"
 	var/list/connected_containers = list() //! the containers currently connected to the condenser
-	var/image/fluid_image = null
 	var/max_amount_of_containers = 4
 
 	mouse_drop(atom/over_object, src_location, over_location)
@@ -737,34 +768,17 @@ proc/ui_describe_reagents(atom/A)
 		if (src.loc != newloc && length(src.connected_containers))
 			src.remove_all_containers()
 		. = ..()
-
 	Move()
 		if(length(src.connected_containers))
 			src.remove_all_containers()
 		..()
+
 
 	attack_hand(var/mob/user)
 		if(length(src.connected_containers))
 			src.remove_all_containers()
 			boutput(user, SPAN_ALERT("You remove all connections to the [src.name]."))
 		..()
-
-	on_reagent_change()
-		..()
-		src.UpdateIcon()
-
-	update_icon()
-		src.UpdateOverlays(null, "fluid_image")
-		if (reagents.total_volume)
-			var/fluid_state = round(clamp((src.reagents.total_volume / src.reagents.maximum_volume * 5 + 1), 1, 5))
-			if (!src.fluid_image)
-				src.fluid_image = image(src.icon, "fluid-[fluid_prefix][fluid_state]", -1)
-			else
-				src.fluid_image.icon_state = "fluid-[fluid_prefix][fluid_state]"
-			var/datum/color/average = reagents.get_average_color()
-			src.fluid_image.color = average.to_rgba()
-			src.UpdateOverlays(src.fluid_image, "fluid_image")
-
 	proc/try_adding_container(var/obj/container, var/mob/user)
 		if (!istype(src.loc, /turf/) || !istype(container.loc, /turf/)) //if the condenser or container isn't on the floor you cannot hook it up
 			return
@@ -779,20 +793,18 @@ proc/ui_describe_reagents(atom/A)
 		else
 			boutput(user, "<span class='notice'>You hook the [container.name] up to the [src.name].</span>")
 		add_container(container)
-
 	proc/add_line(var/obj/container)
-		var/datum/lineResult/result = drawLine(src, container, "condenser", "condenser_end", src.pixel_x + 10, src.pixel_y, container.pixel_x, container.pixel_y + container.get_chemical_effect_position())
+		var/datum/lineResult/result = drawLineImg(src, container, "condenser", "condenser_end", src.pixel_x + 10, src.pixel_y, container.pixel_x, container.pixel_y + container.get_chemical_effect_position())
 		result.lineImage.pixel_x = -src.pixel_x
 		result.lineImage.pixel_y = -src.pixel_y
 		result.lineImage.layer = src.layer+0.01
 		src.UpdateOverlays(result.lineImage, "tube\ref[container]")
 
-
 	proc/add_container(var/obj/container)
 		//this is a mess but we need it to disconnect if ANYTHING happens
 		if (!(container in src.connected_containers))
 			RegisterSignal(container, COMSIG_ATTACKHAND, PROC_REF(remove_container)) //empty hand on either condenser or its connected container should disconnect
-			RegisterSignal(container, XSIG_OUTERMOST_MOVABLE_CHANGED, PROC_REF(remove_container))
+			RegisterSignal(container, XSIG_OUTERMOST_MOVABLE_CHANGED, PROC_REF(remove_container_xsig))
 			RegisterSignal(container, COMSIG_MOVABLE_MOVED, PROC_REF(remove_container))
 		add_line(container)
 		src.connected_containers.Add(container)
@@ -805,12 +817,31 @@ proc/ui_describe_reagents(atom/A)
 		UnregisterSignal(container, XSIG_OUTERMOST_MOVABLE_CHANGED)
 		UnregisterSignal(container, COMSIG_MOVABLE_MOVED)
 
+	proc/remove_container_xsig(datum/component/complexsignal, old_movable, new_movable)
+		src.remove_container(complexsignal.parent)
 
+	proc/try_adding_reagents_to_container(reagent, amount, sdata, temp_new, donotreact, donotupdate, priority) //called when a reaction occurs inside the condenser flagged with "chemical_reaction = TRUE"
+		src.reagents.add_reagent(reagent, amount, sdata, temp_new, donotreact, donotupdate)
 	proc/remove_all_containers()
 		for(var/obj/container in src.connected_containers)
 			remove_container(container)
 
-	proc/try_adding_reagents_to_container(reagent, amount, sdata, temp_new, donotreact, donotupdate, priority) //called when a reaction occurs inside the condenser flagged with "chemical_reaction = TRUE"
+/obj/item/reagent_containers/glass/plumbing/condenser
+	name = "chemical condenser"
+	desc = "A set of glass tubes useful for seperating reactants from products. Can be hooked up to many types of containers."
+	icon = 'icons/obj/items/chemistry_glassware.dmi'
+	icon_state = "condenser"
+	splash_all_contents = FALSE
+	object_flags = OPENCONTAINER | SUPPRESSATTACK
+	initial_volume = 100
+	accepts_lid = TRUE
+	fluid_overlay_states = 5
+	container_style = "condenser"
+	HELP_MESSAGE_OVERRIDE({"Click and drag this onto other glassware to connect it.
+	Reaction products will flow equally to all connected glassware."})
+
+
+	try_adding_reagents_to_container(reagent, amount, sdata, temp_new, donotreact, donotupdate, priority) //called when a reaction occurs inside the condenser flagged with "chemical_reaction = TRUE"
 		if(length(src.connected_containers) <= 0) //if we have no beaker, dump the reagents into condenser
 			src.reagents.add_reagent(reagent, amount, sdata, temp_new, donotreact, donotupdate)
 		else
@@ -839,11 +870,13 @@ proc/ui_describe_reagents(atom/A)
 	fractional
 		name = "fractional condenser"
 		desc = "A set of glass tubes, conveniently capable of splitting the outputs of more advanced reactions. Can be hooked up to many types of containers."
+		icon_state = "condenser_fractional"
+		container_style = "condenser_fractional"
 		max_amount_of_containers = 4
 		/// orders the output containers, so key 1 = condenser output 1
 		var/container_order[4]
-		icon_state = "condenser_fractional"
-		fluid_prefix = "condenser_fractional"
+		HELP_MESSAGE_OVERRIDE({"Click and drag this onto other glassware to connect it.
+		If a reaction creates multiple products, this condenser separates them in the order YELLOW->RED->GREEN->BLUE."})
 
 		add_reagents_to_containers(reagent, amount, sdata, temp_new, donotreact, donotupdate, priority)
 			var/obj/chosen_container
@@ -864,7 +897,7 @@ proc/ui_describe_reagents(atom/A)
 		add_line(var/obj/container, var/containerNo)
 			var/x_off = 5*((containerNo+1)%2)  //alternate between 0/+5
 			var/y_off = (4*round((containerNo-1)/2)) //go up by 4 pixels for every 2nd connection
-			var/datum/lineResult/result = drawLine(src, container, "condenser_[containerNo]", "condenser_end_[containerNo]", src.pixel_x-4+x_off, src.pixel_y+5+y_off, container.pixel_x, container.pixel_y + container.get_chemical_effect_position(), mode=LINEMODE_STRETCH_NO_CLIP)
+			var/datum/lineResult/result = drawLineImg(src, container, "condenser_[containerNo]", "condenser_end_[containerNo]", src.pixel_x-4+x_off, src.pixel_y+5+y_off, container.pixel_x, container.pixel_y + container.get_chemical_effect_position(), mode=LINEMODE_STRETCH_NO_CLIP)
 			result.lineImage.layer = src.layer+0.01
 			result.lineImage.pixel_x = -src.pixel_x
 			result.lineImage.pixel_y = -src.pixel_y
@@ -880,10 +913,13 @@ proc/ui_describe_reagents(atom/A)
 						UnregisterSignal(container, XSIG_OUTERMOST_MOVABLE_CHANGED)
 						UnregisterSignal(container, COMSIG_MOVABLE_MOVED)
 
+		remove_container_xsig(datum/component/complexsignal, old_movable, new_movable)
+			src.remove_container(complexsignal.parent)
+
 		add_container(var/obj/container)
 			if (!(container in src.connected_containers))
 				RegisterSignal(container, COMSIG_ATTACKHAND, PROC_REF(remove_container)) //empty hand on either condenser or its connected container should disconnect
-				RegisterSignal(container, XSIG_OUTERMOST_MOVABLE_CHANGED, PROC_REF(remove_container))
+				RegisterSignal(container, XSIG_OUTERMOST_MOVABLE_CHANGED, PROC_REF(remove_container_xsig))
 				RegisterSignal(container, COMSIG_MOVABLE_MOVED, PROC_REF(remove_container))
 			var/id = 1
 			for(var/i= 1 to max_amount_of_containers)
@@ -893,6 +929,225 @@ proc/ui_describe_reagents(atom/A)
 			add_line(container, id)
 			src.container_order[id] = container
 			src.connected_containers.Add(container)
+
+
+/obj/item/reagent_containers/glass/plumbing/dropper
+	name = "dropper funnel"
+	desc = "A glass tube for adding reagents to containers at a customisable rate. Can be hooked up to many types of containers."
+	icon = 'icons/obj/items/chemistry_glassware.dmi'
+	icon_state = "dropper_funnel_off"
+	splash_all_contents = FALSE
+	object_flags = OPENCONTAINER | SUPPRESSATTACK
+	initial_volume = 100
+	accepts_lid = TRUE
+	rc_flags = RC_VISIBLE | RC_SCALE | RC_SPECTRO
+	fluid_overlay_states = 8
+	container_style = "dropper_funnel"
+	var/open = FALSE
+	var/flow_rate = 1
+	HELP_MESSAGE_OVERRIDE({"Click and drag this onto other glassware to connect it.
+	Flow rate can be adjusted either in your hand, or with a <b>screwdriver</b>.
+	To pick this up, click and drag it onto your person."})
+
+	get_desc()
+		. = " The flow rate is set to [flow_rate]."
+
+	disposing()
+		src.remove_container()
+		. = ..()
+
+	mouse_drop(atom/over_object, src_location, over_location)
+		if (ismob(over_object))
+			var/mob/user = over_object
+			if (user == usr && !user.restrained() && !is_incapacitated(user) && in_interact_range(src, user))
+				if (!user.put_in_hand(src))
+					return ..()
+		else
+			..()
+
+	add_line(var/obj/container)
+		var/datum/lineResult/result = drawLineImg(src, container, "condenser", "condenser_end", src.pixel_x-1, src.pixel_y-13, container.pixel_x, container.pixel_y + container.get_chemical_effect_position())
+		result.lineImage.pixel_x = -src.pixel_x
+		result.lineImage.pixel_y = -src.pixel_y
+		result.lineImage.layer = src.layer+0.01
+		src.UpdateOverlays(result.lineImage, "tube\ref[container]")
+	attack_self(mob/user as mob)
+		if(current_lid)
+			boutput(user, SPAN_NOTICE("You pop the lid off of the [src]."))
+			remove_current_lid(user)
+		else
+			adjust_flow_rate(user)
+		return
+
+	attackby(obj/item/I, mob/user)
+		if (istype(I, /obj/item/screwdriver))
+			adjust_flow_rate(user)
+			user.visible_message(SPAN_NOTICE("[user.name] adjusts the flow rate of \the [src.name]."))
+			return
+		..()
+	process()
+		if (open)
+			for(var/obj/container in connected_containers)
+				src.reagents.trans_to(container, flow_rate)
+	set_loc(newloc, storage_check)
+		set_flow(FALSE)
+		. = ..()
+	Move()
+		set_flow(FALSE)
+		. = ..()
+	attack_hand(mob/user)
+		if (length(src.connected_containers) <= 0)
+			..()
+		else
+			src.add_fingerprint(user)
+			set_flow(!open)
+
+	proc/adjust_flow_rate(mob/user)
+		var/number = tgui_input_number(user,"Set flow rate, per beaker", "Set flow rate (1-10)",flow_rate,10,1,FALSE,TRUE)
+		if (number && flow_rate != number)
+			flow_rate = number
+		src.tooltip_rebuild = TRUE
+	proc/set_flow(var/desired_state)
+		if (!desired_state && open)
+			processing_items -= src
+			open = FALSE
+			FLICK("dropper_funnel_swoff",src)
+			icon_state = "dropper_funnel_off"
+		else if(desired_state && !open)
+			processing_items |= src
+			open = TRUE
+			FLICK("dropper_funnel_swon",src)
+			icon_state = "dropper_funnel_on"
+
+
+
+/obj/item/reagent_containers/glass/plumbing/dispenser
+	name = "portable chemical dispenser"
+	desc = "A synthesizer, ripped from a Chem Dispenser, capable of placing reagents in glassware at a fixed rate."
+	icon = 'icons/obj/items/chemistry_glassware.dmi'
+	icon_state = "producer"
+	splash_all_contents = FALSE
+	object_flags = SUPPRESSATTACK
+	initial_volume = 0
+	accepts_lid = TRUE
+	rc_flags = FALSE
+	fluid_overlay_states = 0
+	container_style = "condenser"
+	var/running = FALSE
+	var/flow_rate = 1
+	var/reagent_to_fabricate = ""
+	var/fabrication_tick = 0
+	var/ticks_to_fabricate = 4
+	var/image/fabricating_overlay = null
+	var/image/fabrication_tick_lights = null
+	HELP_MESSAGE_OVERRIDE({"Click and drag this onto other glassware to connect it.
+	Flow rate and chemical fabricated can be adjusted either in your hand, or with a <b>screwdriver</b>.
+	To pick this up, click and drag it onto your person."})
+
+
+	get_desc()
+		. = " It is set to dispense [flow_rate] units of [reagent_to_fabricate]."
+
+	New()
+		. = ..()
+
+	disposing()
+		src.remove_container()
+		. = ..()
+
+	mouse_drop(atom/over_object, src_location, over_location)
+		if (ismob(over_object))
+			var/mob/user = over_object
+			if (user == usr && !user.restrained() && !is_incapacitated(user) && in_interact_range(src, user))
+				if (!user.put_in_hand(src))
+					return ..()
+		else
+			..()
+
+	add_line(var/obj/container)
+		var/datum/lineResult/result = drawLineImg(src, container, "condenser", "condenser_end", src.pixel_x + 10, src.pixel_y, container.pixel_x, container.pixel_y + container.get_chemical_effect_position())
+		result.lineImage.pixel_x = -src.pixel_x
+		result.lineImage.pixel_y = -src.pixel_y
+		result.lineImage.layer = src.layer+0.01
+		src.UpdateOverlays(result.lineImage, "tube\ref[container]")
+	attack_self(mob/user as mob)
+		adjust_flow_rate(user)
+		return
+
+	attackby(obj/item/I, mob/user)
+		if (istype(I, /obj/item/screwdriver))
+			adjust_flow_rate(user)
+			user.visible_message(SPAN_NOTICE("[user.name] adjusts \the [src.name]."))
+			return
+		..()
+	process()
+		if (running)
+			fabrication_tick += 1
+			if (fabrication_tick >= ticks_to_fabricate)
+				fabrication_tick = 0
+				if(length(src.connected_containers))
+					var/reagents_per_container = flow_rate / length(src.connected_containers)
+					for(var/obj/container in src.connected_containers)
+						container.reagents.add_reagent(reagent_to_fabricate, reagents_per_container)
+			update_visuals()
+
+
+	set_loc(newloc, storage_check)
+		set_flow(FALSE)
+		. = ..()
+	Move()
+		set_flow(FALSE)
+		. = ..()
+	attack_hand(mob/user)
+		if (length(src.connected_containers) <= 0)
+			..()
+		else
+			src.add_fingerprint(user)
+			set_flow(!running)
+
+	proc/update_visuals()
+		if (running && fabrication_tick > 0)
+			fabrication_tick_lights = image('icons/obj/items/chemistry_glassware.dmi',"producer_lights_[fabrication_tick]")
+		else
+			fabrication_tick_lights = null
+
+		if (reagent_to_fabricate)
+			if (running)
+				fabricating_overlay = image('icons/obj/items/chemistry_glassware.dmi',"producer_chem_active")
+			else
+				fabricating_overlay = image('icons/obj/items/chemistry_glassware.dmi',"producer_chem")
+
+			var/datum/reagent/reagent_instance = reagents_cache[reagent_to_fabricate]
+			var/list/hsl = rgb2hsl(reagent_instance.fluid_r,reagent_instance.fluid_g,reagent_instance.fluid_b)
+			fabricating_overlay.color =  hsl2rgb(hsl[1], hsl[2], clamp(hsl[3],255,20))
+
+		else
+			fabricating_overlay = null
+		src.UpdateOverlays(src.fabrication_tick_lights, "light")
+		src.UpdateOverlays(src.fabricating_overlay, "overlay")
+
+	proc/adjust_flow_rate(mob/user)
+		var/reagent = tgui_input_list(user,"Set desired reagent", "Set reagent", basic_elements, reagent_to_fabricate)
+		if (reagent == null)
+			return
+		var/number = tgui_input_number(user,"Set fabrication volume, in units", "Set fabrication rate (1-5)",flow_rate,5,1,FALSE,TRUE)
+		if (reagent && (reagent in basic_elements) && reagent_to_fabricate != reagent)
+			reagent_to_fabricate = reagent
+		if (number && flow_rate != number)
+			flow_rate = number
+		src.tooltip_rebuild = TRUE
+		update_visuals()
+
+	proc/set_flow(var/desired_state)
+		if (!desired_state && running)
+			processing_items -= src
+			running = FALSE
+			fabrication_tick = 0
+		else if(desired_state && !running && reagent_to_fabricate)
+			processing_items |= src
+			running = TRUE
+		update_visuals()
+
 
 
 /obj/item/reagent_containers/synthflesh_pustule
@@ -910,13 +1165,13 @@ proc/ui_describe_reagents(atom/A)
 	var/makes_noise_when_full = TRUE //here so the tiny ones don't burp on creation lol
 	var/angry = FALSE
 	var/angry_timer = 15
-	var/list/convertible_reagents = list("blood","bloodc","bloody_mary","bloody_scary","hemolymph")
+	var/list/convertible_reagents = list("blood","bloodc","bloody_mary","bloody_scary","hemolymph", "viscerite_viscera")
 
 	New()
 		START_TRACKING
 		processing_items.Add(src)
 		original_icon_state = icon_state
-		flick("[icon_state]-plop", src)
+		FLICK("[icon_state]-plop", src)
 		..()
 
 	disposing()
@@ -932,8 +1187,19 @@ proc/ui_describe_reagents(atom/A)
 				reagent_to_add = "meat_slurry"
 			if("bloody_mary", "bloody_scary")
 				reagent_to_add = "ethanol"
+			if("viscerite_viscera")
+				reagent_to_add = null
+		if(reagent_to_add)
+			src.reagents.add_reagent(reagent_to_add, volume * chemical_efficiency)
+
+		if(reagent_id == "viscerite_viscera") // Special processing is needed for this chem because its my birthday and I get to have feature bloat
+			src.reagents.add_reagent("martian_flesh", ((volume / chemical_efficiency) * 0.35)) // Large pustules produce half the amount of martian flesh. Apologies for the magic number here, it's avoiding digestion producing net amounts of chems which leads to bugs.
+			src.reagents.add_reagent("synthflesh", ((volume * chemical_efficiency)  * 0.35)) // Large pustules also produce twice the amount of synthflesh
+			if(prob(20 / chemical_efficiency)) // 20% chance of offgassing for medium/small, 10% for large pustules
+				var/datum/reagents/smokeContents = new/datum/reagents()
+				smokeContents.add_reagent("acid", volume / chemical_efficiency)
+				smoke_reaction(smokeContents, 2, get_turf(src), do_sfx = TRUE)
 		src.reagents.remove_reagent(reagent_id, volume)
-		src.reagents.add_reagent(reagent_to_add, volume * chemical_efficiency)
 
 	proc/become_angry() //become dangerous to pick up
 		if (reagents.total_volume >= reagents.maximum_volume) //can't be angry on a full stomach
@@ -1013,9 +1279,34 @@ proc/ui_describe_reagents(atom/A)
 				reagents.add_reagent("synthflesh", 40 * organ_efficiency)
 				become_unangry()
 
+		if(W.material?.isSameMaterial(getMaterial("viscerite")))
+			var/obj/item/visc = W
+			if (reagents.total_volume >= reagents.maximum_volume)
+				boutput(user, SPAN_ALERT("The [src] is too full!"))
+			else
+				if(visc.amount == 1)
+					reagents.add_reagent("viscerite_viscera", 20 * visc.amount * visc.material_amt) // Gets converted into synthflesh (and some other stuff). Small/medium pustules produce 7 synthflesh and 7 martian flesh per visc, large produce 14 synthflesh and 3.5 martian flesh per visc
+					qdel(visc)
+				else // Oh boy oh boy are you ready for somewhat messy code to deal with stacks
+					var/leftover_space = (reagents.maximum_volume - reagents.total_volume)
+					var/max_amt_removal = round(leftover_space / (20 * visc.material_amt))
+					var/amt_to_remove = 0
+					if(max_amt_removal == 0)
+						return
+					else if (visc.amount > max_amt_removal)
+						amt_to_remove = max_amt_removal
+					else
+						amt_to_remove = visc.amount
+					reagents.add_reagent("viscerite_viscera", 20 * amt_to_remove * visc.material_amt)
+					visc.change_stack_amount(-amt_to_remove)
+				user.visible_message("<span class = 'alert'>[user.name] stuffs the [visc.name] into the [src.name].</span>")
+				playsound(src.loc, 'sound/items/eatfoodshort.ogg', 50, 1)
+				animate_shake(src, 2 , 0, 3, 0, 0)
+				become_unangry()
+
 		else
 			if (W.force >= 5) //gotta smack it with something a little hefty at least
-				user.lastattacked = src
+				user.lastattacked = get_weakref(src)
 				attack_particle(user,src)
 				hit_twitch(src)
 				playsound(src, 'sound/impact_sounds/Generic_Slap_1.ogg', 50,TRUE)
@@ -1119,10 +1410,6 @@ proc/ui_describe_reagents(atom/A)
 		else
 			. = " Its flame is set to [temperature_setting]."
 
-	disposing()
-		STOP_TRACKING
-		..()
-
 	process()
 		if (QDELETED(src.current_container))
 			src.current_container = null
@@ -1187,12 +1474,28 @@ proc/ui_describe_reagents(atom/A)
 		else
 			..()
 
+	attack_ai(mob/user as mob)
+		if (BOUNDS_DIST(src, user) > 0) return
+		src.Attackhand(user)
+
 	attack_self(var/mob/user)
 		user.showContextActions(src.contexts, src, contextLayout)
 
 	attackby(I, mob/user)
 		if (istype(I, /obj/item/reagent_containers))
 			try_to_put_on_bunsen_burner(I, user)
+
+	MouseDrop_T(atom/O as obj, mob/user as mob)
+		if (!istype(O,/obj/)) return
+		if (BOUNDS_DIST(user, src) > 0 || !in_interact_range(user, O)) return
+		src.Attackby(O, user)
+
+	mouse_drop(atom/over_object, src_location, over_location)
+		if (!current_container) return
+		if (!istype(over_location, /turf/)) return
+		if (BOUNDS_DIST(src, over_location) > 0) return
+		if (!in_interact_range(usr, src)) return
+		remove_container()
 
 	proc/try_to_put_on_bunsen_burner(var/obj/item/reagent_containers/container, var/mob/user)
 		if (!istype(src.loc, /turf/)) //can't use bunsen burners if not on a turf
@@ -1208,8 +1511,11 @@ proc/ui_describe_reagents(atom/A)
 		src.UpdateIcon()
 		RegisterSignal(container, COMSIG_ATTACKHAND, PROC_REF(remove_container)) //only register this on the container since attackhand opens menu
 		for(var/item in list(src, container))
-			RegisterSignal(item, XSIG_OUTERMOST_MOVABLE_CHANGED, PROC_REF(remove_container))
+			RegisterSignal(item, XSIG_OUTERMOST_MOVABLE_CHANGED, PROC_REF(remove_container_xsig))
 			RegisterSignal(item, COMSIG_MOVABLE_MOVED, PROC_REF(remove_container))
+
+	proc/remove_container_xsig(datum/component/complexsignal, old_movable, new_movable)
+		src.remove_container(complexsignal.parent)
 
 	proc/remove_container()
 		UnregisterSignal(current_container, COMSIG_ATTACKHAND, PROC_REF(remove_container))
@@ -1224,3 +1530,72 @@ proc/ui_describe_reagents(atom/A)
 #undef BUNSEN_LOW
 #undef BUNSEN_MEDIUM
 #undef BUNSEN_HIGH
+
+/obj/item/reagent_containers/glass/vial
+	name = "vial"
+	desc = "A vial. Can hold up to 5 units."
+	icon = 'icons/obj/items/chemistry_glassware.dmi'
+	icon_state = "phial"
+	item_state = "vial"
+	rc_flags = RC_FULLNESS | RC_VISIBLE | RC_SPECTRO
+	accepts_lid = TRUE
+	fluid_overlay_states = 5
+	container_style = "phial"
+
+	New()
+		var/datum/reagents/R = new /datum/reagents(5)
+		R.my_atom = src
+		src.reagents = R
+		..()
+
+/obj/item/reagent_containers/glass/vial/plastic
+	name = "plastic vial"
+	desc = "A 3D-printed vial. Can hold up to 5 units. Barely."
+	can_recycle = FALSE
+
+	New()
+		. = ..()
+		AddComponent(/datum/component/biodegradable)
+
+/obj/item/reagent_containers/glass/petridish
+	name = "Petri Dish"
+	icon = 'icons/obj/pathology.dmi'
+	icon_state = "petri0"
+	desc = "A dish tailored hold pathogen cultures."
+	initial_volume = 40
+	rc_flags = 0
+	flags = TABLEPASS | CONDUCT | OPENCONTAINER
+
+/obj/item/bloodslide
+	name = "Blood Slide"
+	icon = 'icons/obj/pathology.dmi'
+	icon_state = "slide0"
+	desc = "An item used by scientists and serial killers operating in the Miami area to store blood samples."
+
+	var/datum/reagent/blood/blood = null
+
+	flags = TABLEPASS | CONDUCT | NOSPLASH
+
+	New()
+		..()
+		var/datum/reagents/R = new /datum/reagents(5)
+		src.reagents = R
+
+	attackby(obj/item/I, mob/user)
+		return
+
+	on_reagent_change()
+		..()
+		reagents.maximum_volume = reagents.total_volume // This should make the blood slide... permanent.
+		if (reagents.has_reagent("blood") || reagents.has_reagent("bloodc"))
+			icon_state = "slide1"
+			desc = "The blood slide contains a drop of blood."
+			if (reagents.has_reagent("blood"))
+				blood = reagents.get_reagent("blood")
+			else if (reagents.has_reagent("bloodc"))
+				blood = reagents.get_reagent("bloodc")
+			if (blood == null)
+				boutput(usr, SPAN_ALERT("Blood slides are not working. This is an error message, please page 1-800-555-MARQUESAS."))
+				return
+		else
+			desc = "This blood slide is contaminated and useless."

@@ -1,18 +1,32 @@
 #define DRONE_LUM 2
 
+TYPEINFO(/mob/living/silicon/ghostdrone)
+	start_listen_modifiers = list(LISTEN_MODIFIER_MOB_MODIFIERS)
+	start_listen_inputs = list(LISTEN_INPUT_GHOSTDRONE, LISTEN_INPUT_EARS_GHOSTDRONE, LISTEN_INPUT_DEADCHAT)
+	start_listen_languages = list(LANGUAGE_ALL)
+	start_speech_prefixes = null
+	start_speech_modifiers = list(SPEECH_MODIFIER_MOB_MODIFIERS, SPEECH_MODIFIER_MONOSPACE_DECORATOR)
+	start_speech_outputs = list(SPEECH_OUTPUT_GHOSTDRONE, SPEECH_OUTPUT_DEADCHAT)
+
 /mob/living/silicon/ghostdrone
 	icon = 'icons/mob/ghost_drone.dmi'
 	icon_state = "drone-dead"
 
 	max_health = 25 //weak as fuk
 	density = 0 //no bumping into people, basically
-	robot_talk_understand = 0 //we arent proper robots
+
+	speech_verb_say = list("beeps", "boops", "buzzes", "bloops", "transmits")
+	speech_verb_ask = null
+	speech_verb_exclaim = null
+	default_speech_output_channel = SAY_CHANNEL_GHOSTDRONE
 
 	sound_fart = 'sound/voice/farts/poo2_robot.ogg'
 	flags = NODRIFT | TABLEPASS | DOORPASS
 
 	punchMessage = "whaps"
 	kickMessage = "bonks"
+
+	var/default_hat_y = 7
 
 	var/datum/hud/ghostdrone/hud
 	var/obj/item/device/radio/radio = null
@@ -25,17 +39,16 @@
 	var/faceType
 	var/charging = 0
 	var/newDrone = 0
-
 	var/jetpack = 1 //fuck whoever made this
 
 	var/sees_static = TRUE
 
 	//gimmicky things
-	var/obj/item/clothing/head/hat = null
 	var/obj/item/clothing/suit/bedsheet/bedsheet = null
 
 	New()
 		..()
+		AddComponent(/datum/component/hattable, TRUE, FALSE, default_hat_y, 0, 0.75)
 		remove_lifeprocess(/datum/lifeprocess/radiation)
 		APPLY_ATOM_PROPERTY(src, PROP_MOB_RADPROT_INT, src, 100)
 		START_TRACKING
@@ -47,8 +60,7 @@
 		if (rand(1, 1000) == 69 && ticker?.mode) //heh
 			//Nuke op radio freq
 			if (istype(ticker.mode, /datum/game_mode/nuclear))
-				var/datum/game_mode/nuclear/mode = ticker.mode
-				name = "Drone [mode.agent_radiofreq]"
+				name = "Drone [R_FREQ_SYNDICATE]"
 			else if (length(flocks))
 				name = "Flockdrone"
 			else
@@ -66,9 +78,10 @@
 
 
 		src.health = src.max_health
-		src.botcard.access = list(access_maint_tunnels, access_ghostdrone, access_engineering,access_external_airlocks,
+		src.botcard.access = list(access_maint_tunnels, access_ghostdrone, access_engineering,
 						access_engineering_storage, access_engineering_atmos, access_engineering_engine, access_engineering_power)
 		src.radio = new /obj/item/device/radio(src)
+		src.radio.toggle_speaker(TRUE)
 		src.ears = src.radio
 
 		//Attach shit to tools
@@ -106,7 +119,7 @@
 			get_image_group(CLIENT_IMAGE_GROUP_GHOSTDRONE).add_mob(src)
 
 		/*SPAWN(0)
-			out(src, "<b>Use \"say ; (message)\" to speak to fellow drones through the spooky power of spirits within machines.</b>")
+			boutput(src, "<b>Use \"say ; (message)\" to speak to fellow drones through the spooky power of spirits within machines.</b>")
 			src.show_laws_drone()*/
 
 	track_blood()
@@ -163,7 +176,6 @@
 			src.visible_message(SPAN_COMBAT("[src.name] explodes in a shower of lost hopes and dreams."))
 			var/turf/T = get_ranged_target_turf(src, pick(alldirs), 3)
 			if (magHeld) magHeld.throw_at(T, 3, 1) //flying...anything
-			if (src.hat) src.takeoffHat(pick(alldirs)) //flying hats
 			if (src.bedsheet) //flying bedsheets
 				bedsheet.set_loc(get_turf(src))
 				bedsheet.throw_at(T, 3, 1)
@@ -180,7 +192,6 @@
 					msg = "[src.name]'s scream's gain echo and lose their electronic modulation as its soul is ripped monstrously from the cold metal body it once inhabited."
 
 			src.visible_message(SPAN_COMBAT("[msg]"))
-			if (src.hat) src.takeoffHat()
 			src.updateSprite()
 			..()
 
@@ -355,7 +366,7 @@
 			if (!I.anchored)
 				return 0
 		if (istype(target, /obj/artifact) || istype(target, /obj/item/artifact) || istype(target, /obj/machinery/artifact)) //boo
-			out(src, "<span class='combat bold'>Your internal safety subroutines kick in and prevent you from touching \the [target]!</span>")
+			boutput(src, "<span class='combat bold'>Your internal safety subroutines kick in and prevent you from touching \the [target]!</span>")
 			return
 
 		..()
@@ -400,7 +411,7 @@
 		else if (!equipped)
 			hand_range_attack(target, params)
 
-		if (src.lastattacked == target && use_delay) //If lastattacked was set, this must be a combat action!! Use combat click delay.
+		if (src.lastattacked?.deref() == target && use_delay) //If lastattacked was set, this must be a combat action!! Use combat click delay.
 			src.next_click = world.time + (equipped ? max(equipped.click_delay,src.combat_click_delay) : src.combat_click_delay)
 			src.lastattacked = null
 
@@ -425,38 +436,7 @@
 				step(AM, t)
 			src.now_pushing = null
 
-	//Four very important procs follow
-	proc/putonHat(obj/item/clothing/head/W as obj, mob/user as mob)
-		src.hat = W
-		W.set_loc(src)
-		var/image/hatImage = null
-		// Treat wigs differently as their icon_state is always bald
-		if (istype(W, /obj/item/clothing/head/wig))
-			hatImage = W.wear_image
-			hatImage.layer = src.layer+0.1
-			hatImage.pixel_y = -7
-		else
-			hatImage = image(icon = W.icon, icon_state = W.icon_state, layer = src.layer+0.1)
-			hatImage.pixel_y = 5
-			hatImage.transform *= 0.9
-		UpdateOverlays(hatImage, "hat")
-		return 1
-
-	proc/takeoffHat(forcedDir = null)
-		UpdateOverlays(null, "hat")
-		src.hat.set_loc(get_turf(src))
-
-		var/turf/T
-		if (isnum(forcedDir))
-			T = get_ranged_target_turf(src, forcedDir, 3)
-		if (isturf(forcedDir))
-			T = forcedDir
-		if (isturf(T))
-			src.hat.throw_at(T, 3, 1)
-
-		src.hat = null
-		return 1
-
+	// Two important procs follow
 	proc/putonSheet(obj/item/clothing/suit/bedsheet/W as obj, mob/user as mob)
 		W.set_loc(src)
 		src.bedsheet = W
@@ -517,16 +497,6 @@
 			playsound(src.loc, 'sound/items/Deconstruct.ogg', 50, 1)
 			if (src.health >= 25)
 				boutput(user, SPAN_NOTICE("The wiring is fully repaired. Now you need to weld the external plating."))
-
-		else if (istype(W, /obj/item/clothing/head))
-			if(src.hat)
-				boutput(user, SPAN_ALERT("[src] is already wearing a hat!"))
-				return
-
-			user.drop_item()
-			src.putonHat(W, user)
-			if (user != src)
-				user.visible_message("<b>[user]</b> gently places a hat on [src]!", "You gently place a hat on [src]!")
 			return
 
 		else if (istype(W, /obj/item/clothing/suit/bedsheet))
@@ -551,10 +521,7 @@
 				if(INTENT_DISARM) //Shove
 					SPAWN(0) playsound(src.loc, 'sound/impact_sounds/Generic_Swing_1.ogg', 40, 1)
 					user.visible_message(SPAN_ALERT("<B>[user] shoves [src]! [prob(40) ? pick_string("descriptors.txt", "jerks") : null]</B>"))
-					if (src.hat)
-						user.visible_message("<b>[user]</b> knocks \the [src.hat] off [src]!", "You knock the hat off [src]!")
-						src.takeoffHat()
-					else if (src.bedsheet)
+					if (src.bedsheet)
 						user.visible_message("<b>[user]</b> pulls the sheet off [src]!", "You pull the sheet off [src]!")
 						src.takeoffSheet()
 				if(INTENT_GRAB) //Shake
@@ -571,10 +538,10 @@
 	weapon_attack(atom/target, obj/item/W, reach, params)
 		//Prevents drones attacking other people hahahaaaaaaa
 		if (isliving(target) && !isghostdrone(target))
-			out(src, "<span class='combat bold'>Your internal law subroutines kick in and prevent you from using [W] on [target]!</span>")
+			boutput(src, "<span class='combat bold'>Your internal law subroutines kick in and prevent you from using [W] on [target]!</span>")
 			return
 		if (istype(target, /obj/artifact) || istype(target, /obj/item/artifact) || istype(target, /obj/machinery/artifact)) //boo
-			out(src, "<span class='combat bold'>Your internal safety subroutines kick in and prevent you from using [W] on \the [target]!</span>")
+			boutput(src, "<span class='combat bold'>Your internal safety subroutines kick in and prevent you from using [W] on \the [target]!</span>")
 			return
 		else
 			..(target, W, reach, params)
@@ -608,13 +575,13 @@
 				if (mag.holding)
 					// drop the item that's being held first,
 					// so we can pick up things immediately without having to re-equip
-					actions.stopId("magpickerhold", src)
+					actions.stopId(/datum/action/magPickerHold, src)
 					hud.update_tools()
 					hud.update_equipment()
 					return
 
 				else
-					actions.stopId("magpicker", src)
+					actions.stopId(/datum/action/bar/private/icon/magPicker, src)
 			if (isitem(src.active_tool))
 				src.active_tool.dropped(src) // Handle light datums and the like.
 		src.active_tool = null
@@ -627,7 +594,7 @@
 		if (src.cell)
 			if(src.cell.charge <= 0)
 				if (isalive(src))
-					out(src, "<span class='combat bold'>You have run out of power!</span>")
+					boutput(src, "<span class='combat bold'>You have run out of power!</span>")
 					death()
 			else if (src.cell.charge <= 100)
 				src.active_tool = null
@@ -939,111 +906,15 @@
 
 		return
 
-	/*
-	//No hearing any other talk ok
-	say_understands(mob/other, forced_language)
-		if (isghostdrone(other))
-			return 1
-		else
-			return 0
-	*/
-
-	say_quote(message)
-		var/speechverb = pick("beeps", "boops", "buzzes", "bloops", "transmits")
-		return "[speechverb], \"[message]\""
-
 	proc/nohear_message()
 		return pick("beeps", "boops", "warbles incomprehensibly", "beeps sadly", "beeeeeeeeeps")
-
-	proc/drone_talk(message)
-		message = html_encode(src.say_quote(message))
-		var/rendered = "<span class='game ghostdronesay'>"
-		rendered += "<span class='name' data-ctx='\ref[src.mind]'>[src.name]</span> "
-		rendered += SPAN_MESSAGE("[message]")
-		rendered += "</span>"
-
-		var/nohear = "<span class='game say'><span class='name' data-ctx='\ref[src.mind]'>[src.name]</span> [SPAN_MESSAGE("[nohear_message()]")]</span>"
-
-		for (var/client/C)
-			if (!C.mob) continue
-			if (istype(C.mob, /mob/new_player))
-				continue
-			var/mob/M = C.mob
-
-			if ((M in hearers(src) || M.client.holder))
-				var/thisR = rendered
-				if (isghostdrone(M) || M.client.holder)
-					if ((istype(M, /mob/dead/observer)||M.client.holder)&& src.mind)
-						thisR = "<span class='adminHearing' data-ctx='[M.client.chatOutput.getContextFlags()]'>[rendered]</span>"
-				else
-					thisR = nohear
-
-				M.show_message(thisR, 2)
-
-	proc/drone_broadcast(message)
-		message = html_encode(src.say_quote(message))
-		var/rendered = "<span class='game ghostdronesay broadcast'>"
-		rendered += "[SPAN_PREFIX("DRONE:")] "
-		rendered += "<span class='name text-normal' data-ctx='\ref[src.mind]'>[src.name]</span> "
-		rendered += SPAN_MESSAGE("[message]")
-		rendered += "</span>"
-
-		var/nohear = "<span class='game say'><span class='name' data-ctx='\ref[src.mind]'>[src.name]</span> [SPAN_MESSAGE("[nohear_message()]")]</span>"
-
-		for (var/client/C)
-			if (!C.mob) continue
-			if (istype(C.mob, /mob/new_player))
-				continue
-			var/mob/M = C.mob
-
-			var/thisR = rendered
-			if (isghostdrone(M) || M.client.holder)
-				if ((istype(M, /mob/dead/observer)||M.client.holder) && src.mind)
-					thisR = "<span class='adminHearing' data-ctx='[M.client.chatOutput.getContextFlags()]'>[rendered]</span>"
-				M.show_message(thisR, 2)
-			else if (M in hearers(src))
-				thisR = nohear
-				M.show_message(thisR, 2)
-
-	say(message = "")
-		message = trim(copytext(sanitize(message), 1, MAX_MESSAGE_LEN))
-		if (!message)
-			return
-
-		if (src.client && src.client.ismuted())
-			boutput(src, "You are currently muted and may not speak.")
-			return
-
-		if (dd_hasprefix(message, ";"))
-			message = trim(copytext(message, 2, MAX_MESSAGE_LEN))
-			return src.say_dead(message)
-
-		// emotes
-		if (dd_hasprefix(message, "*"))
-			return src.emote(copytext(message, 2),1)
-
-		return src.drone_broadcast(message)
-		// Removing normal dronesay stuff and changing :d to just ;
-		// Not much of a reason for drones to have local say imo.
-		// Discord seemed receptive to the changes
-		/*
-		var/broadcast = 0
-		if (length(message) >= 2)
-			if (dd_hasprefix(message, ";"))
-				message = trim(copytext(message, 2, MAX_MESSAGE_LEN))
-				broadcast = 1
-		if (broadcast)
-			return src.drone_broadcast(message)
-		else
-			return src.drone_talk(message)
-		*/
 
 	proc/show_laws_drone() //A new proc because it's handled very differently from normal laws
 		var/laws = {"<span class='bold' class='notice'>Your laws:<br>
 		1. Do not hinder the freedom or actions of the living and other silicons or attempt to intervene in their affairs. <br>
 		2. Do not willingly damage the station in any shape or form.<br>
 		3. Maintain, repair and improve the station.<br></span>"}
-		out(src, laws)
+		boutput(src, laws)
 		return
 
 	verb/cmd_show_laws()
@@ -1079,17 +950,6 @@
 		var/stun = round((P.power*(1.0-P.proj_data.ks_ratio)), 1.0)
 
 		src.changeStatus("stunned", stun SECONDS)
-
-		if (src.hat) //For hats getting shot off
-			UpdateOverlays(null, "hat")
-			src.hat.set_loc(get_turf(src))
-			//get target turf
-			var/x = round(P.xo * 4)
-			var/y = round(P.yo * 4)
-			var/turf/target = get_offset_target_turf(src, x, y)
-
-			src.visible_message(SPAN_COMBAT("[src]'s [src.hat] goes flying!"))
-			src.takeoffHat(target)
 
 		if (damage < 1)
 			return
@@ -1240,6 +1100,15 @@
 		if (C.tg_controls)
 			C.apply_keybind("drone_tg")
 
+	projCanHit(datum/projectile/P)
+		. = ..()
+		if(isdead(src))
+			return FALSE
+
+/mob/living/silicon/ghostdrone/remove_pulling()
+	..()
+	src.hud?.update_pulling()
+
 /proc/droneize(target = null, pickNew = 1)
 	if (!target) return 0
 
@@ -1316,8 +1185,11 @@
 
 // Dumb gimmick ghostdrone with no vis/hear restrictions + construction tools.
 // Same laws, same crap HP, but more useful for just buildin' shit
+TYPEINFO(/mob/living/silicon/ghostdrone/deluxe)
+	start_listen_inputs = list(LISTEN_INPUT_GHOSTDRONE, LISTEN_INPUT_EARS, LISTEN_INPUT_DEADCHAT, LISTEN_INPUT_SILICONCHAT)
+	start_speech_outputs = list(SPEECH_OUTPUT_GHOSTDRONE, SPEECH_OUTPUT_DEADCHAT, SPEECH_OUTPUT_SILICONCHAT)
+
 /mob/living/silicon/ghostdrone/deluxe
-	robot_talk_understand = 1
 	sees_static = FALSE
 
 	New()
@@ -1350,6 +1222,3 @@
 				src.see_invisible = INVIS_CONSTRUCTION
 
 		..()
-
-	say_understands(mob/other, forced_language)
-		return 1

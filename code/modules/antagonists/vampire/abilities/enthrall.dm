@@ -33,45 +33,13 @@
 		if (!ishuman(target))
 			return 1
 
+		. = ..()
 		actions.start(new/datum/action/bar/private/icon/vampire_enthrall_thrall(target, src, pointCost), M)
 		return 1 //not 0, we dont awnna deduct points until cast finishes
-
-/datum/targetable/vampire/speak_thrall
-	name = "Speak to Thralls"
-	desc = "Telepathically speak to all of your undead thralls."
-	icon_state = "thrallspeak"
-	targeted = 0
-	target_nodamage_check = 1
-	max_range = 1
-	cooldown = 1
-	pointCost = 0
-	not_when_in_an_object = FALSE
-	when_stunned = 1
-	not_when_handcuffed = 0
-	unlock_message = "You have gained 'Speak to Thralls'. It allows you to telepathically speak to all of your undead thralls."
-
-	cast(mob/target)
-		if (!holder)
-			return 1
-
-		var/mob/living/M = holder.owner
-		var/datum/abilityHolder/vampire/H = holder
-		if (!M)
-			return 1
-
-		var/message = html_encode(input("Choose something to say:","Enter Message.","") as null|text)
-		if (!message)
-			return
-
-		.= H.transmit_thrall_msg(message, M)
-
-		return 0
-
 
 /datum/action/bar/private/icon/vampire_enthrall_thrall
 	duration = 20
 	interrupt_flags = INTERRUPT_MOVE | INTERRUPT_ACT | INTERRUPT_STUNNED | INTERRUPT_ACTION
-	id = "vampire_enthrall"
 	icon = 'icons/ui/actions.dmi'
 	icon_state = "enthrall"
 	bar_icon_state = "bar-vampire"
@@ -132,11 +100,11 @@
 
 		if (target in H.thralls)
 			//and add blood!
-			var/datum/mutantrace/vampiric_thrall/V = target.mutantrace
-			if (V)
-				V.blood_points += 200
-
-			H.blood_tracking_output(cost)
+			var/datum/abilityHolder/vampiric_thrall/thrallHolder = target.get_ability_holder(/datum/abilityHolder/vampiric_thrall)
+			if (thrallHolder)
+				thrallHolder.points += 200
+			//we also restore their real actual blood pressure a bit, to allow vampires to save their thralls who are drained
+			target.blood_volume = min(target.blood_volume + 200, initial(target.blood_volume))
 
 			H.deductPoints(cost)
 

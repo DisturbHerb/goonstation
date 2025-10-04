@@ -3,7 +3,6 @@
 	name = "paint can"
 	icon = 'icons/misc/old_or_unused.dmi'
 	icon_state = "paint_neutral"
-	uses_multiple_icon_states = 1
 	var/paintcolor = "neutral"
 	item_state = "paintcan"
 	w_class = W_CLASS_NORMAL
@@ -24,10 +23,11 @@
 	desc = "Dispenses paint. Derp."
 	icon = 'icons/obj/vending.dmi'
 	icon_state = "paint-vend"
-	icon_fallen = "paint-fallen"
 	var/paint_color = "#ff0000"
 	var/add_orig = 0.2
 	var/paint_intensity = 0.6
+	var/paint_uses = 15
+	var/bootleg = FALSE //Remember, use ONLY genuine replacement parts.
 
 	emag_act(var/mob/user, var/obj/item/card/emag/E)
 		if(user)
@@ -37,11 +37,11 @@
 			var/obj/item/paint_can/rainbow/plaid/P = new/obj/item/paint_can/rainbow/plaid(src.loc)
 			if (user)
 				boutput(user, SPAN_NOTICE("You hear a faint droning sound. Like a tiny set of bagpipes."))
-			P.uses = (15 * 7)
+			P.uses = (paint_uses * 7) // 105
 			P.generate_icon()
 		else
 			var/obj/item/paint_can/rainbow/P = new/obj/item/paint_can/rainbow(src.loc)
-			P.uses = (15 * 7)
+			P.uses = (paint_uses * 7)
 			P.generate_icon()
 
 		return 1
@@ -50,7 +50,7 @@
 		if(istype(W,/obj/item/paint_can) && !(status & (BROKEN|NOPOWER)))
 			var/obj/item/paint_can/can = W
 			boutput(user, SPAN_NOTICE("You refill the paint can."))
-			can.uses = 15
+			can.uses = paint_uses
 			can.generate_icon()
 		else
 			..()
@@ -60,19 +60,26 @@
 			return
 		var/col_new = input(user, "Pick paint color", "Pick paint color", src.paint_color) as color
 		if(col_new)
-			var/obj/item/paint_can/P = new/obj/item/paint_can(src.loc)
-			P.paint_color = col_new
+			if(src.bootleg)
+				col_new = BlendRGB(col_new, random_color(), 0.2)
+			var/obj/item/paint_can/P = new/obj/item/paint_can(src.loc, col_new)
 			paint_color = col_new
 			P.paint_intensity = src.paint_intensity
 			P.add_orig = src.add_orig
 			P.generate_icon()
+			user.put_in_hand_or_drop(P)
 		return
+
+/obj/machinery/vending/paint/bootleg
+	name = "bootleg paint dispenser"
+	bootleg = TRUE
+
 
 //////////////////// broken paint vending machine
 
 //This is me being mean to the players.
 /obj/machinery/vending/paint/broken
-	name = "Broken Paint Dispenser"
+	name = "\improper Broken Paint Dispenser"
 	desc = "Would dispense paint, if it were not broken."
 	icon = 'icons/obj/vending.dmi'
 	icon_state = "paint-vend"
@@ -80,6 +87,46 @@
 	density = 1
 	var/repair_stage = 0
 	var/paint_needed = 20
+	var/list/stage_names = list(
+		"Still-Broken Paint Dispenser",
+		"Slightly-Less-Broken Paint Dispenser",
+		"Broken-But-Under-Maintenance Paint Dispenser",
+		"Partially-Repaired Paint Dispenser",
+		"Very-Nearly-Functional Paint Dispenser",
+		"Almost Fully Repaired and Properly Serviced Paint Dispenser",
+		"One-Step-Away-from-Being-Fully-Repaired Paint Dispenser"
+	)
+	var/list/stage_desc = list(
+		"Would dispense paint, if it were not broken. The maintenance panel has been unscrewed.",
+		"Would dispense paint, if it were not broken. The maintenance panel has been removed.",
+		"Would dispense paint, if it were not broken. The maintenance panel has been removed and the service module has been loosened.",
+		"Would dispense paint, if it were not broken. The maintenance panel has been removed and the wiring has been replaced. A \"check paint cartridge\" light is blinking.",
+		"Would dispense paint, if only the service module was resecured and the panel was replaced.",
+		"Would dispense paint, if only the maintenance panel was replaced.",
+		"Would dispense paint, if only the maintenance panel was secured so as to allow operation."
+	)
+
+	HELP_MESSAGE_OVERRIDE({""})
+	get_help_message(dist, mob/user)
+		if(src.fallen)
+			. += {"You can use a <b>crowbar</b> to lift the machine back up.\n"}
+		switch(src.repair_stage)
+			if(0)
+				. += "You can use a <b>screwdriver</b> to unscrew the maintenance panel."
+			if(1)
+				. += "You can use a <b>crowbar</b> to remove the maintenance panel."
+			if(2)
+				. += "You can use a <b>wrench</b> to unbolt the service module."
+			if(3)
+				. += "You can add cables to repair the service module."
+			if(4)
+				. += "You can use buckets of paint to refil the service module."
+			if(5)
+				. += "You can use a <b>wrench</b> to resecure the service module."
+			if(6)
+				. += "You can replace paint dispenser's maintenance panel to continue repairs."
+			if(7)
+				. += "You can use a <b>screwdriver</b> to secure the maintenance panel"
 
 	attack_hand(mob/user)
 		boutput(user, SPAN_ALERT("This must be repaired before it can be used!"))
@@ -89,7 +136,13 @@
 	attackby(obj/item/W, mob/user)
 		if (!W || !user)
 			return
-
+		if (src.fallen)
+			if (ispryingtool(W))
+				//action bar is defined at the end of these procs
+				actions.start(new /datum/action/bar/icon/right_vendor(src), user)
+			else
+				boutput(user, SPAN_ALERT("[src] needs to be stood upright first!"))
+			return
 		if(istype(W,/obj/item/paint_can))
 			if (repair_stage == 4)
 				var/obj/item/paint_can/can = W
@@ -98,153 +151,162 @@
 					return
 
 				can.uses--
+				if (can.uses <= 0) can.overlays = null
+				can.inventory_counter?.update_number(can.uses)
 				paint_needed--
 				if (!paint_needed)
-					user.visible_message("[user] pours some paint into [src]. The \"check paint cartridge\" light goes out.", "You pour some paint into [src], filling it up!")
+					user.visible_message("[user] pours some paint into [src]. The \"check paint cartridge\" light goes out.", "You pour some paint into [src], filling it up!", group = "paintmachine_fill")
+					playsound(user, 'sound/machines/ping.ogg', 65, TRUE)
 					src.repair_stage = 5
-					src.name = "Very-Nearly-Functional Paint Dispenser"
-					desc = "Would dispense paint, if only the service module was resecured and the panel was replaced."
+					src.update_name()
 					return
 
-				user.visible_message("[user] pours some paint into [src].", "You pour some paint into [src]. ([paint_needed] units still needed)")
+				user.visible_message("[user] pours some paint into [src].", "You pour some paint into [src]. ([paint_needed] units still needed)", group = "paintmachine_fill")
 			else
 				boutput(user, SPAN_ALERT("You need to repair the machine first!"))
 			return
 
-		else
-			switch(repair_stage)
-				if (0)
-					if (isscrewingtool(W))
-						user.visible_message("[user] begins to unscrew the maintenance panel.","You begin to unscrew the maintenance panel.")
-						playsound(user, 'sound/items/Screwdriver2.ogg', 65, TRUE)
-						if (!do_after(user, 2 SECONDS) || repair_stage)
-							return
-						repair_stage = 1
-						user.visible_message("[user] finishes unscrewing the maintenance panel.")
-						src.desc = "Would dispense paint, if it were not broken. The maintenance panel has been unscrewed."
-					else
-						boutput(user, SPAN_ALERT("The maintenance panel needs to be unscrewed first!"))
+		var/datum/action/bar/icon/callback/action_bar = new /datum/action/bar/icon/callback(user, src, 1 SECOND, /obj/machinery/vending/paint/broken/proc/stage_actions,\
+		list(W,user), W.icon, W.icon_state, null)
+		switch(src.repair_stage)
+			if (0)
+				if (isscrewingtool(W))
+					user.visible_message("[user] begins to unscrew the maintenance panel.","You begin to unscrew the maintenance panel.")
+					playsound(user, 'sound/items/Screwdriver2.ogg', 65, TRUE)
+					action_bar.duration = 2 SECONDS
+					actions.start(action_bar, user)
+				else
+					boutput(user, SPAN_ALERT("The maintenance panel needs to be unscrewed first!"))
+					return
+
+			if (1)
+				if (ispryingtool(W))
+					user.visible_message("[user] begins to pry off the maintenance panel.","You begin to pry off the maintenance panel.")
+					playsound(user, 'sound/items/Crowbar.ogg', 65, TRUE)
+					action_bar.duration = 2 SECONDS
+					actions.start(action_bar, user)
+				else
+					boutput(user, SPAN_ALERT("The maintenance panel needs to be pried open first!"))
+					return
+
+			if (2)
+				if (iswrenchingtool(W))
+					user.visible_message("[user] begins to loosen the service module bolts.","You begin to loosen the service module bolts.")
+					playsound(user, 'sound/items/Ratchet.ogg', 65, TRUE)
+					action_bar.duration = 3 SECONDS
+					actions.start(action_bar, user)
+				else
+					boutput(user, SPAN_ALERT("The bolts on the service module must be loosened first!"))
+					return
+
+			if (3)
+				if (istype(W, /obj/item/cable_coil))
+					if (W.amount < 20)
+						boutput(user, SPAN_ALERT("You do not have enough cable to replace all of the burnt wires! (20 units required)"))
 						return
+					user.visible_message("[user] begins to replace the burnt wires.","You begin to replace the burnt wires.")
+					playsound(user, 'sound/items/Deconstruct.ogg', 65, TRUE)
+					action_bar.duration = 10 SECONDS
+					actions.start(action_bar, user)
+				else
+					boutput(user, SPAN_ALERT("The wiring on the service module must be replaced first!"))
+					return
 
-				if (1)
-					if (ispryingtool(W))
-						user.visible_message("[user] begins to pry off the maintenance panel.","You begin to pry off the maintenance panel.")
-						playsound(user, 'sound/items/Crowbar.ogg', 65, TRUE)
-						if (!do_after(user, 2 SECONDS) || (repair_stage != 1))
-							return
-						repair_stage = 2
-						user.visible_message("[user] pries open the maintenance panel, exposing the service module!")
-						var/obj/item/tile/steel/panel = new /obj/item/tile/steel(src.loc)
-						panel.name = "maintenance panel"
-						panel.desc = "A panel that is clearly from a paint dispenser. Obviously."
+			if (5)
+				if (iswrenchingtool(W))
+					user.visible_message("[user] begins to tighten the service module bolts.","You begin to tighten the service module bolts.")
+					playsound(user, 'sound/items/Ratchet.ogg', 65, TRUE)
+					action_bar.duration = 3 SECONDS
+					actions.start(action_bar, user)
+				else
+					boutput(user, SPAN_ALERT("The bolts on the service module must be secured first!"))
+					return
 
-						src.desc = "Would dispense paint, if it were not broken. The maintenance panel has been removed."
-					else
-						boutput(user, SPAN_ALERT("The maintenance panel needs to be pried open first!"))
-						return
+			if (6)
+				if (istype(W, /obj/item/tile))
+					if(!istype(W, /obj/item/tile/paintmachine))
+						boutput(user, SPAN_NOTICE("[W] isn't [src]'s originial maintenance panel, but that should be fine, right?"))
+					user.visible_message("[user] begins to replace the maintenance panel.","You begin to replace the maintenance panel.")
+					playsound(user, 'sound/items/Deconstruct.ogg', 65, TRUE)
+					action_bar.duration = 5 SECONDS
+					actions.start(action_bar, user)
+				else
+					boutput(user, SPAN_ALERT("The service panel must be replaced first!"))
+					return
 
-				if (2)
-					if (iswrenchingtool(W))
-						user.visible_message("[user] begins to loosen the service module bolts.","You begin to loosen the service module bolts.")
-						playsound(user, 'sound/items/Ratchet.ogg', 65, TRUE)
-						if (!do_after(user, 3 SECONDS) || (repair_stage != 2))
-							return
-						repair_stage = 3
-						user.visible_message("[user] looses the service module bolts, exposing the burnt wiring within.")
+			if (7)
+				if (isscrewingtool(W))
+					user.visible_message("[user] begins to secure the maintenance panel..","You begin to secure the maintenance panel.")
+					playsound(user, 'sound/items/Screwdriver2.ogg', 65, TRUE)
+					action_bar.duration = 10 SECONDS
+					actions.start(action_bar, user)
 
-						src.desc = "Would dispense paint, if it were not broken. The maintenance panel has been removed and the service module has been loosened."
-					else
-						boutput(user, SPAN_ALERT("The bolts on the service module must be loosened first!"))
-						return
 
-				if (3)
-					if (istype(W, /obj/item/cable_coil))
-						var/obj/item/cable_coil/coil = W
-						if (W.amount < 20)
-							boutput(user, SPAN_ALERT("You do not have enough cable to replace all of the burnt wires! (20 units required)"))
-							return
-						user.visible_message("[user] begins to replace the burnt wires.","You begin to replace the burnt wires.")
-						playsound(user, 'sound/items/Deconstruct.ogg', 65, TRUE)
-						if (!do_after(user, 100) || (repair_stage != 3))
-							return
-
-						coil.use(20)
+	proc/stage_actions(obj/item/W, mob/user)
+		switch(src.repair_stage)
+			if(0)
+				if(user.equipped(W) && isscrewingtool(W))
+					repair_stage = 1
+					user.visible_message("[user] finishes unscrewing the maintenance panel.")
+			if(1)
+				if(user.equipped(W) && ispryingtool(W))
+					repair_stage = 2
+					user.visible_message("[user] pries open the maintenance panel, exposing the service module!")
+					new /obj/item/tile/paintmachine(src.loc)
+			if(2)
+				if(user.equipped(W) && iswrenchingtool(W))
+					repair_stage = 3
+					user.visible_message("[user] looses the service module bolts, exposing the burnt wiring within.")
+			if(3)
+				if(user.equipped(W) && istype(W, /obj/item/cable_coil))
+					var/obj/item/cable_coil/cable = W
+					if(cable.use(20))
 						repair_stage = 4
 						user.visible_message("[user] replaces the burnt wiring in [src]. A \"check paint cartridge\" light begins to blink.")
-
-						src.name = "Partially-Repaired Paint Dispenser"
-						src.desc = "Would dispense paint, if it were not broken. The maintenance panel has been removed and the wiring has been replaced. A \"check paint cartridge\" light is blinking."
 					else
-						boutput(user, SPAN_ALERT("The wiring on the service module must be replaced first!"))
-						return
+						boutput(user, SPAN_ALERT("You don't have enough cable for that!"))
+			if(5)
+				if(user.equipped(W) && iswrenchingtool(W))
+					repair_stage = 6
+					user.visible_message("[user] tightens the service module bolts.")
+			if(6)
+				if(user.equipped(W) && istype(W, /obj/item/tile))
+					repair_stage = 7
+					user.visible_message("[user] replaces the maintenace panel.")
+					if(!istype(W, /obj/item/tile/paintmachine))
+						boutput(user, SPAN_ALERT("It seems like [W] isn't quite a perfect fit. Welp."))
+						src.bootleg = TRUE
+					W.change_stack_amount(-1)
 
-				if (5)
-					if (iswrenchingtool(W))
-						user.visible_message("[user] begins to tighten the service module bolts.","You begin to tighten the service module bolts.")
-						playsound(user, 'sound/items/Ratchet.ogg', 65, TRUE)
-						if (!do_after(user, 3 SECONDS) || (repair_stage != 5))
-							return
-						repair_stage = 6
-						user.visible_message("[user] tightens the service module bolts.")
+			if(7)
+				if(user.equipped(W) && isscrewingtool(W))
+					repair_stage = 8
+					user.visible_message("[user] secures the maintenance panel!", "You secure the maintenance panel.")
+					var/obj/machinery/vending/paint/paintmachine = new /obj/machinery/vending/paint(src.loc)
+					if(src.bootleg)
+						paintmachine.say("ERROR: Unable to verify PrismaColor license.")
+						paintmachine.bootleg = TRUE
+						paintmachine.name = "bootleg paint dispenser"
+					qdel(src)
+					return
+		src.update_name()
 
-						src.name = "Almost Fully Repaired and Properly Serviced Paint Dispenser"
-						src.desc = "Would dispense paint, if only the maintenance panel was replaced."
-					else
-						boutput(user, SPAN_ALERT("The bolts on the service module must be secured first!"))
-						return
+	proc/update_name()
+		src.name = "\improper [src.stage_names[src.repair_stage]]"
+		src.desc = src.stage_desc[src.repair_stage]
 
-				if (6)
-					if (istype(W, /obj/item/tile))
-						user.visible_message("[user] begins to replace the maintenance panel.","You begin to replace the maintenance panel.")
-						playsound(user, 'sound/items/Deconstruct.ogg', 65, TRUE)
-						if (!do_after(user, 5 SECONDS) || (repair_stage != 6))
-							return
-						repair_stage = 7
-						qdel(W)
-						user.visible_message("[user] replaces the maintenace panel.")
+TYPEINFO(/obj/item/tile/paintmachine)
+	mat_appearances_to_ignore = list("steel")
+/obj/item/tile/paintmachine
+	name = "maintenance panel"
+	desc = "a very important panel from the back of a paint dispenser. Don't lose it!"
+	icon_state = "tile_paintmachine"
+	amount = 1
+	max_stack = 1
+	default_material = "steel"
 
-						src.name = "One-Step-Away-from-Being-Fully-Repaired Paint Dispenser"
-						src.desc = "Would dispense paint, if only the maintenance panel was secured so as to allow operation."
-					else
-						boutput(user, SPAN_ALERT("The service panel must be replaced first!"))
-						return
-
-				if (7)
-					if (isscrewingtool(W))
-						user.visible_message("[user] begins to secure the maintenance panel..","You begin to secure the maintenance panel.")
-						playsound(user, 'sound/items/Screwdriver2.ogg', 65, TRUE)
-						if (!do_after(user, 100) || (repair_stage != 7))
-							return
-						repair_stage = 8
-						if(prob(100))
-							user.visible_message("[user] secures the maintenance panel!", "You secure the maintenance panel.")
-							new /obj/machinery/vending/paint(src.loc)
-							qdel(src)
-							return
-						user.visible_message(SPAN_ALERT("<b>[user] slips, knocking the paint dispenser over!.</b>"), SPAN_ALERT("<b>OH FUCK</b>"))
-
-						src.name = "Irreparably Destroyed Paint Dispenser"
-						src.desc = "Damaged beyond all repair, this will never dispense paint ever again."
-
-						flick("vendbreak", src)
-						SPAWN(0.8 SECONDS)
-							src.icon_state = "fallen"
-							sleep(7 SECONDS)
-							playsound(src.loc, 'sound/effects/Explosion2.ogg', 100, 1)
-
-							var/obj/effects/explosion/delme = new /obj/effects/explosion(src.loc)
-							delme.fingerprintslast = src.fingerprintslast
-
-							invisibility = INVIS_ALWAYS_ISH
-							set_density(0)
-							sleep(15 SECONDS)
-							qdel(delme)
-							qdel(src)
-							return
-
-					else
-						boutput(user, SPAN_ALERT("The service panel must be secured first!"))
-						return
+	_update_stack_appearance()
+		return
 
 ////////////// paint cans
 
@@ -252,49 +314,100 @@ var/list/cached_colors = new/list()
 
 /obj/item/paint_can
 	name = "paint can"
-	desc = "A Paint Can and a brush."
+	desc = "A brush."
 	icon = 'icons/misc/old_or_unused.dmi'
 	icon_state = "paint"
 	item_state = "bucket"
+	var/colorname = null
 	var/paint_color = rgb(1,1,1)
 	var/actual_paint_color
 	var/image/paint_overlay
 	var/uses = 15
 	var/paint_intensity = 0.5
 	var/add_orig = 0
-	flags = FPRINT | EXTRADELAY | TABLEPASS | CONDUCT
+	flags = EXTRADELAY | TABLEPASS | CONDUCT
 	w_class = W_CLASS_SMALL
+	inventory_counter_enabled = TRUE
 
-	New()
+	New(loc, col_new = null)
 		..()
+		if (col_new)
+			src.paint_color = col_new
+			src.colorname = null
+		if (!src.colorname)
+			var/datum/color/C = new
+			C.from_hex(paint_color)
+			src.colorname = get_nearest_color(C)
+			src.name = "[colorname] paint can"
 		generate_icon()
+
+
+	examine()
+		. = ..()
+		if (src.uses > 0)
+			. += "It has <span style='display: inline-block; height: 1em; width: 1em; border: 1px solid black; background-color: [src.paint_color];'>&nbsp;</span> [colorname] paint. It has [src.uses] use\s left."
+		else
+			. += "It is empty. It used to have <span style='display: inline-block; height: 1em; width: 1em; border: 1px solid black; background-color: [src.paint_color];'>&nbsp;</span> [colorname] paint, though."
+
+
 
 	attack_hand(mob/user)
 		..()
 		generate_icon()
 
-	afterattack(atom/target as mob|obj|turf, mob/user as mob)
-		if(target == loc || BOUNDS_DIST(src, target) > 0 || istype(target,/obj/machinery/vending/paint) ) return FALSE
-
-		if(uses <= 0)
-			boutput(user, "It's empty.")
+	proc/paint_thing(atom/target as mob|obj|turf, force = FALSE, quiet = FALSE)
+		if (uses <= 0 && !force)
+			// if we have no uses and we are not forcing it, abort
 			return FALSE
+		else if (!force)
+			// otherwise, if we aren't forcing it (but we have uses), reduce by one
+			uses--
 
-		user.visible_message(SPAN_NOTICE("[user] paints \the [target]."), "You paint \the [target]", SPAN_NOTICE("You hear a wet splat."))
-		playsound(src, 'sound/impact_sounds/Slimy_Splat_1.ogg', 40, TRUE)
+		if (uses <= 0) src.overlays = null
+		src.inventory_counter?.update_number(src.uses)
 
-		uses--
-		if(uses <= 0) overlays = null
-
+		if (!quiet) playsound(target, 'sound/impact_sounds/Slimy_Splat_1.ogg', 40, TRUE)
 		target.add_filter("paint_color", 1, color_matrix_filter(normalize_color_to_matrix(src.actual_paint_color)))
-		if(ismob(target.loc))
+		if (ismob(target.loc))
 			var/mob/M = target.loc
 			M.update_clothing() //trigger an update if this is worn clothing
+
 		return TRUE
+
+	afterattack(atom/target as mob|obj|turf, mob/user as mob)
+		if (target == loc || BOUNDS_DIST(src, target) > 0 || istype(target,/obj/machinery/vending/paint)) return FALSE
+
+		if (uses <= 0)
+			boutput(user, "\The [src] is empty.")
+			return FALSE
+
+		if (src.paint_thing(target))
+			user.visible_message(SPAN_NOTICE("[user] paints \the [target] with \the [src]."), "You paint \the [target] with \the [src].", SPAN_NOTICE("You hear a wet splat."))
+
+		return TRUE
+
+	attackby(obj/item/W, mob/user, params)
+		if (istype(W, /obj/item/gun/paintball))
+			W.Attackby(src, user)
+			return
+
+		. = ..()
+
+	should_suppress_attack(var/object, mob/user)
+		if (istype(object, /obj/table) || istype(object, /obj/window))
+			return TRUE
+		. = ..()
+
+	should_place_on(obj/target, params)
+		// Don't place on tables unless click-dragged or empty
+		if (istype(target, /obj/table) && uses > 0 && islist(params) && !params["dragged"])
+			return FALSE
+		. = ..()
 
 	proc/generate_icon()
 		overlays = null
-		if(uses <= 0) return
+		src.inventory_counter?.update_number(src.uses)
+		if (uses <= 0) return
 		if (!paint_overlay)
 			paint_overlay = image('icons/misc/old_or_unused.dmi',"paint_overlay")
 		paint_overlay.color = paint_color
@@ -310,7 +423,7 @@ var/list/cached_colors = new/list()
 	name = "random paint can"
 	uses = 5
 	New()
-		var/colorname = "Weird"
+		colorname = "weird"
 		switch(rand(1,6))
 			if(1)
 				paint_color = rgb(255,10,10)
@@ -335,9 +448,15 @@ var/list/cached_colors = new/list()
 		desc = "[colorname] paint. In a can. Whoa!"
 		..()
 
+/obj/item/paint_can/totally_random
+	New()
+		src.paint_color = rgb(rand(0, 255), rand(0, 255), rand(0, 255))
+		..()
+
 /obj/item/paint_can/rainbow
 	name = "rainbow paint can"
-	desc = "This Paint Can contains rich, thick, rainbow paint. No, we don't know how it works either."
+	desc = "This paint can contains rich, thick, rainbow paint. No, we don't know how it works either."
+	colorname = "shimmering rainbow"
 	var/colorlist = list()
 	var/currentcolor = 1
 	New()
@@ -347,21 +466,21 @@ var/list/cached_colors = new/list()
 		src.paint_color = colorlist[currentcolor]
 		..()
 
-	afterattack(var/atom/target, var/mob/user, var/change_color = TRUE)
-		if(!..()) return
+	paint_thing(atom/target as mob|obj|turf, force = FALSE, change_color = TRUE)
+		if (!..())
+			return FALSE
 
-		if(change_color)
-			src.currentcolor += 1
-			if (src.currentcolor > length(src.colorlist))
-				src.currentcolor = 1
-
+		if (change_color)
+			src.currentcolor = (src.currentcolor % length(src.colorlist)) + 1
 			src.paint_color = colorlist[currentcolor]
 			src.generate_icon()
+
 		return TRUE
 
 /obj/item/paint_can/rainbow/plaid
 	name = "pattern paint can"
-	desc = "A perfectly ordinary can of paint. Oh, except that it paints patterns."
+	desc = "A perfectly ordinary can of rainbow paint. Oh, except that it paints patterns."
+	colorname = "mysterious pattern"
 	var/patternlist = list()
 	var/currentpattern = 1
 
@@ -373,9 +492,11 @@ var/list/cached_colors = new/list()
 
 		currentpattern = rand(1, length(src.patternlist))
 
+	paint_thing(atom/target as mob|obj|turf, force = FALSE, change_color = TRUE)
+		if (!..(target, force, FALSE))
+			// advance
+			return FALSE
 
-	afterattack(var/atom/target, var/mob/user, var/change_color = TRUE)
-		if(!..(target, user, FALSE)) return
 		var/matrix/scale_transform = matrix()
 		var/icon/I = new(target.icon) //isn't DM great?
 		scale_transform.Scale(I.Width()/32, I.Height()/32)
@@ -386,15 +507,9 @@ var/list/cached_colors = new/list()
 			M.update_clothing() //trigger an update if this is worn clothing
 
 		if(change_color)
-			src.currentcolor += 1
-			if (src.currentcolor > length(src.colorlist))
-				src.currentcolor = 1
-
-			src.currentpattern += 1
-			if (src.currentpattern > length(src.patternlist))
-				src.currentpattern = 1
-
-
+			src.currentcolor = (src.currentcolor % length(src.colorlist)) + 1
+			src.currentpattern = (src.currentpattern % length(src.patternlist)) + 1
 			src.paint_color = colorlist[currentcolor]
 			src.generate_icon()
+
 		return TRUE

@@ -7,30 +7,31 @@
 
 // returns true if hit
 /atom/movable/proc/hit_check(datum/thrown_thing/thr)
-	if(src.throwing)
-		for (var/atom/A as anything in get_turf(src))
-			if (!src.throwing)
-				break
-			if(A == src) continue
-			if(A.GetComponent(/datum/component/glued)) continue
-			if(isliving(A))
-				var/mob/living/L = A
-				if (!L.throws_can_hit_me) continue
-				if (L.lying) continue
+	for (var/atom/A as anything in get_turf(src))
+		if (!src.throwing)
+			break
+		if(A == src) continue
+		if(A.GetComponent(/datum/component/glued)) continue
+		if(isliving(A))
+			var/mob/living/L = A
+			if (!L.throws_can_hit_me) continue
+			if (L.lying) continue
+			if (L.buckled == src) continue
+			src.throw_impact(A, thr)
+			if (thr.stops_on_mob_hit)
+				. = TRUE
+		// **TODO: Better behaviour for windows
+		// which are dense, but shouldn't always stop movement
+		if(isobj(A))
+			if(!A.Cross(src))
 				src.throw_impact(A, thr)
 				. = TRUE
-			// **TODO: Better behaviour for windows
-			// which are dense, but shouldn't always stop movement
-			if(isobj(A))
-				if(!A.Cross(src))
-					src.throw_impact(A, thr)
-					. = TRUE
-			//Would be an idea to move all these checks into its own proc so non-humans don't need to check for this
-			if(ishuman(src) && istype(A, /obj/item/plant/tumbling_creeper))
-				var/obj/item/plant/tumbling_creeper/M = A
-				if(M.armed)
-					src.throw_impact(M, thr)
-					. = TRUE
+		//Would be an idea to move all these checks into its own proc so non-humans don't need to check for this
+		if(ishuman(src) && istype(A, /obj/item/plant/tumbling_creeper))
+			var/obj/item/plant/tumbling_creeper/M = A
+			if(M.armed)
+				src.throw_impact(M, thr)
+				. = TRUE
 
 /atom/movable/proc/throw_begin(atom/target, turf/thrown_from, mob/thrown_by)
 
@@ -52,14 +53,14 @@
 	var/area/AR = get_area(hit_atom)
 	if(AR?.sanctuary)
 		return TRUE
-	src.material_on_attack_use(src, hit_atom)
-	hit_atom.material_trigger_when_attacked(src, null, 2)
+	src.material_on_attack_use(thr?.user, hit_atom)
+	hit_atom.material_trigger_when_attacked(src, thr?.user, 2)
 	if(ismob(hit_atom))
 		var/mob/hit_mob = hit_atom
 		for(var/atom/A in hit_mob)
-			A.material_trigger_on_mob_attacked(src, hit_atom, src, "chest")
+			A.material_trigger_on_mob_attacked(thr?.user, hit_atom, src, "chest")
 		for(var/atom/A in hit_mob.equipped())
-			A.material_trigger_on_mob_attacked(src, hit_atom, src, "chest")
+			A.material_trigger_on_mob_attacked(thr?.user, hit_atom, src, "chest")
 
 	if(!hit_atom)
 		return TRUE
@@ -87,7 +88,7 @@
 	..()
 
 /atom/movable/proc/throw_at(atom/target, range, speed, list/params, turf/thrown_from, mob/thrown_by, throw_type = 1,
-			allow_anchored = UNANCHORED, bonus_throwforce = 0, end_throw_callback = null)
+			allow_anchored = UNANCHORED, bonus_throwforce = 0, datum/callback/end_throw_callback = null)
 	SHOULD_CALL_PARENT(TRUE)
 	//use a modified version of Bresenham's algorithm to get from the atom's current position to that of the target
 	if(!throwing_controller) return
@@ -117,7 +118,7 @@
 	src.throwforce += bonus_throwforce
 
 	var/matrix/transform_original = src.transform
-	if (src.throw_spin == 1 && !(throwing & THROW_SLIP) && !(throwing & THROW_PEEL_SLIP))
+	if (src.throw_spin && !(throwing & THROW_SLIP) && !(throwing & THROW_PEEL_SLIP))
 		animate(src, transform = matrix(transform_original, 120, MATRIX_ROTATE | MATRIX_MODIFY), time = 8/3, loop = -1)
 		animate(transform = matrix(transform_original, 120, MATRIX_ROTATE | MATRIX_MODIFY), time = 8/3, loop = -1)
 		animate(transform = matrix(transform_original, 120, MATRIX_ROTATE | MATRIX_MODIFY), time = 8/3, loop = -1)

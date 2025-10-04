@@ -1,6 +1,9 @@
 ///This amount of potential target locations are picked, up to every defined plant spot for the map
 #define AMOUNT_OF_VALID_NUKE_PLANT_LOCATIONS 2
 
+var/global/list/nuke_op_color_matrix = list("#394470","#c65039", "#63662c")
+var/global/list/nuke_op_camo_matrix = null
+
 /datum/game_mode/nuclear
 	name = "Nuclear Emergency"
 	config_tag = "nuclear"
@@ -15,9 +18,9 @@
 	var/list/datum/mind/syndicates = list()
 	var/finished = 0
 	var/nuke_detonated = 0 //Has the nuke gone off?
-	var/agent_radiofreq = 0 //:h for syndies, randomized per round
 	var/obj/machinery/nuclearbomb/the_bomb = null
 	var/bomb_check_timestamp = 0 // See check_finished().
+	var/minimum_players = 15 // Minimum ready players for the mode
 	var/const/agents_possible = 10 //If we ever need more syndicate agents. cogwerks - raised from 5
 	var/podbay_authed = FALSE // Whether or not we authed our podbay yet
 	var/obj/machinery/computer/battlecruiser_podbay/auth_computer = null // The auth computer in the cairngorm so we can auth it
@@ -38,23 +41,27 @@
 	var/list/possible_syndicates = list()
 
 	if (!landmarks[LANDMARK_SYNDICATE])
-		boutput(world, SPAN_ALERT("<b>ERROR: couldn't find Syndicate spawn landmark, aborting nuke round pre-setup.</b>"))
+		//boutput(world, SPAN_ALERT("<b>ERROR: couldn't find Syndicate spawn landmark, aborting nuke round pre-setup.</b>"))
+		logTheThing(LOG_DEBUG, null, "Failed to find Syndicate spawn landmark, aborting nuke round pre-setup.")
 		return 0
 
-	var/num_players = 0
-	for(var/client/C)
-		var/mob/new_player/player = C.mob
-		if (!istype(player)) continue
+	var/num_players = src.roundstart_player_count()
+#ifndef ME_AND_MY_40_ALT_ACCOUNTS
+	if (num_players < minimum_players)
+		message_admins("<b>ERROR: Minimum player count of [minimum_players] required for Nuclear game mode, aborting nuke round pre-setup.</b>")
+		logTheThing(LOG_GAMEMODE, src, "Failed to start nuclear mode. [num_players] players were ready but a minimum of [minimum_players] players is required. ")
+		return 0
+#endif
 
-		if (player.ready)
-			num_players++
-	var/num_synds = clamp( round(num_players / 6 ), 1, agents_possible)
+	var/num_synds = clamp( round(num_players / 6 ), 2, agents_possible)
 
 	possible_syndicates = get_possible_enemies(ROLE_NUKEOP, num_synds)
 
-	if (!islist(possible_syndicates) || length(possible_syndicates) < 1)
-		boutput(world, SPAN_ALERT("<b>ERROR: couldn't assign any players as Syndicate operatives, aborting nuke round pre-setup.</b>"))
+#ifndef ME_AND_MY_40_ALT_ACCOUNTS
+	if (!islist(possible_syndicates) || length(possible_syndicates) < 2)
+		//boutput(world, SPAN_ALERT("<b>ERROR: couldn't assign at least two players as Syndicate operatives, aborting nuke round pre-setup.</b>"))
 		return 0
+#endif
 
 	// I wandered in and made things hopefully a bit easier to work with since we have multiple maps now - Haine
 	var/list/list/target_locations = null
@@ -113,7 +120,7 @@
 			target_locations = list("the main security room" = list(/area/station/security/main),
 			"the central research sector hub" = list(/area/station/science/lobby),
 			"the cargo bay (QM)" = list(/area/station/quartermaster/office),
-			"the engineering control room" = list(/area/station/engine/engineering, /area/station/engine/power),
+			"the engineering control room" = list(/area/station/engine/engineering),
 			"the central warehouse" = list(/area/station/storage/warehouse),
 			"the courtroom" = list(/area/station/crew_quarters/courtroom, /area/station/crew_quarters/juryroom),
 			"the medbay" = list(/area/station/medical/medbay, /area/station/medical/medbay/surgery, /area/station/medical/medbay/lobby),
@@ -138,7 +145,7 @@
 		for(var/i in 1 to length(target_locations))
 			target_location_names += target_locations[i]
 	if (!target_location_names)
-		boutput(world, SPAN_ALERT("<b>ERROR: couldn't assign target location for bomb, aborting nuke round pre-setup.</b>"))
+		//boutput(world, SPAN_ALERT("<b>ERROR: couldn't assign target location for bomb, aborting nuke round pre-setup.</b>"))
 		message_admins(SPAN_ALERT("<b>CRITICAL BUG:</b> nuke mode setup encountered an error while trying to choose a target location for the bomb (could not select area name)!"))
 		return 0
 
@@ -151,7 +158,7 @@
 	src.create_plant_location_markers(target_locations, target_location_names)
 
 	if (!target_location_type)
-		boutput(world, SPAN_ALERT("<b>ERROR: couldn't assign target location for bomb, aborting nuke round pre-setup.</b>"))
+		//boutput(world, SPAN_ALERT("<b>ERROR: couldn't assign target location for bomb, aborting nuke round pre-setup.</b>"))
 		message_admins(SPAN_ALERT("<b>CRITICAL BUG:</b> nuke mode setup encountered an error while trying to choose a target location for the bomb (could not select area type)!"))
 		return 0
 
@@ -174,8 +181,6 @@
 		syndicate.special_role = ROLE_NUKEOP
 		possible_syndicates.Remove(syndicate)
 
-	agent_radiofreq = random_radio_frequency()
-
 	return 1
 
 /datum/game_mode/nuclear/proc/pick_leader()
@@ -186,12 +191,13 @@
 			possible_leaders += mind
 	if(length(possible_leaders))
 		return pick(possible_leaders)
-	else
-		for(var/datum/mind/mind in syndicates)
-			if(mind.current.client?.preferences?.be_syndicate_commander)
-				possible_leaders += mind
+
+	for(var/datum/mind/mind in syndicates)
+		if(mind.current.client?.preferences?.be_syndicate_commander)
+			possible_leaders += mind
 	if(length(possible_leaders))
 		return pick(possible_leaders)
+
 	return pick(syndicates)
 
 /datum/game_mode/nuclear/post_setup()
@@ -235,19 +241,16 @@
 			H.equip_if_possible(new /obj/item/device/audio_log/nuke_briefing(H, concatenated_location_names), SLOT_R_HAND)
 
 	the_bomb = new /obj/machinery/nuclearbomb(pick_landmark(LANDMARK_NUCLEAR_BOMB))
+	the_bomb.gives_medal = TRUE
 	OTHER_START_TRACKING_CAT(the_bomb, TR_CAT_GHOST_OBSERVABLES) // STOP_TRACKING done in bomb/disposing()
-	new /obj/storage/closet/syndicate/nuclear(pick_landmark(LANDMARK_NUCLEAR_CLOSET))
-
-	for(var/turf/T in landmarks[LANDMARK_SYNDICATE_GEAR_CLOSET])
-		new /obj/storage/closet/syndicate/personal(T)
-	for(var/turf/T in landmarks[LANDMARK_SYNDICATE_BOMB])
-	new /obj/spawner/newbomb/timer/syndicate(pick_landmark(LANDMARK_SYNDICATE_BOMB))
-	for(var/turf/T in landmarks[LANDMARK_SYNDICATE_BREACHING_CHARGES])
-		for(var/i = 1 to 5)
-			new /obj/item/breaching_charge/thermite(T)
 
 	for_by_tcl(computer,/obj/machinery/computer/battlecruiser_podbay)
 		auth_computer = computer
+
+	var/list/cairngorm_door_ids = list("cairngorm_podbay", "cairngorm_armory", "cairngorm_medical", "cairngorm_barracks")
+	for_by_tcl(bolter, /obj/machinery/door_control/bolter)
+		if(bolter.id in cairngorm_door_ids)
+			bolter.toggle()
 
 	SPAWN(rand(waittime_l, waittime_h))
 		send_intercept()
@@ -395,15 +398,6 @@
 
 /datum/game_mode/nuclear/send_intercept()
 	..(ticker.minds)
-/datum/game_mode/nuclear/proc/random_radio_frequency()
-	. = 0
-	var/list/blacklisted = list(0, 1451, 1457) // The old blacklist was rather incomplete and thus ineffective (Convair880).
-	blacklisted.Add(R_FREQ_BLACKLIST)
-
-	do
-		. = rand(1352, 1439)
-
-	while (. in blacklisted)
 
 /datum/game_mode/nuclear/proc/create_plant_location_markers(var/list/target_locations, var/list/target_location_names)
 	// Find the centres of the plant sites.
@@ -413,26 +407,31 @@
 		for (var/area_type in target_locations[target_location_names[i]])
 			areas += get_areas(area_type)
 
-		var/max_x = 1
-		var/min_x = world.maxx
-		var/max_y = 1
-		var/min_y = world.maxy
+		var/total_x = 0
+		var/total_y = 0
+		var/total_turfs = 0
 
 		for (var/area/area in areas)
 			if (area.z != Z_LEVEL_STATION)
 				continue
 			for (var/turf/T in area)
-				max_x = max(max_x, T.x)
-				min_x = min(min_x, T.x)
-				max_y = max(max_y, T.y)
-				min_y = min(min_y, T.y)
+				total_x += T.x
+				total_y += T.y
+				total_turfs += 1
 			if (!marker_name)
 				marker_name = capitalize(area.name)
-		var/target_x = (max_x + min_x) / 2
-		var/target_y = (max_y + min_y) / 2
+		var/target_x = round(total_x / total_turfs)
+		var/target_y = round(total_y / total_turfs)
+
+		// If its not in the right area we can at least try randomly
+		var/marker_area = get_area(locate(target_x, target_y, Z_LEVEL_STATION))
+		if (!(marker_area in areas))
+			var/turf/T = pick(get_area_turfs(pick(areas)))
+			target_x = T.x
+			target_y = T.y
 
 		var/turf/plant_location = locate(target_x, target_y, Z_LEVEL_STATION)
-		plant_location.AddComponent(/datum/component/minimap_marker, MAP_SYNDICATE, "nuclear_bomb_pin", 'icons/obj/minimap/minimap_markers.dmi', "[marker_name] Plant Site")
+		plant_location.AddComponent(/datum/component/minimap_marker/minimap, MAP_SYNDICATE, "nuclear_bomb_pin", 'icons/obj/minimap/minimap_markers.dmi', "[marker_name] Plant Site")
 
 /datum/game_mode/nuclear/process()
 	set background = 1
@@ -485,8 +484,6 @@ var/syndicate_name = null
 	opacity = 0
 	density = 1
 
-
-
 	New()
 		..()
 		var/wins = world.load_intra_round_value("nukie_win")
@@ -506,17 +503,15 @@ var/syndicate_name = null
 		if (..(user))
 			return
 
-		var/wins = world.load_intra_round_value("nukie_win")
-		var/losses = world.load_intra_round_value("nukie_loss")
-		if(isnull(wins))
-			wins = 0
-		if(isnull(losses))
-			losses = 0
+		tgui_message(user, src.desc, "Mission Memorial", theme = "syndicate")
 
-		src.add_dialog(user)
-		user.Browse(src.desc, "title=Mission Memorial;window=cairngorm_stats_[src];size=300x300")
-		onclose(user, "cairngorm_stats_[src]")
-		return
+
+/obj/New()
+	. = ..()
+	if(length(nuke_op_camo_matrix) && (src in by_cat[TR_CAT_NUKE_OP_STYLE]))
+		src.color = color_mapping_matrix(nuke_op_color_matrix, nuke_op_camo_matrix)
+
+
 
 /obj/cairngorm_stats/left
 	icon_state = "memorial_left"

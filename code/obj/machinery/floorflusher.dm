@@ -22,7 +22,8 @@ ADMIN_INTERACT_PROCS(/obj/machinery/floorflusher, proc/flush)
 	var/flushing = 0	// true if flushing in progress
 	var/mail_tag = null // mail_tag to apply on next flush
 	var/mail_id = null // id for linking a flusher for mail tagging
-
+	var/emagged = FALSE
+	HELP_MESSAGE_OVERRIDE({"You can use a <b>crowbar</b> to pry it open."})
 	// Please keep synchronizied with these lists for easy map changes:
 	// /obj/storage/secure/closet/brig_automatic (secure_closets.dm)
 	// /obj/machinery/door_timer (door_timer.dm)
@@ -92,11 +93,19 @@ ADMIN_INTERACT_PROCS(/obj/machinery/floorflusher, proc/flush)
 		..()
 		STOP_TRACKING
 
+	emag_act(mob/user, obj/item/card/emag/E)
+		if (!src.emagged)
+			src.emagged = TRUE
+			boutput(user, SPAN_NOTICE("You short out the locking mechanism on \the [src]."))
+
 	// attack by item places it in to disposal
 	attackby(var/obj/item/I, var/mob/user)
 		if(status & BROKEN)
 			return
-
+		if (ispryingtool(I) && !src.open && !src.opening && !src.flushing)
+			playsound(src, 'sound/machines/airlock_pry.ogg', 35, TRUE)
+			src.openup()
+			return
 		if(open == 1)
 			if (istype(I, /obj/item/grab))
 				return
@@ -124,34 +133,37 @@ ADMIN_INTERACT_PROCS(/obj/machinery/floorflusher, proc/flush)
 
 	Crossed(atom/movable/AM)
 		..()
-		//you can fall in if its open
-		if (open == 1)
-			if (isobj(AM))
-				if (AM:anchored) return //can't have hotspots, overlays, etc.
-				var/obj/O = AM
-				src.visible_message("[O] falls into [src].")
-				O.set_loc(src)
-				flush = 1
-				update()
+		//you can only fall in if its open
+		if (open != 1)
+			return
+		if (istype(AM, /obj/projectile))
+			return
+		if (isobj(AM))
+			if (AM:anchored) return //can't have hotspots, overlays, etc.
+			var/obj/O = AM
+			src.visible_message("[O] falls into [src].")
+			O.set_loc(src)
+			flush = 1
+			update()
 
-			if (isliving(AM))
-				if (AM:anchored) return
-				if (isintangible(AM)) // STOP EATING BLOB OVERMINDS ALSO
-					return
-				var/mob/living/M = AM
-				if (M.buckled)
-					M.buckled = null
-				boutput(M, "You fall into [src].")
-				src.visible_message("[M] falls into [src].")
-				M.set_loc(src)
-				flush = 1
-				update()
+		if (isliving(AM))
+			if (AM:anchored >= ANCHORED_ALWAYS) return
+			if (HAS_ATOM_PROPERTY(AM, PROP_ATOM_FLOATING)) // STOP EATING BLOB OVERMINDS ALSO
+				return
+			var/mob/living/M = AM
+			if (M.buckled)
+				M.buckled = null
+			boutput(M, "You fall into [src].")
+			src.visible_message("[M] falls into [src].")
+			M.set_loc(src)
+			flush = 1
+			update()
 
-			if(current_state <= GAME_STATE_PREGAME)
-				SPAWN(0)
-					flush()
-					sleep(1 SECOND)
-					openup()
+		if(current_state <= GAME_STATE_PREGAME)
+			SPAWN(0)
+				flush()
+				sleep(1 SECOND)
+				openup()
 
 	MouseDrop_T(mob/target, mob/user)
 		if (!istype(target) || target.buckled || BOUNDS_DIST(user, src) > 0 || BOUNDS_DIST(user, target) > 0 || is_incapacitated(user) || isAI(user))
@@ -239,9 +251,10 @@ ADMIN_INTERACT_PROCS(/obj/machinery/floorflusher, proc/flush)
 					// it will take into account your actual name (John Smith) and still work, instead of searching for a "John Smith (as Someone Else)" in the records
 					// unless your face is obstructed, then it works normally by taking your visible name, with intended or unintended results
 					nameToCheck = H.face_visible() ? H.real_name : H.name
-				var/datum/db_record/R = data_core.security.find_record("name", nameToCheck)
-				if(!isnull(R) && ((R["criminal"] == "Incarcerated") || (R["criminal"] == "*Arrest*")))
-					R["criminal"] = "Released"
+					var/datum/db_record/R = data_core.security.find_record("name", nameToCheck)
+					if(!isnull(R) && ((R["criminal"] == ARREST_STATE_INCARCERATED) || (R["criminal"] == ARREST_STATE_ARREST) || (R["criminal"] == ARREST_STATE_DETAIN)))
+						R["criminal"] = ARREST_STATE_RELEASED
+						H.update_arrest_icon()
 
 	// timed process
 	// charge the gas reservoir and perform flush if ready
@@ -251,6 +264,10 @@ ADMIN_INTERACT_PROCS(/obj/machinery/floorflusher, proc/flush)
 			if(!trunk)
 				mode = 0
 				flush = 0
+				if (src.open)
+					src.closeup()
+				for (var/atom/movable/AM in src)
+					src.expel_thing(AM)
 			else
 				trunk.linked = src	// link the pipe trunk to self
 				mode = 1
@@ -264,7 +281,8 @@ ADMIN_INTERACT_PROCS(/obj/machinery/floorflusher, proc/flush)
 
 		if(status & NOPOWER)			// won't charge if no power
 			return
-
+		if (!src.open && src.emagged && prob(10))
+			src.openup()
 		..()
 		if(mode != 1)		// if off or ready, no need to charge
 			return
@@ -312,7 +330,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/floorflusher, proc/flush)
 	proc/openup()
 		open = 1
 		opening = TRUE
-		flick("floorflush_a", src)
+		FLICK("floorflush_a", src)
 		src.icon_state = "floorflush_o"
 		for(var/atom/movable/AM in src.loc)
 			src.Crossed(AM) // try to flush them
@@ -322,7 +340,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/floorflusher, proc/flush)
 	proc/closeup()
 		open = 0
 		opening = TRUE
-		flick("floorflush_a2", src)
+		FLICK("floorflush_a2", src)
 		src.icon_state = "floorflush_c"
 		SPAWN(0.7 SECONDS)
 			opening = FALSE
@@ -330,19 +348,21 @@ ADMIN_INTERACT_PROCS(/obj/machinery/floorflusher, proc/flush)
 	// called when holder is expelled from a disposal
 	// should usually only occur if the pipe network is modified
 	proc/expel(var/obj/disposalholder/H)
-
-		var/turf/target
 		playsound(src, 'sound/machines/hiss.ogg', 50, FALSE, 0)
 		for(var/atom/movable/AM in H)
-			target = get_offset_target_turf(src.loc, rand(5)-rand(5), rand(5)-rand(5))
-
-			AM.set_loc(get_turf(src))
-			AM.pipe_eject(0)
-			AM?.throw_at(target, 5, 1)
+			src.expel_thing(AM)
 
 		H.vent_gas(loc)
 		qdel(H)
 
+	proc/expel_thing(atom/movable/AM)
+		var/turf/target = get_offset_target_turf(src.loc, rand(5)-rand(5), rand(5)-rand(5))
+		AM.set_loc(get_turf(src))
+		AM.pipe_eject(0)
+		AM?.throw_at(target, 5, 1)
+
+	return_air(direct = FALSE)
+		return air_contents
 
 /obj/machinery/floorflusher/industrial
 	name = "industrial loading chute"

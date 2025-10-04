@@ -28,6 +28,7 @@
 	name = "smelly note"
 	interesting = "There are traces of Escherichia Coli, Salmonella, and synthetic grasslike fibers dusted across the note. The handwriting seems mechanical."
 	desc = "A note which smells faintly of... Owls?"
+	icon_state = "paper"
 	info = {"We have your Bee, Bombini. We want 5 mill-ion dosh credits or your Bee friend will be spaced. Do not try to HOOTIN find us. We are very powerful and our location is impossible to find. -THE OWLS
 		<br>
 		<br><b>(This message brought to you by Gaggle Translation services, this message was translated to ENGLISH from OWL.)"}
@@ -36,6 +37,7 @@
 	name = "paper- 'crumpled paper'"
 	desc = "This paper seems like a script for a speech, it's all crumpled up."
 	interesting = "A faint scent of butterscotch lingers on this paper"
+	icon_state = "paper"
 	info =  {"<i>*cheerful*</i>Hallo and Welcome to the newly reopened Frontier Space Owlery!
 			<br>I'm Professor Reuben van der Hootens and I'm glad you're here! You're just in time for Hootenany Week 2053.
 			<br><i> *pause, cough out loud*</i>
@@ -60,6 +62,7 @@
 /obj/item/paper/rippednote
 	name = "paper- 'torn Up paper'"
 	desc = "This paper is barely able to be read, it looks like a bird ripped it up or something."
+	icon_state = "paper"
 	info = {"Kyle, I'm leaving this note here for when you find this. <i>What. The. Fuck.</i>
 			<br>Why did you decide this was a good spot for an APC? Come on man.
 			<br>The birds are going to destroy this thing here. Get this fixed you idiot and report to my office once you're done. -Alex"}
@@ -67,6 +70,7 @@
 /obj/item/paper/hootening
 	name = "paper- 'Experiment #620'"
 	desc = "An experiment log, part of it is obscured by a coffee stain."
+	icon_state = "paper"
 	info = {"<b>Experiment Log #620.</b>
 			<br>
 			<br>Hypothesis: Slow infusion of mutagens, stimulants, and Space Owl blood administered to captive SUBJECT #620-JA may induce
@@ -85,6 +89,7 @@
 
 /obj/item/paper/cleanerorder
 	name = "paper- 'Mission Statement'"
+	icon_state = "paper"
 	info = {"<b>Mission Statement for NT/SEC/FORN #36322</b>
 			<br>Arrange civilian transport to Designated Facility (DF) 'Frontier Space Owlery' under assigned cover, rank: Substitute Custodian
 			<br>Note: This job position has been opened by on-site agent NT/SCI #41903 for you.
@@ -113,6 +118,7 @@
 /obj/item/paper/cargoinvoice
 	name = "paper- 'Daily Order'"
 	desc = "This paper is barely able to be read, it looks like someone spilled coffee on it."
+	icon_state = "paper"
 	info = {"<b>Frontier Space Owlery: Daily Order</b>
 			<br>
 			<br>Shipment Contents:
@@ -123,6 +129,7 @@
 /obj/item/paper/shuttle_heist
 	name = "DEAR FIRST SHIFT TEAM"
 	desc = "This note looks ANGRY."
+	icon_state = "paper"
 	info = {"<b>WHY: I ASK YOU</b>
 			<br>
 			<br>WHY
@@ -133,12 +140,14 @@
 
 /obj/item/paper/randomencounter
 	name = "paper- 'Weird-ass guy'"
+	icon_state = "paper"
 	info = {"Hey its me Jacob, shifts have just about changed but we ran into a crazy dude just now.
 		<br>Guy came running in from the tour route holding a fucking flamethrower!
 		<br>We were able to take him down before he could use the fucking thing. But im not really sure what to do with his stuff. For now we left it inside the confiscated items locker."}
 
 /obj/item/paper/getaway
 	name = "paper- 'Experiment #621: Success'"
+	icon_state = "paper"
 	info = {"As of writing this experiment #621 has been a success. With the blood samples from Experiment #620, I have finally created a reliable synthesis method for this 'Hootagen' shit.
 			<br>I will be presenting my findings in person to AH and the Professor at Aurora's. I'll have to leave James in charge here.
 			<br>He's an idiot but I doubt he could fuck up too badly in just a couple days.
@@ -147,18 +156,21 @@
 
 /obj/item/paper/fuckingidiot
 	name = "paper- 'Memo'"
+	icon_state = "paper"
 	info = {"Hey Alex, James here. Just leaving this note here for when you come back. Kyle and I were fixing a disposals jam and found one of the missing jugs of Owl Nutrients stuck in one of the tubes.
 			<br>Dang janitor must have tossed some full jugs out by accident before he took off. So I tossed it in with the rest of the supplies. Kinda gross, why's this Formula 620 stuff smell like rotting plants?
 			<br>Are you buying from a new producer? I heard it's unhealthy to switch owl feed brands like that."}
 
 /obj/item/paper/failedexperiment
 	name = "paper- 'Experiment #616 results'"
+	icon_state = "paper"
 	info = {"Experiment #616 has been a failure, the chemical synthesis method again did not yield the "Hootagen" I seek.
 			<br>Strangly though instead of the usual flash, explosion or dangerous gas reaction it seems it preciptated into a drab green substance smelling of decayed vegetation.
 			<br>I am experiencing severely intrusive violent thoughts and a really fucking bad headache I suspect stemmed from this brief exposure. Should be more careful around this fucking owl gunk."}
 
 /obj/item/paper/employment
 	name = "paper- 'New Horizons'"
+	icon_state = "paper"
 	info = {"So since this started happening I have decided to begin keeping a journal incase this all blows up in my face.
 			<br>Recently I was contacted by my old college friend Amy on behalf of her employer. Seems this Professor Hootens guy heard about my incident getting fired from NT14.
 			<br>He needs someone with my kinda background and rap sheet in advanced chemistry and genetics to do some classified research with Owls.
@@ -173,6 +185,7 @@
 
 /obj/item/paper/hootagenhint
 	name = "paper- 'Hootagen Research Notes'"
+	icon_state = "paper"
 	info = {"Do research on things that turn into other things because you need to turn the person into another thing? Like a chameleon but different maybe?
 			<br>
 			<br>How the fuck am I supposed to turn somebody into an owl without them fucking dying?
@@ -181,6 +194,7 @@
 
 /obj/item/paper/janitorlist
 	name = "steve's daily notes"
+	icon_state = "paper"
 	info = {"<h3>steve's daily notes</h3>
 			<hr>
 			<p>
@@ -282,21 +296,15 @@
 
 // setpiece decals
 
-/obj/decal/fakeobjects/sealed_door/owlery
-	name = "Busted Airlock"
-	desc = "This airlock is all shot up. The control panel seems to have taken several hits and is beyond repair."
-	icon = 'icons/misc/Owlzone.dmi'
-	icon_state = "airlock_broken"
-
-/obj/decal/fakeobjects/pipe/radioactive
+/obj/fakeobject/pipe/radioactive
 	desc = "This pipe is kinda warm. Huh."
 	interesting = "Radiological decay detected."
 
-/obj/decal/fakeobjects/pipe/sarin // will change to saxitoxin after updating owlery map file
+/obj/fakeobject/pipe/sarin // will change to saxitoxin after updating owlery map file
 	desc = "This pipe seems totally normal."
 	interesting = "Trace amounts of hazardous nerve agent detected."
 
-/obj/decal/fakeobjects/pipe/acid
+/obj/fakeobject/pipe/acid
 	desc = "This pipe is pretty corroded around the fittings. Huh."
 	interesting = "Pipe fittings and adjacent metals exhibit damage consistent with exposure to strong acids."
 
@@ -319,7 +327,7 @@
 
 /obj/item/card/id/owlgold
 	name = "identification card"
-	icon_state = "gold"
+	icon_state = "id_gold"
 	item_state = "gold_id"
 	desc = "This card is important!"
 	access = list(access_owlerycommand, access_owlerysec, access_owlerymaint)
@@ -327,7 +335,7 @@
 	assignment = null
 	title = null
 
-/obj/decal/fakeobjects/bustedpod
+/obj/fakeobject/bustedpod
 	name = "Busted Escape Pod"
 	desc = "A escape pod for escaping. It seems to be busted."
 	icon = 'icons/obj/ship.dmi'
@@ -403,13 +411,8 @@
 	desc = "A core of pure Hootonium, you can feel immense power radiating from within it."
 	icon = 'icons/misc/owlzone.dmi'
 	icon_state = "hootonium"
+	ability_path = /obj/ability_button/owl_slam
 	var/chosen = 0
-
-	plutonize(var/usrverbs)
-		usrverbs += /proc/owl_slam
-
-	unplutonize(var/usrverbs)
-		usrverbs -= /proc/owl_slam
 
 	attack_self(mob/user as mob)
 		var/input = tgui_alert(user, "Would you like to attempt to absorb the core into your body?", "Hoot or not to hoot.", list("Yes", "No"))
@@ -424,24 +427,30 @@
 /datum/ailment/disease/hootonium
 	name = "Hyperhootemia"
 	scantype = "Virus"
-	cure = "Space Owl Diffusion"
+	cure_flags = CURE_CUSTOM
+	cure_desc = "Space Owl Diffusion"
 	max_stages = 3
 	associated_reagent = "hootonium" // associated reagent, duh
+
+/datum/ailment/disease/hootonium/on_infection(mob/living/affected_mob, datum/ailment_data/D)
+	. = ..()
+	affected_mob.add_vomit_behavior(/datum/vomit_behavior/owl)
+
+/datum/ailment/disease/hootonium/on_remove(mob/living/affected_mob, datum/ailment_data/D)
+	. = ..()
+	affected_mob.remove_vomit_behavior(/datum/vomit_behavior/owl)
 
 /datum/ailment/disease/hootonium/stage_act(var/mob/living/affected_mob, var/datum/ailment_data/D, mult)
 	if (..())
 		return
+	if (probmult(30))
+		affected_mob.nauseate(2)
 	switch(D.stage)
 		if(1)
 			if (probmult(25))
 				boutput(affected_mob, "<B>[pick("It feels wrong, I feel wrong.", "Am I okay?", "I can feel it, its under my skin.", "I need help, I WANT HELP!")]<B/>")
 			if (probmult(50))
 				affected_mob.make_jittery(25)
-			if (probmult(15))
-				affected_mob.vomit()
-				new /mob/living/critter/small_animal/bird/owl(get_turf(affected_mob))
-				for(var/mob/O in viewers(affected_mob, null))
-					boutput(O, SPAN_ALERT("<b>[affected_mob] [pick("horks", "vomits", "spews")] up an Owl!</b>"))
 
 		if(2)
 			playsound(affected_mob, 'sound/effects/HeartBeatLong.ogg', 70, TRUE)
@@ -450,7 +459,7 @@
 					playsound(O, 'sound/voice/animal/hoot.ogg', 70, TRUE)
 					O.show_message(SPAN_ALERT("<B>[affected_mob]</B> hoots uncontrollably!"), 1)
 				affected_mob.changeStatus("stunned", 10 SECONDS)
-				affected_mob.changeStatus("weakened", 10 SECONDS)
+				affected_mob.changeStatus("knockdown", 10 SECONDS)
 				affected_mob.make_jittery(250)
 				affected_mob.drop_item()
 				affected_mob.hand = !affected_mob.hand
@@ -458,11 +467,6 @@
 				affected_mob.hand = !affected_mob.hand
 			if  (probmult(35))
 				boutput(affected_mob, "<B>[pick("Oh g-HOOT", "Whats happe-ho-ing to me?", "It hurts!")]</B>")
-			if (probmult(15))
-				affected_mob.vomit()
-				new /mob/living/critter/small_animal/bird/owl(get_turf(affected_mob))
-				for(var/mob/O in viewers(affected_mob, null))
-					boutput(O, SPAN_ALERT("<b>[affected_mob] [pick("horks", "vomits", "spews")] up an Owl!</b>"))
 
 		if(3)
 			if(probmult(25))
@@ -476,30 +480,18 @@
 				random_brute_damage(affected_mob, 5)
 				affected_mob.take_oxygen_deprivation(5)
 				affected_mob.changeStatus("stunned", 10 SECONDS)
-				affected_mob.changeStatus("weakened", 10 SECONDS)
+				affected_mob.changeStatus("knockdown", 10 SECONDS)
 				affected_mob.make_jittery(250)
 				for(var/mob/O in viewers(affected_mob, null))
 					playsound(O, 'sound/voice/animal/hoot.ogg', 70, TRUE)
 					O.show_message(SPAN_ALERT("<B>[affected_mob]</B> hoots uncontrollably!"), 1)
 			if(probmult(25))
 				boutput(affected_mob, "<B>[pick("Who-WHO", "HOoooT", "neST!")]</B>")
-			if (probmult(15))
-				affected_mob.vomit()
-				new /mob/living/critter/small_animal/bird/owl(get_turf(affected_mob))
-				for(var/mob/O in viewers(affected_mob, null))
-					boutput(O, SPAN_ALERT("<b>[affected_mob] [pick("horks", "vomits", "spews")] up an Owl!</b>"))
 			if(probmult(10))
 				var/obj/critter/hootening/P = new/obj/critter/hootening(affected_mob.loc)
 				P.name = affected_mob.real_name
 				logTheThing(LOG_COMBAT, affected_mob, "was gibbed by the disease [name] at [log_loc(affected_mob)].")
 				affected_mob.gib()
-
-/obj/item/reagent_containers/food/snacks/candy/butterscotch
-	name = "butterscotch candy"
-	desc = "It's one of those old timey butterscotch candies like your grampa used to have."
-	real_name = "butterscotch"
-	icon_state = "butterscotch"
-	food_effects = list("food_energized")
 
 /obj/machinery/floorflusher/bathtub
 	name = "bathtub"
@@ -552,7 +544,7 @@
 /obj/machinery/power/apc/owlery
 	noalerts = 1
 	start_charge = 0
-	req_access = access_owlerymaint
+	req_access = list(access_owlerymaint)
 
 
 /obj/owlerysign/owlplaque
@@ -644,7 +636,6 @@
 	rechargeable = 0
 	custom_cell_max_capacity = 100
 	cell_type = /obj/item/ammo/power_cell/self_charging
-	uses_multiple_icon_states = 1
 	muzzle_flash = "muzzle_flash_plaser"
 	uses_charge_overlay = TRUE
 	charge_icon_state = "bullpup"
@@ -697,7 +688,6 @@
 	desc = "A disabled robot owl."
 	icon = 'icons/misc/bird.dmi'
 	icon_state = "smallowl"
-	event_handler_flags = USE_PROXIMITY | USE_FLUID_ENTER
 	anchored = ANCHORED
 	density = 1
 	flash_prob = 80
@@ -710,6 +700,10 @@
 
 			name = "Not so Disabled Animatronic Owl"
 			src.flash()
+
+TYPEINFO(/obj/critter/owl_presentor)
+	start_speech_modifiers = null
+	start_speech_outputs = list(SPEECH_OUTPUT_SPOKEN_LOCAL)
 
 /obj/critter/owl_presentor
 	name = "Professor Hootens"
@@ -730,7 +724,7 @@
 	death_text = "%src% tips over, its joints seizing and locking up.  It does not move again."
 	angertext = "seems to stare at"
 	is_pet = 0
-
+	default_speech_output_channel = SAY_CHANNEL_OUTLOUD
 	var/does_creepy_stuff = 1
 	var/typeName = "Generic"
 
@@ -742,7 +736,7 @@
 
 		if (prob(5))
 			playsound(src.loc, 'sound/misc/automaton_ratchet.ogg', 50, 1)
-			src.visible_message("<span class='game say'>[SPAN_NAME("[src]")] says, \"[pick("The Owls are fine!", "Welcome to the Frontier Space Owlery, please follow the glowing signs. A tour guide will be waiting for you.", "Did you know? By 2063, it is expected that there will be more owls on Earth than human beings.", "Remember, do not touch the owls. Ddon't do it.", "By entering the 50 square kilometers surrounding the Frontier Space Owlery you agree to remove your right to file a civil lawsuit against the owlery for any reason including death.", "Please keep all pets away from Owl feed or the Owls.", "Remember to say 'HI!' to Greg, our friendly cyborg.", "The Frontier Space Owlery thanks our generous benefactors at Donk Co., LLC. The sole creators and copyright holders of Donk Pockets TM!")]\"")
+			src.say("[pick("The Owls are fine!", "Welcome to the Frontier Space Owlery, please follow the glowing signs. A tour guide will be waiting for you.", "Did you know? By 2063, it is expected that there will be more owls on Earth than human beings.", "Remember, do not touch the owls. Ddon't do it.", "By entering the 50 square kilometers surrounding the Frontier Space Owlery you agree to remove your right to file a civil lawsuit against the owlery for any reason including death.", "Please keep all pets away from Owl feed or the Owls.", "Remember to say 'HI!' to Greg, our friendly cyborg.", "The Frontier Space Owlery thanks our generous benefactors at Donk Co., LLC. The sole creators and copyright holders of Donk Pockets TM!")]")
 		if (prob(5))
 			playsound(src.loc, 'sound/misc/automaton_scratch.ogg', 50, 1)
 			src.visible_message(SPAN_ALERT("<b>[src]</b> [pick("turns", "pivots", "twitches", "spins")]."))
@@ -792,14 +786,14 @@
 					playsound(src.loc, 'sound/voice/animal/hoot.ogg', 50, 1)
 			else
 				if (prob(10))
-					flick("[src.icon_state]-flap", src)
+					FLICK("[src.icon_state]-flap", src)
 					src.visible_message("<b>[src]</b> flaps.")
 					playsound(src.loc, pick(sounds_rustle), 50, 1)
 
 
 	on_grump()
 		playsound(src.loc, 'sound/voice/animal/hoot.ogg', 60, 1)
-		src.visible_message(SPAN_ALERT("<b>[src] hoots angrily!</b>"), 1)
+		src.visible_message(SPAN_ALERT("<b>[src] hoots angrily!</b>"))
 
 	CritterAttack(mob/M)
 		playsound(src.loc, pick(sounds_rustle), 60, 1, -1)
@@ -885,7 +879,7 @@
 		return
 
 	ChaseAttack(mob/M)
-		flick("[src.icon_state]-flaploop", src)
+		FLICK("[src.icon_state]-flaploop", src)
 		if(prob(50))
 			playsound(src.loc, pick(sounds_rustle), 50, 1, -1)
 		if(ismob(M))
@@ -896,7 +890,7 @@
 				random_brute_damage(src.target, 10)//shivved
 				take_bleeding_damage(target, null, 5, DAMAGE_STAB, 1, get_turf(target))
 				M.changeStatus("stunned", 2 SECONDS)
-				M.changeStatus("weakened", 2 SECONDS)
+				M.changeStatus("knockdown", 2 SECONDS)
 				if(!M.stat)
 					M.emote("scream")
 			else
@@ -999,11 +993,11 @@
 			src.oldtarget_name = C.name
 			src.task = "chasing"
 			playsound(src.loc, 'sound/voice/animal/hoot.ogg', 75, 1)
-			src.visible_message(SPAN_ALERT("<b>[src] hoots!</b>"), 1)
+			src.visible_message(SPAN_ALERT("<b>[src] hoots!</b>"))
 			break
 
 	attackby(obj/item/W, mob/living/user) //ARRRRGH WHY
-		user.lastattacked = src
+		user.lastattacked = get_weakref(src)
 
 		var/attack_force = 0
 		var/damage_type = "brute"
@@ -1029,7 +1023,7 @@
 			O.show_message(SPAN_ALERT("<b>[user]</b> hits [src] with [W]!"), 1)
 		if(prob(30))
 			playsound(src.loc, 'sound/voice/animal/hoot.ogg', 60, 1)
-			src.visible_message(SPAN_ALERT("<b>[src] hoots!</b>"), 1)
+			src.visible_message(SPAN_ALERT("<b>[src] hoots!</b>"))
 		if(prob(25) && alive)
 			src.target = user
 			src.oldtarget_name = user.name
@@ -1047,7 +1041,7 @@
 			var/turf/T = get_edge_target_turf(user, get_dir(user, get_step_away(user, src)))
 			if (T && isturf(T))
 				user.throw_at(T, 3, 2)
-				user.changeStatus("weakened", 0.5 SECONDS)
+				user.changeStatus("knockdown", 0.5 SECONDS)
 				user.changeStatus("stunned", 0.5 SECONDS)
 
 		if (src.alive && src.health <= 0) src.CritterDeath()
@@ -1058,7 +1052,7 @@
 		src.task = "chasing"
 
 	attack_hand(var/mob/user)
-		user.lastattacked = src
+		user.lastattacked = get_weakref(src)
 		if (!src.alive)
 			..()
 			return
@@ -1070,7 +1064,7 @@
 			playsound(src.loc, pick(sounds_punch), 50, 1)
 			if(prob(30))
 				playsound(src.loc, 'sound/voice/animal/hoot.ogg', 60, 1)
-				src.visible_message(SPAN_ALERT("<b>[src] hoots!</b>"), 1)
+				src.visible_message(SPAN_ALERT("<b>[src] hoots!</b>"))
 			if(prob(20) && alive) // crowd beatdown fix
 				src.target = user
 				src.oldtarget_name = user.name
@@ -1085,20 +1079,20 @@
 			src.oldtarget_name = user.name
 			src.task = "chasing"
 		else
-			src.visible_message(SPAN_ALERT("<b>[user]</b> pets [src]!"), 1)
+			src.visible_message(SPAN_ALERT("<b>[user]</b> pets [src]!"))
 			playsound(src.loc, 'sound/voice/animal/hoot.ogg', 60, 1)
-			src.visible_message(SPAN_ALERT("<b>[src] hoots!</b>"), 1)
+			src.visible_message(SPAN_ALERT("<b>[src] hoots!</b>"))
 
 	ChaseAttack(mob/M)
 		if(!flailing) src.flail()
 		if(prob(10))
 			playsound(src.loc, 'sound/voice/animal/hoot.ogg', 75, 1)
-			src.visible_message(SPAN_ALERT("<b>[src] hoots!</b>"), 1)
+			src.visible_message(SPAN_ALERT("<b>[src] hoots!</b>"))
 			src.visible_message(SPAN_ALERT("<B>[src]</B> tackles [M]!"))
 			playsound(src.loc, 'sound/impact_sounds/Generic_Hit_1.ogg', 50, 1, -1)
 			if(ismob(M))
 				M.changeStatus("stunned", 2 SECONDS)
-				M.changeStatus("weakened", 2 SECONDS)
+				M.changeStatus("knockdown", 2 SECONDS)
 
 	CritterAttack(mob/M)
 		src.attacking = 1
@@ -1143,7 +1137,7 @@
 					take_bleeding_damage(target, null, 5, DAMAGE_STAB, 1, get_turf(target))
 					if(prob(40))
 						playsound(src.loc, 'sound/voice/animal/hoot.ogg', 70, 1)
-						src.visible_message(SPAN_ALERT("<b>[src] hoots!</b>"), 1)
+						src.visible_message(SPAN_ALERT("<b>[src] hoots!</b>"))
 				else
 					src.visible_message(SPAN_ALERT("<B>[src]</B> [pick("slashes", "swipes", "rips", "tears")] a chunk out of [src.target] with its talons!"))
 					playsound(src.loc, 'sound/impact_sounds/Flesh_Stab_1.ogg', 50, 1)
@@ -1151,21 +1145,21 @@
 					take_bleeding_damage(target, null, 10, DAMAGE_CUT, 0, get_turf(target))
 					playsound(src.loc, 'sound/impact_sounds/Slimy_Splat_1.ogg', 50, 1)
 					playsound(src.loc, 'sound/voice/animal/hoot.ogg', 75, 1)
-					src.visible_message(SPAN_ALERT("<b>[src] hoots!</b>"), 1)
+					src.visible_message(SPAN_ALERT("<b>[src] hoots!</b>"))
 					if(!M.stat) M.emote("scream") // don't scream while dead/asleep
 
 			else // flip the fuck out
 				playsound(src.loc, 'sound/impact_sounds/Generic_Hit_1.ogg', 50, 1)
 				src.visible_message(SPAN_ALERT("<b>[src]</b> slams into [src.target]!"))
 				if(iscarbon(M))
-					M.changeStatus("weakened", 0.4 SECONDS)
+					M.changeStatus("knockdown", 0.4 SECONDS)
 				frenzy(src.target)
 
 			if (isdead(M)) // devour corpses
 				src.visible_message(SPAN_ALERT("<b>[src] devours [src.target]! Holy shit!</b>"))
 				playsound(src.loc, 'sound/impact_sounds/Flesh_Break_1.ogg', 50, 1)
 				M.ghostize()
-				new /obj/decal/fakeobjects/skeleton(M.loc)
+				new /obj/fakeobject/skeleton(M.loc)
 				M.gib()
 				src.target = null
 
@@ -1216,7 +1210,7 @@ var/list/owlery_sounds = list('sound/voice/animal/hoot.ogg','sound/ambience/owlz
 /area/owlery
 	name = "owl fuckery"
 	sound_group = "owl"
-	teleport_blocked = 1
+	teleport_blocked = AREA_TELEPORT_BLOCKED
 	sound_environment = 12
 	area_parallax_render_source_group = /datum/parallax_render_source_group/area/owlery
 
@@ -1228,7 +1222,7 @@ var/list/owlery_sounds = list('sound/voice/animal/hoot.ogg','sound/ambience/owlz
 	proc/process()
 		while(current_state < GAME_STATE_FINISHED)
 			sleep(10 SECONDS)
-			if (current_state == GAME_STATE_PLAYING)
+			if (current_state == GAME_STATE_PLAYING && length(population))
 				if(!played_fx_2 && prob(15))
 					sound_fx_2 = pick(owlery_sounds)
 					for(var/mob/M in src)
@@ -1287,7 +1281,7 @@ var/list/owlery_sounds = list('sound/voice/animal/hoot.ogg','sound/ambience/owlz
 	icon_state = "yellow"
 	requires_power = 0
 	luminosity = 1
-	teleport_blocked = 0
+	teleport_blocked = AREA_TELEPORT_ALLOWED
 
 /area/owlery/Owlmait2
 	name = "River Loop Maintenance"
@@ -1301,16 +1295,16 @@ var/list/owlery_sounds = list('sound/voice/animal/hoot.ogg','sound/ambience/owlz
 	sound_loop = 'sound/ambience/station/JazzLounge1.ogg'
 
 //Other fuckable things
-/proc/owl_slam()
-	set category = "Spells"
-	set name = "Owl Slam"
-	set desc = "Hoot the entire station with the power of an owl."
+/obj/ability_button/owl_slam
+	name = "Owl Slam"
+	desc = "Hoot the entire station with the power of an owl."
+	targeted = FALSE
+	icon = 'icons/mob/spell_buttons.dmi'
+	icon_state = "owlslam"
 
-	var/mob/M = usr
-
-	if(M.stat)
-		boutput(M, "Not when you're incapacitated.")
-		return
+/obj/ability_button/owl_slam/execute_ability()
+	. = ..()
+	var/mob/M = the_mob
 
 	var/equipped_thing = M.equipped()
 	if(istype(equipped_thing, /obj/item/basketball))
@@ -1326,7 +1320,7 @@ var/list/owlery_sounds = list('sound/voice/animal/hoot.ogg','sound/ambience/owlz
 		boutput(M, SPAN_ALERT("You can't slam without a b-ball, yo!"))
 		return
 
-	M.verbs -= /proc/owl_slam
+	the_item.remove_item_ability(the_mob, src.type)
 	APPLY_ATOM_PROPERTY(M, PROP_MOB_CANTMOVE, "owlslam") //you cannot move while doing this
 	logTheThing(LOG_COMBAT, M, "<b>triggers a owl slam in [M.loc.loc] ([log_loc(M)])!</b>")
 
@@ -1439,12 +1433,18 @@ var/list/owlery_sounds = list('sound/voice/animal/hoot.ogg','sound/ambience/owlz
 
 		pickupdialoguefailure = "I don't believe you have added anything to your virtu-cart."
 
+TYPEINFO(/obj/item/lilgreg)
+	start_listen_effects = list(LISTEN_EFFECT_LIL_GREG)
+	start_listen_inputs = list(LISTEN_INPUT_OUTLOUD)
+	start_speech_modifiers = null
+	start_speech_outputs = list(SPEECH_OUTPUT_SPOKEN_LOCAL)
+
 /obj/item/lilgreg
 	name = "Greg Jr"
 	desc = "Gregs adopted son! He seems to have gotten caught up with a bad crowd."
 	icon = 'icons/misc/owlzone.dmi'
 	icon_state = "gregjr"
-
+	default_speech_output_channel = SAY_CHANNEL_OUTLOUD
 	var/seensol = 0
 	var/cantalk = 1
 
@@ -1460,21 +1460,16 @@ var/list/owlery_sounds = list('sound/voice/animal/hoot.ogg','sound/ambience/owlz
 				user.visible_message(SPAN_ALERT("[user] pull the string located at the back of Greg Jr."))
 				sleep(3 SECONDS)
 				if (istype(get_area(src), /area/solarium) && seensol == 0)
-					user.visible_message("<span class='game say'>[SPAN_NAME("[src]")] says, \"Woah, so thats what the sun looks like. It's kind of smaller then I expected though?\"")
+					src.say("Woah, so thats what the sun looks like. It's kind of smaller then I expected though?")
 					sleep(1 SECOND)
-					user.visible_message("<B>[src]</b> says, \"Hm, looks like my internal camera is out of storage. Mind holding this tape real quick while I add some film?\"")
+					src.say("Hm, looks like my internal camera is out of storage. Mind holding this tape real quick while I add some film?")
 					new /obj/item/audio_tape/beepoker(get_turf(user))
 					seensol = 1
 					cantalk = 1
 					return
 				else
-					user.visible_message("<span class='game say'>[SPAN_NAME("[src]")] says, \"[pick("Hey there pal! How's your day been?", "You ever been to that weird satilite with the giant guardbuddy?", "Hey have you ever heard about Greg? He's a real swell guy.", "Ever eaten a Lemon Square? I haven't, I wonder what they taste like.","Did you catch last nights Professor Hootens story hour? I must have missed it.", "Those darn Owls scratched my paintjob.", "Ever meet that guy with the big beard and giant heart?", "I wonder where Greg is today, have you seen him?", "I wish I could see that sun thing people keep talking about.")]\"")
+					src.say("[pick("Hey there pal! How's your day been?", "You ever been to that weird satilite with the giant guardbuddy?", "Hey have you ever heard about Greg? He's a real swell guy.", "Ever eaten a Lemon Square? I haven't, I wonder what they taste like.","Did you catch last nights Professor Hootens story hour? I must have missed it.", "Those darn Owls scratched my paintjob.", "Ever meet that guy with the big beard and giant heart?", "I wonder where Greg is today, have you seen him?", "I wish I could see that sun thing people keep talking about.")]")
 					sleep(3 SECONDS)
 					cantalk = 1
 					sleep(2 SECONDS)
 					return
-
-	hear_talk(var/mob/living/carbon/speaker, text, real_name)
-		if(prob(10))
-			usr.visible_message("<span class='game say'>[SPAN_NAME("[src]")] says, \"Woah [real_name] thats [pick("radical", "awesome", "sweet", "delicious", "100% spectacular", "better then sliced bread", "hootacular", "horrible", "hootastic", "dab worthy")]!\"")
-			return

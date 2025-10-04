@@ -22,7 +22,7 @@
 				owner.sleeping = 2
 			else
 				owner.sleeping = max(owner.sleeping - mult, 0)
-			owner.changeStatus("paralysis", 3 SECONDS * mult)
+			owner.changeStatus("unconscious", 3 SECONDS * mult)
 			if (prob(10) && (owner.health > 0))
 				owner.emote("snore")
 			if (!owner.last_sleep) // we are asleep but weren't previously
@@ -43,7 +43,7 @@
 			owner.emote("twitch")
 
 		//todo : clothing blindles flags for less istypeing
-		if (owner.getStatusDuration("blinded"))
+		if (owner.getStatusDuration("blinded") || owner.getStatusDuration("teleporting") || src.owner.loc?.getStatusDuration("teleporting"))
 			owner.blinded = 1
 		else
 			if(!(HAS_ATOM_PROPERTY(owner, PROP_MOB_XRAYVISION) || HAS_ATOM_PROPERTY(owner, PROP_MOB_XRAYVISION_WEAK)))

@@ -67,7 +67,7 @@
 			target = get_turf(target)
 		if (isturf(target))
 			for (var/mob/living/M in target)
-				if (M != src && M.getStatusDuration("weakened"))
+				if (M != src && M.getStatusDuration("knockdown"))
 					target = M
 					break
 			if (!ismob(target))
@@ -94,11 +94,11 @@
 			var/flail = rand(10, 15)
 			holder.owner.canmove = 1
 			while (flail > 0 && MT && !MT.disposed)
-				MT.changeStatus("weakened", 0.7 SECONDS)
+				MT.changeStatus("knockdown", 0.7 SECONDS)
 				MT.canmove = 1
 				if (BOUNDS_DIST(holder.owner, target) > 0)
 					break
-				if (holder.owner.getStatusDuration("stunned") || holder.owner.getStatusDuration("weakened") || holder.owner.getStatusDuration("paralysis"))
+				if (holder.owner.getStatusDuration("stunned") || holder.owner.getStatusDuration("knockdown") || holder.owner.getStatusDuration("unconscious"))
 					break
 				if (istype(S))
 					S.venom_bite(MT)
@@ -131,7 +131,7 @@
 /datum/targetable/critter/spider_drain
 	name = "Drain"
 	desc = "Drain a dead human."
-	icon_state = "clown_spider_drain"
+	icon_state = "spider_drain"
 	cooldown = 30 SECONDS
 	targeted = TRUE
 	target_anything = TRUE
@@ -162,6 +162,9 @@
 		if(!istype(H) || !isdead(H))
 			boutput(holder.owner, SPAN_ALERT("That isn't a dead human."))
 			return 1
+		if(H.bioHolder.HasEffect("husk"))
+			boutput(holder.owner, SPAN_ALERT("That target has already been drained of all their fluids!"))
+			return 1
 		var/mob/living/critter/spider/S = holder.owner
 		holder.owner.visible_message(SPAN_COMBAT("<b>[holder.owner] starts draining the fluids out of [H]!</b>"),\
 		SPAN_COMBAT("<b>You start draining the fluids out of [H]!</b>"))
@@ -175,7 +178,7 @@
 			while (drain > 0 && H && H.stat && !H.disposed)
 				if (H.loc && holder.owner.loc != H.loc)
 					break
-				if (holder.owner.getStatusDuration("stunned") || holder.owner.getStatusDuration("weakened") || holder.owner.getStatusDuration("paralysis"))
+				if (holder.owner.getStatusDuration("stunned") || holder.owner.getStatusDuration("knockdown") || holder.owner.getStatusDuration("unconscious"))
 					break
 				holder.owner.HealDamage("All", 1, 1)
 				sleep(0.4 SECONDS)
@@ -192,7 +195,7 @@
 				if(length(neightbors))
 					holder.owner.set_loc(pick(neightbors))
 				SPAWN(0)
-					var/obj/icecube/cube = new /obj/icecube(get_turf(H), H)
+					var/obj/icecube/spider/cube = new /obj/icecube/spider(get_turf(H), H)
 					if (istype(S))
 						switch (S.encase_in_web)
 							if (2)
@@ -228,6 +231,9 @@
 
 /datum/targetable/critter/spider_drain/cluwne
 	icon_state = "cluwne_spider_drain"
+
+/datum/targetable/critter/spider_drain/clown
+	icon_state = "clown_spider_drain"
 
 // -----------------
 // Baby clownspider kick
@@ -293,7 +299,7 @@
 			target = get_turf(target)
 		if (isturf(target))
 			for (var/mob/living/M in target)
-				if (M != src && M.getStatusDuration("weakened"))
+				if (M != src && M.getStatusDuration("knockdown"))
 					target = M
 					break
 			if (!ismob(target))
@@ -316,12 +322,14 @@
 			var/flail = 8
 			holder.owner.canmove = 0
 			while (flail > 0 && MT && !MT.disposed)
-				MT.changeStatus("weakened", 2 SECONDS)
+				MT.changeStatus("knockdown", 2 SECONDS)
 				MT.canmove = 0
-				if (MT.loc)
+				if (MT.loc && get_dist(holder.owner.loc, MT.loc) < 2)
 					holder.owner.set_loc(MT.loc)
+				else
+					break
 				MT.changeStatus("stunned", 1 SECOND)
-				if (holder.owner.getStatusDuration("stunned") || holder.owner.getStatusDuration("weakened") || holder.owner.getStatusDuration("paralysis"))
+				if (holder.owner.getStatusDuration("stunned") || holder.owner.getStatusDuration("knockdown") || holder.owner.getStatusDuration("unconscious"))
 					break
 				playsound(holder.owner, 'sound/impact_sounds/Flesh_Break_1.ogg', 50, 1)
 				playsound(holder.owner, src.sound_kick, 50, 1)
@@ -361,6 +369,7 @@
 	var/flavor_text = "clown"
 
 	cast(atom/T)
+		. = ..()
 		var/obj/item/reagent_containers/food/snacks/ingredient/egg/critter/ammo = new egg_path(holder.owner.loc)
 		ammo.parent = holder.owner
 		ammo.throw_at(T, 32, 2)

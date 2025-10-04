@@ -13,7 +13,7 @@
 
 	var/flash_animation_duration = 60
 	var/flash_stamina_damage = 130
-	var/flash_weakened = 100
+	var/flash_knockdown = 100
 	var/flash_disorient_time = 60
 
 	var/flash_eye_blurry = 4
@@ -78,7 +78,7 @@
 				animation.icon_state = "blank"
 				animation.icon = 'icons/mob/mob.dmi'
 				animation.master = user
-				flick("blspell", animation)
+				FLICK("blspell", animation)
 				sleep(0.5 SECONDS)
 				qdel(animation)
 
@@ -115,7 +115,7 @@
 		// We're flashing somebody directly, hence the 100% chance to disrupt cloaking device at the end.
 		var/blind_success = M.apply_flash(
 			src.flash_animation_duration,
-			src.flash_weakened,
+			src.flash_knockdown,
 			0,
 			0,
 			src.flash_eye_blurry,
@@ -138,8 +138,8 @@
 		logTheThing(LOG_COMBAT, user, "blinds [constructTarget(M,"combat")] with [src] at [log_loc(user)].")
 
 		// Some after attack stuff.
-		user.lastattacked = M
-		M.lastattacker = user
+		user.lastattacked = get_weakref(M)
+		M.lastattacker = get_weakref(user)
 		M.lastattackertime = world.time
 
 

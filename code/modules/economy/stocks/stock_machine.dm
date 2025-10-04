@@ -1,5 +1,5 @@
 /obj/machinery/computer/stockexchange
-	name = "Stock Exchange"
+	name = "stock exchange"
 	icon = 'icons/obj/computer.dmi'
 	icon_state = "QMreq"
 	var/logged_in = null
@@ -8,6 +8,7 @@
 	light_r =1
 	light_g = 0.7
 	light_b = 0.03
+	circuit_type = /obj/item/circuitboard/stockexchange
 
 /obj/machinery/computer/stockexchange/proc/balance()
 	if (!logged_in)
@@ -48,12 +49,12 @@
 	if (!logged_in)
 		dat += "<span class='user'>Welcome, <b>NT_Guest</b></span><br>"
 	else
-		dat += "<span class='user'>Welcome, <b>[logged_in]</b></span> <a href='?src=\ref[src];logout=1'>Log out</a><br><span class='balance'><b>Your account balance:</b> [balance()] credits</span><br>"
+		dat += "<span class='user'>Welcome, <b>[logged_in]</b></span> <a href='byond://?src=\ref[src];logout=1'>Log out</a><br><span class='balance'><b>Your account balance:</b> [balance()] credits</span><br>"
 		for (var/datum/stock/ticker/S in stockExchange.last_read)
 			var/list/LR = stockExchange.last_read[S]
 			if (!(logged_in in LR))
 				LR[logged_in] = 0
-	dat += "<b>View mode:</b> <a href='?src=\ref[src];cycleview=1'>[vmode ? "compact" : "full"]</a>"
+	dat += "<b>View mode:</b> <a href='byond://?src=\ref[src];cycleview=1'>[vmode ? "compact" : "full"]</a>"
 
 	dat += "<h3>Listed stocks</h3>"
 
@@ -65,12 +66,12 @@
 			dat += "<hr /><div class='stock'><span class='company'>[S.name]</span> <span class='s_company'>([S.short_name])</span>[S.bankrupt ? " <b style='color:red'>BANKRUPT</b>" : null]<br>"
 			if (S.last_unification)
 				dat += "<b>Unified shares</b> [(ticker.round_elapsed_ticks - S.last_unification) / 600] minutes ago.<br>"
-			dat += "<b>Current value per share:</b> [S.current_value] | <a href='?src=\ref[src];viewhistory=\ref[S]'>View history</a><br><br>"
+			dat += "<b>Current value per share:</b> [S.current_value] | <a href='byond://?src=\ref[src];viewhistory=\ref[S]'>View history</a><br><br>"
 			dat += "You currently own <b>[mystocks]</b> shares in this company. There are [S.available_shares] purchasable shares on the market currently.<br>"
 			if (S.bankrupt)
 				dat += "You cannot buy or sell shares in a bankrupt company!<br><br>"
 			else
-				dat += "<a href='?src=\ref[src];buyshares=\ref[S]'>Buy shares</a> | <a href='?src=\ref[src];sellshares=\ref[S]'>Sell shares</a><br><br>"
+				dat += "<a href='byond://?src=\ref[src];buyshares=\ref[S]'>Buy shares</a> | <a href='byond://?src=\ref[src];sellshares=\ref[S]'>Sell shares</a><br><br>"
 			dat += "<b>Prominent products:</b><br>"
 			for (var/prod in S.products)
 				dat += "<i>[prod]</i><br>"
@@ -82,7 +83,7 @@
 					dat += "<i>This offer expires in [(B.offer_expires - ticker.round_elapsed_ticks) / 600] minutes.</i><br>"
 					dat += "<b>Note:</b> If you do not return all shares by the end of the grace period, you will lose your deposit and the value of all unreturned shares at current value from your account!<br>"
 					dat += "<b>Note:</b> You cannot withdraw or transfer money off your account while a borrow is active.<br>"
-					dat += "<a href='?src=\ref[src];take=\ref[B]'>Take offer</a> (Estimated deposit: [B.deposit * S.current_value * B.share_amount] credits)<br><br>"
+					dat += "<a href='byond://?src=\ref[src];take=\ref[B]'>Take offer</a> (Estimated deposit: [B.deposit * S.current_value * B.share_amount] credits)<br><br>"
 			else
 				dat += "<i>No borrow options available</i><br><br>"
 			for (var/datum/stock/borrow/B in S.borrows)
@@ -106,7 +107,7 @@
 						if (E.last_change > lrt && !E.hidden)
 							news = 1
 							break
-			dat += "<a href='?src=\ref[src];archive=\ref[S]'>View news archives</a>[news ? " <span style='color:red'>(updated)</span>" : null]</div>"
+			dat += "<a href='byond://?src=\ref[src];archive=\ref[S]'>View news archives</a>[news ? " <span style='color:red'>(updated)</span>" : null]</div>"
 	else if (vmode == 1)
 		dat += "<b>Actions:</b> + Buy, - Sell, (A)rchives, (H)istory<br><br>"
 		dat += "<table class='stable'><tr><th>&nbsp;</th><th>Name</th><th>Value</th><th>Owned/Avail</th><th>Actions</th></tr>"
@@ -135,8 +136,8 @@
 			if (S.bankrupt)
 				dat += "+ - "
 			else
-				dat += "<a href='?src=\ref[src];buyshares=\ref[S]'>+</a> <a href='?src=\ref[src];sellshares=\ref[S]'>-</a> "
-			dat += "<a href='?src=\ref[src];archive=\ref[S]' class='[news ? "updated" : "default"]'>(A)</a> <a href='?src=\ref[src];viewhistory=\ref[S]'>(H)</a></td></tr>"
+				dat += "<a href='byond://?src=\ref[src];buyshares=\ref[S]'>+</a> <a href='byond://?src=\ref[src];sellshares=\ref[S]'>-</a> "
+			dat += "<a href='byond://?src=\ref[src];archive=\ref[S]' class='[news ? "updated" : "default"]'>(A)</a> <a href='byond://?src=\ref[src];viewhistory=\ref[S]'>(H)</a></td></tr>"
 
 	dat += "</body></html>"
 	user.Browse(dat, "window=computer;size=600x400")
@@ -155,7 +156,7 @@
 				boutput(user, SPAN_NOTICE("Card authorized."))
 				src.logged_in = ID.registered
 			else
-				boutput(user, SPAN_ALERT("Pin number incorrect."))
+				boutput(user, SPAN_ALERT("PIN incorrect."))
 				src.logged_in = null
 		else
 			boutput(user, SPAN_ALERT("No bank account associated with this ID found."))
@@ -281,7 +282,7 @@
 		if (logged_in && logged_in != "")
 			var/list/LR = stockExchange.last_read[S]
 			LR[logged_in] = ticker.round_elapsed_ticks
-		var/dat = "<html><head><title>News feed for [S.name]</title></head><body><h2>News feed for [S.name]</h2><div><a href='?src=\ref[src];archive=\ref[S]'>Refresh</a></div>"
+		var/dat = "<html><head><title>News feed for [S.name]</title></head><body><h2>News feed for [S.name]</h2><div><a href='byond://?src=\ref[src];archive=\ref[S]'>Refresh</a></div>"
 		dat += "<div><h3>Events</h3>"
 		var/p = 0
 		for (var/datum/stock/event/E as anything in S.events)

@@ -4,7 +4,7 @@
 
 /datum/artifact/plant_helper
 	associated_object = /obj/machinery/artifact/plant_helper
-	type_name = "Plant waterer"
+	type_name = "Plant Enhancer"
 	type_size = ARTIFACT_SIZE_LARGE
 	rarity_weight = 350
 	validtypes = list("martian","precursor")
@@ -19,14 +19,26 @@
 	New()
 		..()
 		src.react_heat[2] = "SUPERFICIAL DAMAGE DETECTED"
-		src.field_radius = rand(2,9) // field radius
+		src.field_radius = rand(4,9) // field radius
+		var/did_any = 0
 		if (prob(80))
 			src.helpers.Add("growth")
+			did_any++
 		if (prob(60))
 			src.helpers.Add("health")
+			did_any++
 		if (prob(40))
 			src.helpers.Add("weedkiller")
+			did_any++
 		if (prob(20))
+			src.helpers.Add("mutation")
+			did_any++
+		if (did_any == 0)
+			// if you rolled a complete dud, instead make it real good
+			// i think this works out to about 7% (3.84% x 2 for hitting all OR none)
+			src.helpers.Add("growth")
+			src.helpers.Add("health")
+			src.helpers.Add("weedkiller")
 			src.helpers.Add("mutation")
 
 	effect_process(var/obj/O)
@@ -71,7 +83,7 @@
 				if(total)
 					SPAWN(0)
 						var/lineColor = rgb(r/total, g/total, b/total)
-						var/datum/lineResult/R = drawLine(get_turf(O), P, "smooth", "smoothCap", getCrossed = 0)
+						var/datum/lineResult/R = drawLineImg(get_turf(O), P, "smooth", "smoothCap", getCrossed = 0)
 						var/globalImageKey = "plant_helper_line[TIME]_\ref[R]_[rand(1, 1e9)]"
 						R.lineImage.color = lineColor
 						R.lineImage.alpha = 0

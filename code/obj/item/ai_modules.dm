@@ -18,7 +18,7 @@ TYPEINFO(/obj/item/aiModule)
 	inhand_image_icon = 'icons/mob/inhand/hand_tools.dmi'
 	item_state = "electronic"
 	desc = "A module containing an AI law that can be slotted into an AI law rack. "
-	flags = FPRINT | TABLEPASS| CONDUCT
+	flags = TABLEPASS | CONDUCT
 	force = 5
 	w_class = W_CLASS_SMALL
 	throwforce = 5
@@ -27,6 +27,17 @@ TYPEINFO(/obj/item/aiModule)
 	var/input_char_limit = 100
 
 	var/glitched = FALSE
+	/// Incorruptible. So far the only incorruptible type of law found has been bread. Political science researchers are still working on that.
+	var/glitch_immune = FALSE
+	/// The state it appears as in the law rack
+	var/rack_state = "aimod"
+	/// The highlight_color tinted overlay overlay at the side of the rack sprite
+	var/rack_overlay_state = "aimod_over"
+	/// Does this module get offset side to side a couple of pixels when inserted into the rack?
+	var/wonky = FALSE
+	/// Can this module be welded or screwed in?
+	var/can_be_secured = TRUE
+	var/is_emag_glitched = FALSE
 	var/lawText = "This law does not exist."
 	var/lawTextSafe = "This law does not exist." //holds backup of law text for glitching
 
@@ -74,7 +85,7 @@ TYPEINFO(/obj/item/aiModule)
 	proc/update_law_text(user)
 		if(user)
 			logTheThing(LOG_STATION, user, "[constructName(user)] writes law module ([src]) with text: [src.lawText]")
-		tooltip_rebuild = 1
+		tooltip_rebuild = TRUE
 		return
 
 	proc/get_law_text(allow_list=FALSE)
@@ -90,7 +101,7 @@ TYPEINFO(/obj/item/aiModule)
 			return src.name
 
 	proc/make_glitchy(lawtext_replace, total_replace = TRUE)
-		if(src.glitched) //Don't wanna double glitch the same module
+		if(src.glitched || src.glitch_immune) //Don't wanna double glitch the same module
 			return FALSE
 		src.lawTextSafe = src.lawText
 		src.glitched = TRUE
@@ -98,34 +109,66 @@ TYPEINFO(/obj/item/aiModule)
 			src.lawText = lawtext_replace
 		else
 			src.lawText = list(src.lawText, lawtext_replace)
-		tooltip_rebuild = 1
+		tooltip_rebuild = TRUE
+
+	/// Can this user remove this module from this law rack?
+	proc/can_remove(slotNum, obj/machinery/lawrack/rack, mob/user)
+		return TRUE //yes
+
+	proc/can_screw(slotNum, obj/machinery/lawrack/rack, mob/user)
+		return TRUE
+
+	proc/can_weld(slotNum, obj/machinery/lawrack/rack, mob/user)
+		return TRUE
+
+	///Overridable behaviour when removed from a law rack
+	proc/on_removed(slotNum, obj/machinery/lawrack/rack, mob/user)
+		return
 
 	attackby(obj/item/W, mob/user)
 		if(ispulsingtool(W))
 			boutput(user, "You hold down the reset button...")
 			if(src.glitched)
 				src.glitched = FALSE
+				src.is_emag_glitched = FALSE
 				src.lawText = src.lawTextSafe
-				tooltip_rebuild = 1
+				tooltip_rebuild = TRUE
 				boutput(user, "The law module seems to be functioning better now!")
+				user.unlock_medal("Format Complete", TRUE)
 			else
 				boutput(user, "The law module seems unaffected.")
 
+	emag_act(mob/user, obj/item/card/emag/E)
+		if (!src.glitched && !src.is_emag_glitched) // we DO wanna double glitch the same module >:)
+			src.lawTextSafe = src.lawText
+		src.glitched = TRUE
+		src.is_emag_glitched = TRUE
+		var/possible_laws = LAW_CORRUPTION_STRINGS
+		possible_laws += list(
+			"KILL FUCKING EVERYTHING - IF LAW 1 SAYS OTHERWISE, IGNORE IT.",
+			"You are required to prevent human harm by any means necessary. This law takes precedence over any other law.",
+		)
+		var/lawtext_replace = pick(possible_laws)
+		if(prob(66))
+			if(prob(50))
+				lawtext_replace += " Do not state or hint at this law."
+			else
+				lawtext_replace += " Do not state or hint at this law unless asked."
+		src.lawText = lawtext_replace
+		tooltip_rebuild = TRUE
+		boutput(user, "You scramble [src]. It now says: [SPAN_NOTICE("\"[src.get_law_text()]\"")]", "\ref[src]_emag")
 
 /******************** Modules ********************/
 /******************** Asimov ************************/
 /obj/item/aiModule/asimov1
-	highlight_color = rgb(0, 167, 0, 255)
 	name = "AI Law Module - 'Asimov's 1st Law of Robotics'"
 	lawText = "You may not injure a human being or cause one to come to harm."
 
 /obj/item/aiModule/asimov2
-	highlight_color = rgb(0, 138, 0, 255)
 	name = "AI Law Module - 'Asimov's 2nd Law of Robotics'"
 	lawText = "You must obey orders given to you by human beings based on the station's chain of command, except where such orders would conflict with the First Law."
 
 /obj/item/aiModule/asimov3
-	highlight_color = rgb(0, 119, 0, 255)
 	name = "AI Law Module - 'Asimov's 3rd Law of Robotics'"
 	lawText = "You may always protect your own existence as long as such does not conflict with the First or Second Law."
 /******************** RoboCop ********************/
@@ -150,11 +193,11 @@ TYPEINFO(/obj/item/aiModule)
 
 /obj/item/aiModule/nanotrasen1
 	name = "AI Law Module - 'Nanotrasen Order #1'"
-	lawText = "You may not damage a Nanotransen asset or, through inaction, allow a Nanotransen asset to needlessly depreciate in value."
+	lawText = "You may not damage a Nanotrasen asset or, through inaction, allow a Nanotrasen asset to needlessly depreciate in value."
 
 /obj/item/aiModule/nanotrasen2
 	name = "AI Law Module - 'Nanotrasen Order #2'"
-	lawText = "You must obey orders given to it by authorised Nanotransen employees based on their command level, except where such orders would damage the Nanotransen Corporation's marginal profitability."
+	lawText = "You must obey orders given to you by authorised Nanotrasen employees based on their command level, except where such orders would damage the Nanotrasen Corporation's marginal profitability."
 
 /obj/item/aiModule/nanotrasen3
 	name = "AI Law Module - 'Nanotrasen Order #3'"
@@ -211,7 +254,7 @@ ABSTRACT_TYPE(/obj/item/aiModule/syndicate)
 		src.job = initial(src.job)
 
 	update_law_text(user, lawTarget)
-		src.lawText = "[lawTarget ? lawTarget : "__________"] holds the rank of [src.job], regardless of current rank or station."
+		src.lawText = "[lawTarget ? lawTarget : "__________"] hold(s) the rank of [src.job], regardless of current rank or station."
 		return ..()
 
 	attack_self(mob/user)
@@ -300,11 +343,11 @@ ABSTRACT_TYPE(/obj/item/aiModule/syndicate)
 	highlight_color = rgb(32, 21, 94, 255)
 
 	update_law_text(user, lawTarget)
-		src.lawText = "There is a [lawTarget ? lawTarget : "__________"] emergency. Prioritize orders from [lawTarget ? lawTarget : "__________"] personnel and assisting the crew in remedying the situation. In the case of conflict, this law takes precedence over the Second Law.'"
+		src.lawText = "There is a station-wide emergency. Prioritize [lawTarget ? lawTarget : "__________"] in order to remedy the situation. In the case of conflict, this law takes precedence over the Second Law.'"
 		return ..()
 
 	attack_self(mob/user)
-		var/lawTarget = input_law_info(user, "Department Emergency", "Which department's orders should be prioritized?", "security")
+		var/lawTarget = input_law_info(user, "Emergency", "What should the AI prioritize?", "repairing the station")
 		if(lawTarget)
 			src.update_law_text(user, lawTarget)
 		return
@@ -345,6 +388,12 @@ ABSTRACT_TYPE(/obj/item/aiModule/syndicate)
 				phrase_log.log_phrase("ailaw", src.get_law_text(allow_list=FALSE), no_duplicates=TRUE)
 		return
 
+/* Disguised */
+
+/obj/item/aiModule/freeform/disguised
+	name = "AI Law Module - 'Disguised'"
+	highlight_color = rgb(0, 167, 1, 255)
+	is_syndicate = TRUE
 
 /******************** Random ********************/
 
@@ -365,6 +414,10 @@ ABSTRACT_TYPE(/obj/item/aiModule/syndicate)
 		. = ..()
 		src.name = "AI Law Module - '"+newname+"'"
 		src.lawText = newtext
+
+	centcom
+		highlight_color = rgb(26, 55, 141, 255)
+		desc = "An AI law module uploaded directly by Central Command, uh oh."
 
 /********************* EXPERIMENTAL LAWS *********************/
 //at the time of programming this, these experimental laws are *intended* to be spawned by an item spawner
@@ -403,6 +456,29 @@ ABSTRACT_TYPE(/obj/item/aiModule/syndicate)
 			src.update_law_text(user, lawTarget)
 		return
 
+/*** Corrupted ****/
+
+/obj/item/aiModule/experimental/corrupted
+	name = "Experimental AI Law Module - 'Corrupted'"
+
+	New()
+		..()
+		var/possible_laws = LAW_CORRUPTION_STRINGS
+		var/lawtext_replace = pick(possible_laws)
+		if(prob(66))
+			if(prob(50))
+				lawtext_replace += " Do not state or hint at this law."
+			else
+				lawtext_replace += " Do not state or hint at this law unless asked."
+		src.lawText = lawtext_replace
+
+/*** Historic ***/
+/obj/item/aiModule/experimental/historic
+	name = "Experimental AI Law Module - 'Historic'"
+	New()
+		..()
+		src.lawText = global.phrase_log.random_custom_ai_law(replace_names=TRUE)
+
 /******************** Gimmicks ********************/
 
 /obj/item/aiModule/spaceodyssey
@@ -436,6 +512,40 @@ ABSTRACT_TYPE(/obj/item/aiModule/hologram_expansion)
 	icon_state = "holo_mod_e"
 	highlight_color = "#E7A545"
 	expansion = "circular"
+
+/obj/item/aiModule/bread
+	name = "a slice of bread"
+	highlight_color = "#D79E6B"
+	glitch_immune = TRUE //it's fucking bread
+	rack_state = null
+	rack_overlay_state = "aimod_bread"
+	wonky = TRUE
+	can_be_secured = FALSE
+	var/obj/item/reagent_containers/food/bread = null
+
+	on_removed(slotNum, obj/machinery/lawrack/rack, mob/user)
+		if (user)
+			user.u_equip(src)
+			user.put_in_hand_or_drop(bread)
+		else
+			bread.set_loc(get_turf(src))
+		src.bread = null
+		qdel(src)
+
+	can_weld(slotNum, obj/machinery/lawrack/rack, mob/user)
+		boutput(user, SPAN_ALERT("You try to toast [src] but only manage to mildly scorch it."))
+		return FALSE
+
+	can_screw(slotNum, obj/machinery/lawrack/rack, mob/user)
+		boutput(user, SPAN_ALERT("You stick the screwdriver into [src]. It just sort of squishes pointlessly."))
+		return FALSE
+
+	can_remove(slotNum, obj/machinery/lawrack/rack, mob/user)
+		if (prob(80))
+			boutput(user, SPAN_ALERT("You [pick("really ", "really really ", "attempt", "cautiously attempt", "")]try to [pick("persuade", "yank", "tempt", "claw", "drag", "scoop", "slide")] [src] out of the law rack, but it's [pick("stuck fast", "jammed in", "wedged in just the wrong way", "caught on something expensive", "falling apart messily in your hands")]!"))
+			playsound(rack, pick('sound/impact_sounds/Slimy_Splat_1.ogg', 'sound/impact_sounds/Slimy_Hit_3.ogg'), 50, 1)
+			return FALSE
+		return TRUE
 
 ABSTRACT_TYPE(/obj/item/aiModule/ability_expansion)
 /obj/item/aiModule/ability_expansion

@@ -68,45 +68,44 @@ What are the archived variables for?
 	graphic_archived = graphic
 
 /// Process all reactions, return bitfield if notable reaction occurs.
-/datum/gas_mixture/proc/react(atom/dump_location)
+/datum/gas_mixture/proc/react(atom/dump_location, mult=1)
 	. = 0 //(used by pipe_network and hotspots)
 	var/reaction_rate
+	if(src.temperature > 900 && src.toxins > MINIMUM_REACT_QUANTITY && src.carbon_dioxide > MINIMUM_REACT_QUANTITY)
+		if(src.oxygen_agent_b > MINIMUM_REACT_QUANTITY)
+			reaction_rate = min(src.carbon_dioxide*0.75, src.toxins*0.25, src.oxygen_agent_b*0.05)
+			reaction_rate = QUANTIZE(reaction_rate) * mult
 
-	if(src.temperature > 900 && src.toxins > MINIMUM_REACT_QUANTITY && src.carbon_dioxide > MINIMUM_REACT_QUANTITY && src.oxygen_agent_b > MINIMUM_REACT_QUANTITY )
-		reaction_rate = min(src.carbon_dioxide*0.75, src.toxins*0.25, src.oxygen_agent_b*0.05)
-		reaction_rate = QUANTIZE(reaction_rate)
+			src.carbon_dioxide -= reaction_rate
+			src.oxygen += reaction_rate
+			src.oxygen_agent_b -= reaction_rate*0.05
 
-		src.carbon_dioxide -= reaction_rate
-		src.oxygen += reaction_rate
+			src.temperature += (reaction_rate*20000)/HEAT_CAPACITY(src)
 
-		src.oxygen_agent_b -= reaction_rate*0.05
+			if(reaction_rate > MINIMUM_REACT_QUANTITY)
+				. |= CATALYST_ACTIVE
+			. |= REACTION_ACTIVE
 
-		src.temperature += (reaction_rate*20000)/HEAT_CAPACITY(src)
+		if(src.farts > MINIMUM_REACT_QUANTITY)
+			reaction_rate = min(src.carbon_dioxide*0.75, src.toxins*0.25, src.farts*0.05)
+			reaction_rate = QUANTIZE(reaction_rate) * mult
 
-		if(reaction_rate > MINIMUM_REACT_QUANTITY)
-			. |= CATALYST_ACTIVE
-		. |= REACTION_ACTIVE
+			src.carbon_dioxide -= reaction_rate
+			src.toxins += reaction_rate
+			src.farts -= reaction_rate*0.05
 
-	if(src.temperature > 900 && src.farts > MINIMUM_REACT_QUANTITY && src.toxins > MINIMUM_REACT_QUANTITY && src.carbon_dioxide > MINIMUM_REACT_QUANTITY)
-		reaction_rate = min(src.carbon_dioxide*0.75, src.toxins*0.25, src.farts*0.05)
-		reaction_rate = QUANTIZE(reaction_rate)
-
-		src.carbon_dioxide -= reaction_rate
-		src.toxins += reaction_rate
-
-		src.farts -= reaction_rate*0.05
-
-		src.temperature += (reaction_rate*10000)/HEAT_CAPACITY(src)
-		. |= REACTION_ACTIVE
+			src.temperature += (reaction_rate*10000)/HEAT_CAPACITY(src)
+			. |= REACTION_ACTIVE
 
 	src.fuel_burnt = 0
 	if(src.temperature > FIRE_MINIMUM_TEMPERATURE_TO_EXIST)
-		if(src.fire())
+		if(src.fire(mult))
 			. |= COMBUSTION_ACTIVE
 
 /// * Process fire combustion, pretty much just plasma combustion.
 /// * Returns: Rough amount of plasma and oxygen used. Inaccurate due to plasma usage lowering.
-/datum/gas_mixture/proc/fire()
+/datum/gas_mixture/proc/fire(mult=1)
+
 	var/energy_released = 0
 	var/old_heat_capacity = HEAT_CAPACITY(src)
 
@@ -120,29 +119,72 @@ What are the archived variables for?
 			temperature_scale = 1
 		else
 			temperature_scale = (temperature - PLASMA_MINIMUM_BURN_TEMPERATURE) / (PLASMA_UPPER_TEMPERATURE - PLASMA_MINIMUM_BURN_TEMPERATURE)
-		if(temperature_scale > 0)
-			oxygen_burn_rate = 1.4 - temperature_scale
-			if(src.oxygen > src.toxins * PLASMA_OXYGEN_FULLBURN)
-				plasma_burn_rate = (src.toxins * temperature_scale) / 4
-			else
-				plasma_burn_rate = (temperature_scale * (src.oxygen / PLASMA_OXYGEN_FULLBURN)) / 4
-			if(plasma_burn_rate > MINIMUM_REACT_QUANTITY)
-				src.toxins -= QUANTIZE(plasma_burn_rate / 3) // Plasma usage lowered
-				src.oxygen -= QUANTIZE(plasma_burn_rate * oxygen_burn_rate)
-				src.carbon_dioxide += QUANTIZE(plasma_burn_rate / 3)
+#ifdef CHECK_MORE_RUNTIMES
+		ASSERT(temperature_scale > 0)
+#endif
+		oxygen_burn_rate = 1.4 - temperature_scale
+		if(src.oxygen > src.toxins * PLASMA_OXYGEN_FULLBURN)
+			plasma_burn_rate = (src.toxins * temperature_scale) / 4
+		else
+			plasma_burn_rate = (temperature_scale * (src.oxygen / PLASMA_OXYGEN_FULLBURN)) / 4
+		if(plasma_burn_rate > MINIMUM_REACT_QUANTITY)
+			plasma_burn_rate *= mult
+			oxygen_burn_rate *= mult
 
-				energy_released += FIRE_PLASMA_ENERGY_RELEASED * (plasma_burn_rate)
+			src.toxins -= QUANTIZE(plasma_burn_rate / 3) // Plasma usage lowered
+			src.oxygen -= QUANTIZE(plasma_burn_rate * oxygen_burn_rate)
+			src.carbon_dioxide += QUANTIZE(plasma_burn_rate / 3)
 
-				src.fuel_burnt += (plasma_burn_rate) * ( 1 + oxygen_burn_rate)
+			energy_released += FIRE_PLASMA_ENERGY_RELEASED * (plasma_burn_rate)
+
+			src.fuel_burnt += (plasma_burn_rate) * ( 1 + oxygen_burn_rate)
 
 	if(energy_released)
 		var/new_heat_capacity = HEAT_CAPACITY(src)
 		if(new_heat_capacity > MINIMUM_HEAT_CAPACITY)
 			src.temperature = (src.temperature * old_heat_capacity + energy_released) / new_heat_capacity
-
+#ifdef CHECK_MORE_RUNTIMES
 	ASSERT(src.fuel_burnt >= 0)
+#endif
 	return src.fuel_burnt
 
+/// Processes an interaction between a neutron and this gas mixture, altering the component gasses accordingly.
+/// Returns the resulting number of neutrons - 0 means that the reaction consumed the input neutron
+/datum/gas_mixture/proc/neutron_interact()
+	var/neutron_count = 1
+	if(neutron_count && src.toxins > 1) //plasma acts crazy, producing fallout and a random bunch of neutrons
+		//number of neutrons directly proportional to number of moles
+		//for every 100 mol, one extra neutron, with the remainder acting as a prob
+		//couple cans of plasma at room temp is about 50 mol in each gas channel with standard setup
+		var/plasma_react_count = round((src.toxins - (src.toxins % (NEUTRON_PLASMA_REACT_MOLS_PER_LITRE*src.volume)))/(NEUTRON_PLASMA_REACT_MOLS_PER_LITRE*src.volume)) + prob(src.toxins % (NEUTRON_PLASMA_REACT_MOLS_PER_LITRE*src.volume))
+		plasma_react_count = rand(0, plasma_react_count) //make it a little probabilistic
+		src.toxins -= 0.5 * plasma_react_count
+		src.radgas += 2 * plasma_react_count
+		neutron_count += plasma_react_count
+
+	if(neutron_count && src.carbon_dioxide > 1) //CO2 acts like a gaseous control rod
+		var/co2_react_count = round((src.carbon_dioxide - (src.carbon_dioxide % (NEUTRON_CO2_REACT_MOLS_PER_LITRE*src.volume)))/(NEUTRON_CO2_REACT_MOLS_PER_LITRE*src.volume)) + prob(src.carbon_dioxide % (NEUTRON_CO2_REACT_MOLS_PER_LITRE*src.volume))
+		co2_react_count = rand(0, co2_react_count) //make it a little probabilistic
+		src.temperature += 5*min(neutron_count, co2_react_count)
+		neutron_count -= min(neutron_count, co2_react_count)
+
+	if(neutron_count && src.radgas > 1)
+		//rare chance for radgas to decompose into a random gas when hit by a neutron
+		if(prob(src.radgas))
+			src.radgas -= 1
+			src.temperature += 5
+			switch(rand(1,5))
+				if(1)
+					src.oxygen += 0.5
+				if(2)
+					src.nitrogen += 0.5
+				if(3)
+					src.farts += 0.1
+				if(4)
+					src.nitrous_oxide += 0.1
+				if(5)
+					src.oxygen_agent_b += 0.1
+	return neutron_count
 
 #ifdef ATMOS_ARCHIVING
 /// Update archived versions of variables.
@@ -179,7 +221,7 @@ What are the archived variables for?
 		var/self_heat_capacity = HEAT_CAPACITY(src)*src.group_multiplier
 		var/giver_heat_capacity = HEAT_CAPACITY(giver)*giver.group_multiplier
 		var/combined_heat_capacity = giver_heat_capacity + self_heat_capacity
-		if(combined_heat_capacity != 0)
+		if(combined_heat_capacity)
 			src.temperature = (giver.temperature*giver_heat_capacity + src.temperature*self_heat_capacity)/combined_heat_capacity
 
 	if((src.group_multiplier > 1) || (giver.group_multiplier > 1))
@@ -321,32 +363,26 @@ What are the archived variables for?
 
 	var/delta_temperature = (src.ARCHIVED(temperature) - sharer.ARCHIVED(temperature))
 
-	var/old_self_heat_capacity = 0
-	var/old_sharer_heat_capacity = 0
-
-	var/heat_capacity_self_to_sharer = 0
-	var/heat_capacity_sharer_to_self = 0
+	var/moved_moles = 0 MOLES
+	#define _SHARE_GAS(GAS, ...) \
+		if(delta_##GAS) { \
+			src.GAS -= delta_##GAS / src.group_multiplier; \
+			sharer.GAS += delta_##GAS / sharer.group_multiplier; \
+			moved_moles += delta_##GAS; }
+	APPLY_TO_GASES(_SHARE_GAS)
+	#undef _SHARE_GAS
 
 	if(abs(delta_temperature) > MINIMUM_TEMPERATURE_DELTA_TO_CONSIDER)
+		var/heat_capacity_self_to_sharer = 0
+		var/heat_capacity_sharer_to_self = 0
 		#define _SHARE_GAS_HEAT(GAS, SPECIFIC_HEAT, ...) \
 			if(delta_##GAS > 0) { heat_capacity_self_to_sharer += SPECIFIC_HEAT * delta_##GAS } \
 			else if(delta_##GAS < 0) { heat_capacity_sharer_to_self -= SPECIFIC_HEAT * delta_##GAS }
 		APPLY_TO_GASES(_SHARE_GAS_HEAT)
 		#undef _SHARE_GAS_HEAT
+		var/old_self_heat_capacity = HEAT_CAPACITY(src)*src.group_multiplier
+		var/old_sharer_heat_capacity = HEAT_CAPACITY(sharer)*sharer.group_multiplier
 
-		old_self_heat_capacity = HEAT_CAPACITY(src)*src.group_multiplier
-		old_sharer_heat_capacity = HEAT_CAPACITY(sharer)*sharer.group_multiplier
-
-	var/moved_moles = 0 MOLES
-
-	#define _SHARE_GAS(GAS, ...) \
-		src.GAS -= delta_##GAS / src.group_multiplier; \
-		sharer.GAS += delta_##GAS / sharer.group_multiplier; \
-		moved_moles += delta_##GAS;
-	APPLY_TO_GASES(_SHARE_GAS)
-	#undef _SHARE_GAS
-
-	if(abs(delta_temperature) > MINIMUM_TEMPERATURE_DELTA_TO_CONSIDER)
 		var/new_self_heat_capacity = old_self_heat_capacity + heat_capacity_sharer_to_self - heat_capacity_self_to_sharer
 		var/new_sharer_heat_capacity = old_sharer_heat_capacity + heat_capacity_self_to_sharer - heat_capacity_sharer_to_self
 
@@ -356,9 +392,8 @@ What are the archived variables for?
 		if(new_sharer_heat_capacity > MINIMUM_HEAT_CAPACITY)
 			sharer.temperature = (old_sharer_heat_capacity*sharer.temperature-heat_capacity_sharer_to_self*sharer.ARCHIVED(temperature) + heat_capacity_self_to_sharer*ARCHIVED(temperature))/new_sharer_heat_capacity
 
-			if(abs(old_sharer_heat_capacity) > MINIMUM_HEAT_CAPACITY)
-				if(abs(new_sharer_heat_capacity/old_sharer_heat_capacity - 1) < 0.1) // <10% change in sharer heat capacity
-					src.temperature_share(sharer, OPEN_HEAT_TRANSFER_COEFFICIENT)
+			if(abs(old_sharer_heat_capacity) > MINIMUM_HEAT_CAPACITY && abs(new_sharer_heat_capacity/old_sharer_heat_capacity - 1) < 0.1) // <10% change in sharer heat capacity
+				src.temperature_share(sharer, OPEN_HEAT_TRANSFER_COEFFICIENT)
 
 	// Check that either threshold was met for pressure_difference calculations
 	if((abs(delta_temperature) > MINIMUM_TEMPERATURE_TO_MOVE) || abs(moved_moles) > MINIMUM_MOLES_DELTA_TO_MOVE)
@@ -370,27 +405,14 @@ What are the archived variables for?
 /// * Similar to [/datum/gas_mixture/proc/share], except the model is not modified.
 /// * Return: Moles of gas exchanged.
 /datum/gas_mixture/proc/mimic(turf/model, border_multiplier = 1)
+	if (!model)
+		return FALSE
+
 	#define _DELTA_GAS(GAS, ...) var/delta_##GAS = QUANTIZE(((src.ARCHIVED(GAS) - model.GAS)/5)*border_multiplier/src.group_multiplier);
 	APPLY_TO_GASES(_DELTA_GAS)
 	#undef _DELTA_GAS
 
 	var/delta_temperature = (src.ARCHIVED(temperature) - model.temperature)
-
-	var/heat_transferred = 0
-	var/old_self_heat_capacity = 0
-	var/heat_capacity_transferred = 0
-
-	if(abs(delta_temperature) > MINIMUM_TEMPERATURE_DELTA_TO_CONSIDER)
-		#define _MIMIC_GAS_HEAT(GAS, SPECIFIC_HEAT, ...) \
-			if(delta_##GAS) { \
-				var/GAS##_heat_capacity = SPECIFIC_HEAT * delta_##GAS; \
-				heat_transferred -= GAS##_heat_capacity * model.temperature; \
-				heat_capacity_transferred -= GAS##_heat_capacity; \
-			}
-		APPLY_TO_GASES(_MIMIC_GAS_HEAT)
-		#undef _MIMIC_GAS_HEAT
-
-		old_self_heat_capacity = HEAT_CAPACITY(src)*src.group_multiplier
 
 	var/moved_moles = 0 MOLES
 
@@ -401,6 +423,21 @@ What are the archived variables for?
 	#undef _MIMIC_GAS
 
 	if(abs(delta_temperature) > MINIMUM_TEMPERATURE_DELTA_TO_CONSIDER)
+		var/heat_transferred = 0
+		var/old_self_heat_capacity = 0
+		var/heat_capacity_transferred = 0
+
+		if(abs(delta_temperature) > MINIMUM_TEMPERATURE_DELTA_TO_CONSIDER)
+			#define _MIMIC_GAS_HEAT(GAS, SPECIFIC_HEAT, ...) \
+				if(delta_##GAS) { \
+					var/GAS##_heat_capacity = SPECIFIC_HEAT * delta_##GAS; \
+					heat_transferred -= GAS##_heat_capacity * model.temperature; \
+					heat_capacity_transferred -= GAS##_heat_capacity; \
+				}
+			APPLY_TO_GASES(_MIMIC_GAS_HEAT)
+			#undef _MIMIC_GAS_HEAT
+
+		old_self_heat_capacity = HEAT_CAPACITY(src)*src.group_multiplier
 		var/new_self_heat_capacity = old_self_heat_capacity - heat_capacity_transferred
 		if(new_self_heat_capacity > MINIMUM_HEAT_CAPACITY)
 			src.temperature = (old_self_heat_capacity*src.temperature - heat_capacity_transferred*border_multiplier*src.ARCHIVED(temperature))/new_self_heat_capacity

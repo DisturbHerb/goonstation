@@ -15,7 +15,7 @@ ABSTRACT_TYPE(/obj/item/scrapweapons/weapons)
 	name = "youshouldntseeme basescrapweapon"
 	icon = 'icons/obj/items/scrapweapons.dmi' //codersprites. improve if you want or feel the need
 	inhand_image_icon = 'icons/mob/inhand/hand_scrapweapons.dmi'
-	flags = FPRINT | TABLEPASS | NOSHIELD | USEDELAY
+	flags = TABLEPASS | NOSHIELD | USEDELAY
 	object_flags = NO_GHOSTCRITTER // blanket ban on all scrapweapon items for ghost critters
 	throwforce = 5
 	throw_speed = 1
@@ -40,19 +40,22 @@ ABSTRACT_TYPE(/obj/item/scrapweapons/weapons)
 
 	attackby(obj/item/W, mob/user)
 		. = ..()
+		var/successful	//Whether we successfully built something or not
 		for	(var/obj/item/E in user.equipped_list())
-			if (isweldingtool(E) && E:try_weld(user,2,-1,1,1))
+			if (isweldingtool(E) && E:try_weld(user,0,0,0,0))
 				if (istype(W, /obj/item/scrapweapons/parts/blade))
 					qdel(W)
 					qdel(src)
 					user.put_in_hand_or_drop(new/obj/item/scrapweapons/weapons/machete)
 					boutput(user, SPAN_NOTICE("You fuse the handle and blade into a scrap machete."))
+					successful = TRUE
 
 				if (istype(W, /obj/item/scrapweapons/parts/shaft))
 					qdel(W)
 					qdel(src)
 					user.put_in_hand_or_drop(new/obj/item/scrapweapons/weapons/club)
 					boutput(user, SPAN_NOTICE("You fuse the handle and shaft into a scrap club."))
+					successful = TRUE
 
 
 				if (istype(W, /obj/item/scrapweapons/parts/pole))
@@ -60,6 +63,7 @@ ABSTRACT_TYPE(/obj/item/scrapweapons/weapons)
 					qdel(src)
 					user.put_in_hand_or_drop(new/obj/item/scrapweapons/weapons/spear)
 					boutput(user, SPAN_NOTICE("You fuse the handle and pole into a blunt scrap spear."))
+					successful = TRUE
 
 
 				if (istype(W, /obj/item/raw_material/scrap_metal))
@@ -67,6 +71,7 @@ ABSTRACT_TYPE(/obj/item/scrapweapons/weapons)
 					qdel(src)
 					user.put_in_hand_or_drop(new/obj/item/scrapweapons/weapons/dagger)
 					boutput(user, SPAN_NOTICE("You fuse the handle and scrap metal into a scrap dagger."))
+					successful = TRUE
 
 				else if (istype(W, /obj/item/raw_material/shard))
 					if (istype(W.material, /datum/material/crystal/glass))
@@ -74,12 +79,16 @@ ABSTRACT_TYPE(/obj/item/scrapweapons/weapons)
 						qdel(src)
 						user.put_in_hand_or_drop(new/obj/item/scrapweapons/weapons/dagger/glass)
 						boutput(user, SPAN_NOTICE("You fuse the handle and glass shard into a scrap dagger."))
+						successful = TRUE
 
 					else if (istype(W.material, /datum/material/crystal/plasmaglass))
 						W.change_stack_amount(-1)
 						qdel(src)
 						user.put_in_hand_or_drop(new/obj/item/scrapweapons/weapons/dagger/plasmaglass)
 						boutput(user, SPAN_NOTICE("You fuse the handle and plasmaglass shard into a scrap dagger."))
+						successful = TRUE
+				if (successful == TRUE)
+					E:try_weld(user,2,-1,1,1)
 
 /obj/item/scrapweapons/parts/blade
 	name = "scrap blade"
@@ -156,7 +165,7 @@ ABSTRACT_TYPE(/obj/item/scrapweapons/weapons)
 					src.icon_state = "spear-wire"
 					src.item_state = "spear-wire"
 			else
-				boutput(user, "<span class='alert>You need to attach some wires before you stick anything on the spear!</span>")
+				boutput(user, "<span class='alert'>You need to attach some wires before you stick anything on the spear!</span>")
 				. = ..()
 		else if (istype(W, /obj/item/raw_material/scrap_metal))
 			W.change_stack_amount(-1)
@@ -215,7 +224,7 @@ ABSTRACT_TYPE(/obj/item/scrapweapons/weapons)
 	if (!istype(user) || !user.organHolder || !src.user_can_suicide(user))
 		return 0
 	else
-		user.visible_message(SPAN_ALERT("<b>[user] impales themselves with the [src], straight through the heart! </b>"))
+		user.visible_message(SPAN_ALERT("<b>[user] impales [himself_or_herself(user)] with the [src], straight through the heart! </b>"))
 		user.organHolder.drop_and_throw_organ("heart", dist = 5, speed = 1, showtext = 1)
 		playsound(src.loc, 'sound/impact_sounds/Blade_Small_Bloody.ogg', 50, 1)
 		user.TakeDamage("chest", 100, 0)
@@ -246,7 +255,7 @@ ABSTRACT_TYPE(/obj/item/scrapweapons/weapons)
 		return 0
 	else
 		var/organtokill = pick("liver", "spleen", "appendix", "stomach", "intestines")
-		user.visible_message(SPAN_ALERT("<b>[user] stabs the [src] into their own chest, disemboweling themselves and ripping out their [organtokill]! [pick("Brutal", "Holy fucking SHIT", "Why would they do that?")]!</b>"))
+		user.visible_message(SPAN_ALERT("<b>[user] stabs the [src] into [his_or_her(user)] own chest, disemboweling [himself_or_herself(user)] and ripping out [his_or_her(user)] [organtokill]! [pick("Brutal", "Holy fucking SHIT", "Why would [he_or_she(user)] do that?")]!</b>"))
 		user.organHolder.drop_and_throw_organ(organtokill, dist = 5, speed = 1, showtext = 1)
 		playsound(src.loc, 'sound/impact_sounds/Blade_Small_Bloody.ogg', 50, 1)
 		user.TakeDamage("chest", 150, 0)
@@ -258,7 +267,7 @@ ABSTRACT_TYPE(/obj/item/scrapweapons/weapons)
 /obj/item/scrapweapons/weapons/club
 	name = "scrap club"
 	desc = "A metal shaft attached to a handle. You might be able to improve it a bit."
-	HELP_MESSAGE_OVERRIDE("To improve the club you should first attach some <b>wires</b> to the spear, then attach a piece of <b>scrap metal, glass, or plasmaglass</b> as the tip.")
+	HELP_MESSAGE_OVERRIDE("To improve the club you should first attach some <b>wires</b> to the club, then attach a piece of <b>scrap metal, glass, or plasmaglass</b> as the studs.")
 	icon_state = "club"
 	item_state = "club"
 	w_class = W_CLASS_NORMAL
@@ -340,7 +349,7 @@ ABSTRACT_TYPE(/obj/item/scrapweapons/weapons)
 	if (!istype(user) || !user.organHolder || !src.user_can_suicide(user))
 		return 0
 	else
-		user.visible_message(SPAN_ALERT("<b>[user] swings their [src] in a mighty arc around their head faster and faster until it hits their head and knocks it clean off! [pick("Holy fucking shit", "Jesus christ what a show", "How is that even possible?", "Nice")]! </b>"))
+		user.visible_message(SPAN_ALERT("<b>[user] swings [his_or_her(user)] [src] in a mighty arc around [his_or_her(user)] head faster and faster until it hits [his_or_her(user)] head and knocks it clean off! [pick("Holy fucking shit", "Jesus christ what a show", "How is that even possible?", "Nice")]! </b>"))
 		user.organHolder.drop_and_throw_organ("head", dist = 5, speed = 1, showtext = 1)
 		playsound(src.loc, 'sound/impact_sounds/Blade_Small_Bloody.ogg', 50, 1)
 		SPAWN(10 SECONDS)
@@ -365,7 +374,7 @@ ABSTRACT_TYPE(/obj/item/scrapweapons/weapons)
 
 	New()
 		..()
-		src.setItemSpecial(/datum/item_special/double)
+		src.setItemSpecial(/datum/item_special/jab)
 
 	glass
 		desc = "A tiny bit of glass attached to a handle. You might cut yourself just holding it."

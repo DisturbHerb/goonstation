@@ -71,7 +71,7 @@ TYPEINFO(/obj/item/device/chameleon)
 /obj/item/device/chameleon
 	name = "chameleon-projector"
 	icon_state = "shield0"
-	flags = FPRINT | TABLEPASS| CONDUCT | EXTRADELAY | SUPPRESSATTACK
+	flags = TABLEPASS | CONDUCT | EXTRADELAY | SUPPRESSATTACK
 	c_flags = ONBELT
 	item_state = "electronic"
 	throwforce = 5
@@ -81,6 +81,7 @@ TYPEINFO(/obj/item/device/chameleon)
 	var/can_use = 0
 	var/obj/overlay/anim = null //The toggle animation overlay will also be retained
 	var/obj/dummy/chameleon/cham = null //No sense creating / destroying this
+	var/disrupt_on_drop = TRUE //TODO: refactor this
 	var/active = 0
 	tooltip_flags = REBUILD_DIST
 	HELP_MESSAGE_OVERRIDE({"Use the chameleon projector on any object to copy it's appearance. Use it in hand to appear as that object indefinitely. The disguise will be removed if you interact with anything else or are hit."})
@@ -95,10 +96,12 @@ TYPEINFO(/obj/item/device/chameleon)
 		src.cham.master = src
 
 	dropped()
-		disrupt()
+		. = ..()
+		if(disrupt_on_drop)
+			disrupt()
 
-	attack_self()
-		toggle()
+	attack_self(mob/user)
+		toggle(user)
 
 	get_desc(dist)
 		if (dist < 1 && !istype(src, /obj/item/device/chameleon/bomb))
@@ -126,11 +129,17 @@ TYPEINFO(/obj/item/device/chameleon)
 			if (user && ismob(user))
 				user.show_text("You are too far away to do that.", "red")
 			return
-		if (target.plane == PLANE_HUD || isgrab(target)) //just don't scan hud stuff or grabs
+		if (isgrab(target)) //don't scan grabs
+			return
+		if (target.plane == PLANE_HUD && !isitem(target)) //don't grab hud stuff _unless_ it's an item. Grabs are the only exception I know
 			return
 		//Okay, enough scanning shit without actual icons yo.
-		if ((target.icon && target.icon_state || length(target.overlays) || length(target.underlays)) && isobj(target))
-			if (!cham)
+		if ((target.icon && target.icon_state || length(target.overlays) || length(target.underlays)) && isobj(target) && target.alpha > 5)
+			var/icon/testIcon = getFlatIcon(target)
+			if(!testIcon) //weird edgecases
+				return
+
+			if (!cham || src.cham.qdeled || src.cham.disposed)
 				cham = new(src)
 				cham.master = src
 
@@ -140,45 +149,51 @@ TYPEINFO(/obj/item/device/chameleon)
 			cham.real_name = target.name
 			cham.desc = target.desc
 			cham.real_desc = target.desc
-			cham.icon = getFlatIcon(target)
+			cham.icon = testIcon
 			cham.set_dir(target.dir)
 			can_use = 1
-			tooltip_rebuild = 1
+			tooltip_rebuild = TRUE
 		else
 			user.show_text("\The [target] is not compatible with the scanner.", "red")
 
-	proc/toggle()
+	proc/toggle(mob/user)
 		if (!can_use)
 			return
 
 		if (!anim)
 			anim = new(src)
 
+		if (!src.cham || src.cham.qdeled || src.cham.disposed) //Stop sending people to nullspace after the dummy is destroyed >:(
+			boutput(user, SPAN_ALERT("[src] detects an error in its projection registry and performs an emergency factory reset!"))
+			src.disrupt()
+			src.cham = null
+			src.can_use = FALSE //Go scan something to get a new dummy object
+			return
 		if (active) //active_dummy)
 			active = 0
 			playsound(src, 'sound/effects/pop.ogg', 100, TRUE, 1)
 			for (var/atom/movable/A in cham)
 				A.set_loc(get_turf(cham))
 			cham.set_loc(src)
-			boutput(usr, SPAN_NOTICE("You deactivate the [src]."))
+			boutput(user, SPAN_NOTICE("You deactivate the [src]."))
 			anim.set_loc(get_turf(src))
-			flick("emppulse",anim)
+			FLICK("emppulse",anim)
 			SPAWN(0.8 SECONDS)
 				anim.set_loc(src)
 		else
 			if (istype(src.loc, /obj/dummy/chameleon)) //No recursive chameleon projectors!!
-				boutput(usr, SPAN_ALERT("As your finger nears the power button, time seems to slow, and a strange silence falls.  You reconsider turning on a second projector."))
+				boutput(user, SPAN_ALERT("As your finger nears the power button, time seems to slow, and a strange silence falls.  You reconsider turning on a second projector."))
 				return
 
 			playsound(src, 'sound/effects/pop.ogg', 100, TRUE, 1)
 			cham.master = src
 			cham.set_loc(get_turf(src))
-			usr.set_loc(cham)
 			src.active = 1
+			user.set_loc(cham)
 
-			boutput(usr, SPAN_NOTICE("You activate the [src]."))
+			boutput(user, SPAN_NOTICE("You activate the [src]."))
 			anim.set_loc(get_turf(src))
-			flick("emppulse",anim)
+			FLICK("emppulse",anim)
 			SPAWN(0.8 SECONDS)
 				anim.set_loc(src)
 
@@ -190,16 +205,17 @@ TYPEINFO(/obj/item/device/chameleon)
 				A.set_loc(get_turf(cham))
 			cham.set_loc(src)
 			can_use = 0
-			tooltip_rebuild = 1
+			tooltip_rebuild = TRUE
 			SPAWN(10 SECONDS)
 				can_use = 1
-				tooltip_rebuild = 1
+				tooltip_rebuild = TRUE
 
 /obj/item/device/chameleon/bomb
 	name = "chameleon bomb"
 	icon = 'icons/obj/items/items.dmi'
 	icon_state = "cham_bomb"
-	burn_possible = 0
+	burn_possible = FALSE
+	disrupt_on_drop = FALSE
 	HELP_MESSAGE_OVERRIDE(null)
 	var/strength = 12
 
@@ -208,9 +224,6 @@ TYPEINFO(/obj/item/device/chameleon)
 			return "Hit the bomb on any object to disguise it as that object. Use the bomb in hand to arm/disarm it. The bomb will explode when anyone tries to pick up the armed bomb."
 		else
 			return null
-
-	dropped()
-		return
 
 	UpdateName()
 		src.name = "[name_prefix(null, 1)][src.real_name][name_suffix(null, 1)]"
@@ -249,7 +262,9 @@ TYPEINFO(/obj/item/device/chameleon)
 			if (user && ismob(user))
 				user.show_text("You are too far away to do that.", "red")
 			return
-		if (target.plane == PLANE_HUD  || isgrab(target)) //just don't scan hud stuff and grabs
+		if (isgrab(target)) //don't scan grabs
+			return
+		if (target.plane == PLANE_HUD && !isitem(target)) //don't grab hud stuff _unless_ it's an item. Grabs are the only exception I know
 			return
 		if ((target.icon && target.icon_state || length(target.overlays) || length(target.underlays)) && (isitem(target) || istype(target, /obj/shrub) || istype(target, /obj/critter) || istype(target, /obj/machinery/bot))) // cogwerks - added more fun
 			playsound(src, 'sound/weapons/flash.ogg', 100, TRUE, 1)

@@ -77,6 +77,7 @@
 			all_origin_names += O.name
 		appearance = artifact_controls.get_origin_from_string(pick(all_origin_names))
 
+	A.artiappear = appearance
 	var/name1 = pick(appearance.adjectives)
 	var/name2 = "thingy"
 	if (isitem(src))
@@ -132,7 +133,7 @@
 		trigger_amount--
 		selection = pick(valid_triggers)
 		if (ispath(selection))
-			var/datum/artifact_trigger/AT = new selection
+			var/datum/artifact_trigger/AT = new selection(src)
 			A.triggers += AT
 			valid_triggers -= selection
 
@@ -162,6 +163,16 @@
 	else
 		A.show_fx(src)
 	A.effect_activate(src)
+	for (var/mob/living/L in range(5, src))
+		for(var/datum/objective/objective in L.mind?.objectives)
+			if (istype(objective, /datum/objective/crew/scientist/artifact))
+				var/datum/objective/crew/scientist/artifact/art_obj = objective
+				art_obj.artifacts_activated++
+				break
+			if (istype(objective, /datum/objective/crew/researchdirector/artifact))
+				var/datum/objective/crew/researchdirector/artifact/art_obj = objective
+				art_obj.artifacts_activated++
+				break
 
 /obj/proc/ArtifactDeactivated()
 	if (!src.ArtifactSanityCheck())
@@ -256,13 +267,19 @@
 		var/datum/artifact/activator_key/K = ACT.artifact
 
 		if (K.activated)
-			if (K.universal || A.artitype == K.artitype)
+			if (K.universal || A.artitype == K.activating_origin)
 				if (K.activator && !A.activated)
 					src.ArtifactActivated()
 					if(K.corrupting && length(A.faults) < 10) // there's only so much corrupting you can do ok
 						for(var/i=1,i<rand(1,3),i++)
 							src.ArtifactDevelopFault(100)
+					// prevent instantly adding to contents, since a bad effect happens
+					if (istype(src, /obj/item/artifact/bag_of_holding))
+						return
 				else if (A.activated)
+					if (istype(src, /obj/item/artifact/bag_of_holding) && src.storage.check_can_hold(W) == STORAGE_CAN_HOLD)
+						src.storage.add_contents(W, user)
+						return
 					src.ArtifactDeactivated()
 
 	if (isweldingtool(W))

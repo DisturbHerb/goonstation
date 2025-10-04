@@ -5,7 +5,6 @@
 	icon = 'icons/obj/items/guns/kinetic64x32.dmi'
 	icon_state = "ag3_rifle"
 	item_state = "assault_rifle"
-	uses_multiple_icon_states = 1
 	force = MELEE_DMG_RIFLE
 	contraband = 8
 	ammo_cats = list(AMMO_AUTO_308)
@@ -28,7 +27,7 @@
 	damage = 50
 	damage_type = D_KINETIC
 	hit_type = DAMAGE_CUT
-	impact_image_state = "bhole-small"
+	impact_image_state = "bullethole-small"
 	implanted = /obj/item/implant/projectile/bullet_308
 	casing = /obj/item/casing/rifle
 
@@ -84,6 +83,7 @@ TYPEINFO(/datum/component/mimic_item)
 		. = ..()
 
 	cast(atom/T)
+		. = ..()
 		var/datum/component/C = usr.GetComponent(/datum/component/legs)
 		if(!C)
 			usr.AddComponent(/datum/component/legs)
@@ -111,10 +111,12 @@ TYPEINFO(/datum/component/mimic_item)
 	ai_type = /datum/aiHolder/spider_peaceful
 	is_npc = FALSE
 	flags = TABLEPASS
+	use_stunned_icon = FALSE
 	add_abilities = list(/datum/targetable/critter/bite,
 			/datum/targetable/gimmick/grow_legs_mimic,
 			/datum/targetable/critter/fadeout,
 			/datum/targetable/gimmick/reveal)
+	has_genes = FALSE
 	var/critter_scream_sound = 'sound/voice/screams/fescream4.ogg'
 	var/critter_scream_pitch = -2.5
 	var/critter_fart_sound = 'sound/voice/farts/fart2.ogg'

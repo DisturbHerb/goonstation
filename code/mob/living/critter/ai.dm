@@ -43,8 +43,8 @@ var/list/ai_move_scheduled = list()
 			M.skipped_mobs_list |= SKIPPED_AI_MOBS_LIST
 			LAZYLISTADDUNIQUE(AR.mobs_not_in_global_mobs_list, M)
 
-		if(src.owner.use_ai_toggle)
-			if(owner?.abilityHolder)
+		if(src.owner?.use_ai_toggle)
+			if(owner.abilityHolder)
 				if(!owner.abilityHolder.getAbility(/datum/targetable/ai_toggle))
 					owner.abilityHolder.addAbility(/datum/targetable/ai_toggle)
 			else
@@ -101,6 +101,7 @@ var/list/ai_move_scheduled = list()
 				T.reset()
 
 	proc/get_instance(taskType, list/nparams)
+		RETURN_TYPE(taskType)
 		if (taskType in task_cache)
 			return task_cache[taskType]
 		task_cache[taskType] = new taskType(arglist(nparams))
@@ -216,6 +217,7 @@ var/list/ai_move_scheduled = list()
 
 	proc/enable()
 		src.enabled = TRUE
+		src.owner.ClearSpecificOverlays("offline_indicator") //fucking stoppp
 		src.interrupt()
 
 /datum/aiTask
@@ -224,6 +226,9 @@ var/list/ai_move_scheduled = list()
 	var/atom/target = null
 	/// The maximum tile distance that we look for targets
 	var/max_dist = 5
+	/// If this is set score_target() is ignored and instead the target is chosen by distance only.
+	/// This is better for performance if there are multiple targets. Override to FALSE if you override score_target()!
+	var/score_by_distance_only = TRUE
 	/// if this is set, temporarily give this mob the HEAVYWEIGHT_AI mob flag for the duration of this task
 	var/ai_turbo = FALSE
 	/// If this task allows pathing through space
@@ -254,7 +259,7 @@ var/list/ai_move_scheduled = list()
 
 	/// Called whenever the task is started or ended. Override this instead of reset()
 	proc/on_reset()
-		holder.target = null
+		if (holder) holder.target = null
 
 	/// Evaluate the current environment and assign priority to switching to this task
 	proc/evaluate()
@@ -268,28 +273,40 @@ var/list/ai_move_scheduled = list()
 	/// targets is expected (but not required) to be ordered from best to worst - by default view() will do this if score_target() is based on distance
 	proc/get_best_target(list/atom/targets)
 		. = null
+		if (!holder) return
 		var/best_score = -INFINITY
 		var/list/best_path = null
 		if(length(targets))
-			for(var/atom/A as anything in targets)
-				var/score = src.score_target(A)
-				if(score > best_score)
-					var/simulated_only = !move_through_space
-#ifdef UNDERWATER_MAP
-					//fucking unsimulated ocean tiles fuck
-					simulated_only = FALSE
-#endif
-					var/tmp_best_path = get_path_to(holder.owner, A, max_dist*2, distance_from_target, null, simulated_only)
-					if(length(tmp_best_path))
-						best_score = score
-						best_path = tmp_best_path
-						. = A
-		holder.target = .
-		holder.target_path = best_path
+			var/simulated_only = !move_through_space
+			#ifdef UNDERWATER_MAP
+			//fucking unsimulated ocean tiles fuck
+			simulated_only = FALSE
+			#endif
+			var/required_goals = null // find all targets
+			if(score_by_distance_only)
+				required_goals = 1 // we only need to find the first one
+			var/list/atom/paths_found = get_path_to(holder.owner, targets, max_distance=max_dist*2, mintargetdist=distance_from_target, simulated_only=simulated_only, required_goals=required_goals)
+			if(score_by_distance_only)
+				if(length(paths_found))
+					. = paths_found[1]
+					best_path = paths_found[.]
+			else
+				for(var/atom/A as anything in paths_found)
+					var/score = src.score_target(A)
+					if(score > best_score)
+						var/list/tmp_best_path = paths_found[A]
+						if(length(tmp_best_path))
+							best_score = score
+							best_path = tmp_best_path
+							. = A
+		if(holder)
+			holder.target = .
+			holder.target_path = best_path
 
+	/// If overriding also override [score_by_distance_only] to FALSE!
 	proc/score_target(atom/target)
 		. = 0
-		if(target)
+		if(target && holder)
 			return 100*(max_dist - GET_MANHATTAN_DIST(get_turf(holder.owner), get_turf(target)))/max_dist //normalize distance weighting
 
 	//     do not override procs below this line
@@ -314,7 +331,7 @@ var/list/ai_move_scheduled = list()
 		transition_tasks[transTask] = 0
 
 	next_task()
-		if (length(holder.priority_tasks)) //consume priority tasks first
+		if (length(holder?.priority_tasks)) //consume priority tasks first
 			var/datum/aiTask/chosen_one = holder.priority_tasks[1]
 			holder.priority_tasks -= chosen_one
 			return chosen_one

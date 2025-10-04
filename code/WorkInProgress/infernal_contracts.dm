@@ -13,7 +13,7 @@ Whatever, it's been cleaned up a lot and it's no longer quite so awful.
 		return 0
 	to_buff.force = (initial(to_buff.force)) + total_souls_value
 	to_buff.throwforce = (initial(to_buff.throwforce)) + total_souls_value //these were originally capped at 30, but that seemed arbitrary and pointless in hindsight
-	to_buff.tooltip_rebuild = 1
+	to_buff.tooltip_rebuild = TRUE
 	return 1
 
 /proc/souladjust(var/to_adjust as num)
@@ -164,7 +164,7 @@ proc/is_weak_rollable_contract(type)
 	src.playsound_local(C.loc,'sound/effects/screech.ogg', 50, 1)
 	if(C.mind)
 		shake_camera(C, 20, 16)
-		boutput(C, "<span class='alert'>[screamstring]</span>")
+		boutput(C, SPAN_ALERT("[screamstring]"))
 		boutput(C, "<span style=\"color:purple; font-size:150%\"><i><b><font face = Tempus Sans ITC>You have sold your soul and become a Faustian cluwne! Oh no!</font></b></i></span>")
 		logTheThing(LOG_ADMIN, src, "has signed a contract and turned into a Faustian cluwne at [log_loc(C)]!")
 		C.choose_name(3)
@@ -182,7 +182,7 @@ proc/is_weak_rollable_contract(type)
 	force = 15
 	throwforce = 15
 	throw_range = 20
-	burn_possible = 0
+	burn_possible = FALSE
 	hit_type = DAMAGE_STAB
 	color = "#FF0000"
 	font_color = "#FF0000"
@@ -200,7 +200,7 @@ proc/is_weak_rollable_contract(type)
 			if (ismob(usr))
 				A:lastattacker = usr
 				A:lastattackertime = world.time
-			A.changeStatus("weakened", total_souls_value SECONDS) //scales with souls stolen, was capped, no longer capped, souls much harder to get without monkeys
+			A.changeStatus("knockdown", total_souls_value SECONDS) //scales with souls stolen, was capped, no longer capped, souls much harder to get without monkeys
 			take_bleeding_damage(A, null, total_souls_value, DAMAGE_STAB)
 		..()
 
@@ -217,12 +217,12 @@ proc/is_weak_rollable_contract(type)
 	name = "box of demonic pens"
 	desc = "Contains a set of seven pens, great for collectors."
 	spawn_contents = list(/obj/item/pen/fancy/satan = 4)
-	burn_possible = 0 //Only makes sense since it's from hell.
+	burn_possible = FALSE //Only makes sense since it's from hell.
 
 /obj/item/paper/soul_selling_kit
 	color = "#FF0000"
 	name = "Paper-'Soul Stealing 101'"
-	burn_possible = 0 //Only makes sense since it's from hell.
+	burn_possible = FALSE //Only makes sense since it's from hell.
 	info = {"<b>You shouldn't be seeing this yet!</b>"}
 
 	New()
@@ -245,13 +245,13 @@ proc/is_weak_rollable_contract(type)
 	icon_state = "briefcase"
 	inhand_image_icon = 'icons/mob/inhand/hand_general.dmi'
 	item_state = "briefcase"
-	flags = FPRINT | TABLEPASS| CONDUCT | NOSPLASH
+	flags = TABLEPASS| CONDUCT | NOSPLASH
 	color = "#FF0000"
 	force = 15
 	throwforce = 15
 	throw_speed = 1
 	throw_range = 8
-	burn_possible = 0 //Only makes sense since it's from hell.
+	burn_possible = FALSE //Only makes sense since it's from hell.
 	item_function_flags = IMMUNE_TO_ACID // we don't get a spare, better make sure it lasts.
 	w_class = W_CLASS_BULKY
 	max_wclass = W_CLASS_NORMAL
@@ -364,7 +364,7 @@ END GUIDE
 	icon = 'icons/obj/wizard.dmi'
 	icon_state = "scroll_seal"
 	var/uses = 4
-	flags = FPRINT | TABLEPASS
+	flags = TABLEPASS
 	w_class = W_CLASS_SMALL
 	inhand_image_icon = 'icons/mob/inhand/hand_books.dmi'
 	item_state = "paper"
@@ -372,7 +372,7 @@ END GUIDE
 	throw_speed = 4
 	throw_range = 10
 	desc = "A blank contract that's gone missing from hell."
-	burn_possible = 0 //Only makes sense since it's from hell.
+	burn_possible = FALSE //Only makes sense since it's from hell.
 	var/limiteduse = 0 //whether it has a limited number of uses. 1 is limited, 0 is unlimited.
 	var/inuse = 0 //is someone currently signing this thing?
 	var/used = 0 // how many times a limited use contract has been signed so far
@@ -415,7 +415,7 @@ END GUIDE
 	proc/updateuses(var/mob/user as mob, var/mob/badguy as mob)
 		if (src.limiteduse == 1)
 			src.used++
-			tooltip_rebuild = 1
+			tooltip_rebuild = TRUE
 			SPAWN(0)
 				if (src.used >= src.contractlines)
 					src.vanish(user, badguy)

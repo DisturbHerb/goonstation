@@ -12,14 +12,13 @@ Contains:
 //////////////////////////////////////////////// T-ray scanner //////////////////////////////////
 
 TYPEINFO(/obj/item/device/t_scanner)
-	mats = list("CRY-1", "CON-1")
-
+	mats = list("crystal" = 1,
+				"conductive" = 1)
 /obj/item/device/t_scanner
 	name = "T-ray scanner"
 	desc = "A tuneable terahertz-ray emitter and scanner used to detect underfloor objects such as cables and pipes."
 	icon_state = "t-ray0"
 	var/on = FALSE
-	flags = FPRINT | TABLEPASS
 	c_flags = ONBELT
 	w_class = W_CLASS_SMALL
 	item_state = "electronic"
@@ -41,6 +40,10 @@ TYPEINFO(/obj/item/device/t_scanner)
 		for(var/actionType in childrentypesof(/datum/contextAction/t_scanner)) //see context_actions.dm
 			var/datum/contextAction/t_scanner/action = new actionType(src)
 			actions += action
+
+	dropped(mob/user)
+		. = ..()
+		user?.closeContextActions()
 
 	/// Update the inventory, ability, and context buttons
 	proc/set_on(new_on, mob/user=null)
@@ -198,7 +201,7 @@ TYPEINFO(/obj/item/device/detective_scanner)
 	icon_state = "fs"
 	w_class = W_CLASS_SMALL // PDA fits in a pocket, so why not the dedicated scanner (Convair880)?
 	item_state = "electronic"
-	flags = FPRINT | TABLEPASS | CONDUCT | SUPPRESSATTACK
+	flags = TABLEPASS | CONDUCT | SUPPRESSATTACK
 	c_flags = ONBELT
 	hide_attack = ATTACK_PARTIALLY_HIDDEN
 	var/active = 0
@@ -224,11 +227,15 @@ TYPEINFO(/obj/item/device/detective_scanner)
 				playsound(src, 'sound/machines/printer_thermal.ogg', 50, TRUE)
 				SPAWN(1 SECONDS)
 					var/obj/item/paper/P = new /obj/item/paper
-					P.set_loc(get_turf(src))
+					usr.put_in_hand_or_drop(P)
 
 					var/index = (scan_number % maximum_scans) + 1 // Once a number of scans equal to the maximum number of scans is made, begin to overwrite existing scans, starting from the earliest made.
 					P.info = scans[index]
-					P.name = "forensic readout"
+					var/print_title = href_list["title"]
+					if (print_title)
+						P.name = print_title
+					else
+						P.name = "forensic readout"
 
 
 	attack_self(mob/user as mob)
@@ -262,30 +269,28 @@ TYPEINFO(/obj/item/device/detective_scanner)
 		if(distancescan)
 			if(!(BOUNDS_DIST(user, target) == 0) && IN_RANGE(user, target, 3))
 				user.visible_message(SPAN_NOTICE("<b>[user]</b> takes a distant forensic scan of [target]."))
-				last_scan = scan_forensic(target, visible = 1)
-				boutput(user, last_scan)
-				src.add_fingerprint(user)
+				scan_target(target, user)
 
 	afterattack(atom/A as mob|obj|turf|area, mob/user as mob)
-
 		if (BOUNDS_DIST(A, user) > 0 || istype(A, /obj/ability_button)) // Scanning for fingerprints over the camera network is fun, but doesn't really make sense (Convair880).
 			return
-
 		user.visible_message(SPAN_ALERT("<b>[user]</b> has scanned [A]."))
+		scan_target(A, user)
 
+
+	proc/scan_target(var/atom/target, var/mob/user)
 		if (scans == null)
 			scans = new/list(maximum_scans)
-		last_scan = scan_forensic(A, visible = 1) // Moved to scanprocs.dm to cut down on code duplication (Convair880).
+		var/datum/forensic_scan/scan = scan_forensic(target, visible = TRUE)
+		last_scan = scan.build_report()
 		var/index = (number_of_scans % maximum_scans) + 1 // Once a number of scans equal to the maximum number of scans is made, begin to overwrite existing scans, starting from the earliest made.
 		scans[index] = last_scan
-		var/scan_output = last_scan + "<br>---- <a href='?src=\ref[src];print=[number_of_scans];'>PRINT REPORT</a> ----"
+		var/scan_output = "--- <a href='byond://?src=\ref[src];print=[number_of_scans];title=Analysis of [target];'>PRINT REPORT</a> ---<br>" + last_scan
 		number_of_scans += 1
-
 		boutput(user, scan_output)
-		src.add_fingerprint(user)
 
-		if(!active && istype(A, /obj/decal/cleanable/blood))
-			var/obj/decal/cleanable/blood/B = A
+		if(!active && istype(target, /obj/decal/cleanable/blood))
+			var/obj/decal/cleanable/blood/B = target
 			if(B.dry > 0) //Fresh blood is -1
 				boutput(user, SPAN_ALERT("Targeted blood is too dry to be useful!"))
 				return
@@ -339,7 +344,7 @@ TYPEINFO(/obj/item/device/analyzer/healthanalyzer)
 	inhand_image_icon = 'icons/mob/inhand/hand_medical.dmi'
 	item_state = "healthanalyzer-no_up" // someone made this sprite and then this was never changed to it for some reason???
 	desc = "A hand-held body scanner able to distinguish vital signs of the subject."
-	flags = FPRINT | TABLEPASS | CONDUCT
+	flags = TABLEPASS | CONDUCT
 	c_flags = ONBELT
 	throwforce = 3
 	w_class = W_CLASS_TINY
@@ -357,7 +362,49 @@ TYPEINFO(/obj/item/device/analyzer/healthanalyzer)
 	New()
 		..()
 		scanner_status = image('icons/obj/items/device.dmi', icon_state = "health_over-basic")
-		UpdateOverlays(scanner_status, "status")
+		AddOverlays(scanner_status, "status")
+		RegisterSignal(src, COMSIG_ITEM_ON_OWNER_DEATH, PROC_REF(assembly_on_wearer_death))
+		RegisterSignal(src, COMSIG_ITEM_ASSEMBLY_ITEM_SETUP, PROC_REF(assembly_building))
+		RegisterSignal(src, COMSIG_ITEM_ASSEMBLY_ITEM_ON_TARGET_ADDITION, PROC_REF(assembly_building))
+		// Health-analyser + assembly-applier -> health-analyser/Applier-Assembly
+		src.AddComponent(/datum/component/assembly/trigger_applier_assembly)
+
+	disposing()
+		UnregisterSignal(src, COMSIG_ITEM_ON_OWNER_DEATH)
+		UnregisterSignal(src, COMSIG_ITEM_ASSEMBLY_ITEM_SETUP)
+		UnregisterSignal(src, COMSIG_ITEM_ASSEMBLY_ITEM_ON_TARGET_ADDITION)
+		..()
+
+/// ----------- Assembly-Related Procs -----------
+
+	assembly_get_part_help_message(var/dist, var/mob/shown_user, var/obj/item/assembly/parent_assembly)
+		return " You can add this to a armor vest in order to craft a suicide bomb vest."
+
+	proc/assembly_on_wearer_death(var/affected_analyser, var/mob/dying_mob)
+		if (src.master && istype(src.master, /obj/item/assembly))
+			var/obj/item/assembly/triggering_assembly = src.master
+			if (dying_mob.suiciding && prob(60)) // no suiciding
+				dying_mob.visible_message(SPAN_ALERT("<b>[dying_mob]'s [src.master.name] clicks softly, but nothing happens.</b>"))
+				return
+			//we give our potential victims a time of 3 seconds to react and flee
+			triggering_assembly.last_armer = dying_mob
+			dying_mob.visible_message(SPAN_ALERT("<B>With [him_or_her(dying_mob)] last breath, the [triggering_assembly.name] on them is set off!</B>"),\
+			SPAN_ALERT("<B>With your last breath, you trigger the [src.master.name]!</B>"))
+			logTheThing(LOG_BOMBING, dying_mob, "initiated a health-analyser on a [triggering_assembly.name] at [log_loc(src.master)].")
+			playsound(get_turf(dying_mob), 'sound/machines/twobeep.ogg', 40, TRUE)
+			SPAWN(3 SECONDS)
+				var/datum/signal/signal = get_free_signal()
+				signal.source = src
+				signal.data["message"] = "ACTIVATE"
+				src.master.receive_signal(signal)
+
+	proc/assembly_building(var/manipulated_mousetrap, var/obj/item/assembly/parent_assembly, var/mob/user, var/is_build_in)
+		//since we have a lot of icon states for health analysers, but they have no effect, we take a single one
+		parent_assembly.trigger_icon_prefix = "health-scanner"
+		//health-analyser-assembly + armor vest -> suicide vest
+		parent_assembly.AddComponent(/datum/component/assembly, list(/obj/item/clothing/suit/armor/vest), TYPE_PROC_REF(/obj/item/assembly, create_suicide_vest), TRUE)
+
+/// ----------------------------------------------
 
 	attack_self(mob/user as mob)
 		if (!src.reagent_upgrade && !src.organ_upgrade)
@@ -368,47 +415,47 @@ TYPEINFO(/obj/item/device/analyzer/healthanalyzer)
 				src.reagent_scan = 0
 				src.organ_scan = 0
 				scanner_status.icon_state = "health_over-basic"
-				UpdateOverlays(scanner_status, "status")
+				AddOverlays(scanner_status, "status")
 				boutput(user, SPAN_ALERT("All upgrades disabled."))
 
 			else if (!src.reagent_scan && !src.organ_scan)		//if both inactive, turn reagent on
 				src.reagent_scan = 1
 				src.organ_scan = 0
 				scanner_status.icon_state = "health_over-reagent"
-				UpdateOverlays(scanner_status, "status")
+				AddOverlays(scanner_status, "status")
 				boutput(user, SPAN_ALERT("Reagent scanner enabled."))
 
 			else if (src.reagent_scan)							//if reagent active, turn reagent off, turn organ on
 				src.reagent_scan = 0
 				src.organ_scan = 1
 				scanner_status.icon_state = "health_over-organ"
-				UpdateOverlays(scanner_status, "status")
+				AddOverlays(scanner_status, "status")
 				boutput(user, SPAN_ALERT("Reagent scanner disabled. Organ scanner enabled."))
 
 			else if (src.organ_scan)							//if organ active, turn BOTH on
 				src.reagent_scan = 1
 				src.organ_scan = 1
 				scanner_status.icon_state = "health_over-both"
-				UpdateOverlays(scanner_status, "status")
+				AddOverlays(scanner_status, "status")
 				boutput(user, SPAN_ALERT("All upgrades enabled."))
 
 		else if (src.reagent_upgrade)
 			src.reagent_scan = !(src.reagent_scan)
 			scanner_status.icon_state = !reagent_scan ? "health_over-basic" : "health_over-reagent"
-			UpdateOverlays(scanner_status, "status")
+			AddOverlays(scanner_status, "status")
 			boutput(user, SPAN_NOTICE("Reagent scanner [src.reagent_scan ? "enabled" : "disabled"]."))
 		else if (src.organ_upgrade)
 			src.organ_scan = !(src.organ_scan)
 			scanner_status.icon_state = !organ_scan ? "health_over-basic" : "health_over-organ"
-			UpdateOverlays(scanner_status, "status")
+			AddOverlays(scanner_status, "status")
 			boutput(user, SPAN_NOTICE("Organ scanner [src.organ_scan ? "enabled" : "disabled"]."))
 
 	attackby(obj/item/W, mob/user)
-		addUpgrade(src, W, user, src.reagent_upgrade)
+		addUpgrade(W, user, src.reagent_upgrade)
 		..()
 
 	attack(mob/target, mob/user, def_zone, is_special = FALSE, params = null)
-		if ((user.bioHolder.HasEffect("clumsy") || user.get_brain_damage() >= 60) && prob(50))
+		if ((user.bioHolder.HasEffect("clumsy") || user.get_brain_damage() >= BRAIN_DAMAGE_MAJOR) && prob(50))
 			user.visible_message(SPAN_ALERT("<b>[user]</b> slips and drops [src]'s sensors on the floor!"))
 			user.show_message("Analyzing Results for [SPAN_NOTICE("The floor:<br>&emsp; Overall Status: Healthy")]", 1)
 			user.show_message("&emsp; Damage Specifics: <font color='#1F75D1'>[0]</font> - <font color='#138015'>[0]</font> - <font color='#CC7A1D'>[0]</font> - <font color='red'>[0]</font>", 1)
@@ -422,8 +469,7 @@ TYPEINFO(/obj/item/device/analyzer/healthanalyzer)
 		playsound(src.loc , 'sound/items/med_scanner.ogg', 20, 0)
 		boutput(user, scan_health(target, src.reagent_scan, src.disease_detection, src.organ_scan, visible = 1))
 
-		scan_health_overhead(target, user)
-
+		DISPLAY_MAPTEXT(target, list(user), MAPTEXT_MOB_RECIPIENTS_WITH_OBSERVERS, /image/maptext/health, target)
 		update_medical_record(target)
 
 		if (isdead(target))
@@ -453,7 +499,7 @@ TYPEINFO(/obj/item/device/analyzer/healthanalyzer)
 	New()
 		..()
 		scanner_status.icon_state = "health_over-both"
-		UpdateOverlays(scanner_status, "status")
+		AddOverlays(scanner_status, "status")
 
 /obj/item/device/analyzer/healthanalyzer/vr
 	icon = 'icons/effects/VR.dmi'
@@ -465,7 +511,7 @@ TYPEINFO(/obj/item/device/analyzer/healthanalyzer_upgrade)
 	name = "health analyzer upgrade"
 	desc = "A small upgrade card that allows standard health analyzers to detect reagents present in the patient, and ProDoc Healthgoggles to scan patients' health from a distance."
 	icon_state = "health_upgr"
-	flags = FPRINT | TABLEPASS | CONDUCT
+	flags = TABLEPASS | CONDUCT
 	throwforce = 0
 	w_class = W_CLASS_TINY
 	throw_speed = 5
@@ -478,7 +524,7 @@ TYPEINFO(/obj/item/device/analyzer/healthanalyzer_organ_upgrade)
 	name = "health analyzer organ scan upgrade"
 	desc = "A small upgrade card that allows standard health analyzers to detect the health of induvidual organs in the patient."
 	icon_state = "organ_health_upgr"
-	flags = FPRINT | TABLEPASS | CONDUCT
+	flags = TABLEPASS | CONDUCT
 	throwforce = 0
 	w_class = W_CLASS_TINY
 	throw_speed = 5
@@ -495,7 +541,7 @@ TYPEINFO(/obj/item/device/reagentscanner)
 	inhand_image_icon = 'icons/mob/inhand/hand_medical.dmi'
 	item_state = "reagentscan"
 	desc = "A hand-held device that scans and lists the chemicals inside the scanned subject."
-	flags = FPRINT | TABLEPASS | CONDUCT
+	flags = TABLEPASS | CONDUCT
 	c_flags = ONBELT
 	throwforce = 3
 	w_class = W_CLASS_TINY
@@ -510,6 +556,9 @@ TYPEINFO(/obj/item/device/reagentscanner)
 		return
 
 	afterattack(atom/A as mob|obj|turf|area, mob/user as mob)
+		if(istype(A, /obj/machinery/photocopier))
+			return // Upload scan results to the photocopier without scanning the photocopier itself
+
 		user.visible_message(SPAN_NOTICE("<b>[user]</b> scans [A] with [src]!"),\
 		SPAN_NOTICE("You scan [A] with [src]!"))
 
@@ -527,9 +576,14 @@ TYPEINFO(/obj/item/device/reagentscanner)
 		if (isnull(src.scan_results))
 			boutput(user, SPAN_ALERT("\The [src] encounters an error and crashes!"))
 		else
-			boutput(user, "[src.scan_results]")
+			var/scan_output = "[src.scan_results]"
+			if (user.traitHolder.hasTrait("training_bartender"))
+				var/eth_eq = get_ethanol_equivalent(user, A.reagents)
+				if (eth_eq)
+					scan_output += "<br> [SPAN_REGULAR("You estimate there's the equivalent of <b>[eth_eq] units of ethanol</b> here.")]"
+			boutput(user, scan_output)
 
-	attack_self(mob/user as mob)
+	attack_self(mob/user as mob) // no eth_eq here cuz then we'd have to save how the reagent container used to be
 		if (isnull(src.scan_results))
 			boutput(user, SPAN_NOTICE("No previous scan results located."))
 			return
@@ -551,7 +605,7 @@ TYPEINFO(/obj/item/device/analyzer/atmospheric)
 	icon_state = "atmos-no_up"
 	item_state = "analyzer"
 	w_class = W_CLASS_SMALL
-	flags = FPRINT | TABLEPASS | CONDUCT
+	flags = TABLEPASS | CONDUCT
 	c_flags = ONBELT
 	throwforce = 5
 	w_class = W_CLASS_SMALL
@@ -583,12 +637,12 @@ TYPEINFO(/obj/item/device/analyzer/atmospheric)
 			src.find_breach()
 			if (src.target)
 				user.AddComponent(/datum/component/tracker_hud, src.target, src.hudarrow_color)
-				src.UpdateOverlays(image('icons/obj/items/device.dmi', "atmos-tracker"), "breach_tracker")
+				src.AddOverlays(image('icons/obj/items/device.dmi', "atmos-tracker"), "breach_tracker")
 		else
 			src.tracker_off(user)
 
 	proc/tracker_off(mob/user)
-		src.UpdateOverlays(null, "breach_tracker")
+		src.ClearSpecificOverlays("breach_tracker")
 		src.UnregisterSignal(src.target, COMSIG_TURF_REPLACED)
 		var/datum/component/tracker_hud/arrow = user.GetComponent(/datum/component/tracker_hud)
 		arrow?.RemoveComponent()
@@ -642,7 +696,7 @@ TYPEINFO(/obj/item/device/analyzer/atmospheric)
 		arrow?.RemoveComponent()
 
 	attackby(obj/item/W, mob/user)
-		addUpgrade(src, W, user, src.analyzer_upgrade)
+		addUpgrade(W, user, src.analyzer_upgrade)
 
 	afterattack(atom/A as mob|obj|turf|area, mob/user as mob)
 		if (BOUNDS_DIST(A, user) > 0 || istype(A, /obj/ability_button))
@@ -654,11 +708,10 @@ TYPEINFO(/obj/item/device/analyzer/atmospheric)
 		src.add_fingerprint(user)
 		return
 
-	is_detonator_attachment()
-		return 1
-
-	detonator_act(event, var/obj/item/assembly/detonator/det)
+	detonator_act(event, var/obj/item/canbomb_detonator/det)
 		switch (event)
+			if ("attach")
+				det.initial_wire_functions += src
 			if ("pulse")
 				det.attachedTo.visible_message("<span class='bold' style='color: #B7410E;'>\The [src]'s external display turns off for a moment before booting up again.</span>")
 			if ("cut")
@@ -681,14 +734,14 @@ TYPEINFO(/obj/item/device/analyzer/atmosanalyzer_upgrade)
 	name = "atmospherics analyzer upgrade"
 	desc = "A small upgrade card that allows standard atmospherics analyzers to detect environmental information at a distance."
 	icon_state = "atmos_upgr" // add this
-	flags = FPRINT | TABLEPASS | CONDUCT
+	flags = TABLEPASS | CONDUCT
 	throwforce = 0
 	w_class = W_CLASS_TINY
 	throw_speed = 5
 	throw_range = 10
 
 ///////////////// method to upgrade an analyzer if the correct upgrade cartridge is used on it /////////////////
-/obj/item/device/analyzer/proc/addUpgrade(obj/item/device/src as obj, obj/item/device/W as obj, mob/user as mob, upgraded as num, active as num, iconState as text, itemState as text)
+/obj/item/device/analyzer/proc/addUpgrade(obj/item/device/W as obj, mob/user as mob, upgraded as num, active as num, iconState as text, itemState as text)
 	if (istype(W, /obj/item/device/analyzer/healthanalyzer_upgrade) || istype(W, /obj/item/device/analyzer/healthanalyzer_organ_upgrade) || istype(W, /obj/item/device/analyzer/atmosanalyzer_upgrade))
 		//Health Analyzers
 		if (istype(src, /obj/item/device/analyzer/healthanalyzer))
@@ -701,7 +754,7 @@ TYPEINFO(/obj/item/device/analyzer/atmosanalyzer_upgrade)
 				a.reagent_upgrade = 1
 				a.icon_state = a.organ_upgrade ? "health" : "health-r-up"
 				a.scanner_status.icon_state = a.organ_scan ? "health_over-both" : "health_over-reagent"
-				a.UpdateOverlays(a.scanner_status, "status")
+				a.AddOverlays(a.scanner_status, "status")
 				a.item_state = "healthanalyzer"
 
 			else if (istype(W, /obj/item/device/analyzer/healthanalyzer_organ_upgrade))
@@ -712,7 +765,7 @@ TYPEINFO(/obj/item/device/analyzer/atmosanalyzer_upgrade)
 				a.organ_scan = 1
 				a.icon_state = a.reagent_upgrade ? "health" : "health-o-up"
 				a.scanner_status.icon_state = a.reagent_scan ? "health_over-both" : "health_over-organ"
-				a.UpdateOverlays(a.scanner_status, "status")
+				a.AddOverlays(a.scanner_status, "status")
 				a.item_state = "healthanalyzer"
 		else if(istype(src, /obj/item/device/analyzer/atmospheric) && istype(W, /obj/item/device/analyzer/atmosanalyzer_upgrade))
 			if (upgraded)
@@ -721,7 +774,6 @@ TYPEINFO(/obj/item/device/analyzer/atmosanalyzer_upgrade)
 			var/obj/item/device/analyzer/atmospheric/a = src
 			a.analyzer_upgrade = 1
 			a.icon_state = "atmos"
-			a.item_state = "atmosphericnalyzer"
 
 		else
 			boutput(user, SPAN_ALERT("That cartridge won't fit in there!"))
@@ -744,16 +796,17 @@ TYPEINFO(/obj/item/device/prisoner_scanner)
 	var/datum/db_record/active1 = null
 	var/datum/db_record/active2 = null
 	item_state = "recordtrak"
-	flags = FPRINT | TABLEPASS | CONDUCT | EXTRADELAY
+	flags = TABLEPASS | CONDUCT | EXTRADELAY
 	c_flags = ONBELT
 
 	#define PRISONER_MODE_NONE 1
 	#define PRISONER_MODE_PAROLED 2
 	#define PRISONER_MODE_RELEASED 3
 	#define PRISONER_MODE_INCARCERATED 4
+	#define PRISONER_MODE_SUSPECT 5
 
 	///List of record settings
-	var/static/list/modes = list(PRISONER_MODE_NONE, PRISONER_MODE_PAROLED, PRISONER_MODE_INCARCERATED, PRISONER_MODE_RELEASED)
+	var/static/list/modes = list(PRISONER_MODE_NONE, PRISONER_MODE_PAROLED, PRISONER_MODE_INCARCERATED, PRISONER_MODE_RELEASED, PRISONER_MODE_SUSPECT)
 	///The current setting
 	var/mode = PRISONER_MODE_NONE
 	/// The sechud flag that will be applied when scanning someone
@@ -780,6 +833,8 @@ TYPEINFO(/obj/item/device/prisoner_scanner)
 			mode_string = "Released"
 		else if (src.mode == PRISONER_MODE_INCARCERATED)
 			mode_string = "Incarcerated"
+		else if (src.mode == PRISONER_MODE_SUSPECT)
+			mode_string = "Suspect"
 
 		. += "<br>Arrest mode: [SPAN_NOTICE("[mode_string]")]"
 		if (sechud_flag != initial(src.sechud_flag))
@@ -791,7 +846,7 @@ TYPEINFO(/obj/item/device/prisoner_scanner)
 			return
 
 		if (!target.face_visible())
-			boutput(user, "<span class='alert'>The device displays an error, the target's face must be visible.</span>")
+			boutput(user, SPAN_ALERT("The device displays an error, the target's face must be visible."))
 			return
 
 		////General Records
@@ -832,41 +887,60 @@ TYPEINFO(/obj/item/device/prisoner_scanner)
 			src.active1["p_stat"] = "Active"
 			src.active1["m_stat"] = "Stable"
 			data_core.general.add_record(src.active1)
-			found = 0
+
+			// Bank Records
+			var/bank_record = new/datum/db_record()
+			bank_record["name"] = src.active1["name"]
+			bank_record["id"] = src.active1["id"]
+			bank_record["current_money"] = 0
+			bank_record["wage"] = 0
+			bank_record["notes"] = "No notes."
+			if(istype(target.wear_id, /obj/item/device/pda2))
+				var/obj/item/device/pda2/worn_pda = target.wear_id
+				bank_record["pda_net_id"] = worn_pda.net_id
+			data_core.bank.add_record(bank_record)
 
 		////Security Records
 		var/datum/db_record/E = data_core.security.find_record("name", src.active1["name"])
 		if(E)
 			switch (mode)
 				if(PRISONER_MODE_NONE)
-					E["criminal"] = "None"
+					E["criminal"] = ARREST_STATE_NONE
 
 				if(PRISONER_MODE_PAROLED)
-					E["criminal"] = "Parolled"
+					E["criminal"] = ARREST_STATE_PAROLE
 
 				if(PRISONER_MODE_RELEASED)
-					E["criminal"] = "Released"
+					E["criminal"] = ARREST_STATE_RELEASED
 
 				if(PRISONER_MODE_INCARCERATED)
-					E["criminal"] = "Incarcerated"
+					E["criminal"] = ARREST_STATE_INCARCERATED
+
+				if(PRISONER_MODE_SUSPECT)
+					E["criminal"] = ARREST_STATE_SUSPECT
 			E["sec_flag"] = src.sechud_flag
+			target.update_arrest_icon()
 			return
+
 
 		src.active2 = new /datum/db_record()
 		src.active2["name"] = src.active1["name"]
 		src.active2["id"] = src.active1["id"]
 		switch (mode)
 			if(PRISONER_MODE_NONE)
-				src.active2["criminal"] = "None"
+				src.active2["criminal"] = ARREST_STATE_ARREST
 
 			if(PRISONER_MODE_PAROLED)
-				src.active2["criminal"] = "Parolled"
+				src.active2["criminal"] = ARREST_STATE_PAROLE
 
 			if(PRISONER_MODE_RELEASED)
-				src.active2["criminal"] = "Released"
+				src.active2["criminal"] = ARREST_STATE_RELEASED
 
 			if(PRISONER_MODE_INCARCERATED)
-				src.active2["criminal"] = "Incarcerated"
+				src.active2["criminal"] = ARREST_STATE_INCARCERATED
+
+			if(PRISONER_MODE_SUSPECT)
+				src.active2["criminal"] = ARREST_STATE_SUSPECT
 
 		src.active2["sec_flag"] = src.sechud_flag
 		src.active2["mi_crim"] = "None"
@@ -875,6 +949,8 @@ TYPEINFO(/obj/item/device/prisoner_scanner)
 		src.active2["ma_crim_d"] = "No major crime convictions."
 		src.active2["notes"] = "No notes."
 		data_core.security.add_record(src.active2)
+
+		target.update_arrest_icon()
 
 		return
 
@@ -903,6 +979,9 @@ TYPEINFO(/obj/item/device/prisoner_scanner)
 
 				if(PRISONER_MODE_INCARCERATED)
 					boutput(user, SPAN_NOTICE("you switch the record mode to Incarcerated."))
+
+				if(PRISONER_MODE_SUSPECT)
+					boutput(user, SPAN_NOTICE("you switch the record mode to Suspect."))
 
 		add_fingerprint(user)
 		return
@@ -949,6 +1028,10 @@ TYPEINFO(/obj/item/device/prisoner_scanner)
 		name = "Released"
 		icon_state = "released"
 		mode = PRISONER_MODE_RELEASED
+	suspect
+		name = "Suspect"
+		icon_state = "suspect"
+		mode = PRISONER_MODE_SUSPECT
 	none
 		name = "None"
 		icon_state = "none"
@@ -958,16 +1041,18 @@ TYPEINFO(/obj/item/device/prisoner_scanner)
 #undef PRISONER_MODE_PAROLED
 #undef PRISONER_MODE_RELEASED
 #undef PRISONER_MODE_INCARCERATED
+#undef PRISONER_MODE_SUSPECT
 
 /obj/item/device/ticket_writer
-	name = "Security TicketWriter 2000"
+	name = "security TicketWriter 2000"
 	desc = "A device used to issue tickets from the security department."
 	icon_state = "ticketwriter"
 	item_state = "electronic"
 	w_class = W_CLASS_SMALL
 
-	flags = FPRINT | TABLEPASS | CONDUCT
+	flags = TABLEPASS | CONDUCT
 	c_flags = ONBELT
+	var/paper_icon_state = "paper_caution"
 
 	attack_self(mob/user)
 		var/menuchoice = tgui_alert(user, "What would you like to do?", "Ticket writer", list("Ticket", "Nothing"))
@@ -986,17 +1071,17 @@ TYPEINFO(/obj/item/device/prisoner_scanner)
 		else if (issilicon(user))
 			var/mob/living/silicon/S = user
 			I = S.botcard
-		if (!I || !(access_security in I.access))
+		if (!I || !(access_ticket in I.access))
 			boutput(user, SPAN_ALERT("Insufficient access."))
 			return
 		playsound(src, 'sound/machines/keyboard3.ogg', 30, TRUE)
 		var/issuer = I.registered
 		var/issuer_job = I.assignment
-		var/ticket_target = input(user, "Ticket recipient:", "Recipient", "Ticket Recipient") as text
+		var/ticket_target = input(user, "Ticket recipient:", "Recipient", "Ticket Recipient") as text | null
 		if (!ticket_target)
 			return
 		ticket_target = copytext(sanitize(html_encode(ticket_target)), 1, MAX_MESSAGE_LEN)
-		var/ticket_reason = input(user, "Ticket reason:", "Reason") as text
+		var/ticket_reason = input(user, "Ticket reason:", "Reason") as text | null
 		if (!ticket_reason)
 			return
 		ticket_reason = copytext(sanitize(html_encode(ticket_reason)), 1, MAX_MESSAGE_LEN)
@@ -1017,15 +1102,17 @@ TYPEINFO(/obj/item/device/prisoner_scanner)
 		playsound(src, 'sound/machines/printer_thermal.ogg', 50, TRUE)
 		SPAWN(3 SECONDS)
 			var/obj/item/paper/p = new /obj/item/paper
-			p.set_loc(get_turf(src))
+			user.put_in_hand_or_drop(p)
 			p.name = "Official Caution - [ticket_target]"
 			p.info = ticket_text
-			p.icon_state = "paper_caution"
+			p.icon_state = src.paper_icon_state
 
 		return T.target_byond_key
 
-
-
+/obj/item/device/ticket_writer/crust
+	name = "crusty old security TicketWriter 1000"
+	desc = "An old TicketWriter model held together by hopes and dreams alone."
+	paper_icon_state = "paper_burned"
 
 TYPEINFO(/obj/item/device/appraisal)
 	mats = 5
@@ -1033,7 +1120,6 @@ TYPEINFO(/obj/item/device/appraisal)
 /obj/item/device/appraisal
 	name = "cargo appraiser"
 	desc = "Handheld scanner hooked up to Cargo's market computers. Estimates sale value of various items."
-	flags = FPRINT | TABLEPASS
 	c_flags = ONBELT
 	w_class = W_CLASS_SMALL
 	m_amt = 150
@@ -1124,13 +1210,5 @@ TYPEINFO(/obj/item/device/appraisal)
 		if (sell_value > 0)
 			playsound(src, 'sound/machines/chime.ogg', 10, TRUE)
 
-		if (user.client && !user.client.preferences?.flying_chat_hidden)
-			var/image/chat_maptext/chat_text = null
-			var/popup_text = "<span class='ol c pixel'[sell_value == 0 ? " style='color: #bbbbbb;'>No value" : ">[round(sell_value)][CREDIT_SIGN]"]</span>"
-			chat_text = make_chat_maptext(A, popup_text, alpha = 180, force = 1, time = 1.5 SECONDS)
-			// many of the artifacts are upside down and stuff, it makes text a bit hard to read!
-			chat_text.appearance_flags = RESET_TRANSFORM | RESET_COLOR | RESET_ALPHA | PIXEL_SCALE
-			if (chat_text)
-				// don't bother bumping up other things
-				chat_text.show_to(user.client)
 
+		DISPLAY_MAPTEXT(A, list(user), MAPTEXT_MOB_RECIPIENTS_WITH_OBSERVERS, /image/maptext/appraisal, sell_value)

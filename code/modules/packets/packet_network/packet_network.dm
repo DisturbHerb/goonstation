@@ -43,11 +43,6 @@
 	else // it is a single object
 		src.devices_by_address[device.address] = list((device) = 1, (src.devices_by_address[device.address]) = 1)
 
-	if(is_analog(device?.parent))
-		if(isnull(src.analog_devices))
-			src.analog_devices = list()
-		src.analog_devices[device.parent] = 1
-
 /datum/packet_network/proc/unregister(datum/component/packet_connected/device)
 	src.count_current_devices--
 	if(src.in_disposing)
@@ -70,17 +65,16 @@
 	else
 		src.devices_by_address -= device.address
 
-	if(is_analog(device?.parent))
-		src.analog_devices -= device.parent
+/datum/packet_network/proc/draw_packet(datum/component/packet_connected/target, datum/component/packet_connected/source, datum/signal/signal,\
+	params, datum/client_image_group/img_group)
 
-/datum/packet_network/proc/draw_packet(datum/component/packet_connected/target, datum/component/packet_connected/source, datum/signal/signal, params=null)
 	var/turf/sourceT = get_turf(source?.parent)
 	var/turf/targetT = get_turf(target?.parent)
 	if(!sourceT || !targetT || sourceT.z != targetT.z)
 		return null
 	// we draw twice, once anchored to source, once to target; this is so the line is visible at both ends
-	var/datum/lineResult/R1 = drawLine(sourceT, targetT, "triangle", getCrossed = 0, mode = LINEMODE_SIMPLE)
-	var/datum/lineResult/R2 = drawLine(targetT, sourceT, "triangle", getCrossed = 0, mode = LINEMODE_SIMPLE_REVERSED)
+	var/datum/lineResult/R1 = drawLineImg(sourceT, targetT, "triangle", getCrossed = 0, mode = LINEMODE_SIMPLE)
+	var/datum/lineResult/R2 = drawLineImg(targetT, sourceT, "triangle", getCrossed = 0, mode = LINEMODE_SIMPLE_REVERSED)
 	. = list(R1.lineImage, R2.lineImage)
 	for(var/image/img as anything in .)
 		img.color = debug_color_of(src.channel_name)
@@ -89,7 +83,7 @@
 		animate(img, alpha = 30, time = 0.1 SECOND, easing = SINE_EASING | EASE_IN)
 		animate(alpha = 50, time = 0.9 SECOND, easing = SINE_EASING | EASE_OUT)
 		animate(alpha = 0, time = 1 SECONDS, easing = SINE_EASING)
-		get_image_group(CLIENT_IMAGE_GROUP_PACKETVISION).add_image(img)
+		img_group.add_image(img)
 
 /datum/packet_network/disposing()
 	src.in_disposing = TRUE
@@ -111,13 +105,13 @@
 		for(var/t_address in src.devices_by_address) { \
 			if(islist(src.devices_by_address[t_address])) \
 				for(var/datum/component/packet_connected/target as anything in src.devices_by_address[t_address]) { \
-					if(target == source) \
+					if((target == source) && !source.receives_own_packets) \
 						continue; \
 					RECEIVE_PACKET \
 				} \
 			else { \
 				var/datum/component/packet_connected/target = src.devices_by_address[t_address]; \
-				if(target == source) \
+				if((target == source) && !source.receives_own_packets) \
 					continue; \
 				RECEIVE_PACKET \
 			} \
@@ -126,9 +120,12 @@
 	else { \
 		var/list/datum/component/packet_connected/targets = src.all_hearing ? src.all_hearing.Copy() : list(); \
 		var/list/datum/component/packet_connected/sharing_tag = src.devices_by_tag?[target_tag]; \
-		if(sharing_tag) targets |= sharing_tag; \
+		if(sharing_tag) \
+			targets |= sharing_tag; \
 		if(src.devices_by_address?[target_address]) \
 			targets |= src.devices_by_address?[target_address]; \
+		if (source?.receives_own_packets) \
+			targets |= source; \
 		count_receive += length(targets); \
 		for(var/datum/component/packet_connected/target as anything in targets) { \
 			RECEIVE_PACKET \
@@ -136,16 +133,23 @@
 	}
 
 /datum/packet_network/proc/post_packet(datum/component/packet_connected/source, datum/signal/signal, params=null)
+	. = TRUE
+
 	count_post++
 	if(!src.can_send(source, signal, params))
-		return
+		return FALSE
 	signal.transmission_method = transmission_method
 	LAZYLISTADD(signal.channels_passed, src.channel_name)
 	var/target_tag = signal.data["address_tag"]
 	var/target_address = signal.data["address_1"]
 	var/is_broadcast = target_address == "ping" || target_address == "00000000" || (isnull(target_tag) && isnull(target_address))
+	var/sender = signal.data["sender"]
+	//block any packet asking every device to send a ping back, trivial amplification attack that can seriously lag the server
+	if (sender == "ping")
+		return
 	var/use_can_receive = src.can_receive_necessary(source, signal, params)
-	var/draw_packet = length(global.client_image_groups?[CLIENT_IMAGE_GROUP_PACKETVISION]?.subscribed_mobs_with_subcount)
+	var/datum/client_image_group/img_group = get_image_group("[CLIENT_IMAGE_GROUP_PACKETVISION][src.channel_name]")
+	var/draw_packet = length(img_group?.subscribed_mobs_with_subcount)
 	if(!draw_packet)
 		if(use_can_receive)
 			POST_PACKET_INTERNAL( \
@@ -162,7 +166,7 @@
 			#define RECEIVE_PACKET \
 				if(src.can_receive(target, source, signal, params)) { \
 					target.receive_packet(signal, src.transmission_method, params); \
-					var/image/img = src.draw_packet(target, source, signal, params); \
+					var/image/img = src.draw_packet(target, source, signal, params, img_group); \
 					if(img) \
 						images += img; \
 				} // don't ask, it has to be like this
@@ -171,23 +175,15 @@
 		else
 			POST_PACKET_INTERNAL( \
 				target.receive_packet(signal, src.transmission_method, params); \
-				var/image/img = src.draw_packet(target, source, signal, params); \
+				var/image/img = src.draw_packet(target, source, signal, params, img_group); \
 				if(img) \
 					images += img; \
 			)
 		SPAWN(2 SECONDS)
 			for(var/image/img as anything in images)
-				get_image_group(CLIENT_IMAGE_GROUP_PACKETVISION).remove_image(img)
+				img_group.remove_image(img)
 				qdel(img)
 	qdel(signal)
-
-
-// temporary handling of headset-like radios until that gets refactored into a better system
-
-/datum/packet_network/var/list/obj/analog_devices = null
-
-/datum/packet_network/proc/is_analog(obj/device)
-	return istype(device, /obj/item/device/radio) || istype(device, /obj/item/mechanics/radioscanner)
 
 
 // debugging / profiling / inspection tools

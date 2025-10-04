@@ -100,16 +100,16 @@ var/list/globalPropList = null
 /obj/item
 	setProperty()
 		. = ..()
-		src.tooltip_rebuild = 1
+		src.tooltip_rebuild = TRUE
 	delProperty()
 		. = ..()
-		src.tooltip_rebuild = 1
+		src.tooltip_rebuild = TRUE
 
 /datum/objectProperty
 	var/name = ""
 	var/id = ""
 	var/desc = ""
-	var/tooltipImg = "" //Stored in browserassets\images\tooltips
+	var/tooltipImg = "" //Stored in browserassets\src\images\tooltips
 	var/defaultValue = 1 //Default value. Used to get an idea of what's "normal" for any given property.
 	var/goodDirection = 1 //Dumb name. Tells us which direction the number should grow in for it to be considered "good", 1=positive, -1 negative
 	var/hidden = 0 //does not get printed in item tooltips
@@ -488,6 +488,23 @@ to say if there's demand for that.
 	removeFromMob(obj/item/owner, mob/user, value)
 		. = ..()
 		REMOVE_ATOM_PROPERTY(user, PROP_MOB_REFLECTPROT, owner)
+
+/datum/objectProperty/equipment/toy_reflection // reflects foam darts.
+	name = "Toy Reflection"
+	id = "toyreflection"
+	desc = "Reflects toy projectiles while held."
+	tooltipImg = "disorient_resist.png"
+	defaultValue = 0
+	getTooltipDesc(var/obj/propOwner, var/propVal)
+		return "Reflecting toy projectiles"
+
+	// no ASSOCIATE_ATOM_PROPERTY because this one is simple, valueless
+	updateMob(obj/item/owner, mob/user, value, oldValue=null)
+		. = ..()
+		APPLY_ATOM_PROPERTY(user, PROP_MOB_TOYREFLECTPROT, owner)
+	removeFromMob(obj/item/owner, mob/user, value)
+		. = ..()
+		REMOVE_ATOM_PROPERTY(user, PROP_MOB_TOYREFLECTPROT, owner)
 
 /datum/objectProperty/equipment/enchantarmor
 	hidden = 1

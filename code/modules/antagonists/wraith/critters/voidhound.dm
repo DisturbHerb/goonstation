@@ -18,10 +18,11 @@
 	health_brute_vuln = 0.7
 	health_burn = 40
 	health_burn_vuln = 1
+	name_generator_path = /datum/wraith_name_generator/wraith_summon/hound
 	var/mob/living/intangible/wraith/master = null
 	var/cloaked = FALSE
 
-	faction = FACTION_WRAITH
+	faction = list(FACTION_WRAITH)
 
 	New(var/turf/T, var/mob/living/intangible/wraith/M = null)
 		..(T)

@@ -12,6 +12,7 @@
 #define PLANE_HIDDENGAME -95
 #define PLANE_FOREGROUND_PARALLAX -93
 #define PLANE_FOREGROUND_PARALLAX_OCCLUSION -92
+#define PLANE_ABOVE_FOREGROUND_PARALLAX -91
 #define PLANE_LIGHTING -90
 #define PLANE_SELFILLUM -80
 #define PLANE_ABOVE_LIGHTING -50
@@ -23,6 +24,8 @@
 #define PLANE_OVERLAY_EFFECTS 25
 #define PLANE_MUL_OVERLAY_EFFECTS 26 //! Multiplicative blend mode
 #define PLANE_HUD 30
+#define PLANE_ABOVE_HUD 31
+#define PLANE_ANTAG_ICONS 33
 #define PLANE_SCREEN_OVERLAYS 40
 
 /atom/movable/screen/plane_parent
@@ -87,14 +90,10 @@ client
 	var/list/plane_parents = list()
 	var/list/plane_displays = list()
 	var/atom/movable/screen/plane_display/master/game_display
-	// list of current zone sel to the next zone sel if you scroll up
-	var/static/list/zone_sels_positive_delta = list("head" = "head", "chest" = "head", "l_arm" = "chest", "r_arm" = "l_arm", "l_leg" = "r_arm", "r_leg" = "l_leg")
-	// list of current zone sel to the next zone sel if you scroll down
-	var/static/list/zone_sels_negative_delta = list("head" = "chest", "chest" = "l_arm", "l_arm" = "r_arm", "r_arm" = "l_leg", "l_leg" = "r_leg", "r_leg" = "r_leg")
 
 	New()
 		Z_LOG_DEBUG("Client/New", "[src.ckey] - Adding plane_parents")
-		add_plane(new /atom/movable/screen/plane_parent(PLANE_DISTORTION, name = "*distortion_plane", mouse_opacity = 0, is_screen = TRUE, distort = FALSE))
+		add_plane(new /atom/movable/screen/plane_parent(PLANE_DISTORTION, appearance_flags = NO_CLIENT_COLOR, name = "*distortion_plane", mouse_opacity = 0, is_screen = TRUE, distort = FALSE))
 		add_plane(new /atom/movable/screen/plane_parent(PLANE_UNDERFLOOR, name = "underfloor_plane"))
 		add_plane(new /atom/movable/screen/plane_parent(PLANE_SPACE, name = "space_plane"))
 		add_plane(new /atom/movable/screen/plane_parent(PLANE_PARALLAX, appearance_flags = TILE_BOUND, mouse_opacity = 0, name = "parallax_plane", is_screen = TRUE))
@@ -117,6 +116,7 @@ client
 		add_plane(new /atom/movable/screen/plane_parent(PLANE_OVERLAY_EFFECTS, mouse_opacity = 0, name = "overlay_effects_plane", is_screen = 1, distort = FALSE))
 		add_plane(new /atom/movable/screen/plane_parent(PLANE_MUL_OVERLAY_EFFECTS, mouse_opacity = 0, name = "mul_overlay_effects_plane", is_screen = 1, distort = FALSE, blend_mode = BLEND_MULTIPLY))
 		add_plane(new /atom/movable/screen/plane_parent(PLANE_HUD, appearance_flags = NO_CLIENT_COLOR, name = "hud_plane", is_screen = 1, distort = FALSE))
+		add_plane(new /atom/movable/screen/plane_parent(PLANE_ANTAG_ICONS, appearance_flags = NO_CLIENT_COLOR, name = "antag_icons_plane", is_screen = 1, distort = FALSE))
 		add_plane(new /atom/movable/screen/plane_parent(PLANE_SCREEN_OVERLAYS, appearance_flags = NO_CLIENT_COLOR, mouse_opacity = 0, name = "screen_overlays_plane", is_screen = 1, distort = FALSE))
 
 		var/atom/movable/screen/plane_parent/occlusion_plane = src.get_plane(PLANE_FOREGROUND_PARALLAX_OCCLUSION)
@@ -144,26 +144,30 @@ client
 
 		src.setup_special_screens()
 
-		SPAWN(5 SECONDS)
+		SPAWN(3 SECONDS)
 			apply_depth_filter()
 		..()
 
+	// yeah whatever lets just define these right here because fucking alphabetical preprocessor
+	// needs them super early for this file
+	#define SCROLL_TARGET_NEVER 1
+	#define SCROLL_TARGET_HOVER 2
+	#define SCROLL_TARGET_ALWAYS 3
 	MouseWheel(atom/A, delta_x, delta_y, location, control, params)
+		if(A?.MouseWheel(delta_x, delta_y, location, control, params))
+			return
 		var/mob/M = src.mob
-		if (!M?.zone_sel)
+		if(!M?.zone_sel)
 			return
-		// overrides atom/mousewheel, so atom/mousewheel always needs to be called and should return true if defined anywhere
-		if (A?.MouseWheel(delta_x, delta_y, location, control, params))
-			return
-		if (delta_y > 0)
-			if (src.zone_sels_positive_delta[M.zone_sel.selecting] != M.zone_sel.selecting)
-				M.zone_sel.select_zone(src.zone_sels_positive_delta[M.zone_sel.selecting])
-		else
-			if (src.zone_sels_negative_delta[M.zone_sel.selecting] != M.zone_sel.selecting)
-				M.zone_sel.select_zone(src.zone_sels_negative_delta[M.zone_sel.selecting])
+		if(src.preferences?.scrollwheel_limb_targeting == SCROLL_TARGET_ALWAYS)
+			M.zone_sel.scroll_target(delta_y)
 
 	proc/add_plane(var/atom/movable/screen/plane_parent/plane)
 		RETURN_TYPE(/atom/movable/screen/plane_parent)
+#ifdef CHECK_MORE_RUNTIMES
+		if (src.plane_parents["[plane.plane]"])
+			CRASH("Attempting to add plane parent with id [plane.plane] that is already taken by another plane!")
+#endif
 		src.plane_parents["[plane.plane]"] = plane
 		return plane
 

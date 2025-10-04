@@ -8,6 +8,7 @@
 		if (!(BOUNDS_DIST(M, holder.owner) == 0))
 			return
 
+		. = ..()
 		var/did_it = 0
 		holder.owner.verbs -= /mob/living/carbon/human/machoman/verb/macho_heartpunch
 		var/direction = get_dir(holder.owner,M)
@@ -41,7 +42,7 @@
 				playsound(holder.owner, 'sound/impact_sounds/Metal_Hit_Light_1.ogg', 50, 1)
 				R.emote("scream")
 				var/obj/item/parts/robot_parts/chest/chestpunt = new R.part_chest.type(R.loc)
-				chestpunt.name = "[R.name]'s [chestpunt.name]"
+				chestpunt.name = "[R.name]’s [chestpunt.name]"
 				R.compborg_lose_limb(R.part_chest)
 
 				for (var/I = 1, I <= 5 && chestpunt && step(chestpunt ,direction, 1), I++)
