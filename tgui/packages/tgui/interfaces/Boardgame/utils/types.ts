@@ -26,6 +26,7 @@ export type BoardgameData = {
   users: UserDataType[];
   currentUser: UserDataType;
   lastMovedPiece: string;
+  givenPalettes: string[];
 };
 
 export type PieceDataType = {

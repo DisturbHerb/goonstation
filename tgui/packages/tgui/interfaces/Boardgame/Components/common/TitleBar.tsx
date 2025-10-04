@@ -39,6 +39,13 @@ export const TitleBar = (props, context) => {
           applyGNot('1,d,1,d,1,d,1,d,d,1,d,1,d,1,d,2,d,1,d,1,d,1,d,16,D,1,D,1,D,1,D,2,D,1,D,1,D,1,D,D,1,D,1,D,1,D');
         }}
       />
+      <ButtonConfirm
+        tooltipContent="Load Xiangqi Preset"
+        icon="ring"
+        onConfirm={() => {
+          applyGNot('r,h,e,a,k,a,e,h,r,10,c,5,c,1,p,1,p,1,p,1,p,1,p,18,P,1,P,1,P,1,P,1,P,1,C,5,C,10,R,H,E,A,K,A,E,H,R');
+        }}
+      />
     </Box>
   );
 };

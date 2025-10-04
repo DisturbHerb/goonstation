@@ -11,6 +11,7 @@
 #define MAP_TEXT_CAPTURE 1
 
 #define BOARDSTYLE_CHECKERBOARD "checkerboard"
+#define BOARDSTYLE_XIANGQI "xiangqi"
 
 #define SOUND_MOVE "move"
 #define SOUND_CAPTURE "capture"
@@ -28,7 +29,7 @@
 /**
  * # Boardgame
  */
-
+ABSTRACT_TYPE(/obj/item/boardgame)
 /obj/item/boardgame
 	name = "board game"
 	desc = "A generic board game?"
@@ -48,6 +49,7 @@
 	)
 
 	var/game = "chess"
+	var/list/given_palettes = list("Chess", "Draughts")
 	/// Used by TGUI to render a board design
 	var/boardstyle = BOARDSTYLE_CHECKERBOARD
 	var/use_map_text = FALSE
@@ -433,7 +435,7 @@
 			"boardstyle" = src.boardstyle,
 			"width" = src.board_width,
 			"height" = src.board_height,
-			"lock" = src.lock_pieces_to_tile
+			"lock" = src.lock_pieces_to_tile,
 		)
 
 
@@ -444,6 +446,7 @@
 		.["users"] = src.active_users
 		.["currentUser"] = src.active_users[user.ckey]
 		.["lastMovedPiece"] = src.lastMovedPiece
+		.["givenPalettes"] = src.given_palettes
 
 	ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
 		. = ..()
@@ -561,6 +564,30 @@
 			src.remove_filter("paint_color")
 			can.uses--
 		return
+
+/obj/item/boardgame/chess
+	name = "chess board"
+	desc = "It's a board for playing chess and draughts!"
+
+/obj/item/boardgame/xiangqi
+	name = "xianqi board"
+	desc = "A XIANG|GIESEL-branded xiangqi board!"
+	icon_state = "xiangqiboard"
+	game = "xiangqi"
+	given_palettes = list("Xiangqi")
+	board_width = 9
+	board_height = 10
+
+	styling = list(
+		STYLING_TILECOLOR1 = rgb(240, 217, 181),
+		STYLING_TILECOLOR2 = rgb(181, 136, 99),
+		STYLING_OLDTILECOLOR1 = rgb(240, 217, 181),
+		STYLING_OLDTILECOLOR2 = rgb(181, 136, 99),
+		STYLING_BORDER = rgb(131, 100, 74),
+		STYLING_ASPECT = 0.9,
+		STYLING_NOTATIONS = TRUE,
+		STYLING_FLIPBUTTON = TRUE,
+	)
 
 #undef MAP_TEXT_MOVE
 #undef MAP_TEXT_CAPTURE

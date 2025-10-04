@@ -62,3 +62,15 @@ kits.forEach((kit: GameKit) => {
 });
 
 export const fetchPalettes = () => palettes;
+
+/**
+ * Presets
+ */
+
+export type Preset = {
+  name: string;
+  game: GameName;
+  notation: string;
+}
+
+export const presets: Preset[] = [];

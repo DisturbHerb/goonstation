@@ -5,11 +5,12 @@ import { useActions, useStates } from '../../utils';
 import { Box, Button, Flex } from '../../../../components';
 
 export const Palettes = (props, context) => {
-  const { act, data } = useBackend<BoardgameData>(context);
+  const { data } = useBackend<BoardgameData>(context);
   const { isExpanded } = useStates(context);
+  const filterPalettes = data.givenPalettes || [];
   return (
     <Box className={'boardgame__palettes'}>
-      {fetchPalettes().map((set, i) => (
+      {fetchPalettes().filter(palette => filterPalettes.includes(palette.name)).map((set, i) => (
         <Box key={set.name}>
           <Box className={'boardgame__palettes-header'}>
             <PaletteExpandButton index={i} setId={set.name} />
