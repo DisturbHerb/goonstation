@@ -19,6 +19,7 @@
 	transfer_volume = 5
 	/// IV stands cannot operate without an `iv_drip` attached. This machine does not directly connect to the patient.
 	var/obj/item/reagent_containers/glass/iv_drip/iv_drip = null
+	var/datum/component/reagent_overlay/other_target/iv_reagent_overlay_component = null
 
 /obj/machinery/medical/blood/iv_stand/start_feedback()
 	..()
@@ -62,25 +63,15 @@
 
 /obj/machinery/medical/blood/iv_stand/update_icon()
 	if (!src.iv_drip)
-		src.ClearSpecificOverlays("fluid", "bag", "lights")
+		src.ClearSpecificOverlays("line", "lights")
 		src.UpdateOverlays(image(src.icon, icon_state = "IV_pump-lid"), "lid")
 		return
-	src.handle_iv_bag_image()
+	src.UpdateOverlays(image(src.icon, icon_state = "IV", layer = FLOAT_LAYER - 1.1), "line")
 	src.ClearSpecificOverlays("lid")
 	if (src.iv_drip.patient || src.is_disabled())
 		src.ClearSpecificOverlays("lights")
 		return
 	src.UpdateOverlays(image(src.icon, icon_state = "IV_pump-lights"), "lights")
-
-/obj/machinery/medical/blood/iv_stand/proc/handle_iv_bag_image()
-	src.UpdateOverlays(image(src.icon, icon_state = "IV"), "bag")
-	if (!src.iv_drip.reagents.total_volume)
-		src.ClearSpecificOverlays("fluid")
-		return
-	var/image/fluid_image = image(src.icon, icon_state = "IV-fluid")
-	fluid_image.icon_state = "IV-fluid"
-	fluid_image.color = src.iv_drip.reagents.get_average_color().to_rgba()
-	src.UpdateOverlays(fluid_image, "fluid")
 
 /obj/machinery/medical/blood/iv_stand/proc/update_name()
 	if (src.iv_drip)
@@ -170,8 +161,17 @@
 		src.iv_drip.start_transfusion()
 	src.UpdateIcon()
 	src.update_name()
+	src.iv_reagent_overlay_component = src.AddComponent( \
+		/datum/component/reagent_overlay/other_target, \
+		reagent_overlay_icon = src.icon, \
+		reagent_overlay_icon_state = "IV_fluid", \
+		reagent_overlay_states = 6, \
+		reagent_overlay_scaling = RC_REAGENT_OVERLAY_SCALING_LINEAR, \
+		target = src.iv_drip, \
+	)
 
 /obj/machinery/medical/blood/iv_stand/proc/remove_iv_drip(mob/user, turf/new_loc)
+	src.iv_reagent_overlay_component.RemoveComponent()
 	src.stop_affect()
 	var/obj/item/reagent_containers/glass/iv_drip/old_iv = src.iv_drip
 	src.iv_drip.iv_stand = null
