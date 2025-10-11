@@ -9,6 +9,8 @@ ABSTRACT_TYPE(/obj/machinery/medical/blood)
 	var/transfer_volume = 16
 	/// Assuming there's a single internal reagent container.
 	var/maximum_container_volume = 16
+	/// How much bleed do we wanna do on someone if this is forcefully ripped out of their vein?
+	var/force_remove_bleed = 5
 
 /obj/machinery/medical/blood/New()
 	. = ..()
@@ -17,6 +19,11 @@ ABSTRACT_TYPE(/obj/machinery/medical/blood)
 	if (!src.maximum_container_volume)
 		return
 	src.create_reagents(src.maximum_container_volume)
+
+/obj/machinery/medical/blood/force_remove_effect()
+	..()
+	blood_slash(src.patient, src.force_remove_bleed)
+	src.patient.emote("scream")
 
 /// Draws patient blood into internal reagent container.
 /obj/machinery/medical/blood/proc/handle_draw(volume, mult)

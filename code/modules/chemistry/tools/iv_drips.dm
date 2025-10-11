@@ -232,6 +232,8 @@
 		var/fluff = pick("pulled", "yanked", "ripped")
 		src.patient.visible_message(SPAN_ALERT("<b>[src]'s needle gets [fluff] out of [src.patient]!</b>"),\
 		SPAN_ALERT("<b>[src]'s needle gets [fluff] out of you!</b>"))
+		blood_slash(src.patient, 5)
+		src.patient.emote("scream")
 	if (ismob(user))
 		UnregisterSignal(user, COMSIG_MOVABLE_MOVED)
 		src.patient.tri_message(user,\

@@ -39,7 +39,7 @@
 	return
 /obj/machinery/medical/blood/iv_stand/remove_message(mob/user)
 	return
-/obj/machinery/medical/blood/iv_stand/force_remove_feedback()
+/obj/machinery/medical/blood/iv_stand/force_remove_message()
 	return
 
 /obj/machinery/medical/blood/iv_stand/New()

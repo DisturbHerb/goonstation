@@ -240,7 +240,8 @@ ABSTRACT_TYPE(/obj/machinery/medical)
 		src.remove_message(user)
 		logTheThing(LOG_COMBAT, user, "disconnected [src] from [constructTarget(src.patient, "combat")] at [log_loc(user)].")
 	if (force)
-		src.force_remove_feedback()
+		src.force_remove_message()
+		src.force_remove_effect()
 	src.stop_affect()
 	for (var/datum/statusEffect/machine_status_effect as anything in src.patient.getStatusList(src.connection_status_effect, src))
 		src.patient.delStatus(machine_status_effect)
@@ -269,7 +270,7 @@ ABSTRACT_TYPE(/obj/machinery/medical)
 		SPAN_NOTICE("<b>[user]</b> disconnects [src] from you."))
 
 /// Feedback on the forceful disconnection of a patient.
-/obj/machinery/medical/proc/force_remove_feedback()
+/obj/machinery/medical/proc/force_remove_message()
 	src.patient.visible_message(\
 		SPAN_ALERT("<b>[src] is forcefully disconnected from [src.patient]!</b>"),\
 		SPAN_ALERT("<b>[src] is forcefully disconnected from you!</b>"))
@@ -365,6 +366,11 @@ ABSTRACT_TYPE(/obj/machinery/medical)
 	if (src.patient)
 		src.stop_feedback(reason)
 	src.set_inactive()
+
+/obj/machinery/medical/proc/force_remove_effect()
+	SHOULD_CALL_PARENT(TRUE)
+	if (src.connect_directly)
+		return
 
 /obj/machinery/medical/proc/attempt_attach_to_obj(obj/target_object, mob/user)
 	. = TRUE

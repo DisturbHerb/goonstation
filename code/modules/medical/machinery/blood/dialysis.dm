@@ -19,7 +19,7 @@ TYPEINFO(/obj/machinery/medical/blood/dialysis)
 	power_consumption = 1.5 KILO WATTS
 	transfer_volume = 16
 	hackable = TRUE
-
+	force_remove_bleed = 7
 	connection_status_effect = "dialysis-machine"
 
 	/// Reagent ID of the current patient's blood.
@@ -66,7 +66,7 @@ TYPEINFO(/obj/machinery/medical/blood/dialysis)
 		SPAN_NOTICE("<b>[user]</b> removes [src]'s cannulae from your.")\
 	)
 
-/obj/machinery/medical/blood/dialysis/force_remove_feedback()
+/obj/machinery/medical/blood/dialysis/force_remove_message()
 	var/fluff = pick("pulled", "yanked", "ripped")
 	src.patient.visible_message(\
 		SPAN_ALERT("<b>[src]'s cannulae get [fluff] out of [src.patient]!</b>"),\
