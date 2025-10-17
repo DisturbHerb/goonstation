@@ -19,8 +19,9 @@ TYPEINFO(/obj/machinery/medical/dialysis)
 	density = 1
 	icon_state = "dialysis"
 	power_consumption = 1.5 KILO WATTS
+	function = /datum/medical_equipment_function/transfuser/dialysis
 
-/obj/machinery/medical/dialysis/handle_emag(mob/user, obj/item/card/emag/E)
+/obj/machinery/medical/dialysis/emag_feedback(mob/user, obj/item/card/emag/emag)
 	. = ..()
 	src.say("Dialysis protocols inversed.")
 
@@ -46,11 +47,17 @@ TYPEINFO(/obj/machinery/medical/dialysis)
 
 /obj/machinery/medical/dialysis/update_icon(...)
 	..()
-	if (!src.equipment_datum.active || !src.equipment_datum.patient)
+	if (!src.medical_equipment.active || !src.medical_equipment.patient)
 		src.ClearSpecificOverlays("pump", "screen", DIALYSIS_TUBING_GOOD, DIALYSIS_TUBING_BAD)
 		return
 	src.UpdateOverlays(image(src.icon, "pump"), "pump")
 	src.UpdateOverlays(image(src.icon, "screen"), "screen")
+
+/obj/machinery/medical/dialysis/proc/on_draw()
+	src.update_tubing(DIALYSIS_TUBING_BAD)
+
+/obj/machinery/medical/dialysis/proc/on_inject()
+	src.update_tubing(DIALYSIS_TUBING_GOOD)
 
 /obj/machinery/medical/dialysis/proc/update_tubing(tube = DIALYSIS_TUBING_BAD)
 	var/image/tubing_image = image(src.icon, tube)

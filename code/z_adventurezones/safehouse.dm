@@ -113,7 +113,6 @@
 /obj/item/reagent_containers/glass/iv_drip/dead_exec
 	desc = "A bag filled with someone's blood. It's labelled 'Jean Rockefeller'."
 	icon_state = "IV-blood"
-	mode = INJECT
 	initial_reagents = "blood"
 
 	New()

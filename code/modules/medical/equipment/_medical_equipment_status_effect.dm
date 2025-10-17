@@ -10,10 +10,10 @@
 	icon_state = "+"
 	unique = FALSE
 	effect_quality = STATUS_QUALITY_NEUTRAL
-	var/datum/medical_equipment/medical_equipment = null
+	var/datum/medical_equipment/equipment = null
 
 /datum/statusEffect/medical_equipment/getTooltip()
-	. = "You are physically connected to \a [src.medical_equipment.attached_object.name]. Moving too far from it may forcefully disconnect you."
+	. = "You are physically connected to \a [src.equipment.equipment_obj.name]. Moving too far from it may forcefully disconnect you."
 
 /datum/statusEffect/medical_equipment/onAdd(datum/medical_equipment/optional)
 	..()

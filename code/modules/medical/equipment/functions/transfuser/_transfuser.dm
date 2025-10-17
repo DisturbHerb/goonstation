@@ -1,3 +1,4 @@
+ABSTRACT_TYPE(/datum/medical_equipment_function/transfuser)
 /**
  * # `/datum/medical_equipment_function`
  *
@@ -6,7 +7,7 @@
 /datum/medical_equipment_function/transfuser
 	var/datum/reagents/reservoir = null
 	/// Units of fluid transferred each tick. Currently for both in and out.
-	var/transfer_volume = 16
+	var/transfer_volume = 5
 
 /datum/medical_equipment_function/transfuser/New(datum/reagents/reservoir)
 	..()
@@ -17,43 +18,49 @@
 
 /// Draws patient blood into internal reagent container.
 /datum/medical_equipment_function/transfuser/proc/handle_draw(volume, mult)
-	if (!src.parent.patient)
+	var/mob/living/carbon/patient = src.parent.patient
+	if (!patient)
 		return
-	if (!src.get_patient_fluid_volume())
+	if (!src.get_fluid_volume())
 		return
 	if (!isnum(volume))
 		return
-	transfer_blood(src.parent.patient, src.reservoir, src.calculate_transfer_volume(src.transfer_volume, mult))
+	transfer_blood(patient, src.reservoir, src.calculate_transfer_volume(src.transfer_volume, mult))
 
 /// Infuses internal reagent container contents to patient.
 /datum/medical_equipment_function/transfuser/proc/handle_infusion(volume, mult)
-	if (!src.parent.patient)
+	var/mob/living/carbon/patient = src.parent.patient
+	if (!patient)
 		return
 	if (!src.reservoir.total_volume)
 		return
 	if (!isnum(volume))
 		return
-	if (src.parent.patient.reagents.is_full())
+	if (patient.reagents.is_full())
 		return
 	var/infusion_volume = src.calculate_transfer_volume(volume, mult)
-	src.reservoir.trans_to(src.parent.patient, infusion_volume)
-	src.parent.patient.reagents.reaction(src.parent.patient, INGEST, infusion_volume)
+	src.reservoir.trans_to(patient, infusion_volume)
+	patient.reagents.reaction(patient, INGEST, infusion_volume)
 
 /// Returns total patient blood volume in units.
-/datum/medical_equipment_function/transfuser/proc/get_patient_blood_volume()
+/datum/medical_equipment_function/transfuser/proc/get_blood_volume(mob/living/carbon/target)
 	. = 0
-	if (!iscarbon(src.parent.patient))
+	if (!target)
+		target = src.parent.patient
+	if (!iscarbon(target))
 		return
-	var/datum/reagent/patient_blood_reagent = src.parent.patient.reagents.reagent_list["blood"]
-	var/patient_blood_reagent_volume = patient_blood_reagent?.volume || 0
-	. = src.parent.patient.blood_volume + patient_blood_reagent_volume
+	var/datum/reagent/target_blood_reagent = target.reagents.reagent_list["blood"]
+	var/target_blood_reagent_volume = target_blood_reagent?.volume || 0
+	. = target.blood_volume + target_blood_reagent_volume
 
-/// Returns total patient fluid volume (blood + all reagents) in units.
-/datum/medical_equipment_function/transfuser/proc/get_patient_fluid_volume()
+/// Returns total target fluid volume (blood + all reagents) in units.
+/datum/medical_equipment_function/transfuser/proc/get_fluid_volume(mob/living/carbon/target)
 	. = 0
-	if (!iscarbon(src.parent.patient))
+	if (!target)
+		target = src.parent.patient
+	if (!iscarbon(target))
 		return
-	. = src.parent.patient.blood_volume + src.parent.patient.reagents.total_volume
+	. = target.blood_volume + target.reagents.total_volume
 
 /// As `mult` is given in deciseconds, it needs to be converted to seconds for transfer volume calculations.
 /datum/medical_equipment_function/transfuser/proc/calculate_transfer_volume(volume, mult)

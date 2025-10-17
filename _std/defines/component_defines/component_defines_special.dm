@@ -184,3 +184,11 @@
 #define COMSIG_CLIENT_LOGOUT "client_logout"
 /// When a client's chat is loaded
 #define COMSIG_CLIENT_CHAT_LOADED "client_chat_loaded"
+
+// ---- Medical Equipment ----
+#define COMSIG_MED_EQUIP_ADD_PT "med_equip_add_pt"
+#define COMSIG_MED_EQUIP_REMOVE_PT "med_equip_remove_pt"
+#define COMSIG_MED_EQUIP_START_FAIL "med_equip_start_fail"
+#define COMSIG_MED_EQUIP_START "med_equip_start"
+#define COMSIG_MED_EQUIP_STOP "med_equip_stop"
+#define COMSIG_MED_EQUIP_NO_POWER "med_equip_no_power"

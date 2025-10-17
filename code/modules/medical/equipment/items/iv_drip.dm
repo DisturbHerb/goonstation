@@ -20,14 +20,14 @@
 	container_style = "IV"
 	fluid_overlay_states = 9
 	fluid_overlay_scaling = RC_REAGENT_OVERLAY_SCALING_LINEAR
-	var/datum/medical_equipment/equipment_datum = null
 	var/obj/machinery/medical/attached_machine = null
 
 /obj/item/reagent_containers/glass/iv_drip/New()
 	..()
-	src.equipment_datum = new /datum/medical_equipment(\
-		attached_obj = src,\
-		functions = /datum/medical_equipment_function/transfuser/iv,\
+	src.medical_equipment = new /datum/medical_equipment(\
+		equipment_obj = src,\
+		function = /datum/medical_equipment_function/transfuser/iv,\
+		function_params = list(MED_TRANSFUSER_RESERVOIR = src.reagents),\
 	)
 	src.UpdateOverlays(image(src.icon, "IVlabel[src.reagents.get_master_reagent_name() == "blood" ? "-blood" : ""]"), "label")
 	src.update_name()
@@ -39,9 +39,7 @@
 		src.attached_machine.UpdateIcon()
 
 /obj/item/reagent_containers/glass/iv_drip/attack_self(mob/user)
-	// src.mode = !src.mode
-	// user.show_text("You switch [src] to [src.mode ? "inject" : "draw"].")
-	src.UpdateIcon()
+	return
 
 /obj/item/reagent_containers/glass/iv_drip/attackby(obj/A, mob/user)
 	if (!iscuttingtool(A))

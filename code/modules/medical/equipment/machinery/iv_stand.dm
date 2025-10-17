@@ -17,15 +17,28 @@
 	/// IV stands cannot operate without an `iv_drip` attached.
 	var/obj/item/reagent_containers/glass/iv_drip/iv_drip = null
 
-/obj/machinery/medical/iv_stand/start_feedback()
+/obj/machinery/medical/iv_stand/start_feedback(datum/medical_equipment/equipment, list/params)
 	..()
-	// src.say("[src.iv_drip?.mode ? "Infusing" : "Drawing from"] patient at [src.transfer_volume]u per tick.")
+	if (!length(params))
+		return
+	if (!length(params[MED_IV_MODE]))
+		return
+	var/mode = params[MED_IV_MODE]
+	if (!length(params[MED_TRANSFUSER_VOLUME]))
+		return
+	var/transfer_volume = params[MED_TRANSFUSER_VOLUME]
+	src.say("[mode ? "Infusing" : "Drawing from"] patient at [transfer_volume]u per tick.")
 
-/obj/machinery/medical/iv_stand/stop_feedback(reason)
+/obj/machinery/medical/iv_stand/stop_feedback(datum/medical_equipment/equipment, list/params)
 	..()
-	// src.say("Stopped [src.iv_drip?.mode ? "infusing" : "drawing from"] patient.")
+	if (!length(params))
+		return
+	if (!length(params[MED_IV_MODE]))
+		return
+	var/mode = params[MED_IV_MODE]
+	src.say("Stopped [mode ? "infusing" : "drawing from"] patient.")
 
-/obj/machinery/medical/iv_stand/low_power_alert()
+/obj/machinery/medical/iv_stand/low_power_alert(datum/medical_equipment/equipment, list/params)
 	..()
 	src.say("IV pump unable to draw power. Check bag.")
 
@@ -54,7 +67,7 @@
 		return
 	src.handle_iv_bag_image()
 	src.ClearSpecificOverlays("lid")
-	if (!src.equipment_datum.patient || src.is_disabled())
+	if (!src.medical_equipment.patient || src.is_disabled())
 		src.ClearSpecificOverlays("lights")
 		return
 	src.UpdateOverlays(image(src.icon, icon_state = "IV_pump-lights"), "lights")
@@ -78,36 +91,27 @@
 /obj/machinery/medical/iv_stand/mouse_drop_interactions(atom/over_object, user)
 	..()
 	if (isturf(over_object) && src.iv_drip)
-		src.remove_iv_drip(user, get_turf(over_object))
+		src.remove_iv_drip(get_turf(over_object), user)
 
-/obj/machinery/medical/iv_stand/attackby(obj/item/W, mob/user)
-	if (iswrenchingtool(W))
-		actions.start(new /datum/action/bar/icon/furniture_deconstruct(src, W, 2 SECONDS), user)
-		return
-	if (!istype(W, /obj/item/reagent_containers/glass/iv_drip))
+/obj/machinery/medical/iv_stand/attackby(obj/item/I, mob/user)
+	if (!istype(I, /obj/item/reagent_containers/glass/iv_drip))
 		return ..()
-	if (isrobot(user)) // are they a borg? it's probably a mediborg's IV then, don't take that!
+	// are they a borg? it's probably a mediborg's IV then, don't take that!
+	if (isrobot(user))
 		return
-
-	// TODO this definitely needs to be a proc
-	if (src.iv_drip)
-		return
-	if (W.loc == user)
-		user.u_equip(W)
-	src.iv_drip = W
-	src.iv_drip.set_loc(src)
-	src.iv_drip.subordinate(src.equipment_datum)
-	user.visible_message(SPAN_NOTICE("[user] hangs [src.iv_drip] on [src]."), SPAN_NOTICE("You hang [src.iv_drip] on [src]."))
-
-	src.UpdateIcon()
-	src.update_name()
+	src.add_iv_drip(I, user)
 
 /obj/machinery/medical/iv_stand/attack_hand(mob/user)
 	if (!src.iv_drip)
 		return ..()
 	if (isrobot(user))
 		return ..()
-	src.remove_iv_drip(user)
+	src.remove_iv_drip(user = user)
+
+/obj/machinery/medical/iv_stand/attempt_deconstruct(obj/item/I, mob/user)
+	. = ..()
+	if (iswrenchingtool(I))
+		return TRUE
 
 /obj/machinery/medical/iv_stand/deconstruct()
 	if (src.iv_drip)
@@ -115,22 +119,25 @@
 	var/obj/item/furniture_parts/IVstand/P = new /obj/item/furniture_parts/IVstand(src.loc)
 	if (P && src.material)
 		P.setMaterial(src.material)
-	qdel(src)
+	..()
 
-/obj/machinery/medical/iv_stand/proc/remove_iv_drip(mob/user, turf/new_loc)
-	var/obj/item/reagent_containers/glass/iv_drip/old_iv = src.iv_drip
-	src.iv_drip.equipment_datum.clear_superior()
+/obj/machinery/medical/iv_stand/proc/add_iv_drip(obj/item/reagent_containers/glass/iv_drip/new_iv, mob/user)
+	if (src.iv_drip)
+		return
+	if (!istype(new_iv, /obj/item/reagent_containers/glass/iv_drip))
+		return
+	src.iv_drip = src.add_equipment(new_iv, user)
+	user.visible_message(SPAN_NOTICE("[user] hangs [src.iv_drip] on [src]."), SPAN_NOTICE("You hang [src.iv_drip] on [src]."))
+	src.UpdateIcon()
+	src.update_name()
+
+/obj/machinery/medical/iv_stand/proc/remove_iv_drip(atom/new_loc, mob/user)
+	src.remove_equipment(src.iv_drip, user, new_loc)
+	if (user)
+		user.visible_message(SPAN_NOTICE("[user] takes [src.iv_drip] down from [src]."), SPAN_NOTICE("You take [src.iv_drip] down from [src]."))
 	src.iv_drip = null
 	src.UpdateIcon()
 	src.update_name()
-	if (isturf(new_loc))
-		old_iv.set_loc(new_loc)
-		return
-	if (ismob(user))
-		user.visible_message(SPAN_NOTICE("[user] takes [old_iv] down from [src]."), SPAN_NOTICE("You take [old_iv] down from [src]."))
-		user.put_in_hand_or_drop(old_iv)
-		return
-	old_iv.set_loc(get_turf(new_loc))
 
 /obj/item/furniture_parts/IVstand
 	name = "\improper IV stand parts"
