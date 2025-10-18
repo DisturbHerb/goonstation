@@ -20,12 +20,16 @@
 // Fail states
 	// General fail state.
 	#define MED_FUNCTION_FAILURE "med_function_fail"
-// /datum/medical_equipment_function/transfuser/iv
+// /datum/medical_equipment_function/transfuser
 	// Params
 		/// `reservoir`
 		#define MED_TRANSFUSER_RESERVOIR "transfuser_reservoir"
 		/// `transfer_volume`
 		#define MED_TRANSFUSER_VOLUME "transfuser_volume"
+// /datum/medical_equipment_function/transfuser/dialysis
+	// Fail states
+		/// Patient has no blood or reagents.
+		#define MED_DIALYSIS_PT_EMPTY "dialysis_patient_empty"
 // /datum/medical_equipment_function/transfuser/iv
 	// Params
 		#define MED_IV_MODE "iv_mode"

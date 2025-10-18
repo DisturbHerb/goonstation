@@ -18,7 +18,9 @@
 	var/obj/item/reagent_containers/glass/iv_drip/iv_drip = null
 
 /obj/machinery/medical/iv_stand/start_feedback(datum/medical_equipment/equipment, list/params)
-	..()
+	. = ..()
+	if (!.)
+		return
 	if (!length(params))
 		return
 	if (!length(params[MED_IV_MODE]))
@@ -30,7 +32,9 @@
 	src.say("[mode ? "Infusing" : "Drawing from"] patient at [transfer_volume]u per tick.")
 
 /obj/machinery/medical/iv_stand/stop_feedback(datum/medical_equipment/equipment, list/params)
-	..()
+	. = ..()
+	if (!.)
+		return
 	if (!length(params))
 		return
 	if (!length(params[MED_IV_MODE]))
@@ -39,7 +43,9 @@
 	src.say("Stopped [mode ? "infusing" : "drawing from"] patient.")
 
 /obj/machinery/medical/iv_stand/low_power_alert(datum/medical_equipment/equipment, list/params)
-	..()
+	. = ..()
+	if (!.)
+		return
 	src.say("IV pump unable to draw power. Check bag.")
 
 /obj/machinery/medical/iv_stand/New()
@@ -122,22 +128,24 @@
 	..()
 
 /obj/machinery/medical/iv_stand/proc/add_iv_drip(obj/item/reagent_containers/glass/iv_drip/new_iv, mob/user)
-	if (src.iv_drip)
-		return
-	if (!istype(new_iv, /obj/item/reagent_containers/glass/iv_drip))
-		return
-	src.iv_drip = src.add_equipment(new_iv, user)
-	user.visible_message(SPAN_NOTICE("[user] hangs [src.iv_drip] on [src]."), SPAN_NOTICE("You hang [src.iv_drip] on [src]."))
-	src.UpdateIcon()
-	src.update_name()
+	// if (src.iv_drip)
+	// 	return
+	// if (!istype(new_iv, /obj/item/reagent_containers/glass/iv_drip))
+	// 	return
+	// src.iv_drip = src.add_equipment(new_iv, user)
+	// user.visible_message(SPAN_NOTICE("[user] hangs [src.iv_drip] on [src]."), SPAN_NOTICE("You hang [src.iv_drip] on [src]."))
+	// src.UpdateIcon()
+	// src.update_name()
+	return
 
 /obj/machinery/medical/iv_stand/proc/remove_iv_drip(atom/new_loc, mob/user)
-	src.remove_equipment(src.iv_drip, user, new_loc)
-	if (user)
-		user.visible_message(SPAN_NOTICE("[user] takes [src.iv_drip] down from [src]."), SPAN_NOTICE("You take [src.iv_drip] down from [src]."))
-	src.iv_drip = null
-	src.UpdateIcon()
-	src.update_name()
+	// src.remove_equipment(src.iv_drip, user, new_loc)
+	// if (user)
+	// 	user.visible_message(SPAN_NOTICE("[user] takes [src.iv_drip] down from [src]."), SPAN_NOTICE("You take [src.iv_drip] down from [src]."))
+	// src.iv_drip = null
+	// src.UpdateIcon()
+	// src.update_name()
+	return
 
 /obj/item/furniture_parts/IVstand
 	name = "\improper IV stand parts"

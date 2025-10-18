@@ -13,12 +13,14 @@ ABSTRACT_TYPE(/obj/machinery/medical)
 /**
  * # Medical Machinery
  *
- * Larger medical equipments which utilise the machinery process loop and consume grid power.
+ * Medical equipment which utilises the machinery process loop and consumes grid power.
  *
  * Unique behaviour:
  * - Toggle brakes to (un)anchor the machine.
  * - Provides clear spoken feedback with maptext on certain events.
  * - Can be attached to any object within `TYPEINFO(/obj/machinery/medical).paired_obj_whitelist`.
+ * - Can vary behaviour based on power availability and can be broken.
+ * - Deconstruction support, see `src.attempt_deconstruct()`.
  */
 /obj/machinery/medical
 	name = "medical machine"
@@ -69,7 +71,7 @@ ABSTRACT_TYPE(/obj/machinery/medical)
 
 /obj/machinery/medical/New()
 	. = ..()
-	/// Args for `/datum/medical_equipment_function` instantiation.
+	// Args for `/datum/medical_equipment_function` instantiation.
 	var/list/function_params = list()
 	src.medical_equipment = new /datum/medical_equipment(\
 		equipment_obj = src,\
@@ -78,6 +80,14 @@ ABSTRACT_TYPE(/obj/machinery/medical)
 		function_params = function_params,\
 		use_processing_items = FALSE,\
 	)
+	if (!src.medical_equipment)
+		CRASH("[src] unable to instantiate medical_equipment!")
+
+	// Signals for spoken feedback on certain events.
+	RegisterSignal(src.medical_equipment, COMSIG_MED_EQUIP_START_FAIL, PROC_REF(start_failure_feedback))
+	RegisterSignal(src.medical_equipment, COMSIG_MED_EQUIP_START, PROC_REF(start_feedback))
+	RegisterSignal(src.medical_equipment, COMSIG_MED_EQUIP_STOP, PROC_REF(stop_feedback))
+	RegisterSignal(src.medical_equipment, COMSIG_MED_EQUIP_NO_POWER, PROC_REF(low_power_alert))
 
 /obj/machinery/medical/disposing()
 	qdel(src.medical_equipment)
@@ -107,7 +117,7 @@ ABSTRACT_TYPE(/obj/machinery/medical)
 	..()
 	if (!src.medical_equipment.active)
 		return
-	src.medical_equipment.effect(mult)
+	src.medical_equipment.process(mult)
 
 /obj/machinery/medical/mouse_drop(atom/over_object)
 	var/mob/living/user = usr
@@ -149,65 +159,80 @@ ABSTRACT_TYPE(/obj/machinery/medical)
 
 /obj/machinery/medical/proc/mouse_drop_interactions(atom/over_object, mob/living/user)
 	SHOULD_CALL_PARENT(TRUE)
+	. = TRUE
 	if (!isatom(over_object) || !isliving(user))
-		return
+		return FALSE
 	if (isobj(over_object))
 		if (over_object == src.paired_obj)
 			src.detach_from_obj(user)
 		else
 			src.attempt_attach_to_obj(over_object, user)
-		return
+		return FALSE
 
 /// If failure to start, fire off once.
-/obj/machinery/medical/proc/start_failure_feedback(datum/medical_equipment/equipment, list/params)
+/obj/machinery/medical/proc/start_failure_feedback(datum/medical_equipment/equipment, reason = MED_EQUIPMENT_FAILURE)
 	SHOULD_CALL_PARENT(TRUE)
+	. = TRUE
+	if (!src.medical_equipment.patient)
+		return FALSE
 	if (src.start_fail_alert_given)
-		return
+		return FALSE
+	if (src.is_disabled())
+		return FALSE
 	src.start_fail_alert_given = TRUE
 
 /// Feedback on successful startup.
-/obj/machinery/medical/proc/start_feedback(datum/medical_equipment/equipment, list/params)
+/obj/machinery/medical/proc/start_feedback(datum/medical_equipment/equipment)
 	SHOULD_CALL_PARENT(TRUE)
+	. = TRUE
+	src.stop_alert_given = FALSE
+	src.low_power_alert_given = FALSE
+	if (!src.medical_equipment.patient || !src.medical_equipment.active)
+		return FALSE
 	if (src.start_alert_given)
-		return
-	if (!src.medical_equipment.active)
-		return
+		return FALSE
+	if (src.is_disabled())
+		return FALSE
 	src.start_alert_given = TRUE
 
 /// Feedback on stopping for any reason.
-/obj/machinery/medical/proc/stop_feedback(datum/medical_equipment/equipment, list/params)
+/obj/machinery/medical/proc/stop_feedback(datum/medical_equipment/equipment, reason = MED_EQUIPMENT_FAILURE)
 	SHOULD_CALL_PARENT(TRUE)
+	. = TRUE
+	src.start_fail_alert_given = FALSE
+	src.start_alert_given = FALSE
+	if (!src.medical_equipment.patient || src.medical_equipment.active)
+		return FALSE
 	if (src.low_power_alert_given || src.stop_alert_given)
-		return
-	var/reason = MED_EQUIPMENT_FAILURE
-	if (length(params[MED_EQUIPMENT_FAIL_REASON]))
-		reason = params[MED_EQUIPMENT_FAIL_REASON]
-	if (!src.medical_equipment.active)
-		return
+		return FALSE
 	if ((reason == MED_EQUIPMENT_NO_POWER) && !src.low_power_alert_given)
 		src.low_power_alert()
 		src.stop_alert_given = TRUE
-		return
+		return FALSE
 	if (src.is_disabled())
-		return
+		return FALSE
 	src.stop_alert_given = TRUE
 
 /// If there is power loss, fire off once.
-/obj/machinery/medical/proc/low_power_alert(datum/medical_equipment/equipment, list/params)
+/obj/machinery/medical/proc/low_power_alert(datum/medical_equipment/equipment)
 	SHOULD_CALL_PARENT(TRUE)
+	. = TRUE
+	src.start_fail_alert_given = FALSE
+	src.start_alert_given = FALSE
+	if (!src.medical_equipment.patient || src.medical_equipment.active)
+		return FALSE
 	if (src.low_power_alert_given || src.stop_alert_given)
-		return
-	if (!src.medical_equipment.active)
-		return
+		return FALSE
 	if (src.is_broken())
-		return
+		return FALSE
 	src.low_power_alert_given = TRUE
 
 // If successfully EMAG'd, fire off once.
 /obj/machinery/medical/proc/emag_feedback(mob/user, obj/item/card/emag/emag)
 	SHOULD_CALL_PARENT(TRUE)
+	. = TRUE
 	if (src.hacked)
-		return
+		return FALSE
 
 /obj/machinery/medical/proc/attempt_attach_to_obj(obj/target_object, mob/user)
 	. = TRUE
@@ -275,26 +300,28 @@ ABSTRACT_TYPE(/obj/machinery/medical)
 	qdel(src)
 
 /obj/machinery/medical/proc/add_equipment(obj/item/equipment_item, mob/user)
-	SHOULD_NOT_OVERRIDE(TRUE)
-	if (!equipment_item.medical_equipment)
-		return null
-	. = equipment_item
-	if (equipment_item.loc == user)
-		user.u_equip(equipment_item)
-	equipment_item.set_loc(src)
-	equipment_item.medical_equipment.add_subordinate(src.medical_equipment)
+// 	SHOULD_NOT_OVERRIDE(TRUE)
+// 	if (!equipment_item.medical_equipment)
+// 		return null
+// 	. = equipment_item
+// 	if (equipment_item.loc == user)
+// 		user.u_equip(equipment_item)
+// 	equipment_item.set_loc(src)
+// 	equipment_item.medical_equipment.add_subordinate(src.medical_equipment)
+	return
 
 /obj/machinery/medical/proc/remove_equipment(obj/item/equipment_item, mob/user, atom/new_loc)
-	SHOULD_NOT_OVERRIDE(TRUE)
-	equipment_item.medical_equipment.remove_superior()
-	equipment_item = null
-	if (isturf(new_loc))
-		equipment_item.set_loc(new_loc)
-		return
-	if (ismob(user))
-		user.put_in_hand_or_drop(equipment_item)
-		return
-	equipment_item.set_loc(get_turf(new_loc))
+// 	SHOULD_NOT_OVERRIDE(TRUE)
+// 	equipment_item.medical_equipment.remove_superior()
+// 	equipment_item = null
+// 	if (isturf(new_loc))
+// 		equipment_item.set_loc(new_loc)
+// 		return
+// 	if (ismob(user))
+// 		user.put_in_hand_or_drop(equipment_item)
+// 		return
+// 	equipment_item.set_loc(get_turf(new_loc))
+	return
 
 /obj/machinery/medical/proc/attempt_deconstruct(obj/item/I, mob/user)
 	SHOULD_CALL_PARENT(TRUE)

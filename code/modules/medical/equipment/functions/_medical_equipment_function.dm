@@ -1,9 +1,10 @@
 ABSTRACT_TYPE(/datum/medical_equipment_function)
 /datum/medical_equipment_function
 	var/datum/medical_equipment/parent = null
+	var/mob/living/carbon/patient = null
 	var/requires_power = FALSE
 
-/datum/medical_equipment_function/New(parent, params)
+/datum/medical_equipment_function/New(datum/medical_equipment/parent, alist/params)
 	SHOULD_CALL_PARENT(TRUE)
 	..()
 	if (!istype(parent, /datum/medical_equipment))
@@ -11,24 +12,24 @@ ABSTRACT_TYPE(/datum/medical_equipment_function)
 	src.parent = parent
 
 /// Returns null if we can affect a patient. Returns the reason if it cannot.
-/datum/medical_equipment_function/proc/check_effect_fail(mob/living/carbon/target)
+/datum/medical_equipment_function/proc/check_effect_fail(mob/living/carbon/target_patient)
 	SHOULD_CALL_PARENT(TRUE)
 	if (src.requires_power && !src.parent.powered)
 		return MED_EQUIPMENT_NO_POWER
 
 /// Returns feedback string on failure to connect patient.
-/datum/medical_equipment_function/proc/connect_fail_feedback(mob/user, mob/living/carbon/target, reason = MED_FUNCTION_FAILURE)
+/datum/medical_equipment_function/proc/attempt_fail_feedback(mob/user, mob/living/carbon/target_patient, reason = MED_FUNCTION_FAILURE)
 	SHOULD_CALL_PARENT(TRUE)
-	if (!iscarbon(target))
+	. = null
+	if (!iscarbon(target_patient))
 		return
 
 /// Visible message feedback on ending effect.
-/datum/medical_equipment_function/proc/end_effect_feedback(mob/living/carbon/target, reason = MED_FUNCTION_FAILURE)
+/datum/medical_equipment_function/proc/stop_effect_feedback(reason = MED_FUNCTION_FAILURE)
 	SHOULD_CALL_PARENT(TRUE)
-	if (!target)
-		target = src.parent.patient
-	if (!iscarbon(target))
-		return
+	. = TRUE
+	if (!iscarbon(src.patient))
+		return FALSE
 
 /datum/medical_equipment_function/proc/on_power_loss()
 	return
@@ -36,22 +37,30 @@ ABSTRACT_TYPE(/datum/medical_equipment_function)
 /datum/medical_equipment_function/proc/on_power_restore()
 	return
 
-/datum/medical_equipment_function/proc/effect(mult)
+/// Called once when starting effect.
+/datum/medical_equipment_function/proc/start_effect()
 	SHOULD_CALL_PARENT(TRUE)
 	. = TRUE
-	if (src.check_effect_fail())
+	if (!iscarbon(src.patient))
 		return FALSE
-	var/mob/living/carbon/patient = src.parent.patient
-	boutput(world, SPAN_ADMIN("[src.parent.equipment_obj] does a thing ([src.type]) to [patient]."))
 
-/datum/medical_equipment_function/proc/hack()
-	. = FALSE
+/// Called on `src.parent.process()`.
+/datum/medical_equipment_function/proc/effect(mult)
+	. = TRUE
+	if (!src.patient)
+		return FALSE
+	boutput(world, SPAN_ADMIN("[src.parent.equipment_obj] does a thing ([src.type]) to [src.patient]."))
+
+/// Called once when ending effect.
+/datum/medical_equipment_function/proc/stop_effect()
+	SHOULD_CALL_PARENT(TRUE)
+	src.stop_effect_feedback()
 
 /datum/medical_equipment_function/proc/force_remove_consequence()
 	SHOULD_CALL_PARENT(TRUE)
-	var/mob/living/carbon/patient = src.parent.patient
-	if (!patient)
-		return
+	. = TRUE
+	if (!src.patient)
+		return FALSE
 
 /datum/medical_equipment_function/proc/on_attack_self(mob/user)
-	. = list()
+	return

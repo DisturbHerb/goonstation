@@ -24,6 +24,8 @@
 	var/tmp/datum/medical_equipment_function/function = null
 	/// The `/mob/living/carbon` that this equipment is effecting. Must stay within range.
 	var/tmp/mob/living/carbon/patient = null
+	/// If `TRUE`, failing a `src.check_effect_fail()` check will prevent you from adding the patient.
+	var/tmp/check_before_attempt = FALSE
 	/// If `FALSE`, don't add this to `global.processing_items`.
 	var/tmp/use_processing_items = TRUE
 	/// Is this equipment currently effecting a patient?
@@ -34,28 +36,26 @@
 	var/tmp/broken = FALSE
 	/// Is this EMAG'd?
 	var/tmp/hacked = FALSE
-	/// If `TRUE` and `src.check_effect_fail()` returns a failure reason, refuse to connect.
-	var/tmp/check_can_effect_before_connect = FALSE
 	/// Connection actionbar length.
 	var/tmp/connect_time = 3 SECONDS
 	/// `/datum/statusEffect/medical_equipment` ID associated with this equipment.
 	var/tmp/connect_status_effect = "medical_equipment"
-	/// If subordinate to another `/datum/medical_equipment/`, `src` will hand over patient management and effect application.
-	var/tmp/datum/medical_equipment/superior = null
-	/// If superior to another `/datum/medical_equipment/`, `src` will take over patient management and effect application.
-	var/tmp/list/subordinates = null
+	// /// If subordinate to another `/datum/medical_equipment/`, `src` will hand over patient management and effect application.
+	// var/tmp/datum/medical_equipment/superior = null
+	// /// If superior to another `/datum/medical_equipment/`, `src` will take over patient management and effect application.
+	// var/tmp/list/subordinates = null
 
 /*
  * Initialisation and boilerplate
  */
-/datum/medical_equipment/New(obj/equipment_obj, connect_time, function, function_params, use_processing_items = TRUE)
+/datum/medical_equipment/New(obj/equipment_obj, connect_time, function, alist/function_params, use_processing_items = TRUE, check_before_attempt = FALSE)
 	..()
 	src.equipment_obj = equipment_obj
 	if (!isobj(src.equipment_obj))
 		CRASH("[src] tried to instantiate with a equipment_obj ([equipment_obj]) that wasn't an object!")
 	if (isnum_safe(connect_time) && (connect_time >= 0))
 		src.connect_time = connect_time
-	if (length(function))
+	if (function)
 		var/datum/medical_equipment_function/function_instance = new function(src, function_params)
 		if (!istype(function_instance, /datum/medical_equipment_function))
 			CRASH("[src] tried to instantiate an invalid /datum/medical_equipment_function/ type ([function], params: [english_list(function_params)])!")
@@ -66,77 +66,70 @@
 	RegisterSignals(src.equipment_obj, list(COMSIG_MOVABLE_MOVED, COMSIG_MOVABLE_SET_LOC), PROC_REF(on_move))
 	if (isitem(src.equipment_obj))
 		RegisterSignal(src.equipment_obj, COMSIG_ITEM_ATTACK_SELF, PROC_REF(on_attack_self))
+		RegisterSignal(src.equipment_obj, COMSIG_ITEM_AFTERATTACK, PROC_REF(on_after_attack))
 
 /datum/medical_equipment/disposing()
-	src.remove_superior()
-	src.clear_subordinates()
+	// src.remove_superior()
+	// src.clear_subordinates()
 	src.equipment_obj = null
 	src.patient = null
 	..()
 
-/datum/medical_equipment/proc/mouse_drop(mob/user, mob/living/carbon/target)
-	if (!iscarbon(target))
+/datum/medical_equipment/proc/mouse_drop(mob/user, mob/living/carbon/target_patient)
+	if (!iscarbon(target_patient))
 		return
-	if (!src.can_interact(user, target))
+	if (!src.can_interact(user, target_patient))
 		return
-	if (target == src.patient)
+	if (target_patient == src.patient)
 		src.remove_patient(user)
 		return
-	src.attempt_add_patient(user, target)
+	src.attempt_add_patient(user, target_patient)
 
 /*
  * Equipment hierarchy management
  */
-/datum/medical_equipment/proc/add_subordinate(datum/medical_equipment/new_subordinate)
-	if (!istype(new_subordinate, /datum/medical_equipment))
-		return
-	if (new_subordinate.superior)
-		new_subordinate.superior.remove_subordinate(new_subordinate)
-	new_subordinate.superior = src
-	new_subordinate.set_inactive()
+// /datum/medical_equipment/proc/add_subordinate(datum/medical_equipment/new_subordinate)
+// 	if (!istype(new_subordinate, /datum/medical_equipment))
+// 		return
+// 	if (new_subordinate.superior)
+// 		new_subordinate.superior.remove_subordinate(new_subordinate)
+// 	new_subordinate.superior = src
+// 	new_subordinate.set_inactive()
 
-/datum/medical_equipment/proc/remove_subordinate(datum/medical_equipment/old_subordinate)
-	if (!istype(old_subordinate, /datum/medical_equipment))
-		return
-	if (!(old_subordinate in src.subordinates))
-		return
-	src.subordinates -= old_subordinate
-	old_subordinate.superior = null
+// /datum/medical_equipment/proc/remove_subordinate(datum/medical_equipment/old_subordinate)
+// 	if (!istype(old_subordinate, /datum/medical_equipment))
+// 		return
+// 	if (!(old_subordinate in src.subordinates))
+// 		return
+// 	src.subordinates -= old_subordinate
+// 	old_subordinate.superior = null
 
-/datum/medical_equipment/proc/clear_subordinates()
-	for (var/datum/medical_equipment/subordinate as anything in src.subordinates)
-		src.remove_subordinate(subordinate)
-	src.subordinates = list()
+// /datum/medical_equipment/proc/clear_subordinates()
+// 	// for (var/datum/medical_equipment/subordinate as anything in src.subordinates)
+// 	// 	src.remove_subordinate(subordinate)
+// 	src.subordinates_do(clear_subordinates)
+// 	src.subordinates = list()
 
-/datum/medical_equipment/proc/add_superior(datum/medical_equipment/new_superior)
-	if (!istype(new_superior, /datum/medical_equipment))
-		return
-	new_superior.add_subordinate(src)
+// /datum/medical_equipment/proc/add_superior(datum/medical_equipment/new_superior)
+// 	if (!istype(new_superior, /datum/medical_equipment))
+// 		return
+// 	new_superior.add_subordinate(src)
 
-/datum/medical_equipment/proc/remove_superior()
-	src.superior.remove_subordinate(src)
+// /datum/medical_equipment/proc/remove_superior()
+// 	src.superior.remove_subordinate(src)
+
+// /// Make `src`'s subordinates call the same proc with the same arguments and get proc return values as alist.
+// /datum/medical_equipment/proc/subordinates_do(proc_name, list/proc_arguments)
+// 	if (!length(proc_name))
+// 		CRASH("Cannot pass no-length proc to \ref[src]'s subordinates!")
+// 	var/alist/return_values = list()
+// 	var/proc_path = text2path("[src.type]/proc/[proc_name]")
+// 	for (var/datum/medical_equipment/subordinate as anything in src.subordinates)
+// 		return_values["\ref[subordinate]"] = call(subordinate, proc_path)(arglist(proc_arguments))
 
 /*
  * Interaction and connection checks
  */
-/// Is a connection (to an object or patient) possible?
-/datum/medical_equipment/proc/can_connect(mob/living/carbon/connectee, mob/connector)
-	. = FALSE
-	// Assume connectee is current patient if not given.
-	if (!connectee)
-		connectee = src.patient
-	if (!iscarbon(connectee))
-		return
-	if (!src.can_interact(connectee, connector))
-		return
-	// If being pushed/pulled by `src.patient`, check if either the previous or current position of whatever moved is in range of whatever follows.
-	if (connectee != src.patient)
-		return
-	if ((src.patient.pushing != src) && (src.patient.pulling != src))
-		return
-	if (src.can_push_or_pull())
-		. = TRUE
-
 /// Check that `src.equipment_obj` and target are in range. If there's a user, check that they're able to act and in range.
 /datum/medical_equipment/proc/can_interact(atom/target, mob/user)
 	. = FALSE
@@ -150,6 +143,17 @@
 	if (in_interact_range(src.equipment_obj, user) && in_interact_range(target, user))
 		. = TRUE
 
+/// Is the connection with our patient still good?
+/datum/medical_equipment/proc/check_patient_connection()
+	. = FALSE
+	if (src.can_interact(src.patient))
+		. = TRUE
+	if ((src.patient.pulling != src.equipment_obj) && (src.patient.pushing != src.equipment_obj))
+		return
+	. = FALSE
+	if (src.can_push_or_pull())
+		. = TRUE
+
 /// Tests for pushing and pulling. Nasty. `TRUE` if connection can be maintained during pull/push.
 /datum/medical_equipment/proc/can_push_or_pull()
 	. = FALSE
@@ -157,29 +161,37 @@
 		return
 	var/atom/movable/leader
 	var/atom/movable/follower
-	if (src.patient.pulling == src)
+	if (src.patient.pulling == src.equipment_obj)
 		leader = src.patient
-		follower = src
-	if (src.patient.pushing == src)
-		leader = src
+		follower = src.equipment_obj
+	if (src.patient.pushing == src.equipment_obj)
+		leader = src.equipment_obj
 		follower = src.patient
 	if (!ismovable(leader, follower))
 		return
 	// Don't bother if neither the lead or follow are within pushing/pulling distance.
-	if (GET_MANHATTAN_DIST(leader, follower) > 2)
+	if (!GET_DIST(leader, follower) > 2)
 		return
-	var/atom/new_leader_loc = leader.loc
-	var/atom/old_leader_loc = get_step(new_leader_loc, turn(leader.last_move, 180))
-	if (!BOUNDS_DIST(old_leader_loc, follower) || !BOUNDS_DIST(new_leader_loc, follower))
-		. = TRUE
+	// We can't actually use regular `last_turf` because diagonals. The incongruence between `last_move` and `last_move_dir` might actually be
+	// sufficient to kill me. - DisturbHerb
+	var/last_move_dir = NORTH
+	if (leader == src.patient)
+		last_move_dir = src.patient.last_move_dir
+	else
+		last_move_dir = leader.last_move
 
-/// Is our connection with our current patient still good?
-/datum/medical_equipment/proc/check_patient_connection()
-	. = TRUE
-	if (!src.patient)
-		return FALSE
-	if (!src.can_connect(src.patient))
-		return FALSE
+	var/turf/leader_last_turf = get_step(leader, turn(last_move_dir, 180))
+	// var/event_timestamp = time2text(TIME, "hh:mm:ss")
+	// var/bound1 = BOUNDS_DIST(leader, follower)
+	// var/bound2 = BOUNDS_DIST(leader_last_turf, follower)
+	// boutput(world, SPAN_ADMIN("[event_timestamp]: Leader ([leader]: [leader.x], [leader.y])."))
+	// boutput(world, SPAN_ADMIN("[event_timestamp]: Leader Last Pos ([leader]: [leader_last_turf.x], [leader_last_turf.y]). [dir2text(turn(last_move_dir, 180))] from current."))
+	// boutput(world, SPAN_ADMIN("[event_timestamp]: Follow ([follower]: [follower.x], [follower.y])."))
+	// boutput(world, SPAN_ADMIN("[event_timestamp]: Bound 1: [bound1], Bound 2: [bound2]."))
+	if (!BOUNDS_DIST(leader, follower) || !BOUNDS_DIST(leader_last_turf, follower))
+		. = TRUE
+	// else
+	// 	boutput(world, SPAN_ADMIN("[event_timestamp]: Pull/Push fail."))
 
 /*
  * Patient connection management
@@ -195,22 +207,24 @@
 	if (src.patient)
 		boutput(user, SPAN_ALERT("Unable to connect [new_patient] as [src.patient] is already using [src.equipment_obj]!"))
 		return
-	if (src.check_can_effect_before_connect)
+	if (!src.function)
+		boutput(user, SPAN_ALERT("You can't use [src.equipment_obj] on its own!"))
+		return
+	if (src.check_before_attempt)
 		var/attempt_fail_reason = src.check_effect_fail(new_patient)
 		if (attempt_fail_reason)
-			src.get_connect_fail_feedback(user, attempt_fail_reason)
+			src.attempt_fail_feedback(user, new_patient, attempt_fail_reason)
 			return
 	src.attempt_message(user, new_patient)
 	logTheThing(LOG_COMBAT, user, "is trying to connect [src.equipment_obj] to [constructTarget(new_patient, "combat")] at [log_loc(user)].")
-	// TODO UNIQUE ACTIONBAR
-	var/icon/actionbar_icon = getFlatIcon(src.equipment_obj)
-	SETUP_GENERIC_ACTIONBAR(user, src, src.connect_time, PROC_REF(add_patient), list(new_patient, user), actionbar_icon, null, null, null)
+	global.actions.start(new /datum/action/bar/icon/med_equipment_add_patient(src, user, new_patient, src.connect_time), user)
 
 /// Sets target carbon as current patient.
 /datum/medical_equipment/proc/add_patient(mob/living/carbon/new_patient, mob/user)
 	if (!iscarbon(new_patient))
 		return
 	src.patient = new_patient
+	src.function?.patient = src.patient
 	src.start_effect()
 	if (ismob(user))
 		src.add_message(user, new_patient)
@@ -220,8 +234,9 @@
 	RegisterSignals(src.patient, list(COMSIG_MOVABLE_MOVED, COMSIG_MOVABLE_SET_LOC), PROC_REF(on_move))
 	if (src.use_processing_items)
 		global.processing_items |= src
-	for (var/datum/medical_equipment/subordinate as anything in src.subordinates)
-		subordinate.add_patient(new_patient)
+	// for (var/datum/medical_equipment/subordinate as anything in src.subordinates)
+	// 	subordinate.add_patient(new_patient)
+
 
 /// Removes current patient, optionally by `mob/user`.
 /datum/medical_equipment/proc/remove_patient(mob/user, force = FALSE)
@@ -236,14 +251,30 @@
 		src.patient.delStatus(equipment_status_effect)
 	UnregisterSignal(src.patient, list(COMSIG_MOVABLE_MOVED, COMSIG_MOVABLE_SET_LOC))
 	src.patient = null
+	src.function?.patient = null
 	global.processing_items -= src
-	for (var/datum/medical_equipment/subordinate as anything in src.subordinates)
-		subordinate.remove_patient()
+	// for (var/datum/medical_equipment/subordinate as anything in src.subordinates)
+	// 	subordinate.remove_patient()
 
 /// Called when `src.patient` or `src.equipment_object` moves.
 /datum/medical_equipment/proc/on_move()
-	if (!src.check_patient_connection() && src.patient)
+	if (!src.patient)
+		return
+	if (!src.check_patient_connection())
 		src.remove_patient(force = TRUE)
+
+/// Applicable if `src.equipment_obj` is an item. Called on `src.equipment_obj.AfterAttack()`.
+/datum/medical_equipment/proc/on_after_attack(obj/item/equipment_obj, mob/living/carbon/target, mob/user)
+	if (!ismob(user) || !iscarbon(target))
+		return
+	if (!isitem(src.equipment_obj))
+		return
+	if (!(src.equipment_obj in user))
+		return
+	if (src.patient == target)
+		src.remove_patient(user)
+		return
+	src.attempt_add_patient(target, user)
 
 /*
  * Chat log feedback
@@ -275,31 +306,39 @@
 		SPAN_ALERT("<b>[src.equipment_obj] is forcefully disconnected from [src.patient]!</b>"),\
 		SPAN_ALERT("<b>[src.equipment_obj] is forcefully disconnected from you!</b>"))
 
-/datum/medical_equipment/proc/get_connect_fail_feedback(mob/user, mob/living/carbon/target, reason = MED_EQUIPMENT_FAILURE)
-	var/output = src.function?.connect_fail_feedback(user, target, reason)
+/datum/medical_equipment/proc/attempt_fail_feedback(mob/user, mob/living/carbon/target, reason = MED_EQUIPMENT_FAILURE)
+	var/output = ""
+	// Check equipment failure first.
+	switch (reason)
+		if (MED_EQUIPMENT_BROKEN)
+			output = "[src.equipment_obj] is broken and can't accept a patient!"
+		if (MED_EQUIPMENT_NO_POWER)
+			output = "[src.equipment_obj] can't draw any power and can't accept a patient!"
+	// Then check function failure.
+	output = src.function?.attempt_fail_feedback(user, target, reason) || output
 	if (!length(output))
-		return
+		output = "[src.equipment_obj] can't accept a patient right now!"
 	boutput(user, SPAN_ALERT(output))
 
 /*
  * Function effect application
  */
 /// Returns null if we can effect a patient. Returns the reason if it cannot.
-/datum/medical_equipment/proc/check_effect_fail(mob/living/carbon/target)
+/datum/medical_equipment/proc/check_effect_fail(mob/living/carbon/target_patient)
 	SHOULD_CALL_PARENT(TRUE)
-	if (!iscarbon(target))
-		target = src.patient
-	if (!target)
+	if (!iscarbon(target_patient))
+		target_patient = src.patient
+	if (!target_patient)
 		return MED_EQUIPMENT_NO_PATIENT
 	if (src.broken)
 		return MED_EQUIPMENT_BROKEN
-	var/function_effect_fail = src.function?.check_effect_fail(target)
+	var/function_effect_fail = src.function?.check_effect_fail(target_patient)
 	if (function_effect_fail)
 		return function_effect_fail
-	for (var/datum/medical_equipment/subordinate as anything in src.subordinates)
-		var/subordinate_effect_fail = subordinate.check_effect_fail(target)
-		if (subordinate_effect_fail)
-			return subordinate_effect_fail
+	// for (var/datum/medical_equipment/subordinate as anything in src.subordinates)
+	// 	var/subordinate_effect_fail = subordinate.check_effect_fail(target_patient)
+	// 	if (subordinate_effect_fail)
+	// 		return subordinate_effect_fail
 
 /datum/medical_equipment/proc/set_active()
 	if (src.active)
@@ -312,21 +351,25 @@
 	src.active = FALSE
 
 /datum/medical_equipment/proc/start_effect()
-	if (src.superior || src.active)
+	// if (src.superior || src.active)
+	if (src.active)
 		return
 	var/start_fail_reason = src.check_effect_fail()
 	if (start_fail_reason)
-		SEND_SIGNAL(src.equipment_obj, COMSIG_MED_EQUIP_START_FAIL, list(MED_EQUIPMENT_FAIL_REASON = start_fail_reason))
+		SEND_SIGNAL(src, COMSIG_MED_EQUIP_START_FAIL, start_fail_reason)
 		return
 	src.set_active()
-	SEND_SIGNAL(src.equipment_obj, COMSIG_MED_EQUIP_START)
+	src.function?.start_effect()
+	src.effect()
+	SEND_SIGNAL(src, COMSIG_MED_EQUIP_START)
 
 /// **Only call this from `src.equipment_obj`!**
-/datum/medical_equipment/proc/process(mult)
-	if (src.superior || src.broken)
+/datum/medical_equipment/proc/process(mult = 1)
+	// if (src.superior || src.broken)
+	if (src.broken)
 		return
 	if (!src.active)
-		if (src.powered)
+		if ((src.powered && src.function?.requires_power) || src.function?.requires_power)
 			src.start_effect()
 		return
 	var/effect_fail_reason = src.check_effect_fail()
@@ -343,19 +386,20 @@
 /datum/medical_equipment/proc/stop_effect(reason = MED_EQUIPMENT_FAILURE)
 	if (!src.active)
 		return
-	SEND_SIGNAL(src.equipment_obj, COMSIG_MED_EQUIP_STOP, list(MED_EQUIPMENT_FAIL_REASON = reason))
 	src.set_inactive()
+	src.function?.stop_effect()
+	SEND_SIGNAL(src, COMSIG_MED_EQUIP_STOP, reason)
 
 /datum/medical_equipment/proc/force_remove_consequences()
 	src.function?.force_remove_consequence()
-	for (var/datum/medical_equipment/subordinate as anything in src.subordinates)
-		subordinate.force_remove_consequences()
+	// for (var/datum/medical_equipment/subordinate as anything in src.subordinates)
+	// 	subordinate.force_remove_consequences()
 
 /*
  * Function effect management
  */
 /// Applicable if `src.equipment_obj` is an item.
-/datum/medical_equipment/proc/on_attack_self(mob/user)
+/datum/medical_equipment/proc/on_attack_self(obj/item/equipment_obj, mob/user)
 	if (!ismob(user))
 		return
 	if (!isitem(src.equipment_obj))
@@ -368,9 +412,8 @@
 	. = FALSE
 	if (src.hacked)
 		return
-	if (src.function?.hack())
-		src.hacked = TRUE
-		. = TRUE
+	src.hacked = TRUE
+	. = TRUE
 
 /*
  * Power management
@@ -390,7 +433,7 @@
 	if (src.function?.requires_power && src.active)
 		src.stop_effect(MED_EQUIPMENT_NO_POWER)
 	else
-		SEND_SIGNAL(src.equipment_obj, COMSIG_MED_EQUIP_NO_POWER)
+		SEND_SIGNAL(src, COMSIG_MED_EQUIP_NO_POWER)
 
 /datum/medical_equipment/proc/on_power_restore()
 	src.powered = TRUE

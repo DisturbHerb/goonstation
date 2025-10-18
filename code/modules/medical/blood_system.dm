@@ -454,12 +454,21 @@ this is already used where it needs to be used, you can probably ignore it.
 /* ====================================== */
 /* ---------- transfer_blood() ---------- */
 /* ====================================== */
-
-/proc/transfer_blood(var/mob/living/some_idiot as mob, var/atom/A as obj|mob, var/amount = 5)
-	if (!some_idiot || !A || !istype(some_idiot))
+/// `target` can be some some `/atom` or `/datum/reagents`.
+/proc/transfer_blood(var/mob/living/some_idiot as mob, var/datum/target, var/amount = 5)
+	if (!isliving(some_idiot) || !some_idiot.reagents || !target)
 		return 0
 
-	if (!A.reagents || (!istype(some_idiot) && !some_idiot.reagents))
+	var/datum/reagents/target_reagents = null
+	if (istype(target, /datum/reagents))
+		target_reagents = target
+	else if (isatom(target))
+		var/atom/target_atom = target
+		if (!target_atom.reagents)
+			target_atom.create_reagents()
+		target_reagents = target_atom.reagents
+
+	if (!target_reagents)
 		return 0
 
 	if (isvampire(some_idiot) && (some_idiot.get_vampire_blood() <= 0) || (!isvampire(some_idiot) && !some_idiot.reagents && !some_idiot.blood_volume))
@@ -477,13 +486,13 @@ this is already used where it needs to be used, you can probably ignore it.
 	if (!isvampire(some_idiot) && (some_idiot.blood_volume < blood_to_transfer))
 		blood_to_transfer = some_idiot.blood_volume
 
-	if (!A.reagents.get_reagent("bloodc") && !A.reagents.get_reagent("blood")) // if it doesn't have blood with blood bioholder data already, only then create this
+	if (!target_reagents.get_reagent("bloodc") && !target_reagents.get_reagent("blood")) // if it doesn't have blood with blood bioholder data already, only then create this
 		bloodHolder = some_idiot.get_blood_bioholder()
 
 	if (ischangeling(some_idiot))
-		A.reagents.add_reagent("bloodc", blood_to_transfer, bloodHolder)
+		target_reagents.add_reagent("bloodc", blood_to_transfer, bloodHolder)
 	else
-		A.reagents.add_reagent(some_idiot.blood_id, blood_to_transfer, bloodHolder)
+		target_reagents.add_reagent(some_idiot.blood_id, blood_to_transfer, bloodHolder)
 
 	// Vampires can't use this trick to inflate their blood count, because they can't get more than ~30% of it back (Convair880).
 	if (blood_system && (isvampire(some_idiot) && (some_idiot.get_vampire_blood() >= blood_to_transfer)))
@@ -495,7 +504,7 @@ this is already used where it needs to be used, you can probably ignore it.
 		some_idiot.blood_volume -= blood_to_transfer
 
 	if (blood_to_transfer < amount)
-		some_idiot.reagents.trans_to(A, (amount - blood_to_transfer))
+		some_idiot.reagents.trans_to_direct(target_reagents, (amount - blood_to_transfer))
 	return 1
 
 /* =================================== */

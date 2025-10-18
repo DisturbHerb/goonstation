@@ -186,9 +186,21 @@
 #define COMSIG_CLIENT_CHAT_LOADED "client_chat_loaded"
 
 // ---- Medical Equipment ----
-#define COMSIG_MED_EQUIP_ADD_PT "med_equip_add_pt"
-#define COMSIG_MED_EQUIP_REMOVE_PT "med_equip_remove_pt"
-#define COMSIG_MED_EQUIP_START_FAIL "med_equip_start_fail"
-#define COMSIG_MED_EQUIP_START "med_equip_start"
-#define COMSIG_MED_EQUIP_STOP "med_equip_stop"
-#define COMSIG_MED_EQUIP_NO_POWER "med_equip_no_power"
+	// ---- Activity Events ----
+	/// When medical equipment fails to start. (medical_equipment, reason)
+	#define COMSIG_MED_EQUIP_START_FAIL "med_equip_start_fail"
+	/// When medical equipment starts. (medical_equipment)
+	#define COMSIG_MED_EQUIP_START "med_equip_start"
+	/// When medical equipment stops. (medical_equipment, reason)
+	#define COMSIG_MED_EQUIP_STOP "med_equip_stop"
+	/// When medical equipment has no power. (medical_equipment)
+	#define COMSIG_MED_EQUIP_NO_POWER "med_equip_no_power"
+	// ---- Function Events ----
+	/// Infuser: after drawing from a patient. (medical_equipment, reservoir)
+	#define COMSIG_INFUSER_DRAW "infuser_draw"
+	/// IVs: on requesting IV mode
+	#define COMSIG_IV_GET_MODE "iv_get_mode"
+	/// IVs: on returning IV mode (medical_equpment, params)
+	#define COMSIG_IV_RETURN_MODE "iv_return_mode"
+	/// Dialysis machine: prior to infusing a patient. (medical_equipment, reservoir)
+	#define COMSIG_DIALYSIS_PRE_INFUSION "dialysis_pre_infusion"
