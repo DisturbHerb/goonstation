@@ -159,27 +159,24 @@
 	. = FALSE
 	if (!src.patient)
 		return
+	// We can't actually use regular `last_turf` because diagonals. The incongruence between `last_move` and `last_move_dir` might actually be
+	// sufficient to kill me. - DisturbHerb
 	var/atom/movable/leader
 	var/atom/movable/follower
+	var/last_move_dir = NORTH
 	if (src.patient.pulling == src.equipment_obj)
 		leader = src.patient
+		last_move_dir = src.patient.last_move_dir
 		follower = src.equipment_obj
 	if (src.patient.pushing == src.equipment_obj)
 		leader = src.equipment_obj
+		last_move_dir = leader.last_move
 		follower = src.patient
 	if (!ismovable(leader, follower))
 		return
 	// Don't bother if neither the lead or follow are within pushing/pulling distance.
 	if (!GET_DIST(leader, follower) > 2)
 		return
-	// We can't actually use regular `last_turf` because diagonals. The incongruence between `last_move` and `last_move_dir` might actually be
-	// sufficient to kill me. - DisturbHerb
-	var/last_move_dir = NORTH
-	if (leader == src.patient)
-		last_move_dir = src.patient.last_move_dir
-	else
-		last_move_dir = leader.last_move
-
 	var/turf/leader_last_turf = get_step(leader, turn(last_move_dir, 180))
 	// var/event_timestamp = time2text(TIME, "hh:mm:ss")
 	// var/bound1 = BOUNDS_DIST(leader, follower)
