@@ -130,65 +130,25 @@
 /*
  * Interaction and connection checks
  */
-/// Check that `src.equipment_obj` and target are in range. If there's a user, check that they're able to act and in range.
-/datum/medical_equipment/proc/can_interact(atom/target, mob/user)
+/// Check that `src.equipment_obj`, `user`, and `target` are in range. `user` must also be able to act.
+/datum/medical_equipment/proc/can_interact(mob/user, mob/living/carbon/target)
 	. = FALSE
-	if (in_interact_range(target, src.equipment_obj))
-		. = TRUE
-	if (!user)
+	if (!iscarbon(target) || !ismob(user))
 		return
-	. = FALSE
-	if (!ismob(user) || !can_act(user))
+	if (!can_act(user))
 		return
-	if (in_interact_range(src.equipment_obj, user) && in_interact_range(target, user))
+	if (global.in_interact_range(src.equipment_obj, target) && global.in_interact_range(src.equipment_obj, user) && global.in_interact_range(target, user))
 		. = TRUE
 
 /// Is the connection with our patient still good?
 /datum/medical_equipment/proc/check_patient_connection()
 	. = FALSE
-	if (src.can_interact(src.patient))
+	if (global.in_interact_range(src.patient, src.equipment_obj))
 		. = TRUE
 	if ((src.patient.pulling != src.equipment_obj) && (src.patient.pushing != src.equipment_obj))
 		return
-	. = FALSE
-	if (src.can_push_or_pull())
+	if (IN_RANGE(src.patient, src.equipment_obj, 2))
 		. = TRUE
-
-/// Tests for pushing and pulling. Nasty. `TRUE` if connection can be maintained during pull/push.
-/datum/medical_equipment/proc/can_push_or_pull()
-	. = FALSE
-	if (!src.patient)
-		return
-	// We can't actually use regular `last_turf` because diagonals. The incongruence between `last_move` and `last_move_dir` might actually be
-	// sufficient to kill me. - DisturbHerb
-	var/atom/movable/leader
-	var/atom/movable/follower
-	var/last_move_dir = NORTH
-	if (src.patient.pulling == src.equipment_obj)
-		leader = src.patient
-		last_move_dir = src.patient.last_move_dir
-		follower = src.equipment_obj
-	if (src.patient.pushing == src.equipment_obj)
-		leader = src.equipment_obj
-		last_move_dir = leader.last_move
-		follower = src.patient
-	if (!ismovable(leader, follower))
-		return
-	// Don't bother if neither the lead or follow are within pushing/pulling distance.
-	if (!GET_DIST(leader, follower) > 2)
-		return
-	var/turf/leader_last_turf = get_step(leader, turn(last_move_dir, 180))
-	// var/event_timestamp = time2text(TIME, "hh:mm:ss")
-	// var/bound1 = BOUNDS_DIST(leader, follower)
-	// var/bound2 = BOUNDS_DIST(leader_last_turf, follower)
-	// boutput(world, SPAN_ADMIN("[event_timestamp]: Leader ([leader]: [leader.x], [leader.y])."))
-	// boutput(world, SPAN_ADMIN("[event_timestamp]: Leader Last Pos ([leader]: [leader_last_turf.x], [leader_last_turf.y]). [dir2text(turn(last_move_dir, 180))] from current."))
-	// boutput(world, SPAN_ADMIN("[event_timestamp]: Follow ([follower]: [follower.x], [follower.y])."))
-	// boutput(world, SPAN_ADMIN("[event_timestamp]: Bound 1: [bound1], Bound 2: [bound2]."))
-	if (!BOUNDS_DIST(leader, follower) || !BOUNDS_DIST(leader_last_turf, follower))
-		. = TRUE
-	// else
-	// 	boutput(world, SPAN_ADMIN("[event_timestamp]: Pull/Push fail."))
 
 /*
  * Patient connection management
