@@ -117,6 +117,7 @@
 #define SPEECH_MODIFIER_ACCENT_WORD_SCRAMBLED "accent_word_scrambled"
 #define SPEECH_MODIFIER_ACCENT_YEE "accent_yee"
 #define SPEECH_MODIFIER_ACCENT_ZALGO "accent_zalgo"
+#define SPEECH_MODIFIER_ACCENT_CLAN_CAT "accent_clan_cat"
 #define SPEECH_MODIFIER_BRADBURY "bradbury"
 #define SPEECH_MODIFIER_BOT "bot"
 #define SPEECH_MODIFIER_BOT_BAD "bad_bot"
