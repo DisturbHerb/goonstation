@@ -18,14 +18,16 @@
 	// Multi-word phrases.
 	var/alist/substitutes = list(
 		"belt hell" = "thunderpath",
+		"chief engineer" = "twoleg workfolk mentor"
 		"god damn it" = "StarClan-curse it",
 		"god damned" = "StarClan-cursed",
 		"god damn" = "StarClan-curse",
 		"head of personnel" = "twoleg deputy",
 		"head of security" = "twoleg warrior",
 		"security officer" = "twoleg warrior",
-		"medical assistant" = "twoleg medicine cat apprentice",
-		"medical director" = "twoleg medicine cat",
+		"staff assistant" = "rogue"
+		"medical assistant" = "twoleg medicine apprentice",
+		"medical director" = "twoleg medicine mentor",
 	)
 	// Aliases for multi-word phrases and random sbus.
 	var/alist/aliases = list(
