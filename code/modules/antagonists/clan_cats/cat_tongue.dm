@@ -15,7 +15,7 @@
 		return
 
 	// ORDER OF SUBSTITUTION AND ALIAS MATTERS.
-	// Multi-word phrases and random substitutions.
+	// Multi-word phrases.
 	var/alist/substitutes = list(
 		"belt hell" = "thunderpath",
 		"god damn it" = "StarClan-curse it",
@@ -24,13 +24,10 @@
 		"head of personnel" = "twoleg deputy",
 		"head of security" = "twoleg warrior",
 		"security officer" = "twoleg warrior",
-		"idiotic" = list("mousebrained", "fuzzbrained", "fishbrained"),
-		"idiot" = list("mousebrain", "fuzzbrain", "fishbrain"),
 		"medical assistant" = "twoleg medicine cat apprentice",
 		"medical director" = "twoleg medicine cat",
-		"green" = list("green", "blue"),
 	)
-	// Aliases for multi-word phrases and random sbustitutions.
+	// Aliases for multi-word phrases and random sbus.
 	var/alist/aliases = list(
 		"foolish" = "idiotic",
 		"fool" = "idiot",
@@ -47,18 +44,16 @@
 		"medical doc" = "medical director",
 		"med doc" = "medical director",
 		"sec officer" = "security officer",
-		"blue" = "green",
+		"bull crap" = "bullcrap",
+		"bull shit" = "bullshit",
+		"house cat" = "housecat",
+		"hall way" = "hallway",
 	)
 	// Replace aliases in string first.
 	for (var/alias in aliases)
 		string = replacetext(string, alias, aliases[alias])
 	for (var/phrase in substitutes)
-		var/replacement
-		if (islist(substitutes[phrase]))
-			replacement = pick(substitutes[phrase])
-		else
-			replacement = substitutes[phrase]
-		string = replacetext(string, phrase, replacement)
+		string = replacetext(string, phrase, substitutes[phrase])
 
 	// Single words. See language/clan_cat.txt.
 	var/list/tokens = splittext(string, " ")
@@ -72,7 +67,10 @@
 			token = copytext(token, 1, punct_index)
 		// Check case-sensitive first.
 		var/matching_token = strings("language/clan_cat.txt", token, TRUE) || strings("language/clan_cat.txt", lowertext(token), TRUE)
+		// Some replacements are as lists that may be randomly picked from.
 		if (matching_token)
+			if (findtext(matching_token, ","))
+				matching_token = pick(splittext(matching_token, ","))
 			token = replacetext(token, lowertext(token), matching_token)
 		modded_tokens += (token + punct)
 	. = jointext(modded_tokens, " ") || string
