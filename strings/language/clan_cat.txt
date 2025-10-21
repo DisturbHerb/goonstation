@@ -2,7 +2,6 @@ asshole@=foxheart
 bathroom@=dirtplace
 bed@=nest
 bedroom@=twoleg nest
-/* Intended behaviour. Contingent on what Dovewing's eye colour is at any given time. */
 blue@=blue,green
 bullcrap@=foxdung,mousedung
 bullshit@=foxdung,mousedung
