@@ -17,7 +17,7 @@
 	/// IV stands cannot operate without an `iv_drip` attached.
 	var/obj/item/reagent_containers/glass/iv_drip/iv_drip = null
 
-/obj/machinery/medical/iv_stand/start_feedback(datum/medical_equipment/equipment, list/params)
+/obj/machinery/medical/iv_stand/start_feedback(datum/component/medical_device/equipment, list/params)
 	. = ..()
 	if (!.)
 		return
@@ -31,7 +31,7 @@
 	var/transfer_volume = params[MED_TRANSFUSER_VOLUME]
 	src.say("[mode ? "Infusing" : "Drawing from"] patient at [transfer_volume]u per tick.")
 
-/obj/machinery/medical/iv_stand/stop_feedback(datum/medical_equipment/equipment, list/params)
+/obj/machinery/medical/iv_stand/stop_feedback(datum/component/medical_device/equipment, list/params)
 	. = ..()
 	if (!.)
 		return
@@ -42,7 +42,7 @@
 	var/mode = params[MED_IV_MODE]
 	src.say("Stopped [mode ? "infusing" : "drawing from"] patient.")
 
-/obj/machinery/medical/iv_stand/low_power_alert(datum/medical_equipment/equipment, list/params)
+/obj/machinery/medical/iv_stand/low_power_alert(datum/component/medical_device/equipment, list/params)
 	. = ..()
 	if (!.)
 		return
@@ -73,26 +73,11 @@
 		return
 	src.handle_iv_bag_image()
 	src.ClearSpecificOverlays("lid")
-	if (!src.medical_equipment.patient || src.is_disabled())
+	// if (!src.medical_device.patient || src.is_disabled())
+	if (src.is_disabled())
 		src.ClearSpecificOverlays("lights")
 		return
 	src.UpdateOverlays(image(src.icon, icon_state = "IV_pump-lights"), "lights")
-
-/obj/machinery/medical/iv_stand/proc/handle_iv_bag_image()
-	src.UpdateOverlays(image(src.icon, icon_state = "IV"), "bag")
-	if (!src.iv_drip.reagents.total_volume)
-		src.ClearSpecificOverlays("fluid")
-		return
-	var/image/fluid_image = image(src.icon, icon_state = "IV-fluid")
-	fluid_image.icon_state = "IV-fluid"
-	fluid_image.color = src.iv_drip.reagents.get_average_color().to_rgba()
-	src.UpdateOverlays(fluid_image, "fluid")
-
-/obj/machinery/medical/iv_stand/proc/update_name()
-	if (src.iv_drip)
-		src.name = "[initial(src.name)] ([src.iv_drip])"
-		return
-	src.name = initial(src.name)
 
 /obj/machinery/medical/iv_stand/mouse_drop_interactions(atom/over_object, user)
 	..()
@@ -128,24 +113,42 @@
 	..()
 
 /obj/machinery/medical/iv_stand/proc/add_iv_drip(obj/item/reagent_containers/glass/iv_drip/new_iv, mob/user)
-	// if (src.iv_drip)
-	// 	return
-	// if (!istype(new_iv, /obj/item/reagent_containers/glass/iv_drip))
-	// 	return
-	// src.iv_drip = src.add_equipment(new_iv, user)
-	// user.visible_message(SPAN_NOTICE("[user] hangs [src.iv_drip] on [src]."), SPAN_NOTICE("You hang [src.iv_drip] on [src]."))
-	// src.UpdateIcon()
-	// src.update_name()
-	return
+	if (src.iv_drip)
+		return
+	if (!istype(new_iv, /obj/item/reagent_containers/glass/iv_drip))
+		return
+	user.drop_item(new_iv)
+	new_iv.set_loc(src)
+	src.iv_drip = new_iv
+	user.visible_message(SPAN_NOTICE("[user] hangs [src.iv_drip] on [src]."), SPAN_NOTICE("You hang [src.iv_drip] on [src]."))
+	src.UpdateIcon()
+	src.update_name()
 
 /obj/machinery/medical/iv_stand/proc/remove_iv_drip(atom/new_loc, mob/user)
-	// src.remove_equipment(src.iv_drip, user, new_loc)
-	// if (user)
-	// 	user.visible_message(SPAN_NOTICE("[user] takes [src.iv_drip] down from [src]."), SPAN_NOTICE("You take [src.iv_drip] down from [src]."))
-	// src.iv_drip = null
-	// src.UpdateIcon()
-	// src.update_name()
-	return
+	if (user)
+		user.visible_message(SPAN_NOTICE("[user] takes [src.iv_drip] down from [src]."), SPAN_NOTICE("You take [src.iv_drip] down from [src]."))
+		user.put_in_hand_or_drop(src.iv_drip)
+	else
+		MOVE_OUT_TO_TURF_SAFE(src.iv_drip, src)
+	src.iv_drip = null
+	src.UpdateIcon()
+	src.update_name()
+
+/obj/machinery/medical/iv_stand/proc/handle_iv_bag_image()
+	src.UpdateOverlays(image(src.icon, icon_state = "IV"), "bag")
+	if (!src.iv_drip.reagents.total_volume)
+		src.ClearSpecificOverlays("fluid")
+		return
+	var/image/fluid_image = image(src.icon, icon_state = "IV-fluid")
+	fluid_image.icon_state = "IV-fluid"
+	fluid_image.color = src.iv_drip.reagents.get_average_color().to_rgba()
+	src.UpdateOverlays(fluid_image, "fluid")
+
+/obj/machinery/medical/iv_stand/proc/update_name()
+	if (src.iv_drip)
+		src.name = "[initial(src.name)] ([src.iv_drip])"
+		return
+	src.name = initial(src.name)
 
 /obj/item/furniture_parts/IVstand
 	name = "\improper IV stand parts"

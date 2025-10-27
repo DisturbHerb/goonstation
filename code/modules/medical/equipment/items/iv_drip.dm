@@ -33,16 +33,11 @@
 	src.mode_overlay.appearance_flags = RESET_COLOR | RESET_ALPHA | RESET_TRANSFORM | PIXEL_SCALE
 	src.vis_contents += src.mode_overlay
 
-	src.medical_equipment = new /datum/medical_equipment(\
-		equipment_obj = src,\
-		function = /datum/medical_equipment_function/transfuser/iv,\
-		function_params = list(MED_TRANSFUSER_RESERVOIR = src.reagents),\
-		check_before_attempt = TRUE,\
-	)
+	AddComponent(/datum/component/medical_device/transfuser/iv, reservoir = src)
 	src.UpdateOverlays(image(src.icon, "IVlabel[src.reagents.get_master_reagent_name() == "blood" ? "-blood" : ""]"), "label")
 	src.update_name()
-	RegisterSignal(src.medical_equipment, COMSIG_IV_RETURN_MODE, PROC_REF(update_mode_overlay))
-	SEND_SIGNAL(src.medical_equipment, COMSIG_IV_GET_MODE)
+	RegisterSignal(src, COMSIG_IV_RETURN_MODE, PROC_REF(update_mode_overlay))
+	SEND_SIGNAL(src, COMSIG_IV_GET_MODE)
 
 /obj/item/reagent_containers/glass/iv_drip/on_reagent_change()
 	..()
@@ -76,22 +71,22 @@
 /obj/item/reagent_containers/glass/iv_drip/pickup(mob/user)
 	. = ..()
 	if (!src.mode_overlay.icon_state)
-		SEND_SIGNAL(src.medical_equipment, COMSIG_IV_GET_MODE)
+		SEND_SIGNAL(src, COMSIG_IV_GET_MODE)
 	src.mode_overlay.invisibility = INVIS_NONE
 
-// /obj/item/reagent_containers/glass/iv_drip/mouse_drop(atom/over_object)
-// 	if (!isatom(over_object))
-// 		. = ..()
-// 		return
-// 	var/mob/living/user = usr
-// 	if (!isliving(user) || isintangible(user) || !can_act(user) || !in_interact_range(src, user) || !in_interact_range(over_object, user))
-// 		. = ..()
-// 		return
-// 	if (!istype(over_object, /obj/machinery/medical/blood/iv_stand))
-// 		. = ..()
-// 		return
-// 	var/obj/machinery/medical/blood/iv_stand/iv_stand = over_object
-// 	iv_stand.add_iv_drip(src, user)
+/obj/item/reagent_containers/glass/iv_drip/mouse_drop(atom/over_object)
+	if (!isatom(over_object))
+		. = ..()
+		return
+	var/mob/living/user = usr
+	if (!isliving(user) || isintangible(user) || !can_act(user) || !in_interact_range(src, user) || !in_interact_range(over_object, user))
+		. = ..()
+		return
+	if (!istype(over_object, /obj/machinery/medical/iv_stand))
+		. = ..()
+		return
+	var/obj/machinery/medical/iv_stand/iv_stand = over_object
+	iv_stand.add_iv_drip(src, user)
 
 /obj/item/reagent_containers/glass/iv_drip/proc/update_name()
 	if (src.reagents?.total_volume)
@@ -99,10 +94,8 @@
 	else
 		src.name = "\improper IV drip"
 
-/obj/item/reagent_containers/glass/iv_drip/proc/update_mode_overlay(datum/medical_equipment/equipment, alist/params)
-	if (!length(params))
-		return
-	var/mode = params[MED_IV_MODE] || MED_IV_DRAW
+/obj/item/reagent_containers/glass/iv_drip/proc/update_mode_overlay(datum/component/medical_device/equipment, mode)
+	var/mode = mode || MED_IV_DRAW
 	src.mode_overlay.icon_state = mode ? "inject" : "draw"
 
 /*

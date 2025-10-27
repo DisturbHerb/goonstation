@@ -24,9 +24,6 @@
 	/// if gun/bullet related, forensic profile of it
 	var/forensic_ID = null
 
-	/// Associated `/datum/medical_equipment` instance. Do not override.
-	var/tmp/datum/medical_equipment/medical_equipment = null
-
 	New()
 		. = ..()
 		if (HAS_FLAG(object_flags, HAS_DIRECTIONAL_BLOCKING))

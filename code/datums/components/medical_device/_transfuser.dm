@@ -1,25 +1,20 @@
-ABSTRACT_TYPE(/datum/medical_equipment_function/transfuser)
+ABSTRACT_TYPE(/datum/component/medical_device/transfuser)
 /**
- * # `/datum/medical_equipment_function`
+ * # `/datum/component/medical_device/transfuser`
  *
  * Transfusing blood/reagents between a patient and a target reagent container. Contains some relevant helper procs.
  */
-/datum/medical_equipment_function/transfuser
+/datum/component/medical_device/transfuser
 	var/datum/reagents/reservoir = null
 	/// Units of fluid transferred each tick. Currently for both in and out.
 	var/transfer_volume = 5
 
-/datum/medical_equipment_function/transfuser/New(datum/medical_equipment/parent, alist/params)
+/datum/component/medical_device/transfuser/Initialize(connect_time, use_processing_items = TRUE, check_before_attempt = FALSE, datum/reagents/reservoir)
 	..()
-	if (length(params))
-		var/datum/reagents/param_reservoir = params[MED_TRANSFUSER_RESERVOIR]
-		if (istype(param_reservoir))
-			src.reservoir = param_reservoir
-	if (!src.reservoir)
-		src.reservoir = new /datum/reagents(src.transfer_volume)
+	src.reservoir = istype(reservoir, /datum/reagents) ? reservoir : new /datum/reagents(src.transfer_volume)
 
 /// Draws patient blood into internal reagent container.
-/datum/medical_equipment_function/transfuser/proc/handle_draw(volume, mult)
+/datum/component/medical_device/transfuser/proc/handle_draw(volume, mult)
 	if (!src.patient)
 		return
 	if (!src.get_fluid_volume())
@@ -30,7 +25,7 @@ ABSTRACT_TYPE(/datum/medical_equipment_function/transfuser)
 	SEND_SIGNAL(src.parent, COMSIG_INFUSER_DRAW, src.reservoir)
 
 /// Infuses internal reagent container contents to patient.
-/datum/medical_equipment_function/transfuser/proc/handle_infusion(volume, mult)
+/datum/component/medical_device/transfuser/proc/handle_infusion(volume, mult)
 	if (!src.patient)
 		return
 	if (!src.reservoir.total_volume)
@@ -44,7 +39,7 @@ ABSTRACT_TYPE(/datum/medical_equipment_function/transfuser)
 	patient.reagents.reaction(patient, INGEST, infusion_volume)
 
 /// Returns total patient blood volume in units.
-/datum/medical_equipment_function/transfuser/proc/get_blood_volume(mob/living/carbon/target_patient)
+/datum/component/medical_device/transfuser/proc/get_blood_volume(mob/living/carbon/target_patient)
 	. = 0
 	if (!target_patient)
 		target_patient = src.patient
@@ -55,7 +50,7 @@ ABSTRACT_TYPE(/datum/medical_equipment_function/transfuser)
 	. = target_patient.blood_volume + target_blood_reagent_volume
 
 /// Returns total target_patient fluid volume (blood + all reagents) in units.
-/datum/medical_equipment_function/transfuser/proc/get_fluid_volume(mob/living/carbon/target_patient)
+/datum/component/medical_device/transfuser/proc/get_fluid_volume(mob/living/carbon/target_patient)
 	. = 0
 	if (!target_patient)
 		target_patient = src.patient
@@ -64,5 +59,5 @@ ABSTRACT_TYPE(/datum/medical_equipment_function/transfuser)
 	. = target_patient.blood_volume + target_patient.reagents.total_volume
 
 /// Accounts for `mult` on process loops where it's supported.
-/datum/medical_equipment_function/transfuser/proc/calculate_transfer_volume(volume, mult)
+/datum/component/medical_device/transfuser/proc/calculate_transfer_volume(volume, mult)
 	. = volume * mult

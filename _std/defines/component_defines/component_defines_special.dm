@@ -191,22 +191,20 @@
 /// When an `/atom/movable` attempts to leave a dimensional locker. (sender, atom_movable, old_loc)
 #define COMSIG_EXTRADIMENSIONAL_PREFAB_EXIT "extradimensional_prefab_exit"
 
-// ---- Medical Equipment ----
-	// ---- Activity Events ----
-	/// When medical equipment fails to start. (medical_equipment, reason)
-	#define COMSIG_MED_EQUIP_START_FAIL "med_equip_start_fail"
-	/// When medical equipment starts. (medical_equipment)
-	#define COMSIG_MED_EQUIP_START "med_equip_start"
-	/// When medical equipment stops. (medical_equipment, reason)
-	#define COMSIG_MED_EQUIP_STOP "med_equip_stop"
-	/// When medical equipment has no power. (medical_equipment)
-	#define COMSIG_MED_EQUIP_NO_POWER "med_equip_no_power"
-	// ---- Function Events ----
-	/// Infuser: after drawing from a patient. (medical_equipment, reservoir)
-	#define COMSIG_INFUSER_DRAW "infuser_draw"
-	/// IVs: on requesting IV mode
-	#define COMSIG_IV_GET_MODE "iv_get_mode"
-	/// IVs: on returning IV mode (medical_equpment, params)
-	#define COMSIG_IV_RETURN_MODE "iv_return_mode"
-	/// Dialysis machine: prior to infusing a patient. (medical_equipment, reservoir)
-	#define COMSIG_DIALYSIS_PRE_INFUSION "dialysis_pre_infusion"
+// ---- Medical Devices ----
+/// When medical device fails to start. (`/atom/medical_device`, reason)
+#define COMSIG_MED_DEVICE_START_FAIL "med_device_start_fail"
+/// When medical device starts. (`/atom/medical_device`)
+#define COMSIG_MED_DEVICE_START "med_device_start"
+/// When medical device stops. (`/atom/medical_device`, reason)
+#define COMSIG_MED_DEVICE_STOP "med_device_stop"
+/// When medical device has no power. (`/atom/medical_device`)
+#define COMSIG_MED_DEVICE_NO_POWER "med_device_no_power"
+/// Infuser: after drawing from a patient. (`/atom/medical_device`, reservoir)
+#define COMSIG_INFUSER_DRAW "infuser_draw"
+/// Dialysis machine: prior to infusing a patient. (`/atom/medical_device`, reservoir)
+#define COMSIG_DIALYSIS_PRE_INFUSION "dialysis_pre_infusion"
+/// IVs: on requesting IV mode
+#define COMSIG_IV_GET_MODE "iv_get_mode"
+/// IVs: on returning IV mode (`/atom/medical_device`, params)
+#define COMSIG_IV_RETURN_MODE "iv_return_mode"
