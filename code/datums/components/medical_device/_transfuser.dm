@@ -11,6 +11,8 @@ ABSTRACT_TYPE(/datum/component/medical_device/transfuser)
 
 /datum/component/medical_device/transfuser/Initialize(connect_time, use_processing_items = TRUE, check_before_attempt = FALSE, datum/reagents/reservoir)
 	..()
+	if (.)
+		return
 	src.reservoir = istype(reservoir, /datum/reagents) ? reservoir : new /datum/reagents(src.transfer_volume)
 
 /// Draws patient blood into internal reagent container.

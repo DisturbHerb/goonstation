@@ -14,8 +14,10 @@
 			over the ground or anything!"}
 	icon = 'icons/obj/machines/medical/iv_stand.dmi'
 	icon_state = "IV_stand"
-	/// IV stands cannot operate without an `iv_drip` attached.
-	var/obj/item/reagent_containers/glass/iv_drip/iv_drip = null
+	/// IV stands cannot operate without an IV attached.
+	var/obj/item/iv = null
+	/// IV medical device component associated with `src.iv`.
+	var/datum/component/medical_device/transfuser/iv/iv_component = null
 
 /obj/machinery/medical/iv_stand/start_feedback(datum/component/medical_device/equipment, list/params)
 	. = ..()
@@ -53,21 +55,24 @@
 	src.UpdateIcon()
 
 /obj/machinery/medical/iv_stand/disposing()
-	if (src.iv_drip)
-		src.remove_iv_drip()
+	src.remove_iv()
 	..()
 
 /obj/machinery/medical/iv_stand/get_desc(dist, mob/user)
 	. = ..()
-	if (!src.iv_drip)
+	if (!src.iv)
 		return
-	. += " [src.iv_drip] is attached to it."
-	if (!src.iv_drip.reagents.total_volume)
+	. += " [src.iv] is attached to it."
+	if (!src.iv_component?.reservoir.total_volume)
 		return
-	. += "<br>[SPAN_NOTICE("[src.iv_drip.reagents.get_description(user, src.iv_drip.rc_flags)]")]"
+	var/iv_rc_flags = RC_SPECTRO
+	if (istype(src.iv, /obj/item/reagent_containers))
+		var/obj/item/reagent_containers/iv_as_reagent_container = src.iv
+		iv_rc_flags = iv_as_reagent_container.rc_flags
+	. += "<br>[SPAN_NOTICE("[iv_component.reservoir.get_description(user, iv_rc_flags)]")]"
 
 /obj/machinery/medical/iv_stand/update_icon()
-	if (!src.iv_drip)
+	if (!src.iv)
 		src.ClearSpecificOverlays("fluid", "bag", "lights")
 		src.UpdateOverlays(image(src.icon, icon_state = "IV_pump-lid"), "lid")
 		return
@@ -81,23 +86,23 @@
 
 /obj/machinery/medical/iv_stand/mouse_drop_interactions(atom/over_object, user)
 	..()
-	if (isturf(over_object) && src.iv_drip)
-		src.remove_iv_drip(get_turf(over_object), user)
+	if (isturf(over_object) && src.iv)
+		src.remove_iv(get_turf(over_object), user)
 
 /obj/machinery/medical/iv_stand/attackby(obj/item/I, mob/user)
-	if (!istype(I, /obj/item/reagent_containers/glass/iv_drip))
+	if (!istype(I, /obj/item))
 		return ..()
 	// are they a borg? it's probably a mediborg's IV then, don't take that!
 	if (isrobot(user))
 		return
-	src.add_iv_drip(I, user)
+	src.add_iv(I, user)
 
 /obj/machinery/medical/iv_stand/attack_hand(mob/user)
-	if (!src.iv_drip)
+	if (!src.iv)
 		return ..()
 	if (isrobot(user))
 		return ..()
-	src.remove_iv_drip(user = user)
+	src.remove_iv(user = user)
 
 /obj/machinery/medical/iv_stand/attempt_deconstruct(obj/item/I, mob/user)
 	. = ..()
@@ -105,48 +110,54 @@
 		return TRUE
 
 /obj/machinery/medical/iv_stand/deconstruct()
-	if (src.iv_drip)
-		src.remove_iv_drip()
+	src.remove_iv()
 	var/obj/item/furniture_parts/IVstand/P = new /obj/item/furniture_parts/IVstand(src.loc)
 	if (P && src.material)
 		P.setMaterial(src.material)
 	..()
 
-/obj/machinery/medical/iv_stand/proc/add_iv_drip(obj/item/reagent_containers/glass/iv_drip/new_iv, mob/user)
-	if (src.iv_drip)
+/obj/machinery/medical/iv_stand/proc/add_iv(obj/item/new_iv, mob/user)
+	if (src.iv)
 		return
-	if (!istype(new_iv, /obj/item/reagent_containers/glass/iv_drip))
+	if (!isitem(new_iv))
+		return
+	var/datum/component/medical_device/transfuser/iv/new_iv_component = new_iv.GetComponent(/datum/component/medical_device/transfuser/iv)
+	if (!new_iv_component)
 		return
 	user.drop_item(new_iv)
 	new_iv.set_loc(src)
-	src.iv_drip = new_iv
-	user.visible_message(SPAN_NOTICE("[user] hangs [src.iv_drip] on [src]."), SPAN_NOTICE("You hang [src.iv_drip] on [src]."))
+	src.iv = new_iv
+	src.iv_component = new_iv_component
+	user.visible_message(SPAN_NOTICE("[user] hangs [src.iv] on [src]."), SPAN_NOTICE("You hang [src.iv] on [src]."))
 	src.UpdateIcon()
 	src.update_name()
 
-/obj/machinery/medical/iv_stand/proc/remove_iv_drip(atom/new_loc, mob/user)
+/obj/machinery/medical/iv_stand/proc/remove_iv(atom/new_loc, mob/user)
+	if (!src.iv)
+		return
 	if (user)
-		user.visible_message(SPAN_NOTICE("[user] takes [src.iv_drip] down from [src]."), SPAN_NOTICE("You take [src.iv_drip] down from [src]."))
-		user.put_in_hand_or_drop(src.iv_drip)
+		user.visible_message(SPAN_NOTICE("[user] takes [src.iv] down from [src]."), SPAN_NOTICE("You take [src.iv] down from [src]."))
+		user.put_in_hand_or_drop(src.iv)
 	else
-		MOVE_OUT_TO_TURF_SAFE(src.iv_drip, src)
-	src.iv_drip = null
+		MOVE_OUT_TO_TURF_SAFE(src.iv, src)
+	src.iv_component = null
+	src.iv = null
 	src.UpdateIcon()
 	src.update_name()
 
 /obj/machinery/medical/iv_stand/proc/handle_iv_bag_image()
 	src.UpdateOverlays(image(src.icon, icon_state = "IV"), "bag")
-	if (!src.iv_drip.reagents.total_volume)
+	if (!src.iv.reagents.total_volume)
 		src.ClearSpecificOverlays("fluid")
 		return
 	var/image/fluid_image = image(src.icon, icon_state = "IV-fluid")
 	fluid_image.icon_state = "IV-fluid"
-	fluid_image.color = src.iv_drip.reagents.get_average_color().to_rgba()
+	fluid_image.color = src.iv.reagents.get_average_color().to_rgba()
 	src.UpdateOverlays(fluid_image, "fluid")
 
 /obj/machinery/medical/iv_stand/proc/update_name()
-	if (src.iv_drip)
-		src.name = "[initial(src.name)] ([src.iv_drip])"
+	if (src.iv)
+		src.name = "[initial(src.name)] ([src.iv])"
 		return
 	src.name = initial(src.name)
 

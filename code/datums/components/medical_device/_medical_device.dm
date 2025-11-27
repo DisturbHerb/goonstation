@@ -5,7 +5,7 @@
  * withing interaction range of the object.
  *
  * This datum handles:
- * - Connection and disconnection of patients to medical device, either by a user or (forcefully disconnecting) when the patient is out of
+ * - Connection and disconnection of patients to a medical device, either by a user or (forcefully disconnecting) when the patient is out of
  *   interaction range.
  * - Application of effects to a connected patient.
  * - Chat log feedback to the user for patient connection interactions.
@@ -48,8 +48,8 @@
 	RegisterSignals(src.parent, list(COMSIG_MOVABLE_MOVED, COMSIG_MOVABLE_SET_LOC), PROC_REF(on_move))
 	RegisterSignal(src.parent, COMSIG_ATOM_MOUSEDROP, PROC_REF(mouse_drop))
 	if (isitem(src.parent))
-		RegisterSignal(src.parent, COMSIG_ITEM_ATTACK_SELF, PROC_REF(on_attack_self))
-		RegisterSignal(src.parent, COMSIG_ITEM_AFTERATTACK, PROC_REF(on_after_attack))
+		RegisterSignal(src.parent, COMSIG_ITEM_ATTACK_SELF, PROC_REF(attack_self))
+		RegisterSignal(src.parent, COMSIG_ITEM_AFTERATTACK, PROC_REF(after_attack))
 
 /datum/component/medical_device/UnregisterFromParent()
 	src.patient = null
@@ -66,7 +66,7 @@
 	src.attempt_add_patient(user, target_patient)
 
 /// Applicable if `src.parent` is an item.
-/datum/component/medical_device/proc/on_attack_self(obj/item/parent, mob/user)
+/datum/component/medical_device/proc/attack_self(obj/item/parent, mob/user)
 	if (!ismob(user))
 		return
 	if (!isitem(src.parent))
@@ -75,7 +75,7 @@
 		return
 
 /// Applicable if `src.parent` is an item.
-/datum/component/medical_device/proc/on_after_attack(obj/item/parent, mob/living/carbon/target, mob/user)
+/datum/component/medical_device/proc/after_attack(obj/item/parent, mob/living/carbon/target, mob/user)
 	if (!ismob(user) || !iscarbon(target))
 		return
 	if (!isitem(src.parent))
@@ -153,7 +153,7 @@
 		src.patient.setStatus(src.connect_status_effect, INFINITE_STATUS, src)
 	RegisterSignals(src.patient, list(COMSIG_MOVABLE_MOVED, COMSIG_MOVABLE_SET_LOC), PROC_REF(on_move))
 	if (src.use_processing_items)
-		global.processing_items |= src
+		global.processing_items.Add(src)
 
 
 /// Removes current patient, optionally by `mob/user`.
@@ -169,7 +169,7 @@
 		src.patient.delStatus(device_status_effect)
 	UnregisterSignal(src.patient, list(COMSIG_MOVABLE_MOVED, COMSIG_MOVABLE_SET_LOC))
 	src.patient = null
-	global.processing_items -= src
+	global.processing_items.Remove(src)
 
 /// Called when `src.patient` or `src.parentect` moves.
 /datum/component/medical_device/proc/on_move()

@@ -20,30 +20,16 @@
 	container_style = "IV"
 	fluid_overlay_states = 9
 	fluid_overlay_scaling = RC_REAGENT_OVERLAY_SCALING_LINEAR
-	var/obj/machinery/medical/attached_machine = null
-	var/obj/overlay/mode_overlay = null
 
 /obj/item/reagent_containers/glass/iv_drip/New()
 	..()
-	src.mode_overlay = new()
-	src.mode_overlay.icon = src.icon
-	src.mode_overlay.invisibility = INVIS_ALWAYS
-	src.mode_overlay.plane = PLANE_HUD
-	src.mode_overlay.layer = HUD_LAYER_3
-	src.mode_overlay.appearance_flags = RESET_COLOR | RESET_ALPHA | RESET_TRANSFORM | PIXEL_SCALE
-	src.vis_contents += src.mode_overlay
-
 	AddComponent(/datum/component/medical_device/transfuser/iv, reservoir = src)
 	src.UpdateOverlays(image(src.icon, "IVlabel[src.reagents.get_master_reagent_name() == "blood" ? "-blood" : ""]"), "label")
 	src.update_name()
-	RegisterSignal(src, COMSIG_IV_RETURN_MODE, PROC_REF(update_mode_overlay))
-	SEND_SIGNAL(src, COMSIG_IV_GET_MODE)
 
 /obj/item/reagent_containers/glass/iv_drip/on_reagent_change()
 	..()
 	src.update_name()
-	if (src.attached_machine)
-		src.attached_machine.UpdateIcon()
 
 /obj/item/reagent_containers/glass/iv_drip/attack_self(mob/user)
 	return
@@ -64,16 +50,6 @@
 	src.desc = "[src.desc] It has been sliced open."
 	boutput(user, "You carefully slice [src] open.")
 
-/obj/item/reagent_containers/glass/iv_drip/dropped(mob/user)
-	. = ..()
-	src.mode_overlay.invisibility = INVIS_ALWAYS
-
-/obj/item/reagent_containers/glass/iv_drip/pickup(mob/user)
-	. = ..()
-	if (!src.mode_overlay.icon_state)
-		SEND_SIGNAL(src, COMSIG_IV_GET_MODE)
-	src.mode_overlay.invisibility = INVIS_NONE
-
 /obj/item/reagent_containers/glass/iv_drip/mouse_drop(atom/over_object)
 	if (!isatom(over_object))
 		. = ..()
@@ -86,17 +62,13 @@
 		. = ..()
 		return
 	var/obj/machinery/medical/iv_stand/iv_stand = over_object
-	iv_stand.add_iv_drip(src, user)
+	iv_stand.add_iv(src, user)
 
 /obj/item/reagent_containers/glass/iv_drip/proc/update_name()
 	if (src.reagents?.total_volume)
 		src.name = src.reagents.get_master_reagent_name() == "blood" ? "blood pack" : "[src.reagents.get_master_reagent_name()] drip"
 	else
 		src.name = "\improper IV drip"
-
-/obj/item/reagent_containers/glass/iv_drip/proc/update_mode_overlay(datum/component/medical_device/equipment, mode)
-	var/mode = mode || MED_IV_DRAW
-	src.mode_overlay.icon_state = mode ? "inject" : "draw"
 
 /*
  * IV drip types

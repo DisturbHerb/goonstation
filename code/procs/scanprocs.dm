@@ -479,8 +479,10 @@
 			reagents = P.occupant.reagents
 	else if (istype(A, /obj/machinery/medical/iv_stand))
 		var/obj/machinery/medical/iv_stand/iv_stand = A
-		if (iv_stand.iv_drip)
-			reagents = iv_stand.iv_drip.reagents
+		A = iv_stand.iv ? iv_stand.iv || A
+	var/datum/component/medical_device/transfuser/atom_transfuser = A.GetComponent(/datum/component/medical_device/transfuser)
+	if (istype(atom_transfuser, /datum/component/medical_device/transfuser))
+		reagents = atom_transfuser.reservoir
 
 	if (reagents)
 		if (length(reagents.reagent_list))

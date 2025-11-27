@@ -204,7 +204,3 @@
 #define COMSIG_INFUSER_DRAW "infuser_draw"
 /// Dialysis machine: prior to infusing a patient. (`/atom/medical_device`, reservoir)
 #define COMSIG_DIALYSIS_PRE_INFUSION "dialysis_pre_infusion"
-/// IVs: on requesting IV mode
-#define COMSIG_IV_GET_MODE "iv_get_mode"
-/// IVs: on returning IV mode (`/atom/medical_device`, params)
-#define COMSIG_IV_RETURN_MODE "iv_return_mode"

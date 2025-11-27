@@ -3,11 +3,33 @@
 	var/mode = MED_IV_DRAW
 	var/transfer_volume_unpowered = 5
 	var/transfer_volume_powered = 5
+	var/obj/overlay/mode_overlay = null
+	var/obj/machinery/medical/iv_stand/iv_stand = null
 
 /datum/component/medical_device/transfuser/iv/Initialize(connect_time, use_processing_items, check_before_attempt, datum/reagents/reservoir)
 	..()
+	if (.)
+		return
+	if (!ismovable(src.parent) || !isturf(src.parent))
+		return COMPONENT_INCOMPATIBLE
 	if (src.reservoir.total_volume)
 		src.change_mode(mode = MED_IV_INJECT)
+	src.mode_overlay = new()
+	src.mode_overlay.icon = 'icons/obj/surgery.dmi'
+	src.mode_overlay.invisibility = INVIS_ALWAYS
+	src.mode_overlay.plane = PLANE_HUD
+	src.mode_overlay.layer = HUD_LAYER_3
+	src.mode_overlay.appearance_flags = RESET_COLOR | RESET_ALPHA | RESET_TRANSFORM | PIXEL_SCALE
+	if (ismovable(src.parent))
+		var/atom/movable/movable_parent = src.parent
+		movable_parent.vis_contents += src.mode_overlay
+	// I recognise this is silly. But this is just how components roll.
+	else if (isturf(src.parent))
+		var/turf/turf_parent = src.parent
+		turf_parent.vis_contents += src.mode_overlay
+	RegisterSignal(src.parent, COMSIG_ATOM_REAGENT_CHANGE, PROC_REF(on_reagent_change))
+	RegisterSignal(src.parent, COMSIG_ITEM_PICKUP, PROC_REF(pickup))
+	RegisterSignal(src.parent, COMSIG_ITEM_DROPPED, PROC_REF(dropped))
 
 /datum/component/medical_device/transfuser/iv/check_effect_fail(mob/living/carbon/target_patient)
 	. = ..()
@@ -72,14 +94,21 @@
 /datum/component/medical_device/transfuser/iv/on_attack_self(mob/user)
 	src.change_mode(user)
 
-/datum/component/medical_device/transfuser/iv/proc/return_mode()
-	SEND_SIGNAL(src.parent, COMSIG_IV_RETURN_MODE, src.mode)
-
 /datum/component/medical_device/transfuser/iv/proc/change_mode(mob/user, mode)
 	if (mode)
 		src.mode = mode
 	else
 		src.mode = !src.mode
+	src.mode_overlay.icon_state = mode ? "inject" : "draw"
 	if (user)
 		user.show_text("You switch [src.parent] to [src.mode ? "inject" : "draw"].")
-	src.return_mode()
+
+/datum/component/medical_device/transfuser/iv/proc/on_reagent_change()
+	if (src.iv_stand)
+		src.iv_stand.UpdateIcon()
+
+/datum/component/medical_device/transfuser/iv/proc/dropped(mob/user)
+	src.mode_overlay.invisibility = INVIS_ALWAYS
+
+/datum/component/medical_device/transfuser/iv/proc/pickup(mob/user)
+	src.mode_overlay.invisibility = INVIS_NONE
