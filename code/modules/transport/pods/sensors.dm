@@ -114,8 +114,8 @@
 				var/obj/item/shipcomponent/sensor/target_sensor = target_pod.get_part(POD_PART_SENSORS)
 				if (istype(target_sensor))
 					target_sensor.whos_tracking_me |= src.ship
-					target_pod.myhud.sensor_lock.icon_state = "master-caution"
-					target_pod.myhud.sensor_lock.mouse_opacity = 1
+					target_pod.myhud.update_systems()
+					target_pod.myhud.update_states()
 
 		src.ship.myhud.tracking.icon_state = "dots-s"
 		processing_items.Add(src)
@@ -131,8 +131,8 @@
 				if (istype(target_sensor))
 					target_sensor.whos_tracking_me -= src.ship
 					if (islist(target_sensor.whos_tracking_me) && length(target_sensor.whos_tracking_me) == 0)
-						target_pod.myhud.sensor_lock.icon_state = "off"
-						target_pod.myhud.sensor_lock.mouse_opacity = 0
+						target_pod.myhud.update_systems()
+						target_pod.myhud.update_states()
 
 		src.tracking_target = null
 		src.ship.myhud.tracking.set_dir(NORTH)

@@ -1,6 +1,7 @@
 /atom/movable/screen/hud/pod
-	icon = 'icons/mob/hud_pod.dmi'
+	icon = 'icons/mob/hud_pod/hud_pod.dmi'
 	show_tooltip = TRUE
+	mouse_over_pointer = MOUSE_HAND_POINTER
 	var/base_name = ""
 	var/base_icon_state = ""
 	var/datum/hud/pod/pod_hud = null
@@ -39,42 +40,41 @@
 	return TRUE
 
 /atom/movable/screen/hud/pod/proc/update_state()
-	if (length(src.dependent_parts))
-		src.overlays = list()
-		for (var/part_id as anything in src.dependent_parts)
-			var/obj/item/shipcomponent/dependent_pod_part = src.pod_hud.master.get_part(part_id)
-			if (istype(dependent_pod_part) && dependent_pod_part.active)
-				continue
-
-			src.overlays += image('icons/mob/hud_pod.dmi', "marker")
-			break
-
+	if (!src.base_icon_state)
 		return
-
-	if (src.base_icon_state)
-		var/obj/item/shipcomponent/pod_part = src.pod_hud.master.get_part(src.pod_part_id)
-		if (istype(pod_part))
-			if (pod_part.active)
-				src.icon_state = "[src.base_icon_state]-on"
-			else
-				src.icon_state = "[src.base_icon_state]-off"
+	var/active = FALSE
+	var/list/parts_buffer = list()
+	if (length(src.dependent_parts))
+		parts_buffer += src.dependent_parts
+	if (!(src.pod_part_id in parts_buffer))
+		parts_buffer += src.pod_part_id
+	if (!length(parts_buffer))
+		return
+	for (var/part_id in parts_buffer)
+		var/obj/item/shipcomponent/pod_part = src.pod_hud.master.get_part(part_id)
+		if (!istype(pod_part))
+			continue
+		if (pod_part?.active)
+			active = TRUE
+			continue
+		active = FALSE
+		break
+	if (active)
+		src.icon_state = "[src.base_icon_state]-on"
+	else
+		src.icon_state = "[src.base_icon_state]-off"
 
 /atom/movable/screen/hud/pod/proc/update_system()
-	if (length(src.dependent_parts))
-		src.update_state()
+	if (!src.base_name)
 		return
-
-	if (src.base_name)
-		var/obj/item/shipcomponent/pod_part = src.pod_hud.master.get_part(src.pod_part_id)
-		if (istype(pod_part))
-			src.name = pod_part.name
-			src.overlays = list()
-		else
-			src.name = src.base_name
-			src.overlays += image('icons/mob/hud_pod.dmi', "marker")
-
+	var/obj/item/shipcomponent/pod_part = src.pod_hud.master.get_part(src.pod_part_id)
+	if (istype(pod_part))
+		src.name = pod_part.name
+	else
+		src.name = src.base_name
 
 /atom/movable/screen/hud/pod/read_only
+	mouse_over_pointer = MOUSE_INACTIVE_POINTER
 	mouse_opacity = FALSE
 	show_tooltip = FALSE
 

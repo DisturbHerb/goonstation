@@ -41,29 +41,29 @@
 	for (var/i in 1 to src.bar_length)
 		var/atom/movable/screen/S = new /atom/movable/screen()
 		S.name = src.bar_name
-		S.icon = 'icons/obj/colosseum.dmi'
+		S.icon = 'icons/mob/hud_pod/hud_pod.dmi'
 		S.pixel_x = 32 * (i - 1)
 
 		if (i == 1)
-			S.icon_state = "health_bar_left"
+			S.icon_state = "health_bar-left"
 
 		else if (i == src.bar_length)
-			S.icon_state = "health_bar_right"
+			S.icon_state = "health_bar-right"
 
 		else
-			S.icon_state = "health_bar_center"
+			S.icon_state = "health_bar-center"
 
 		S.vis_flags |= VIS_INHERIT_ID
 		src.vis_contents += S
 
 	src.health_overlay = new /atom/movable/screen()
-	src.health_overlay.icon = 'icons/obj/colosseum.dmi'
+	src.health_overlay.icon = 'icons/mob/hud_pod/hud_pod-text_overlays.dmi'
 	src.health_overlay.icon_state = "health"
 	src.health_overlay.vis_flags |= VIS_INHERIT_ID
 	src.vis_contents += src.health_overlay
 
 	src.shield_overlay = new /atom/movable/screen()
-	src.shield_overlay.icon = 'icons/obj/colosseum.dmi'
+	src.shield_overlay.icon = 'icons/mob/hud_pod/hud_pod-text_overlays.dmi'
 	src.shield_overlay.icon_state = "health"
 	src.shield_overlay.vis_flags |= VIS_INHERIT_ID
 	src.vis_contents += src.shield_overlay
@@ -108,24 +108,24 @@
 	var/image/units = null
 
 	if (value < 0)
-		tens = image('icons/obj/colosseum.dmi', "INF")
+		tens = image('icons/mob/hud_pod/hud_pod-text_overlays.dmi', "inf")
 
 	else
 		value = clamp(value, 0, 999)
 
 		if (value >= 100)
-			hundreds = image('icons/obj/colosseum.dmi', "[round(value / 100)]")
+			hundreds = image('icons/mob/hud_pod/hud_pod-text_overlays.dmi', "[round(value / 100)]")
 			hundreds.appearance_flags |= RESET_COLOR | RESET_TRANSFORM
 			hundreds.color = text_colour
 			hundreds.pixel_x = full_offset - 8
 
 		if (value >= 10)
-			tens = image('icons/obj/colosseum.dmi', "[round((value / 10) % 10)]")
+			tens = image('icons/mob/hud_pod/hud_pod-text_overlays.dmi', "[round((value / 10) % 10)]")
 			tens.appearance_flags |= RESET_COLOR | RESET_TRANSFORM
 			tens.color = text_colour
 			tens.pixel_x = full_offset
 
-		units = image('icons/obj/colosseum.dmi', "[round(value % 10)]")
+		units = image('icons/mob/hud_pod/hud_pod-text_overlays.dmi', "[round(value % 10)]")
 		units.appearance_flags |= RESET_COLOR | RESET_TRANSFORM
 		units.color = text_colour
 		units.pixel_x = full_offset + 8

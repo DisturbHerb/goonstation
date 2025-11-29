@@ -5,7 +5,6 @@
 	power_used = 30
 	system = "Lights"
 	icon_state = "star_lights"
-	var/hud_state = "lights"
 
 	var/col_r = 0.9
 	var/col_g = 0.8
@@ -89,7 +88,6 @@
 	name = "Police Lights"
 	desc = "Wee woo."
 	icon_state = "police_siren"
-	hud_state = "siren"
 
 	var/weeoo_in_progress = 0
 

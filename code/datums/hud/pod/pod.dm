@@ -2,19 +2,18 @@
 	exceeds_boundaries = TRUE
 	var/obj/machinery/vehicle/master = null
 	var/atom/movable/screen/hud/pod/leave_pod/leave_pod = null
-	var/atom/movable/screen/hud/pod/read_only/sensor_lock/sensor_lock = null
 	var/atom/movable/screen/hud/pod/read_only/tracking/tracking = null
+	var/hud_color = "#D73715"
 
 /datum/hud/pod/New(loc)
 	. = ..()
 
 	src.master = loc
 	src.leave_pod = new(null, src)
-	src.sensor_lock = new(null, src)
 	src.tracking = new(null, src)
 
 	var/datum/hud_zone/main_panel = src.create_hud_zone(
-		list(x_low = 1, x_high = 14, y_low = TILE_HEIGHT + 1, y_high = TILE_HEIGHT + 1),
+		list(x_low = 1, x_high = 15, y_low = TILE_HEIGHT + 1, y_high = TILE_HEIGHT + 1),
 		"main_panel",
 		vertical_edge = NORTH,
 	)
@@ -28,6 +27,7 @@
 	main_panel.register_element(new /datum/hud_element(new /atom/movable/screen/hud/pod/weapon(null, src)), "weapon")
 	main_panel.register_element(new /datum/hud_element(new /atom/movable/screen/hud/pod/lights(null, src)), "lights")
 	main_panel.register_element(new /datum/hud_element(new /atom/movable/screen/hud/pod/secondary_system(null, src)), "secondary_system")
+	main_panel.register_element(new /datum/hud_element(new /atom/movable/screen/hud/pod/indicator(null, src)), "indicator")
 	main_panel.register_element(new /datum/hud_element(new /atom/movable/screen/hud/pod/lock(null, src)), "lock")
 	main_panel.register_element(new /datum/hud_element(new /atom/movable/screen/hud/pod/set_lock_code(null, src)), "set_lock_code")
 	main_panel.register_element(new /datum/hud_element(new /atom/movable/screen/hud/pod/return_to_station(null, src)), "return_to_station")
@@ -42,12 +42,11 @@
 	healthbar_panel.register_element(new /datum/hud_element(new /atom/movable/screen/hud/pod/read_only/healthbars(null, src), width = 3), "healthbars")
 
 	var/datum/hud_zone/exit_panel = src.create_hud_zone(
-		list(x_low = WIDE_TILE_WIDTH, x_high = WIDE_TILE_WIDTH, y_low = 1, y_high = 2),
+		list(x_low = WIDE_TILE_WIDTH, x_high = WIDE_TILE_WIDTH, y_low = 1, y_high = 1),
 		"exit_panel",
 		horizontal_edge = EAST,
 	)
 	exit_panel.register_element(new /datum/hud_element(src.leave_pod), "leave_pod")
-	exit_panel.register_element(new /datum/hud_element(src.sensor_lock), "sensor_lock")
 
 	var/datum/hud_zone/tracking_panel = src.create_hud_zone(
 		list(x_low = 11, x_high = 11, y_low = 8, y_high = 8),
@@ -64,7 +63,6 @@
 /datum/hud/pod/disposing()
 	src.master = null
 	src.leave_pod = null
-	src.sensor_lock = null
 	src.tracking = null
 	src.delete_hud_zone("main_panel")
 	src.delete_hud_zone("healthbar_panel")

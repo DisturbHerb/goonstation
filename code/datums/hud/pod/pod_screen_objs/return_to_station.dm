@@ -1,7 +1,8 @@
 /atom/movable/screen/hud/pod/return_to_station
 	name = "Return To Station"
 	desc = "Using this will place you on the station Z-level the next time you fly off the edge of the current level."
-	icon_state = "return-to-station"
+	icon_state = "system-off"
+	base_icon_state = "system"
 	tooltip_options = list("theme" = "pod")
 	pod_part_id = POD_PART_COMMS
 	dependent_parts = list(POD_PART_COMMS)

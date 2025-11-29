@@ -1,7 +1,9 @@
 /atom/movable/screen/hud/pod/comms_use
 	name = "Use Comms System"
 	desc = "Use the communications system to talk or whatever."
-	icon_state = "comms_system"
+	icon_state = "comms_system-off"
+	base_name = "Use Comms System"
+	base_icon_state = "comms_system"
 	tooltip_options = list("theme" = "pod")
 	pod_part_id = POD_PART_COMMS
 	dependent_parts = list(POD_PART_COMMS)

@@ -11,5 +11,4 @@
 	. = ..()
 	if (!.)
 		return
-
 	src.pod_hud.update_systems()
