@@ -2,11 +2,13 @@
 	icon = 'icons/mob/hud_pod/hud_pod.dmi'
 	show_tooltip = TRUE
 	mouse_over_pointer = MOUSE_HAND_POINTER
+	var/active = FALSE
 	var/base_name = ""
 	var/base_icon_state = ""
 	var/datum/hud/pod/pod_hud = null
 	var/pod_part_id = null
 	var/list/dependent_parts = null
+	var/image/text_overlay = null
 
 /atom/movable/screen/hud/pod/New(loc, datum/hud/pod/pod_hud)
 	src.master = pod_hud
@@ -42,24 +44,8 @@
 /atom/movable/screen/hud/pod/proc/update_state()
 	if (!src.base_icon_state)
 		return
-	var/active = FALSE
-	var/list/parts_buffer = list()
-	if (length(src.dependent_parts))
-		parts_buffer += src.dependent_parts
-	if (!(src.pod_part_id in parts_buffer))
-		parts_buffer += src.pod_part_id
-	if (!length(parts_buffer))
-		return
-	for (var/part_id in parts_buffer)
-		var/obj/item/shipcomponent/pod_part = src.pod_hud.master.get_part(part_id)
-		if (!istype(pod_part))
-			continue
-		if (pod_part?.active)
-			active = TRUE
-			continue
-		active = FALSE
-		break
-	if (active)
+	src.active = src.is_active()
+	if (src.active)
 		src.icon_state = "[src.base_icon_state]-on"
 	else
 		src.icon_state = "[src.base_icon_state]-off"
@@ -72,6 +58,46 @@
 		src.name = pod_part.name
 	else
 		src.name = src.base_name
+	src.active = src.is_active()
+
+// Are our pod part and our dependent parts all active?
+/atom/movable/screen/hud/pod/proc/is_active()
+	. = FALSE
+	var/list/parts_buffer = list()
+	if (length(src.dependent_parts))
+		parts_buffer += src.dependent_parts
+	if (!(src.pod_part_id in parts_buffer))
+		parts_buffer += src.pod_part_id
+	if (!length(parts_buffer))
+		return
+	for (var/part_id in parts_buffer)
+		var/obj/item/shipcomponent/pod_part = src.pod_hud.master.get_part(part_id)
+		if (!istype(pod_part))
+			continue
+		if (pod_part?.active)
+			. = TRUE
+			continue
+		. = FALSE
+		break
+
+/atom/movable/screen/hud/pod/proc/draw_text(list/text_icon_states)
+	if (!text_icon_states)
+		return
+	if (!islist(text_icon_states))
+		text_icon_states = list(text_icon_states)
+	if (!length(text_icon_states))
+		return
+	var/image/drawn_text = new()
+	var/image/drawn_text_alpha_mask = new()
+	for (var/text_icon_state in text_icon_states)
+		drawn_text.overlays += image(src.icon, icon_state = text_icon_state)
+		drawn_text_alpha_mask.overlays += image('icons/mob/hud_pod/hud_pod-text_overlays.dmi', text_icon_state)
+	drawn_text.color = src.pod_hud.hud_color
+	drawn_text.filters["scan_effect"] = filter(type = "displace", icon = icon('icons/mob/hud_pod/hud_pod-text_overlays.dmi', "crt-displacement"), size = 1)
+	drawn_text.filters["scan_lines"] = filter(type = "layer", icon = icon('icons/mob/hud_common.dmi', "scan"), blend_mode = BLEND_MULTIPLY)
+	drawn_text.filters["alpha"] = filter(type = "alpha", icon = drawn_text_alpha_mask)
+	src.text_overlay = drawn_text
+	src.UpdateOverlays(src.text_overlay, "text_overlay")
 
 /atom/movable/screen/hud/pod/read_only
 	mouse_over_pointer = MOUSE_INACTIVE_POINTER
