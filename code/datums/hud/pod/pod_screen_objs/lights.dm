@@ -12,7 +12,11 @@
 	var/obj/item/shipcomponent/engine/engine = src.pod_hud.master.get_part(POD_PART_ENGINE)
 	if (!pod_lights || !engine?.active)
 		src.icon_state = "system-off"
-		src.ClearSpecificOverlays(FALSE, "text_overlay")
+		src.UpdateOverlays(image(src.icon, "system_switch-off"), "switch")
+		src.ClearSpecificOverlays(FALSE, "text-lights", "text-status")
 		return
 	src.icon_state = "system-on"
-	src.draw_text(list("lights", "[pod_lights.active ? "on" : "off"]"))
+	if (!src.GetOverlayImage("lights"))
+		src.draw_text("lights")
+	src.draw_text("[pod_lights.active ? "on" : "off"]", "status")
+	src.UpdateOverlays(image(src.icon, "system_switch-[pod_lights.active? "on" : "off"]"), "switch")
