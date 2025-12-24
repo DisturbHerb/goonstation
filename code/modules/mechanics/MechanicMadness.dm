@@ -15,13 +15,22 @@
 
 // mechanics containers for mechanics components (read: portable horn [read: vuvuzela] honkers! yaaaay!)
 //
+
+TYPEINFO(/obj/item/storage/mechanics/housing_large)
+	mats = list("bohrum" = 100,
+				"conductive" = 50)
+
+TYPEINFO(/obj/item/storage/mechanics/housing_handheld)
+	mats = list("bohrum" = 80,
+				"conductive_high" = 40)
+
 /obj/item/storage/mechanics // generic
 	name="Generic MechComp Housing"
 	desc="You should not bee seeing this! Call 1-800-CODER or just crusher it"
 	icon='icons/misc/mechanicsExpansion.dmi'
 	can_hold=list(/obj/item/mechanics, /obj/item/device/gps)
 	var/list/users = list() // le chumps who have opened the housing
-	deconstruct_flags = DECON_NONE //nope, so much nope.
+	deconstruct_flags = DECON_NONE
 	slots=1
 	var/num_f_icons = 0 // how many fill icons i have
 	var/light_time=0
@@ -227,6 +236,7 @@
 	get_desc()
 		.+="[src.welded ? " It is welded shut." : ""][src.open ? " Its cover has been opened." : ""]\
 		[src.anchored ? "It is [src.open || src.welded ? "also" : ""] anchored to the ground." : ""]"
+
 	housing_large // chonker
 		can_be_welded = TRUE
 		can_be_anchored = ANCHORED
@@ -2988,21 +2998,33 @@ TYPEINFO(/obj/item/mechanics/miccomp)
 	desc = ""
 	icon_state = "comp_pressure"
 	var/tmp/limiter = 0
+	var/changesig = FALSE
 	cabinet_banned = TRUE // non-functional
 	New()
 		..()
 		SEND_SIGNAL(src,COMSIG_MECHCOMP_ALLOW_MANUAL_SIGNAL)
+		SEND_SIGNAL(src,COMSIG_MECHCOMP_ADD_CONFIG,"Toggle Signal Changing",PROC_REF(toggleDefault))
+
+	get_desc()
+		. += "<br>[SPAN_NOTICE("Replace Signal is [changesig ? "on.":"off."]")]"
+
+	proc/toggleDefault(obj/item/W as obj, mob/user as mob)
+		changesig = !changesig
+		boutput(user, "Signal changing now [changesig ? "on":"off"]")
+		return TRUE
 
 	Crossed(atom/movable/AM as mob|obj)
 		..()
-		if (level == OVERFLOOR || HAS_ATOM_PROPERTY(AM, PROP_ATOM_FLOATING))
+		if (level == OVERFLOOR || HAS_ATOM_PROPERTY(AM, PROP_ATOM_FLOATING) || istype(AM, /obj/item/dummy))
 			return
 		return_if_overlay_or_effect(AM)
 		if (limiter && (ticker.round_elapsed_ticks < limiter))
 			return
 		LIGHT_UP_HOUSING
 		limiter = ticker.round_elapsed_ticks + 10
-		SEND_SIGNAL(src,COMSIG_MECHCOMP_TRANSMIT_DEFAULT_MSG, null)
+		var/transmission_style = changesig ? COMSIG_MECHCOMP_TRANSMIT_DEFAULT_MSG : COMSIG_MECHCOMP_TRANSMIT_SIGNAL
+		var/output = changesig ? null : "[AM.name]"
+		SEND_SIGNAL(src, transmission_style, output)
 
 	update_icon()
 		icon_state = "[under_floor ? "u":""]comp_pressure"

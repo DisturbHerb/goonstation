@@ -3309,7 +3309,7 @@ var/global/noir = 0
 				return
 
 		if ("secretsdebug")
-			if (src.level >= LEVEL_CODER)
+			if (src.level >= LEVEL_ADMIN)
 				switch(href_list["type"])
 					if("budget")
 						src.owner:debug_variables(wagesystem)
@@ -4559,6 +4559,10 @@ var/global/noir = 0
 	var/mob/new_player/M = new()
 
 	M.key = usr.client.key
+	M.adminspawned = 1
+	M.client.player.dnr = FALSE //reset DNR in case we cryoed to get here
+	M.client.player.claimed_rewards = list() // reset claimed medal rewards
+	M.mind.purchased_bank_item = null
 
 	usr.remove()
 
