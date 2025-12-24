@@ -63,7 +63,7 @@ var/global/list/colors_to_assign = list()
 	/// Given a maximum of 6 cats to a clan, we'll attempt to maximise the size of a clan before spinning off more clans. For example, if there are
 	/// 12 available cats (incl. 2 leaders), we'll have 2 clans at the maximum size. If we add another cat and assume there's another leader
 	/// available, we'll have 3 clans; 2 of which will have 4 cats and 1 with 5 cats.
-	src.clan_count = clamp(ceil(src.min_clans, (length(possible_clan_cats) / src.max_clan_size)), src.min_clans, min(length(possible_leaders), src.max_clans))
+	src.clan_count = clamp(ceil((length(possible_clan_cats) / src.max_clan_size)), src.min_clans, min(length(possible_leaders), src.max_clans))
 	if (src.clan_count < src.min_clans)
 		logTheThing(LOG_GAMEMODE, src, "Something went wrong when calculating the number of clans to spawn! Aborting round pre-setup.")
 		return FALSE
