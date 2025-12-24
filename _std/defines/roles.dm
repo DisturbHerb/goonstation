@@ -56,3 +56,6 @@
 #define ROLE_PIRATE_FIRST_MATE "pirate_first_mate"
 #define ROLE_PIRATE_CAPTAIN "pirate_captain"
 #define ROLE_CONFIRMED_CRIMINAL "confirmed_criminal"
+#define ROLE_CLAN_CAT "clan_cat"
+#define ROLE_CLAN_DEPUTY "clan_deputy"
+#define ROLE_CLAN_LEADER "clan_leader"
