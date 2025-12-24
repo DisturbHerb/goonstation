@@ -862,8 +862,6 @@
 #include "code\modules\antagonists\clan_cats\cat_tongue.dm"
 #include "code\modules\antagonists\clan_cats\clan_cat\_clan.dm"
 #include "code\modules\antagonists\clan_cats\clan_cat\_clan_cat.dm"
-#include "code\modules\antagonists\clan_cats\clan_cat\_clan_cat_parent.dm"
-#include "code\modules\antagonists\clan_cats\clan_cat\_clan_cat_parent.dm"
 #include "code\modules\antagonists\clan_cats\clan_cat\_clan_leader.dm"
 #include "code\modules\antagonists\clan_cats\clan_cat\canon_cats.dm"
 #include "code\modules\antagonists\conspirator\conspirator.dm"
