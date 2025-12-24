@@ -8,3 +8,8 @@
 
 #define CLAN_TYPE_MODERN "modern"
 #define CLAN_TYPE_SETTLER "settler"
+
+#define PELT_PATTERN_TUXEDO "tuxedo"
+#define PELT_PATTERN_TABBY "tabby"
+#define PELT_PATTERN_SPOTTY "spotty"
+#define PELT_PATTERN_COLORPOINT "colorpoint"
