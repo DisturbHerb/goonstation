@@ -42,6 +42,7 @@
 #include "defines\chemicompiler.dm"
 #include "defines\chemistry.dm"
 #include "defines\chem_fire.dm"
+#include "defines\clan_cats.dm"
 #include "defines\client.dm"
 #include "defines\cloner_defects.dm"
 #include "defines\clothing.dm"

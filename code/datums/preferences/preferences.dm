@@ -52,6 +52,8 @@ var/list/removed_jobs = list(
 	var/be_conspirator = FALSE
 	var/be_flock = FALSE
 	var/be_salvager = FALSE
+	var/be_clan_leader = FALSE
+	var/be_clan_cat = FALSE
 	var/be_misc = FALSE
 
 	var/be_random_name = FALSE
@@ -290,6 +292,8 @@ var/list/removed_jobs = list(
 				ROLE_CONSPIRATOR = src.be_conspirator,
 				ROLE_FLOCKMIND = src.be_flock,
 				ROLE_SALVAGER = src.be_salvager,
+				ROLE_CLAN_LEADER = src.be_clan_leader,
+				ROLE_CLAN_CAT = src.be_clan_cat,
 				ROLE_MISC = src.be_misc,
 			),
 
@@ -1135,6 +1139,8 @@ var/list/removed_jobs = list(
 				src.be_blob = FALSE
 				src.be_conspirator = FALSE
 				src.be_flock = FALSE
+				src.be_clan_leader = FALSE
+				src.be_clan_cat = FALSE
 				src.be_misc = FALSE
 				src.tooltip_option = TOOLTIP_ALWAYS
 				src.scrollwheel_limb_targeting = SCROLL_TARGET_ALWAYS
@@ -1480,6 +1486,8 @@ var/list/removed_jobs = list(
 			ROLE_HEAD_REVOLUTIONARY = TRUE,
 			ROLE_CONSPIRATOR = TRUE,
 			ROLE_SALVAGER = TRUE,
+			ROLE_CLAN_CAT = TRUE,
+			ROLE_CLAN_LEADER = TRUE,
 		)
 		for (var/antag_role as anything in global.roles_to_prefs)
 			antagonist_static_data[antag_role] = list()
