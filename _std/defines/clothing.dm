@@ -106,3 +106,15 @@ var/list/all_slots = list(SLOT_BACK, SLOT_WEAR_MASK, SLOT_L_HAND, SLOT_R_HAND, S
 //glove side for iconstate stuff
 #define GLOVE_HAS_LEFT 1
 #define GLOVE_HAS_RIGHT 2
+
+// Clothing style elements for /datum/component/clothing_style_element
+// Buttons
+	#define STYLE_BUTTONED "buttoned"
+	#define STYLE_UNBUTTONED "unbuttoned"
+// Hoods
+	#define STYLE_HOOD_UP "hood_up"
+	#define STYLE_HOOD_DOWN "hood_down"
+// Shirt tucking
+	#define STYLE_NO_TUCK "no_tuck"
+	#define STYLE_HALF_TUCK "half_tuck"
+	#define STYLE_FULL_TUCK "full_tuck"

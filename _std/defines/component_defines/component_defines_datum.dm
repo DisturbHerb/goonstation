@@ -42,3 +42,7 @@
 // ---- reagents signals ----
 	/// When reagent scanned
 	#define COMSIG_REAGENTS_ANALYZED "reagents_analyzed"
+
+// ---- Clothing style cycle signals ----
+	/// On pressing a clothing item's style-changing ability button (clothing_item, style_element)
+	#define COMSIG_CLOTHING_STYLE_ABILITY_TOGGLE "clothing_style_ability_toggle"

@@ -110,51 +110,13 @@
 
 ////////////////////////////////////////////////////////////
 
-/obj/ability_button/mask_toggle
-	name = "Toggle Welding Mask"
-	icon_state = "weldup"
-
-	execute_ability()
-		var/obj/item/clothing/head/helmet/welding/W = the_item
-		W.up ? W.flip_down(the_mob) : W.flip_up(the_mob)
-		icon_state = "[W.up ? "welddown" : "weldup"]"
-		..()
-
-
-/obj/ability_button/coat_toggle
-	name = "(Un)Button Coat"
+/obj/ability_button/clothing_style_cycle
+	name = "Change clothing style"
 	icon_state = "labcoat"
+	var/element = ""
 
 	execute_ability()
-		var/obj/item/clothing/suit/W = the_item
-		W.AttackSelf(the_mob)
-		..()
-
-/obj/ability_button/hood_toggle
-	name = "Toggle Hood"
-	icon_state = "hood_up"
-
-	execute_ability()
-		var/obj/item/clothing/suit/W = the_item
-		if (!W.hooded)
-			if (W.can_wear_hood())
-				W.AttackSelf(the_mob)
-				W.on_toggle_hood()
-			else
-				boutput(the_mob, SPAN_ALERT("You're already wearing something on your head!"))
-		else
-			W.AttackSelf(the_mob)
-			W.on_toggle_hood()
-		..()
-
-/obj/ability_button/tuck_cycle
-	name = "Change shirt style"
-	icon_state = "shirt-half_tuck"
-
-	execute_ability()
-		var/obj/item/clothing/under/misc/collar_shirt/W = the_item
-		if (istype(W, /obj/item/clothing/under/misc/collar_shirt))
-			W.AttackSelf(the_mob)
+		SEND_SIGNAL(src.the_item, src.element)
 		..()
 
 /obj/ability_button/magboot_toggle
