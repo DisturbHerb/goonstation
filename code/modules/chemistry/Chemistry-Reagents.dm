@@ -41,7 +41,6 @@ datum
 		var/thirst_value = 0
 		var/hunger_value = 0
 		var/hygiene_value = 0
-		var/bladder_value = 0
 		var/energy_value = 0
 		var/blob_damage = 0 // If this is a poison, it may be useful for poisoning the blob.
 		var/viscosity = 0 // determines interactions in fluids. 0 for least viscous, 1 for most viscous. use decimals!
@@ -242,8 +241,6 @@ datum
 						H.sims.affectMotive("Thirst", thirst_value)
 					if (src.hunger_value)
 						H.sims.affectMotive("Hunger", hunger_value)
-					if (src.bladder_value)
-						H.sims.affectMotive("Bladder", bladder_value)
 					if (src.energy_value)
 						H.sims.affectMotive("Energy", energy_value)
 
@@ -333,8 +330,7 @@ datum
 			var/current_tally = holder.addiction_tally[src.id]
 			if (addiction_min < current_tally && isliving(M) && prob(addProb))
 				boutput(M, SPAN_ALERT("<b>You suddenly feel invigorated and guilty...</b>"))
-				addiction = get_disease_from_path(/datum/ailment/addiction).setup_strain(src, current_tally, M)
-				M.contract_disease(/datum/ailment/addiction, null, addiction, TRUE)
+				M.contract_addiction(src, TRUE)
 				return
 			if (addiction_min < current_tally + 3 && !ON_COOLDOWN(M, "addiction_warn_[src.id]", 5 MINUTES))
 				boutput(M, SPAN_ALERT("You think it might be time to hold back on [src.name] for a bit..."))

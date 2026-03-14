@@ -159,6 +159,7 @@ TYPEINFO(/obj/item/disk)
 	icon_state = "rubber_chicken"
 	item_state = "rubber_chicken"
 	w_class = W_CLASS_SMALL
+	default_material = "synthrubber_yellow"
 	stamina_damage = 10
 	stamina_cost = 5
 	stamina_crit_chance = 3
@@ -168,7 +169,7 @@ TYPEINFO(/obj/item/disk)
 	icon_state = "std_module"
 	w_class = W_CLASS_SMALL
 	inhand_image_icon = 'icons/mob/inhand/hand_tools.dmi'
-	item_state = "electronic"
+	item_state = "electronics"
 	flags = TABLEPASS|CONDUCT
 	var/mtype = 1						// 1=electronic 2=hardware
 
@@ -294,6 +295,7 @@ TYPEINFO(/obj/item/disk)
 	icon_state = "rubber_hammer"
 	c_flags = ONBELT
 	force = 0
+	default_material = "synthrubber_yellow"
 
 	New()
 		..()
@@ -332,7 +334,7 @@ TYPEINFO(/obj/item/reagent_containers/vape)
 	c_flags = ONBELT
 	var/emagged = 0
 	var/last_used = 0
-	var/list/safe_smokables = list("nicotine", "THC", "CBD")
+	var/list/safe_smokables = list("nicotine", "THC", "CBD", "beff", "fizzy_banana", "beer", "menthol", "synaptizine", "cryostylane", "barbecue_sauce", "strawberry_milk")
 	var/datum/effects/system/bad_smoke_spread/smoke
 	var/range = 1
 
@@ -474,23 +476,16 @@ TYPEINFO(/obj/item/reagent_containers/vape)
 	icon_state = "ecigrefill"
 	flags = TABLEPASS
 
-/obj/item/wrestlingbell
-	name = "Wrestling bell"
-	desc = "A bell used to signal the start of a wrestling match"
-	anchored = ANCHORED
-	density = 1
-	icon = 'icons/obj/wrestlingbell.dmi'
-	icon_state = "wrestlingbell"
-	object_flags = NO_BLOCK_TABLE
-	deconstruct_flags = DECON_WRENCH
-	var/last_ring = 0
+	flavored
+		name = "flavored E-cigarette refill pack"
+		desc = "A small black box full of flavors fun for the whole family"
+		var/list/flavors = list("beff", "fizzy_banana", "beer", "menthol", "synaptizine", "cryostylane", "barbecue_sauce", "strawberry_milk") // when changing make sure you adjust safe_whitelist on vapes
+		initial_reagents = null
 
-	attack_hand(mob/user)
-		if(last_ring + 20 >= world.time)
-			return
-		else
-			last_ring = world.time
-			playsound(src.loc, 'sound/misc/Boxingbell.ogg', 50,1)
+		New()
+			..()
+			src.reagents.add_reagent("nicotine", 25)
+			src.reagents.add_reagent(pick(flavors), 25)
 
 /obj/item/trophy
 	name = "trophy"
@@ -654,6 +649,7 @@ TYPEINFO(/obj/item/reagent_containers/vape)
 	icon_state = "waste"
 	default_material = "slag"
 	var/datum/gas_mixture/leak_gas = new
+	can_arcplate = FALSE
 
 	New()
 		. = ..()

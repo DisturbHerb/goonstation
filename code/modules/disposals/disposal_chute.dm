@@ -24,6 +24,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 	anchored = ANCHORED
 	density = 1
 	flags = NOSPLASH | TGUI_INTERACTIVE
+	provides_grip = TRUE
 	var/datum/gas_mixture/air_contents	// internal reservoir
 	var/mode = DISPOSAL_CHUTE_CHARGING	// item mode 0=off 1=charging 2=charged
 	var/flush = 0	// true if flush handle is pulled
@@ -115,8 +116,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 		playsound(src.loc, 'sound/impact_sounds/Machinery_Break_1.ogg', 50, 1)
 		. = ..()
 
-	HELP_MESSAGE_OVERRIDE("Place held boxes and bags by clicking with the <b>Disarm</b>, <b>Grab</b>, or <b>Harm</b> intent. \n \
-							Dump satchel contents by click-dragging onto this.")
+	HELP_MESSAGE_OVERRIDE("Drag held boxes, bags, and satchels onto this to empty them out.")
 
 	get_help_message(dist, mob/user)
 		. = ..()
@@ -161,8 +161,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 			src.set_broken()
 
 	// attack by item places it in to disposal
-	attackby(var/obj/item/I, var/mob/user)
-		var/obj/item/storage/mechanics/mechitem = null
+	attackby(var/obj/item/I, var/mob/user, params)
 		if(status & BROKEN)
 			switch(src.repair_step)
 				if(DISPOSAL_REPAIR_STEP_SCREWDRIVER)
@@ -192,29 +191,8 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 			return
 		if (istype(I, /obj/item/handheld_vacuum))
 			return
-		if(istype(I, /obj/item/storage/mechanics))
-			mechitem = I
-		//first time they click with a storage, it gets dumped. second time container itself is added
-		if (length(I.storage?.get_contents()) && user.a_intent == INTENT_HELP && (!mechitem || mechitem.open)) //if they're not on help intent it'll default to placing it in while full.
-			if(istype(I, /obj/item/storage/secure))
-				var/obj/item/storage/secure/secS = I
-				if (!src.fits_in(secS))
-					return
-				if(secS.locked)
-					user.visible_message("[user.name] places \the [secS] into \the [src].",\
-						"You place \the [secS] into \the [src].")
-					user.drop_item()
-					secS.set_loc(src)
-					actions.interrupt(user, INTERRUPT_ACT)
-					src.update()
-					return
-			for(var/obj/item/O in I.storage.get_contents())
-				if (src.fits_in(O))
-					I.storage.transfer_stored_item(O, src, user = user)
-			user.visible_message("<b>[user.name]</b> dumps out [I] into [src].")
-			actions.interrupt(user, INTERRUPT_ACT)
-			src.play_item_insert_sound(I)
-			src.update()
+		// Mousedropping storage items will dump the contents during MouseDrop_T instead
+		if (istype(I, /obj/item/storage/mechanics) || (islist(params) && params["dragged"]))
 			return
 
 		var/obj/item/magtractor/mag
@@ -230,6 +208,8 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 				var/mob/GM = G.affecting
 				if (istype(src, /obj/machinery/disposal/mail) && !GM.canRideMailchutes() || !src.fits_in(GM))
 					boutput(user, SPAN_ALERT("That won't fit!"))
+					return
+				if (GM.buckled || GM.anchored)
 					return
 				actions.start(new/datum/action/bar/icon/shoveMobIntoChute(src, GM, user), user)
 		else
@@ -258,6 +238,8 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 			return
 		if(user.restrained() && (user.pulled_by || length(user.grabbed_by)))
 			return
+		if (HAS_ATOM_PROPERTY(user, PROP_MOB_CANTMOVE))
+			return
 		if (istype(target, /obj/machinery/bot))
 			var/obj/machinery/bot/bot = target
 			bot.set_loc(src)
@@ -274,7 +256,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 
 		if (isliving(target))
 			var/mob/living/mobtarget = target
-			if  (mobtarget.buckled || isAI(mobtarget))
+			if (mobtarget.buckled || isAI(mobtarget) || mobtarget.anchored)
 				return
 
 			if (istype(src, /obj/machinery/disposal/mail))
@@ -284,6 +266,33 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 					return
 
 			actions.start(new/datum/action/bar/icon/shoveMobIntoChute(src, mobtarget, user), user)
+
+		if (!target.storage)
+			return
+		else if (!length(target.storage.get_contents()))
+			boutput(user, SPAN_ALERT("There's nothing in [target] to empty out!"))
+			return
+		else if (!istype(target, /obj/item/storage/mechanics) && user.is_in_hands(target))
+			if(istype(target, /obj/item/storage/secure))
+				var/obj/item/storage/secure/secS = target
+				if (!src.fits_in(secS))
+					return
+				if(secS.locked)
+					user.visible_message("[user.name] places \the [secS] into \the [src].",\
+						"You place \the [secS] into \the [src].")
+					user.drop_item()
+					secS.set_loc(src)
+					actions.interrupt(user, INTERRUPT_ACT)
+					src.play_item_insert_sound(target)
+					src.update()
+					return
+			for(var/obj/item/O in target.storage.get_contents())
+				if (src.fits_in(O))
+					target.storage.transfer_stored_item(O, src, user = user)
+			user.visible_message("<b>[user.name]</b> dumps out [target] into [src].")
+			actions.interrupt(user, INTERRUPT_ACT)
+			src.update()
+			return
 
 	hitby(atom/movable/MO, datum/thrown_thing/thr)
 		if (!src.fits_in(MO))
@@ -663,6 +672,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 	icon = 'icons/obj/disposal_small.dmi'
 	handle_normal_state = "disposal-handle"
 	density = 0
+	provides_grip = FALSE
 
 	north
 		dir = NORTH
@@ -683,6 +693,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 	icon = 'icons/obj/disposal_small.dmi'
 	handle_normal_state = "brig-handle"
 	density = 0
+	provides_grip = FALSE
 
 	north
 		dir = NORTH
@@ -721,6 +732,7 @@ ADMIN_INTERACT_PROCS(/obj/machinery/disposal, proc/flush, proc/eject)
 	icon = 'icons/obj/disposal_small.dmi'
 	handle_normal_state = "ore-handle"
 	density = 0
+	provides_grip = FALSE
 
 	north
 		dir = NORTH

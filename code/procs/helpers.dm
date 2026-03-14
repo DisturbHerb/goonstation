@@ -2304,6 +2304,12 @@ proc/radioGarbleText(var/message, var/per_letter_corruption_chance=40)
 		. += corrupted_bit
 	return jointext(.,"")
 
+/// Replace a value with another if the original is null. Otherwise returns the original.
+proc/replace_if_false(var/original, var/replacement)
+	if(original)
+		return original
+	else
+		return replacement
 
 /// Returns given text replaced entirely by nonsense chars
 proc/illiterateGarbleText(var/message)
@@ -2813,3 +2819,11 @@ proc/area_table_spawn(area_type, spawn_type)
 	if (!length(tables)) //no tables FUCK
 		return
 	new spawn_type(get_turf(pick(tables)))
+
+/atom/proc/find_parent_of_type(type)
+	var/atom/parent = src.loc
+	while (!istype(parent, type) && parent.loc)
+		parent = parent.loc
+	if (istype(parent, type))
+		return parent
+	return null

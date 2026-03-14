@@ -28,6 +28,7 @@ ABSTRACT_TYPE(/obj/item/storage/secure)
 	w_class = W_CLASS_NORMAL
 	burn_possible = FALSE
 	var/random_code = FALSE // sets things to already have a randomized code on spawning
+	deconstruct_flags = DECON_SCREWDRIVER | DECON_WRENCH | DECON_WELDER | DECON_WIRECUTTERS | DECON_CROWBAR
 
 /obj/item/storage/secure/New()
 	..()
@@ -282,8 +283,10 @@ TYPEINFO(/obj/item/storage/secure/sbriefcase)
 	w_class = W_CLASS_BULKY
 	spawn_contents = list(/obj/item/paper,\
 	/obj/item/pen)
-	check_wclass = TRUE
+	check_wclass = STORAGE_CHECK_W_CLASS_INCLUDE
 	can_hold = list(/obj/item/stamped_bullion)
+
+	HELP_MESSAGE_OVERRIDE("Set or enter a code by <b>using in-hand</b>.<br>View contents by <b>click-dragging</b> from the briefcase to your character.")
 
 TYPEINFO(/obj/item/storage/secure/ssafe)
 	mats = 8

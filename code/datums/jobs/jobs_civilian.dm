@@ -2,7 +2,7 @@
 
 ABSTRACT_TYPE(/datum/job/civilian)
 /datum/job/civilian
-	linkcolor = CIVILIAN_LINK_COLOR
+	ui_colour = TGUI_COLOUR_BLUE
 	slot_card = /obj/item/card/id/civilian
 	job_category = JOB_CIVILIAN
 
@@ -17,7 +17,7 @@ ABSTRACT_TYPE(/datum/job/civilian)
 	slot_foot = list(/obj/item/clothing/shoes/chef)
 	slot_head = list(/obj/item/clothing/head/chefhat)
 	slot_suit = list(/obj/item/clothing/suit/chef)
-	slot_ears = list(/obj/item/device/radio/headset/civilian)
+	slot_ears = list(/obj/item/device/radio/headset/civilian/catering)
 	items_in_backpack = list(/obj/item/kitchen/rollingpin, /obj/item/kitchen/utensil/knife/cleaver, /obj/item/bell/kitchen)
 	wiki_link = "https://wiki.ss13.co/Chef"
 
@@ -32,7 +32,7 @@ ABSTRACT_TYPE(/datum/job/civilian)
 	slot_jump = list(/obj/item/clothing/under/rank/bartender)
 	slot_foot = list(/obj/item/clothing/shoes/black)
 	slot_suit = list(/obj/item/clothing/suit/armor/vest)
-	slot_ears = list(/obj/item/device/radio/headset/civilian)
+	slot_ears = list(/obj/item/device/radio/headset/civilian/catering)
 	slot_poc1 = list(/obj/item/cloth/towel/bar)
 	slot_poc2 = list(/obj/item/reagent_containers/food/drinks/cocktailshaker)
 	items_in_backpack = list(/obj/item/gun/kinetic/sawnoff, /obj/item/ammo/bullets/abg, /obj/item/paper/book/from_file/pocketguide/bartending)
@@ -40,11 +40,7 @@ ABSTRACT_TYPE(/datum/job/civilian)
 
 /datum/job/civilian/botanist
 	name = "Botanist"
-	#ifdef MAP_OVERRIDE_DONUT3
-	limit = 7
-	#else
 	limit = 5
-	#endif
 	wages = PAY_TRADESMAN
 	access_string = "Botanist"
 	slot_belt = list(/obj/item/device/pda2/botanist)
@@ -52,7 +48,8 @@ ABSTRACT_TYPE(/datum/job/civilian)
 	slot_foot = list(/obj/item/clothing/shoes/brown)
 	slot_glov = list(/obj/item/clothing/gloves/black)
 	slot_poc1 = list(/obj/item/paper/botany_guide)
-	slot_ears = list(/obj/item/device/radio/headset/civilian)
+	slot_poc2 = list(/obj/item/plantanalyzer)
+	slot_ears = list(/obj/item/device/radio/headset/civilian/hydroponics)
 	wiki_link = "https://wiki.ss13.co/Botanist"
 
 	faction = list(FACTION_BOTANY)
@@ -69,7 +66,7 @@ ABSTRACT_TYPE(/datum/job/civilian)
 	slot_glov = list(/obj/item/clothing/gloves/black)
 	slot_poc1 = list(/obj/item/paper/ranch_guide)
 	slot_poc2 = list(/obj/item/device/pda2/botanist)
-	slot_ears = list(/obj/item/device/radio/headset/civilian)
+	slot_ears = list(/obj/item/device/radio/headset/civilian/hydroponics)
 	items_in_backpack = list(/obj/item/device/camera_viewer/ranch,/obj/item/storage/box/knitting)
 	wiki_link = "https://wiki.ss13.co/Rancher"
 
@@ -83,7 +80,7 @@ ABSTRACT_TYPE(/datum/job/civilian)
 	slot_foot = list(/obj/item/clothing/shoes/galoshes)
 	slot_glov = list(/obj/item/clothing/gloves/long)
 	slot_rhan = list(/obj/item/mop)
-	slot_ears = list(/obj/item/device/radio/headset/civilian)
+	slot_ears = list(/obj/item/device/radio/headset/civilian/janitor)
 	slot_poc1 = list(/obj/item/device/pda2/janitor)
 	items_in_backpack = list(/obj/item/reagent_containers/glass/bucket, /obj/item/lamp_manufacturer/organic)
 	wiki_link = "https://wiki.ss13.co/Janitor"
@@ -97,7 +94,7 @@ ABSTRACT_TYPE(/datum/job/civilian)
 	slot_jump = list(/obj/item/clothing/under/rank/chaplain)
 	slot_belt = list(/obj/item/device/pda2/chaplain)
 	slot_foot = list(/obj/item/clothing/shoes/black)
-	slot_ears = list(/obj/item/device/radio/headset/civilian)
+	slot_ears = list(/obj/item/device/radio/headset/civilian/chaplain)
 	slot_lhan = list(/obj/item/bible/loaded)
 	wiki_link = "https://wiki.ss13.co/Chaplain"
 
@@ -149,7 +146,7 @@ ABSTRACT_TYPE(/datum/job/civilian)
 	request_cost = PAY_TRADESMAN*4
 	trait_list = list("training_clown")
 	access_string = "Clown"
-	linkcolor = MEDICAL_LINK_COLOR // :o)
+	ui_colour = TGUI_COLOUR_PINK
 	slot_back = list()
 	slot_belt = list(/obj/item/storage/fanny/funny)
 	slot_mask = list(/obj/item/clothing/mask/clown_hat)
@@ -170,7 +167,7 @@ ABSTRACT_TYPE(/datum/job/civilian)
 
 /datum/job/civilian/AI
 	name = "AI"
-	linkcolor = SILICON_LINK_COLOR
+	ui_colour = TGUI_COLOUR_GREY
 	limit = 1
 	no_late_join = TRUE
 	high_priority_job = TRUE
@@ -183,6 +180,8 @@ ABSTRACT_TYPE(/datum/job/civilian)
 	uses_character_profile = FALSE
 	show_in_id_comp = FALSE
 	wiki_link = "https://wiki.ss13.co/Artificial_Intelligence"
+	email_group = MGD_SILICON
+	rounds_needed_to_play = ROUNDS_MIN_SECASS
 
 	special_setup(var/mob/living/carbon/human/M)
 		..()
@@ -193,7 +192,7 @@ ABSTRACT_TYPE(/datum/job/civilian)
 
 /datum/job/civilian/cyborg
 	name = "Cyborg"
-	linkcolor = SILICON_LINK_COLOR
+	ui_colour = TGUI_COLOUR_GREY
 	limit = 8
 	no_late_join = TRUE
 	can_roll_antag = FALSE
@@ -205,6 +204,7 @@ ABSTRACT_TYPE(/datum/job/civilian)
 	uses_character_profile = FALSE
 	show_in_id_comp = FALSE
 	wiki_link = "https://wiki.ss13.co/Cyborg"
+	email_group = MGD_SILICON
 
 	special_setup(var/mob/living/carbon/human/M)
 		..()

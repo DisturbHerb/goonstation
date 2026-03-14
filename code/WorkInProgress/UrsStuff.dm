@@ -229,12 +229,32 @@
 				tooltip_rebuild = TRUE
 				boutput(user, "You place [W] into [src].")
 				src.update()
+				SEND_SIGNAL(W, COMSIG_ITEM_STORED, user)
 			else return ..()
 
 	mouse_drop(mob/user as mob) // no I ain't even touchin this mess it can keep doin whatever it's doin
 		if(user == usr && !user.restrained() && !user.stat && (user.contents.Find(src) || in_interact_range(src, user)))
 			if(!user.put_in_hand(src))
 				return ..()
+
+	MouseDrop_T(var/atom/movable/target, var/mob/user)
+		if (src.icon_state == "eggbox-closed" || !istype(target, /obj/item/reagent_containers/food/snacks/ingredient/egg) || !in_interact_range(src, user)  || BOUNDS_DIST(target, user) > 0 || !can_act(user))
+			return
+		if (src.count < src.max_count)
+			user.visible_message(SPAN_NOTICE("[user] begins quickly filling \the [src]."))
+			var/turf/staystill = get_turf(user)
+			for(var/obj/item/checked_item in view(1,user))
+				if (!istype(checked_item, target.type) || (checked_item in user) || QDELETED(checked_item)) continue
+				if (get_turf(user) != staystill) break
+				checked_item.add_fingerprint(user)
+				checked_item.set_loc(src)
+				src.insert_egg(checked_item)
+				SEND_SIGNAL(checked_item, COMSIG_ITEM_STORED, user)
+				sleep(0.2 SECONDS)
+				if (src.count >= src.max_count)
+					boutput(user, SPAN_NOTICE("\The [src] is now full!"))
+					break
+			boutput(user, SPAN_NOTICE("You finish filling \the [src]."))
 
 	proc/insert_egg(var/obj/item/egg = null)
 		if (src.count < src.max_count)
@@ -332,6 +352,7 @@
 	name = null
 	icon = 'icons/obj/foodNdrink/food_related.dmi'
 	icon_state = null
+	vis_flags = VIS_INHERIT_ID | VIS_INHERIT_PLANE |  VIS_INHERIT_LAYER
 	var/obj/item/kitchen/egg_box/my_egg_box = null
 	var/my_index = null
 
@@ -346,4 +367,39 @@
 
 	attack_hand(mob/user)
 		. = ..()
+
+/datum/bilked_account_proxy
+	var/mob/bilked_idiot = null
+
+	New(var/bilked = null)
+		. = ..()
+		src.bilked_idiot = bilked
+
+	proc/get_amount()
+		return data_core.bank.find_record("name", bilked_idiot.real_name)["current_money"]
+
+/obj/machinery/maptext_monitor/proc_monitor/bilked_account
+	var/datum/bilked_account_proxy/my_bap = null
+	var/datum/reagent/fooddrink/bilk/my_bilk = null
+	pixel_y = 32
+	maptext_prefix = "<span class='c pixel sh'>GET BILKED, IDIOT!\n$<span class='vga'>"
+	New(var/mob/bilked = null,var/datum/reagent/fooddrink/bilk/bilk = null)
+		. = ..()
+		src.my_bap = new(bilked)
+		src.monitored = src.my_bap
+		src.monitored_proc = "get_amount"
+		src.my_bilk = bilk
+		bilked.vis_contents += src
+	process()
+		..()
+		animate_storage_rustle(src)
+		playsound(my_bap.bilked_idiot, 'sound/mksounds/gotitem.ogg', 5, FALSE)
+		if(src.my_bap.bilked_idiot.reagents.get_reagent_amount("bilk") == 0)
+			src.my_bilk.counter = null
+			qdel(my_bap)
+			qdel(src)
+		else if(my_bap.get_amount() <= 0)
+			src.my_bilk.counter = null
+			qdel(my_bap)
+			qdel(src)
 

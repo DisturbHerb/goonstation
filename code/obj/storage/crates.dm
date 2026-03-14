@@ -12,12 +12,13 @@
 	icon_opened = "crateopen"
 	#endif
 	icon_welded = "welded-crate"
-	soundproofing = 3
+	soundproofing = SOUNDPROOFING_STORAGE
 	throwforce = 50 //ouch
 	can_flip_bust = 1
 	object_flags = NO_GHOSTCRITTER
 	event_handler_flags = USE_FLUID_ENTER | NO_MOUSEDROP_QOL
 	pass_unstable = TRUE
+	material_amt = 0.1 // Matched to their cost in QM/crate fabricators.
 
 	get_desc()
 		. = ..()
@@ -806,7 +807,7 @@ TYPEINFO(/obj/storage/crate/chest)
 		/obj/item/chem_grenade/cryo = 4)
 
 	weapons3
-		spawn_contents = list(/obj/item/barrier,
+		spawn_contents = list(/obj/item/barrier/collapsible/security,
 		/obj/item/chem_grenade/shock = 2)
 
 	weapons4
@@ -860,3 +861,15 @@ TYPEINFO(/obj/storage/crate/chest)
 		shotgun_gen.place_loot_instance(src,1,1, new /obj/loot_spawner/medium/ks23_shrapnel)
 		shotgun_gen.place_loot_instance(src,3,1, new /obj/loot_spawner/medium/ks23_slug)
 		..()
+
+/obj/storage/crate/eng_reinforcedcables
+	name = "reinforced cable crate"
+	spawn_contents = list(
+		/obj/item/storage/box/cablesbox/reinforced = 4
+	)
+
+/obj/storage/crate/eng_dowsingrods
+	name = "dowsing rod crate"
+	spawn_contents = list(
+		/obj/item/heat_dowsing = 10
+	)
