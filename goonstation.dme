@@ -2918,6 +2918,7 @@
 #include "code\obj\machinery\singularity\singularity_bomb.dm"
 #include "code\obj\machinery\singularity\singularity_generator.dm"
 #include "code\obj\map\light.dm"
+#include "code\obj\map\ptmc.dm"
 #include "code\obj\nuclearreactor\centrifuge.dm"
 #include "code\obj\nuclearreactor\destroyed_reactor.dm"
 #include "code\obj\nuclearreactor\misc.dm"
