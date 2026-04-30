@@ -2,70 +2,70 @@
 "a" = (
 /turf/space,
 /area/space)
-"b" = (
-/obj/table/round/auto{
-	icon_state = "4"
-	},
-/turf/simulated/floor/blue,
-/area/space)
 "c" = (
-/obj/table/round/auto{
-	icon_state = "10"
-	},
-/turf/simulated/floor/blue,
+/obj/stool/bed/moveable/hospital,
+/obj/item/clothing/suit/bedsheet/blue,
+/turf/simulated/floor/black,
 /area/space)
 "d" = (
-/obj/machinery/door/airlock/gannets/glass/medical{
+/obj/machinery/computer3/generic/med_data{
 	dir = 8
 	},
-/turf/simulated/floor/white,
+/obj/machinery/power/data_terminal,
+/turf/simulated/floor/blue,
 /area/space)
 "e" = (
-/turf/simulated/floor/bluewhite{
-	dir = 1
-	},
-/area/space)
-"g" = (
 /obj/table/round/auto{
 	icon_state = "5"
 	},
 /turf/simulated/floor/blue,
 /area/space)
-"h" = (
-/turf/simulated/floor/blackwhite{
-	dir = 1
+"f" = (
+/turf/simulated/floor/sanitary/white,
+/area/space)
+"g" = (
+/obj/table/round/auto{
+	icon_state = "4"
 	},
+/turf/simulated/floor/blue,
+/area/space)
+"i" = (
+/obj/table/round/auto{
+	icon_state = "10"
+	},
+/turf/simulated/floor/blue,
 /area/space)
 "j" = (
 /obj/machinery/computer3/generic/med_data{
-	dir = 8
+	dir = 4
 	},
 /obj/machinery/power/data_terminal,
 /turf/simulated/floor/black,
 /area/space)
 "k" = (
-/turf/simulated/floor/sanitary/white,
+/turf/simulated/floor/bluewhite{
+	dir = 1
+	},
+/area/space)
+"l" = (
+/turf/simulated/floor/bluewhite{
+	dir = 6
+	},
 /area/space)
 "m" = (
 /turf/simulated/floor/white,
 /area/space)
-"o" = (
-/turf/simulated/floor/bluewhite/corner{
-	dir = 4
-	},
-/area/space)
-"p" = (
-/obj/machinery/computer3/generic/med_data,
-/obj/machinery/power/data_terminal,
-/turf/simulated/floor/black,
+"n" = (
+/obj/mapping_helper/wingrille_spawn/auto,
+/turf/simulated/floor/plating,
 /area/space)
 "q" = (
-/obj/stool/bed/moveable/hospital,
-/obj/item/clothing/suit/bedsheet/blue,
-/turf/simulated/floor/black,
+/turf/simulated/floor/stairs/medical,
 /area/space)
 "r" = (
-/turf/simulated/floor/blue,
+/turf/simulated/floor/blackwhite{
+	dir = 5
+	},
 /area/space)
 "s" = (
 /obj/stool/bed/moveable/hospital,
@@ -73,112 +73,116 @@
 /turf/simulated/floor/blue,
 /area/space)
 "t" = (
-/obj/machinery/door/airlock/gannets/glass/medical{
-	dir = 1
-	},
+/obj/stool/bed/moveable/hospital,
 /turf/simulated/floor/white,
 /area/space)
 "u" = (
-/turf/simulated/floor/bluewhite{
-	dir = 10
-	},
-/area/space)
-"v" = (
 /turf/simulated/floor/black,
 /area/space)
 "w" = (
-/obj/machinery/computer3/generic/med_data{
-	dir = 4
-	},
-/obj/machinery/power/data_terminal,
-/turf/simulated/floor/black,
-/area/space)
-"y" = (
-/obj/machinery/computer3/generic/med_data,
-/obj/machinery/power/data_terminal,
-/turf/simulated/floor/white,
-/area/space)
-"z" = (
-/obj/machinery/computer3/generic/med_data{
-	dir = 8
-	},
-/obj/machinery/power/data_terminal,
-/turf/simulated/floor/blue,
-/area/space)
-"A" = (
-/turf/simulated/floor/blackwhite{
-	dir = 5
-	},
-/area/space)
-"C" = (
-/turf/simulated/floor/stairs/medical,
-/area/space)
-"E" = (
-/obj/mapping_helper/wingrille_spawn/auto,
-/turf/simulated/floor/plating,
-/area/space)
-"H" = (
-/turf/simulated/floor/bluewhite{
-	dir = 4
-	},
-/area/space)
-"I" = (
-/obj/machinery/door/airlock/gannets/medical,
-/turf/simulated/floor/sanitary/white,
-/area/space)
-"J" = (
-/turf/simulated/wall/auto/jen,
-/area/space)
-"K" = (
-/obj/stool/bed/moveable/hospital,
-/obj/item/clothing/suit/bedsheet/blue,
-/turf/simulated/floor/white,
-/area/space)
-"L" = (
-/obj/machinery/door/airlock/gannets/glass/medical,
-/turf/simulated/floor/white,
-/area/space)
-"M" = (
 /obj/machinery/door/airlock/gannets/glass/medical{
 	dir = 4
 	},
 /turf/simulated/floor/white,
 /area/space)
-"N" = (
+"x" = (
 /turf/simulated/floor/bluewhite,
 /area/space)
-"O" = (
+"z" = (
+/obj/machinery/computer3/generic/med_data,
+/obj/machinery/power/data_terminal,
+/turf/simulated/floor/black,
+/area/space)
+"A" = (
+/obj/machinery/door/airlock/gannets/medical,
+/turf/simulated/floor/sanitary/white,
+/area/space)
+"D" = (
+/obj/machinery/door/airlock/gannets/glass/medical{
+	dir = 8
+	},
+/turf/simulated/floor/white,
+/area/space)
+"E" = (
 /turf/simulated/floor/bluewhite{
+	dir = 4
+	},
+/area/space)
+"F" = (
+/turf/simulated/floor/bluewhite/corner{
 	dir = 8
 	},
 /area/space)
-"P" = (
-/turf/simulated/floor/bluewhite{
-	dir = 6
-	},
-/area/space)
-"Q" = (
-/turf/simulated/floor/bluewhite/corner,
-/area/space)
-"R" = (
+"G" = (
 /obj/table/round/auto{
 	icon_state = "12"
 	},
 /turf/simulated/floor/blue,
 /area/space)
-"S" = (
-/turf/simulated/floor/blackwhite/side,
-/area/space)
-"T" = (
-/turf/simulated/floor/bluewhite/corner{
+"H" = (
+/obj/machinery/computer3/generic/med_data{
 	dir = 8
 	},
+/obj/machinery/power/data_terminal,
+/turf/simulated/floor/black,
 /area/space)
-"U" = (
+"I" = (
+/obj/stool/bed/moveable/hospital,
+/obj/item/clothing/suit/bedsheet/blue,
+/turf/simulated/floor/white,
+/area/space)
+"J" = (
+/turf/simulated/wall/auto/jen,
+/area/space)
+"K" = (
+/turf/simulated/floor/bluewhite/corner,
+/area/space)
+"M" = (
 /obj/table/round/auto{
 	icon_state = "3"
 	},
 /turf/simulated/floor/blue,
+/area/space)
+"N" = (
+/turf/simulated/floor/bluewhite/corner{
+	dir = 4
+	},
+/area/space)
+"P" = (
+/turf/simulated/floor/blackwhite{
+	dir = 1
+	},
+/area/space)
+"R" = (
+/obj/machinery/computer3/generic/med_data,
+/obj/machinery/power/data_terminal,
+/turf/simulated/floor/white,
+/area/space)
+"S" = (
+/turf/simulated/floor/bluewhite{
+	dir = 10
+	},
+/area/space)
+"T" = (
+/turf/simulated/floor/blue,
+/area/space)
+"U" = (
+/obj/machinery/door/airlock/gannets/glass/medical{
+	dir = 1
+	},
+/turf/simulated/floor/white,
+/area/space)
+"V" = (
+/turf/simulated/floor/blackwhite/side,
+/area/space)
+"X" = (
+/obj/machinery/door/airlock/gannets/glass/medical,
+/turf/simulated/floor/white,
+/area/space)
+"Z" = (
+/turf/simulated/floor/bluewhite{
+	dir = 8
+	},
 /area/space)
 
 (1,1,1) = {"
@@ -18510,38 +18514,38 @@ a
 a
 a
 a
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
 a
 a
 a
@@ -18812,7 +18816,6 @@ a
 a
 a
 a
-J
 a
 a
 a
@@ -18836,14 +18839,15 @@ a
 a
 a
 a
-J
 a
 a
 a
 a
 a
 a
-J
+a
+a
+a
 a
 a
 a
@@ -19114,7 +19118,6 @@ a
 a
 a
 a
-J
 a
 a
 a
@@ -19138,7 +19141,8 @@ a
 a
 a
 a
-J
+a
+a
 a
 a
 a
@@ -19416,24 +19420,6 @@ a
 a
 a
 a
-J
-a
-a
-a
-a
-a
-J
-J
-J
-J
-J
-J
-J
-J
-J
-J
-a
-a
 a
 a
 a
@@ -19448,6 +19434,24 @@ J
 J
 J
 J
+J
+J
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
 a
 a
 a
@@ -19718,7 +19722,7 @@ a
 a
 a
 a
-J
+a
 a
 a
 a
@@ -20020,7 +20024,7 @@ a
 a
 a
 a
-J
+a
 a
 a
 a
@@ -20322,7 +20326,7 @@ a
 a
 a
 a
-J
+a
 a
 a
 a
@@ -20624,7 +20628,7 @@ a
 a
 a
 a
-J
+a
 a
 a
 a
@@ -20926,7 +20930,7 @@ a
 a
 a
 a
-J
+a
 a
 a
 a
@@ -21228,7 +21232,7 @@ a
 a
 a
 a
-J
+a
 a
 a
 a
@@ -21530,7 +21534,7 @@ a
 a
 a
 a
-J
+a
 a
 a
 J
@@ -21832,7 +21836,7 @@ a
 a
 a
 a
-J
+a
 a
 a
 J
@@ -22134,7 +22138,7 @@ a
 a
 a
 a
-J
+a
 a
 a
 J
@@ -22436,7 +22440,7 @@ a
 a
 a
 a
-J
+a
 a
 a
 J
@@ -22738,7 +22742,7 @@ a
 a
 a
 a
-J
+a
 a
 a
 J
@@ -23040,9 +23044,9 @@ a
 a
 a
 a
-J
 a
 a
+a
 J
 J
 J
@@ -23054,12 +23058,12 @@ m
 m
 m
 m
-e
+k
 m
 J
 J
-r
-r
+T
+T
 J
 J
 m
@@ -23342,28 +23346,28 @@ a
 a
 a
 a
+a
+a
+a
+a
+a
+a
 J
-a
-a
-a
-a
-a
-J
+f
+f
+A
+m
+m
+m
+m
 k
-k
-I
-m
-m
-m
-m
-e
 m
 J
-r
-r
-r
-r
-E
+T
+T
+T
+T
+n
 m
 m
 a
@@ -23644,28 +23648,28 @@ a
 a
 a
 a
+a
+a
+a
+a
+a
+a
 J
-a
-a
-a
-a
-a
 J
-J
-k
+f
 J
 m
 m
 m
-r
+T
 m
 m
-L
-r
-z
+X
+T
+d
 s
-r
-L
+T
+X
 m
 m
 a
@@ -23946,20 +23950,20 @@ a
 a
 a
 a
-J
 a
 a
+a
 J
 J
 J
 J
-k
-k
+f
+f
 J
 m
 m
 m
-r
+T
 m
 J
 J
@@ -24248,9 +24252,9 @@ a
 a
 a
 a
-J
 a
 a
+a
 J
 m
 m
@@ -24259,14 +24263,14 @@ J
 J
 J
 m
-N
-r
-e
+x
+T
+k
 m
-L
-v
-v
-v
+X
+u
+u
+u
 J
 J
 m
@@ -24550,9 +24554,9 @@ a
 a
 a
 a
-J
 a
 a
+a
 J
 m
 m
@@ -24561,16 +24565,16 @@ m
 m
 J
 m
-N
-r
-e
+x
+T
+k
 m
-E
-v
-v
-v
-v
-E
+n
+u
+u
+u
+u
+n
 m
 m
 m
@@ -24852,9 +24856,9 @@ a
 a
 a
 a
-J
 a
 a
+a
 J
 m
 m
@@ -24863,16 +24867,16 @@ m
 m
 J
 m
-N
-r
-e
+x
+T
+k
 m
-E
-j
-q
-v
-v
-L
+n
+H
+c
+u
+u
+X
 m
 m
 m
@@ -25154,9 +25158,9 @@ a
 a
 a
 a
-J
 a
 a
+a
 J
 m
 m
@@ -25165,9 +25169,9 @@ J
 J
 J
 m
-N
-r
-e
+x
+T
+k
 m
 J
 J
@@ -25456,9 +25460,9 @@ a
 a
 a
 a
-J
 a
 a
+a
 J
 m
 m
@@ -25467,15 +25471,15 @@ m
 m
 m
 m
-r
-r
-e
+T
+T
+k
 m
-L
-v
-v
-h
-L
+X
+u
+u
+P
+X
 m
 m
 m
@@ -25758,26 +25762,26 @@ a
 a
 a
 a
-J
 a
 a
+a
 J
 m
 m
 m
 J
 m
-Q
-P
-r
-r
-e
+K
+l
+T
+T
+k
 m
-E
-j
-q
-E
-E
+n
+H
+c
+n
+n
 m
 m
 m
@@ -26060,7 +26064,7 @@ a
 a
 a
 a
-J
+a
 a
 a
 J
@@ -26069,16 +26073,16 @@ J
 J
 J
 m
-N
-r
-r
-r
-e
+x
+T
+T
+T
+k
 m
 J
 J
 J
-E
+n
 m
 m
 m
@@ -26362,26 +26366,26 @@ a
 a
 a
 a
-J
 a
 a
+a
 J
-p
-v
-S
+z
+u
+V
 m
 m
-N
-r
-r
-b
-e
+x
+T
+T
+g
+k
 m
-E
-w
-q
-E
-E
+n
+j
+c
+n
+n
 m
 m
 m
@@ -26664,26 +26668,26 @@ a
 a
 a
 a
-J
 a
 a
+a
 J
-q
-v
-S
+c
+u
+V
 m
 m
-N
-r
-r
-R
-e
+x
+T
+T
+G
+k
 m
-L
-v
-v
-h
-t
+X
+u
+u
+P
+U
 m
 m
 m
@@ -26966,7 +26970,7 @@ a
 a
 a
 a
-J
+a
 a
 a
 J
@@ -26975,11 +26979,11 @@ J
 J
 J
 m
-N
-r
-r
-R
-e
+x
+T
+T
+G
+k
 m
 J
 J
@@ -27268,26 +27272,26 @@ a
 a
 a
 a
-J
 a
 a
+a
 J
-p
-v
-S
+z
+u
+V
 m
 m
-o
-r
-r
-R
-e
+N
+T
+T
+G
+k
 m
-L
-v
-v
-h
-L
+X
+u
+u
+P
+X
 m
 m
 m
@@ -27570,26 +27574,26 @@ a
 a
 a
 a
-J
 a
 a
+a
 J
-q
-v
-S
-J
-m
-m
-u
-r
 c
-g
+u
+V
+J
+m
+m
+S
 T
-E
-j
-q
-h
-E
+i
+e
+F
+n
+H
+c
+P
+n
 m
 m
 m
@@ -27872,9 +27876,9 @@ a
 a
 a
 a
-J
 a
 a
+a
 J
 J
 J
@@ -27883,10 +27887,10 @@ J
 m
 m
 m
-u
-r
-c
-U
+S
+T
+i
+M
 J
 J
 J
@@ -28174,24 +28178,24 @@ a
 a
 a
 a
-J
 a
 a
-m
-m
+a
+a
+a
 J
 J
-v
-A
+u
+r
 m
 m
 m
-O
-r
-r
-r
-r
-L
+Z
+T
+T
+T
+T
+X
 m
 m
 m
@@ -28476,16 +28480,16 @@ a
 a
 a
 a
-J
 a
 a
-m
-m
-m
+a
+a
+a
+a
 J
-q
-v
-A
+c
+u
+r
 m
 m
 m
@@ -28493,7 +28497,7 @@ m
 m
 m
 m
-t
+U
 m
 m
 m
@@ -28778,22 +28782,22 @@ a
 a
 a
 a
-J
 a
 a
-m
+a
+a
+a
+a
+J
+J
+H
+J
+r
 m
 m
 J
-J
-j
-J
-A
-m
-m
-J
-E
-d
+n
+D
 J
 J
 J
@@ -29080,9 +29084,9 @@ a
 a
 a
 a
-J
 a
 a
+a
 J
 m
 J
@@ -29090,16 +29094,16 @@ J
 J
 J
 J
-v
-A
+u
+r
 J
 J
-H
-H
-J
-m
-m
 E
+E
+J
+m
+m
+n
 m
 m
 a
@@ -29382,9 +29386,9 @@ a
 a
 a
 a
-J
 a
 a
+a
 J
 m
 m
@@ -29392,16 +29396,16 @@ m
 J
 J
 J
-j
-q
+H
+c
 J
 J
-z
+d
 s
 J
-y
+R
 m
-E
+n
 m
 m
 a
@@ -29684,11 +29688,11 @@ a
 a
 a
 a
-J
 a
 a
+a
 J
-K
+I
 m
 m
 J
@@ -29701,9 +29705,9 @@ J
 J
 J
 J
-K
+I
 m
-t
+U
 m
 m
 a
@@ -29986,9 +29990,9 @@ a
 a
 a
 a
-J
 a
 a
+a
 J
 m
 m
@@ -30004,7 +30008,7 @@ m
 m
 J
 J
-E
+n
 J
 m
 m
@@ -30288,7 +30292,7 @@ a
 a
 a
 a
-J
+a
 a
 a
 J
@@ -30590,9 +30594,9 @@ a
 a
 a
 a
-J
 a
 a
+a
 J
 m
 m
@@ -30603,7 +30607,7 @@ m
 m
 m
 m
-L
+X
 m
 m
 m
@@ -30892,9 +30896,9 @@ a
 a
 a
 a
-J
 a
 a
+a
 J
 m
 J
@@ -30905,7 +30909,7 @@ J
 J
 m
 m
-t
+U
 m
 m
 m
@@ -31194,17 +31198,17 @@ a
 a
 a
 a
-J
+a
 a
 a
 J
 m
 J
 m
-C
-C
-C
-C
+q
+q
+q
+q
 m
 m
 J
@@ -31496,7 +31500,7 @@ a
 a
 a
 a
-J
+a
 a
 a
 J
@@ -31798,22 +31802,22 @@ a
 a
 a
 a
+a
+a
+a
+a
+a
+a
 J
-a
-a
-m
-a
-m
-J
 m
 m
 m
-E
+n
+t
 m
 m
-m
-m
-E
+t
+n
 a
 a
 a
@@ -32100,22 +32104,22 @@ a
 a
 a
 a
+a
+a
+a
+a
+a
+a
 J
-a
-a
-m
-a
-m
-J
 m
 m
 m
-L
+X
 m
 m
 m
 m
-L
+X
 a
 a
 a
@@ -32402,22 +32406,22 @@ a
 a
 a
 a
+a
+a
+a
+a
+a
+a
 J
-a
-a
-m
-a
-m
-J
 m
 m
 m
-t
+U
 m
 m
 m
 m
-t
+U
 a
 a
 a
@@ -32704,22 +32708,22 @@ a
 a
 a
 a
+a
+a
+a
+a
+a
+a
 J
-a
-a
-m
-a
-m
-J
 m
 m
 m
-E
+n
+t
 m
 m
-m
-m
-E
+t
+n
 a
 a
 a
@@ -33006,7 +33010,7 @@ a
 a
 a
 a
-J
+a
 a
 a
 a
@@ -33308,7 +33312,7 @@ a
 a
 a
 a
-J
+a
 a
 a
 a
@@ -33610,8 +33614,8 @@ a
 a
 a
 a
-J
-J
+a
+a
 a
 a
 a
@@ -33912,7 +33916,7 @@ a
 a
 a
 a
-J
+a
 a
 a
 a
@@ -34214,15 +34218,15 @@ a
 a
 a
 a
+a
+a
+a
+a
+a
 J
-a
-a
-a
-a
 J
-J
-M
-d
+w
+D
 J
 a
 a
