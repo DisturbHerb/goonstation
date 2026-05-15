@@ -935,6 +935,7 @@
 #include "code\modules\antagonists\macho_man\abilities\throw.dm"
 #include "code\modules\antagonists\nations\nation.dm"
 #include "code\modules\antagonists\nations\passports\_passport_parent.dm"
+#include "code\modules\antagonists\nations\passports\passport_creation.dm"
 #include "code\modules\antagonists\nations\passports\passports.dm"
 #include "code\modules\antagonists\nations\roles\_nation_role_parent.dm"
 #include "code\modules\antagonists\nations\roles\nation_roles.dm"
