@@ -10695,7 +10695,7 @@
 	name = "Cargo Hallway"
 	})
 "eWP" = (
-/obj/minimap/map_computer,
+/obj/minimap/map_computer/nations/supply,
 /turf/simulated/floor/industrial,
 /area/station/hallway/secondary/northeast{
 	name = "Cargo Hallway"
@@ -16986,6 +16986,9 @@
 /area/station/hallway/secondary/east{
 	name = "Engineering Hallway"
 	})
+"hIz" = (
+/turf/simulated/floor/industrial,
+/area/station/science/hall)
 "hIB" = (
 /obj/mapping_helper/wingrille_spawn/auto/reinforced/crystal,
 /obj/cable{
@@ -20189,7 +20192,7 @@
 /turf/simulated/floor/purple/side,
 /area/station/hallway/primary/south)
 "iXO" = (
-/obj/minimap/map_computer,
+/obj/minimap/map_computer/nations/engineering,
 /turf/simulated/floor/industrial,
 /area/station/hallway/secondary/east{
 	name = "Engineering Hallway"
@@ -31942,7 +31945,7 @@
 	},
 /area/station/crew_quarters/kitchen)
 "ogD" = (
-/obj/minimap/map_computer,
+/obj/minimap/map_computer/nations/un,
 /turf/simulated/floor/industrial,
 /area/station/bridge)
 "ogK" = (
@@ -36841,7 +36844,7 @@
 	},
 /area/station/hangar/catering)
 "quI" = (
-/obj/minimap/map_computer,
+/obj/minimap/map_computer/nations/medical,
 /turf/simulated/floor/industrial,
 /area/station/hallway/secondary/west{
 	name = "Medical Concourse West"
@@ -48302,8 +48305,8 @@
 	name = "Cargo Crew Quarters"
 	})
 "vGZ" = (
-/obj/minimap/map_computer,
-/turf/simulated/floor/white,
+/obj/minimap/map_computer/nations/research,
+/turf/simulated/floor/industrial,
 /area/station/science/hall)
 "vHm" = (
 /obj/table/reinforced/industrial/auto,
@@ -52207,7 +52210,7 @@
 	name = "Research Maintenance"
 	})
 "xAa" = (
-/obj/minimap/map_computer,
+/obj/minimap/map_computer/nations/service,
 /turf/simulated/floor/industrial,
 /area/station/hallway/secondary/north{
 	name = "Service East Hallway"
@@ -96116,10 +96119,10 @@ iEd
 xkd
 wUt
 kTo
-acD
-acD
-acD
-acD
+hIz
+hIz
+hIz
+hIz
 vGZ
 fkd
 fXh
@@ -96418,11 +96421,11 @@ rXd
 bGW
 rpa
 fkd
-acD
-acD
-acD
-acD
-acD
+hIz
+hIz
+hIz
+hIz
+hIz
 fkd
 fXh
 pHn
@@ -96720,11 +96723,11 @@ hPF
 hPF
 kKQ
 fkd
-acD
-acD
-acD
-acD
-acD
+hIz
+hIz
+hIz
+hIz
+hIz
 fkd
 kKQ
 fGT
@@ -97022,11 +97025,11 @@ wfQ
 kWq
 fLD
 fkd
-acD
-acD
-acD
-acD
-acD
+hIz
+hIz
+hIz
+hIz
+hIz
 fkd
 fSs
 beb
@@ -97324,11 +97327,11 @@ kTr
 jCv
 qEi
 fkd
-acD
-acD
-acD
-acD
-acD
+hIz
+hIz
+hIz
+hIz
+hIz
 tKn
 mJD
 bTD

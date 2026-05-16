@@ -17,6 +17,8 @@
 
 	var/datum/nation/nation_type = null
 	var/datum/mind/owner = null
+	var/minimap_type = 0
+	var/minimap_marker = null
 	var/custom_name = FALSE
 
 	var/base_name = ""
@@ -25,6 +27,9 @@
 
 /obj/item/passport/New(newLoc, datum/mind/owner_to_assign)
 	. = ..()
+
+	if (src.minimap_marker)
+		src.AddComponent(/datum/component/minimap_marker/minimap, (MAP_NATIONS_UN | src.minimap_type), src.minimap_marker, list_on_ui = FALSE)
 
 	if (!src.custom_name && src.nation_type)
 		src.base_name = "passport ([src.nation_type::name])"

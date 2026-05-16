@@ -9,6 +9,12 @@
 #define MAP_OBSERVER				(1<<6) // observer map
 #define MAP_SPACE_PHOENIX			(1<<7)
 #define MAP_CAMERA_STATION			(1<<8) //! Station camera networks for security camera viewer computer
+#define MAP_NATIONS_UN				(1<<9)
+#define MAP_NATIONS_ENG				(1<<10)
+#define MAP_NATIONS_MED				(1<<11)
+#define MAP_NATIONS_SCI				(1<<12)
+#define MAP_NATIONS_SER				(1<<13)
+#define MAP_NATIONS_SUP				(1<<14)
 #define MAP_HTR_TEAM 				(1<<20)
 
 // Area groups, which will be treated as one atom/movable by the renderer, allowing for efficient recolouring across minimaps.

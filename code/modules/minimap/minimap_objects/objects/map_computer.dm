@@ -144,3 +144,26 @@
 	disposing()
 		STOP_TRACKING
 		. = ..()
+
+
+/obj/minimap/map_computer/nations
+	name = "Station Map"
+	desc = "A cutting-edge cathode ray tube monitor, actively rendering many dozens of kilobytes of structural data."
+
+/obj/minimap/map_computer/nations/un
+	map_type = MAP_NATIONS_UN
+
+/obj/minimap/map_computer/nations/engineering
+	map_type = MAP_NATIONS_ENG
+
+/obj/minimap/map_computer/nations/medical
+	map_type = MAP_NATIONS_MED
+
+/obj/minimap/map_computer/nations/research
+	map_type = MAP_NATIONS_SCI
+
+/obj/minimap/map_computer/nations/service
+	map_type = MAP_NATIONS_SER
+
+/obj/minimap/map_computer/nations/supply
+	map_type = MAP_NATIONS_SUP
