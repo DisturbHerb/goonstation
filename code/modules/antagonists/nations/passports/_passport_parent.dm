@@ -34,8 +34,8 @@
 	if (src.nation_type)
 		src.nation = global.get_singleton(src.nation_type)
 
-	if (!src.custom_name && src.nation_type)
-		src.base_name = "passport ([src.nation_type::name])"
+	if (!src.custom_name && src.nation)
+		src.base_name = "passport ([src.nation.name])"
 
 	if (!ismind(owner_to_assign))
 		return
