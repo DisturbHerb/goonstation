@@ -138,7 +138,7 @@
 	dir = 8
 	},
 /obj/machinery/light/small/floor,
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quartersA{
 	name = "Medical Restroom"
 	})
@@ -431,7 +431,7 @@
 	},
 /obj/table/reinforced/industrial/auto,
 /obj/item/storage/toolbox/emergency,
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/toilets{
 	name = "Service Restroom"
 	})
@@ -740,7 +740,7 @@
 	},
 /obj/machinery/light/small/floor,
 /obj/machinery/light_switch/east,
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quartersA{
 	name = "Medical Restroom"
 	})
@@ -1853,7 +1853,7 @@
 	},
 /obj/machinery/light/small/floor,
 /obj/machinery/light_switch/east,
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/toilets{
 	name = "Service Restroom"
 	})
@@ -3401,15 +3401,12 @@
 /turf/simulated/floor/wood,
 /area/station/crew_quarters/hop)
 "bDc" = (
-/obj/table/reinforced/bar/auto{
-	name = "wooden table"
-	},
-/obj/item/dice/d1,
-/obj/item/pinpointer/teg_semi{
-	pixel_y = 5
-	},
-/obj/item/deconstructor,
 /obj/machinery/light_switch/west,
+/obj/machinery/computer/announcement/station/engineering,
+/obj/cable{
+	icon_state = "0-2"
+	},
+/obj/machinery/power/data_terminal,
 /turf/simulated/floor/yellowblack{
 	dir = 1
 	},
@@ -3899,6 +3896,9 @@
 	},
 /obj/cable{
 	icon_state = "2-8"
+	},
+/obj/cable{
+	icon_state = "1-8"
 	},
 /turf/simulated/floor/black,
 /area/station/engine/engineering/ce/private)
@@ -5211,7 +5211,7 @@
 	icon_state = "line1";
 	dir = 8
 	},
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quartersA{
 	name = "Medical Restroom"
 	})
@@ -6410,6 +6410,11 @@
 /obj/machinery/power/data_terminal,
 /turf/simulated/floor/black,
 /area/station/engine/engineering/ce/private)
+"cYw" = (
+/turf/unsimulated/floor/sanitary,
+/area/station/crew_quarters/quartersC{
+	name = "Cargo Restroom"
+	})
 "cYx" = (
 /obj/machinery/light,
 /obj/cable{
@@ -11856,6 +11861,7 @@
 /obj/cable{
 	icon_state = "4-8"
 	},
+/obj/mapping_helper/access/heads,
 /turf/simulated/floor/black,
 /area/station/turret_protected/Zeta)
 "fyU" = (
@@ -14063,6 +14069,11 @@
 /turf/simulated/floor/carpet/green/fancy/edge/east,
 /area/station/security/checkpoint/chapel{
 	name = "Service Customs"
+	})
+"gpG" = (
+/turf/unsimulated/floor/sanitary,
+/area/station/crew_quarters/quartersA{
+	name = "Medical Restroom"
 	})
 "gpR" = (
 /turf/simulated/floor/greenblack,
@@ -16784,6 +16795,7 @@
 /obj/cable{
 	icon_state = "1-2"
 	},
+/obj/mapping_helper/access/eva,
 /turf/simulated/floor/darkblueblack,
 /area/station/storage/eva)
 "hEj" = (
@@ -18252,7 +18264,6 @@
 /obj/cable{
 	icon_state = "1-2"
 	},
-/obj/mapping_helper/access/captain,
 /obj/mapping_helper/access/hos,
 /obj/mapping_helper/firedoor_spawn,
 /turf/simulated/floor,
@@ -18325,7 +18336,7 @@
 	dir = 4;
 	icon_state = "line1"
 	},
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quartersC{
 	name = "Cargo Restroom"
 	})
@@ -20321,7 +20332,7 @@
 	},
 /obj/machinery/light/small/floor,
 /obj/machinery/light_switch/west,
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quartersB{
 	name = "Engineering Restroom"
 	})
@@ -21565,7 +21576,7 @@
 	icon_state = "line1"
 	},
 /obj/machinery/light/small/floor,
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quartersC{
 	name = "Cargo Restroom"
 	})
@@ -23547,7 +23558,7 @@
 	dir = 4;
 	icon_state = "line1"
 	},
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/toilets{
 	name = "Service Restroom"
 	})
@@ -23926,7 +23937,7 @@
 	},
 /obj/machinery/light/small/floor,
 /obj/machinery/light_switch/west,
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quartersC{
 	name = "Cargo Restroom"
 	})
@@ -25209,13 +25220,13 @@
 	name = "Engineering Hallway"
 	})
 "lgr" = (
-/obj/machinery/door/airlock/pyro/weapons/secure{
-	dir = 4
-	},
-/obj/mapping_helper/access/hos,
 /obj/cable{
 	icon_state = "4-8"
 	},
+/obj/machinery/door/airlock/pyro/command{
+	dir = 4
+	},
+/obj/mapping_helper/access/hos,
 /obj/mapping_helper/firedoor_spawn,
 /turf/simulated/floor/black,
 /area/station/security/hos)
@@ -26608,7 +26619,7 @@
 	dir = 10
 	},
 /obj/machinery/door_control/east,
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quartersA{
 	name = "Medical Restroom"
 	})
@@ -26627,12 +26638,10 @@
 	name = "Engineering Hallway"
 	})
 "lKu" = (
-/obj/table/reinforced/bar/auto{
-	name = "wooden table"
-	},
-/obj/random_item_spawner/snacks/one,
-/turf/simulated/floor/black,
-/area/station/medical/head/private)
+/turf/unsimulated/floor/sanitary,
+/area/station/crew_quarters/quarters{
+	name = "Research Restroom"
+	})
 "lKH" = (
 /obj/stool/chair/office/yellow{
 	dir = 8
@@ -27861,7 +27870,7 @@
 	dir = 4;
 	icon_state = "line1"
 	},
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quartersB{
 	name = "Engineering Restroom"
 	})
@@ -28905,7 +28914,7 @@
 	icon_state = "line1";
 	dir = 4
 	},
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quartersA{
 	name = "Medical Restroom"
 	})
@@ -29518,7 +29527,7 @@
 	dir = 8
 	},
 /obj/machinery/light/small/floor,
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quarters{
 	name = "Research Restroom"
 	})
@@ -29599,6 +29608,9 @@
 	dir = 1;
 	layer = 9.1;
 	pixel_y = 21
+	},
+/obj/item/deconstructor{
+	pixel_x = 11
 	},
 /turf/simulated/floor/yellowblack{
 	dir = 1
@@ -31202,7 +31214,7 @@
 	icon_state = "line1"
 	},
 /obj/machinery/light/small/floor,
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/toilets{
 	name = "Service Restroom"
 	})
@@ -32973,7 +32985,7 @@
 	icon_state = "line1"
 	},
 /obj/machinery/light/small/floor,
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quartersB{
 	name = "Engineering Restroom"
 	})
@@ -33139,7 +33151,7 @@
 	},
 /area/station/security/evidence)
 "oLI" = (
-/obj/machinery/door/airlock/pyro/weapons/secure{
+/obj/machinery/door/airlock/pyro/command{
 	dir = 4
 	},
 /obj/mapping_helper/access/hos,
@@ -34662,7 +34674,6 @@
 	name = "Bridge Lockdown Doors";
 	opacity = 0
 	},
-/obj/mapping_helper/access/captain,
 /obj/mapping_helper/access/hos,
 /obj/mapping_helper/firedoor_spawn,
 /turf/simulated/floor/black,
@@ -35600,7 +35611,6 @@
 	name = "Bridge Lockdown Doors";
 	opacity = 0
 	},
-/obj/mapping_helper/access/captain,
 /obj/mapping_helper/access/hos,
 /obj/mapping_helper/firedoor_spawn,
 /turf/simulated/floor/black,
@@ -35723,7 +35733,7 @@
 	icon_state = "line1"
 	},
 /obj/cryotron,
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quartersB{
 	name = "Engineering Restroom"
 	})
@@ -37789,7 +37799,7 @@
 	},
 /obj/table/reinforced/industrial/auto,
 /obj/item/storage/toolbox/emergency,
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quartersB{
 	name = "Engineering Restroom"
 	})
@@ -38591,7 +38601,7 @@
 	dir = 6
 	},
 /obj/machinery/door_control/west,
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quartersB{
 	name = "Engineering Restroom"
 	})
@@ -38914,19 +38924,26 @@
 /obj/item/pen{
 	pixel_y = -12
 	},
+/obj/item/item_box/gold_star{
+	pixel_y = -9;
+	pixel_x = 6
+	},
+/obj/item/pinpointer/teg_semi{
+	pixel_y = 8;
+	pixel_x = -4
+	},
 /obj/item/wrench/gold{
 	pixel_y = 5;
 	pixel_x = -3
 	},
-/obj/item/item_box/gold_star{
-	pixel_y = -9;
-	pixel_x = 6
+/obj/item/dice/d1{
+	pixel_x = 8;
+	pixel_y = 3
 	},
 /turf/simulated/floor/black,
 /area/station/engine/engineering/ce/private)
 "rrX" = (
 /obj/machinery/door/airlock/pyro/command,
-/obj/mapping_helper/access/captain,
 /obj/mapping_helper/access/hos,
 /obj/cable{
 	icon_state = "1-2"
@@ -38986,6 +39003,11 @@
 /obj/machinery/computer/secure_data/detective_computer,
 /turf/simulated/floor/darkblueblack,
 /area/station/security/interrogation)
+"rtS" = (
+/turf/unsimulated/floor/sanitary,
+/area/station/crew_quarters/quartersB{
+	name = "Engineering Restroom"
+	})
 "rul" = (
 /obj/table/reinforced/auto,
 /obj/item/reagent_containers/food/drinks/fueltank{
@@ -39222,7 +39244,7 @@
 	icon_state = "line1"
 	},
 /obj/cryotron,
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quartersC{
 	name = "Cargo Restroom"
 	})
@@ -41470,7 +41492,7 @@
 	icon_state = "line1"
 	},
 /obj/cryotron,
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/toilets{
 	name = "Service Restroom"
 	})
@@ -42844,7 +42866,7 @@
 	icon_state = "line1";
 	dir = 4
 	},
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quarters{
 	name = "Research Restroom"
 	})
@@ -43454,7 +43476,7 @@
 /obj/mapping_helper/button/pair{
 	dir = 9
 	},
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/toilets{
 	name = "Service Restroom"
 	})
@@ -45931,7 +45953,7 @@
 	},
 /obj/table/reinforced/industrial/auto,
 /obj/item/storage/toolbox/emergency,
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quartersC{
 	name = "Cargo Restroom"
 	})
@@ -47231,6 +47253,12 @@
 	},
 /turf/simulated/floor/specialroom/chapel,
 /area/station/chapel/sanctuary)
+"vjH" = (
+/obj/machinery/computer/announcement/station/medical{
+	dir = 8
+	},
+/turf/simulated/floor/black,
+/area/station/medical/head/private)
 "vjR" = (
 /obj/item/storage/wall{
 	dir = 4;
@@ -47253,7 +47281,6 @@
 /area/station/chapel/office)
 "vkf" = (
 /obj/machinery/door/airlock/pyro/glass/command,
-/obj/mapping_helper/access/captain,
 /obj/mapping_helper/access/hos,
 /obj/mapping_helper/firedoor_spawn,
 /turf/simulated/floor,
@@ -48181,7 +48208,7 @@
 /obj/mapping_helper/button/pair{
 	dir = 5
 	},
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quartersC{
 	name = "Cargo Restroom"
 	})
@@ -48364,7 +48391,7 @@
 	dir = 8
 	},
 /obj/cryotron,
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quarters{
 	name = "Research Restroom"
 	})
@@ -48769,6 +48796,11 @@
 	},
 /turf/simulated/floor/engine,
 /area/station/engine/core/thermoelectric)
+"vSn" = (
+/turf/unsimulated/floor/sanitary,
+/area/station/crew_quarters/toilets{
+	name = "Service Restroom"
+	})
 "vSo" = (
 /obj/rack,
 /obj/item/clothing/suit/space/engineer,
@@ -50223,7 +50255,7 @@
 	},
 /obj/table/reinforced/industrial/auto,
 /obj/item/storage/toolbox/emergency,
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quarters{
 	name = "Research Restroom"
 	})
@@ -51163,7 +51195,7 @@
 	},
 /obj/machinery/light/small/floor,
 /obj/machinery/light_switch/east,
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quarters{
 	name = "Research Restroom"
 	})
@@ -52314,13 +52346,13 @@
 	icon_state = "1-2"
 	},
 /obj/machinery/door/airlock/pyro/glass/security/alt,
-/obj/mapping_helper/access/armory,
 /obj/cable{
 	icon_state = "2-8"
 	},
 /obj/cable{
 	icon_state = "2-4"
 	},
+/obj/mapping_helper/access/security,
 /turf/simulated/floor/engine{
 	allows_vehicles = 0
 	},
@@ -53523,7 +53555,7 @@
 	dir = 8
 	},
 /obj/cryotron,
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quartersA{
 	name = "Medical Restroom"
 	})
@@ -53577,7 +53609,7 @@
 /obj/mapping_helper/button/pair{
 	dir = 9
 	},
-/turf/simulated/floor/sanitary,
+/turf/unsimulated/floor/sanitary,
 /area/station/crew_quarters/quarters{
 	name = "Research Restroom"
 	})
@@ -77913,9 +77945,9 @@ sRz
 sRz
 sRz
 aMc
-aWZ
-aWZ
-aWZ
+gpG
+gpG
+gpG
 ecF
 mxF
 qAc
@@ -84898,8 +84930,8 @@ lXW
 cVX
 qkD
 lSQ
-lKu
 kOn
+vjH
 ijL
 rwd
 sRz
@@ -97478,9 +97510,9 @@ sRz
 sRz
 sRz
 qUu
-dct
-dct
-dct
+vSn
+vSn
+vSn
 qUu
 ohf
 aZV
@@ -103518,9 +103550,9 @@ sRz
 sRz
 sRz
 oue
-lJg
-lJg
-lJg
+cYw
+cYw
+cYw
 oue
 nQC
 gip
@@ -103975,9 +104007,9 @@ nfa
 aPs
 ivA
 xWN
-wDb
-wDb
-wDb
+lKu
+lKu
+lKu
 xWN
 wwD
 sRz
@@ -123213,9 +123245,9 @@ sRz
 sRz
 sRz
 cBY
-kcs
-kcs
-kcs
+rtS
+rtS
+rtS
 kdC
 eYQ
 vjC
