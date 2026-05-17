@@ -4590,6 +4590,52 @@ ABSTRACT_TYPE(/area/mining)
 		if(ENVIRON)
 			used_environ += amount
 
+// nations neutral territory areas
+/area/nations_neutral
+	name = "Neutral Zone"
+	minimaps_to_render_on = MAP_ALL
+	occlude_foreground_parallax_layers = TRUE
+
+/area/nations_neutral/hoot
+	name = "Forster's Rock"
+	icon_state = "green"
+
+/area/nations_neutral/shipwright
+	name = "Kuiper Shipwright"
+	icon_state = "blue"
+
+/area/nations_neutral/shipwright/bay1
+	name = "Kuiper Bay One"
+	icon_state = "hangar"
+
+/area/nations_neutral/shipwright/bay2
+	name = "Kuiper Bay Two"
+	icon_state = "hangar"
+
+/area/nations_neutral/shipwright/command
+	name = "Kuiper Administration"
+	icon_state = "purple"
+
+/area/nations_neutral/shipwright/systems
+	name = "Kuiper Systems Zone"
+	icon_state = "yellow"
+
+/area/nations_neutral/shipwright/hardware
+	name = "Kuiper Hardware Bay"
+	icon_state = "yellow"
+
+/area/nations_neutral/shipwright/restroom
+	name = "Kuiper Personnel Systems"
+	icon_state = "toilets"
+
+/area/nations_neutral/shipwright/messhall
+	name = "Kuiper Mess Hall"
+	icon_state = "green"
+
+/area/nations_neutral/shipwright/medbooth
+	name = "Kuiper Medical Bay"
+	icon_state = "medbay"
+
 
 // pod_wars Areas
 /area/pod_wars

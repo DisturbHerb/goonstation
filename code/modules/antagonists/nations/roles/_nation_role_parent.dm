@@ -23,10 +23,8 @@ ABSTRACT_TYPE(/datum/antagonist/nation)
 		src.passport = src.owner.passport
 
 	else
-		qdel(src.owner.passport)
-
 		var/passport_type = src.nation_type::passport_type
-		src.passport = new passport_type(null, src.owner)
+		src.passport = new passport_type(null, src.owner, give_antag_role = FALSE)
 		src.owner.current.put_in_hand_or_drop(src.passport)
 
 	src.RegisterSignal(src.passport, COMSIG_PARENT_PRE_DISPOSING, PROC_REF(remove_callback))
@@ -38,11 +36,29 @@ ABSTRACT_TYPE(/datum/antagonist/nation)
 /datum/antagonist/nation/proc/remove_callback()
 	src.owner.remove_antagonist(src)
 
+
 ABSTRACT_TYPE(/datum/antagonist/nation/citizen)
 /datum/antagonist/nation/citizen
 	succinct_end_of_round_antagonist_entry = TRUE
 	role_type = "Citizen"
 
+/datum/antagonist/nation/citizen/give_equipment()
+	. = ..()
+	src.passport.nation.add_citizen(src.owner)
+
+/datum/antagonist/nation/citizen/remove_equipment()
+	src.passport.nation.remove_citizen(src.owner)
+	. = ..()
+
+
 ABSTRACT_TYPE(/datum/antagonist/nation/leader)
 /datum/antagonist/nation/leader
 	role_type = "Leader"
+
+/datum/antagonist/nation/leader/give_equipment()
+	. = ..()
+	src.passport.nation.add_leader(src.owner)
+
+/datum/antagonist/nation/leader/remove_equipment()
+	src.passport.nation.remove_leader(src.owner)
+	. = ..()
