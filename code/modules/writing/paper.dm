@@ -20,6 +20,7 @@
 	"Chaplain" = "stamp-sprite-chap",\
 	"Mime" = "stamp-sprite-mime",\
 	"Centcom" = "stamp-sprite-centcom",\
+	"United Nations" = "stamp-sprite-un",\
 	"Syndicate" = "stamp-sprite-syndicate",\
 	"Void" = "stamp-sprite-void",\
 	"Your Name" = "stamp-text-name",\
@@ -149,6 +150,9 @@
 		stamp_overlay.transform = stamp_matrix
 		src.UpdateOverlays(stamp_overlay, "stamps_[length(stamps) % PAPER_MAX_STAMPS_OVERLAYS]")
 
+/obj/item/paper/proc/on_stamp(mob/user, datum/tgui/ui, obj/item/stamp/stamp)
+	return
+
 /obj/item/paper/ui_interact(mob/user, datum/tgui/ui)
 	ui = tgui_process.try_update_ui(user, src, ui)
 	if(!ui)
@@ -191,6 +195,7 @@
 
 			if(length(stamps) < PAPER_MAX_STAMPS)
 				stamp(stamp_x, stamp_y, stamp_r, stamp.current_state, stamp.icon_state)
+				src.on_stamp(usr, ui, stamp)
 				update_static_data(usr, ui)
 				boutput(usr, SPAN_NOTICE("[ui.user] stamps [src] with \the [stamp.name]!"))
 				playsound(usr.loc, 'sound/misc/stamp_paper.ogg', 50, 0.5)
@@ -264,6 +269,7 @@
 		"stamp-sprite-chap" = "[resource("images/tgui/stamp_icons/stamp-chap.png")]",
 		"stamp-sprite-mime" = "[resource("images/tgui/stamp_icons/stamp-mime.png")]",
 		"stamp-sprite-centcom" = "[resource("images/tgui/stamp_icons/stamp-centcom.png")]",
+		"stamp-sprite-un" = "[resource("images/tgui/stamp_icons/stamp-un.png")]",
 		"stamp-sprite-syndicate" = "[resource("images/tgui/stamp_icons/stamp-syndicate.png")]",
 		"stamp-sprite-void" = "[resource("images/tgui/stamp_icons/stamp-void.png")]",
 		"stamp-sprite-classified" = "[resource("images/tgui/stamp_icons/stamp-classified.png")]",
@@ -765,6 +771,15 @@
 
 
 /obj/item/stamp // static staff stamps
+	united_nations
+		name = "\improper United Nations rubber stamp"
+		desc = "A rubber stamp for stamping important documents. Ooh, it's the really fancy National Notary 'Parliamentary' model with the mahogany handle."
+		icon_state = "stamp-md"
+		default_material = "synthrubber_blue"
+		available_modes = list("United Nations")
+		current_mode = "United Nations"
+		is_reassignable = 0
+		assignment = "stamp-un"
 	cap
 		name = "\improper captain's rubber stamp"
 		desc = "The Captain's rubber stamp for stamping important documents. Ooh, it's the really fancy National Notary 'Congressional' model with the fine ebony handle."
