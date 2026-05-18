@@ -63,7 +63,7 @@ $RESOLUTION_TEXT
 	switch (stamp.current_mode)
 		if ("Granted")
 			src.stamp_granted = TRUE
-		if ("Captain")
+		if ("Captain", "Head of Security")
 			src.stamp_captain = TRUE
 		if ("United Nations")
 			src.stamp_un = TRUE
