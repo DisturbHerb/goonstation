@@ -2,6 +2,10 @@
 	/// Currently held passport, for Nations.
 	var/obj/item/passport/passport = null
 
+/datum/mind/proc/set_passport(obj/item/passport/passport)
+	qdel(src.passport)
+	src.passport = passport
+
 /obj/item/passport
 	name = "passport"
 	desc = "An identity document confirming its owner's citizenship or lack thereof."
@@ -16,31 +20,45 @@
 	throw_range = 15
 
 	var/datum/nation/nation_type = null
+	var/datum/nation/nation = null
 	var/datum/mind/owner = null
+	var/minimap_type = 0
+	var/minimap_marker = null
 	var/custom_name = FALSE
 
 	var/base_name = ""
 	var/owner_name = ""
 	var/icon/owner_icon = null
 
-/obj/item/passport/New(newLoc, datum/mind/owner_to_assign)
+/obj/item/passport/New(newLoc, datum/mind/owner_to_assign, give_antag_role = TRUE)
 	. = ..()
 
-	if (!src.custom_name && src.nation_type)
-		src.base_name = "passport ([src.nation_type::name])"
+	if (src.minimap_marker)
+		src.AddComponent(/datum/component/minimap_marker/minimap, (MAP_NATIONS_UN | src.minimap_type), src.minimap_marker, list_on_ui = FALSE)
+
+	if (src.nation_type)
+		src.nation = global.get_singleton(src.nation_type)
+
+	if (!src.custom_name && src.nation)
+		src.base_name = "passport ([src.nation.name])"
 
 	if (!ismind(owner_to_assign))
 		return
 
 	src.owner = owner_to_assign
-	src.owner.passport = src
+	src.owner.set_passport(src)
+
+	if (give_antag_role)
+		src.owner.add_antagonist(src.nation.citizen_role, respect_mutual_exclusives = FALSE)
 
 	src.set_owner_name()
 
 	src.owner_icon = src.owner.current.build_flat_icon(SOUTH)
 
 /obj/item/passport/disposing()
-	src.owner?.passport = null
+	if (src.owner && (src.owner.passport == src))
+		src.owner.set_passport(null)
+
 	. = ..()
 
 /obj/item/passport/attack_self(mob/user)
@@ -65,11 +83,11 @@
 
 /obj/item/passport/ui_data(mob/user)
 	. = list(
-		"isLeader" = src.nation_type?.leader == user.mind ? TRUE : FALSE, // todo: doesn't presently work as src.nation_type is a type path not instance
+		"isLeader" = src.nation?.leader == user.mind ? TRUE : FALSE,
 		"isOwner" = src.owner == user.mind ? TRUE : FALSE,
-		"nationColor" = src.nation_type?.passport_color,
-		"nationName" = src.nation_type?.name,
-		"nationShortName" = src.nation_type?.short_name,
+		"nationColor" = src.nation?.passport_color,
+		"nationName" = src.nation?.name,
+		"nationShortName" = src.nation?.short_name,
 		"ownerRoleType" = src.get_owner_role_type(),
 	)
 

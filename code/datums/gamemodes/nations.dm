@@ -1,8 +1,3 @@
-/*
-	TO DO:
-	* issue passports to everybody, including non-antags
- */
-
 /// Initially populated with the default nation types.
 var/list/roundstart_nation_types = list(
 	/datum/nation/engineering,
@@ -39,8 +34,7 @@ var/list/roundstart_nation_types = list(
 		client_minds += client?.mob.mind
 
 	for (var/nation_type in roundstart_nation_types)
-		var/datum/nation/new_nation = new nation_type()
-		src.nations += new_nation
+		src.nations += global.get_singleton(nation_type)
 
 	client_minds = src.populate_nations(client_minds)
 
