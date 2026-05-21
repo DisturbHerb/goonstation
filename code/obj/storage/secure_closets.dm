@@ -430,6 +430,24 @@
 	/obj/item/storage/box/luminol_grenade_kit,
 	/obj/item/clipboard)
 
+/obj/storage/secure/closet/safe
+	name = "\improper cast iron safe"
+	desc = "An inordinately heavy and durable safe, no doubt containing something important."
+	req_access = list(access_maxsec)
+	icon_state = "safe_big"
+	icon_closed = "safe_big"
+	icon_opened = "safe_big-open"
+	icon_greenlight = "safe_big-greenlight"
+	icon_redlight = "safe_big-redlight"
+	open_sound = 'sound/misc/safe_open.ogg'
+	close_sound = 'sound/misc/safe_close.ogg'
+	_max_health = LOCKER_HEALTH_STRONG
+	_health = LOCKER_HEALTH_STRONG
+	reinforced = TRUE
+	bolted = TRUE
+	spawn_contents = list(/obj/item/stamp/united_nations, /obj/item/device/resolution_writer)
+	radiation_protection = 20
+
 /obj/storage/secure/closet/brig
 	name = "\improper Confiscated Items safe"
 	desc = "A card-locked safe for storage of contraband. Unfortunately it was made by the lowest bidder."

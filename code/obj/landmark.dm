@@ -109,6 +109,10 @@ var/global/list/job_start_locations = list()
 	name = "Clown"
 	icon_state = "clown"
 
+/obj/landmark/start/job/ringmaster
+	name = "THE RINGMASTER"
+	icon_state = "clown"
+
 /obj/landmark/start/job/chef
 	name = "Chef"
 	icon_state = "chef"
@@ -152,6 +156,10 @@ var/global/list/job_start_locations = list()
 
 /obj/landmark/start/job/quartermaster
 	name = "Quartermaster"
+	icon_state = "quartermaster"
+
+/obj/landmark/start/job/head_of_supply
+	name = "Head of Supply"
 	icon_state = "quartermaster"
 
 // Med/Sci

@@ -20,7 +20,8 @@ TYPEINFO(/obj/machinery/shredder)
 		/obj/item/poster,
 		/obj/item/plant/herb,
 		/obj/item/clothing/mask/cigarette,
-		/obj/item/sticker/postit
+		/obj/item/sticker/postit,
+		/obj/item/passport,
 	)
 	/// Some things get rotated 90 degrees to fit better
 	var/rotated_types = list(/obj/item/card,
