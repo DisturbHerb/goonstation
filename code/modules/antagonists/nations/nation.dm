@@ -104,10 +104,11 @@ ABSTRACT_TYPE(/datum/nation)
 	name = "Clowntopia"
 	passport_type = /obj/item/passport/clown
 	nation_color = "#d73715"
-	leader_jobs = alist(/datum/job/civilian/clown = ROLE_NATION_CLN_LEADER)
+	leader_jobs = alist(/datum/job/civilian/clown/ringmaster = ROLE_NATION_CLN_LEADER)
 	citizen_role = ROLE_NATION_CLN
 	citizen_jobs = list(
 		/datum/job/civilian/clown,
+		/datum/job/special/clown,
 	)
 	citizen_job_categories = list(JOB_CLOWN)
 
@@ -148,7 +149,7 @@ ABSTRACT_TYPE(/datum/nation)
 	short_name = "Cargonia"
 	passport_type = /obj/item/passport/supply
 	nation_color = "#4a301b"
-	leader_jobs = alist(/datum/job/engineering/quartermaster = ROLE_NATION_SUP_LEADER)
+	leader_jobs = alist(/datum/job/engineering/quartermaster/head = ROLE_NATION_SUP_LEADER)
 	citizen_role = ROLE_NATION_SUP
 	citizen_jobs = list(
 		/datum/job/engineering/miner,

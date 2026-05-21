@@ -141,7 +141,7 @@ ABSTRACT_TYPE(/datum/job/civilian)
 /datum/job/civilian/clown
 	name = "Clown"
 #ifdef MAP_OVERRIDE_NATIONS
-	limit = 5
+	limit = 4
 #else
 	limit = 1
 #endif
@@ -166,6 +166,11 @@ ABSTRACT_TYPE(/datum/job/civilian)
 	wiki_link = "https://wiki.ss13.co/Clown"
 
 	faction = list(FACTION_CLOWN)
+
+/datum/job/civilian/clown/ringmaster
+	name = "THE RINGMASTER"
+	limit = 1
+	items_in_belt = list(/obj/item/cloth/towel/clown, /obj/item/stamp/clown)
 
 // AI and Cyborgs
 

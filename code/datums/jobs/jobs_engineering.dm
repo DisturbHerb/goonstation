@@ -84,6 +84,11 @@ ABSTRACT_TYPE(/datum/job/engineering)
 	wiki_link = "https://wiki.ss13.co/Quartermaster"
 	email_group = MGD_SUPPLY
 
+/datum/job/engineering/quartermaster/head
+	name = "Head of Supply"
+	limit = 1
+	items_in_backpack = list(/obj/item/stamp/qm)
+
 /datum/job/engineering/miner
 	name = "Miner"
 	#ifdef UNDERWATER_MAP

@@ -40,7 +40,7 @@ ABSTRACT_TYPE(/datum/job/command)
 	slot_eyes = list(/obj/item/clothing/glasses/sunglasses)
 	slot_ears = list(/obj/item/device/radio/headset/command/captain)
 	slot_poc1 = list(/obj/item/disk/data/floppy/read_only/authentication)
-	items_in_backpack = list(/obj/item/storage/box/id_kit,/obj/item/device/flash)
+	items_in_backpack = list(/obj/item/storage/box/id_kit, /obj/item/device/flash, /obj/item/stamp/united_nations)
 	rounds_needed_to_play = ROUNDS_MIN_CAPTAIN
 
 	special_setup(var/mob/living/carbon/human/M)
