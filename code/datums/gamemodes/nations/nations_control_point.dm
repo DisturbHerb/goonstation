@@ -141,11 +141,19 @@
 		return
 
 	if (!user_nation.can_capture && !src.control_point.owner_nation)
-		boutput(user, SPAN_ALERT("You are above such petty territorial squabbles!"))
+		if (user_nation.is_leader(user.mind))
+			src.print_passport_slip(user, "This is already neutral territory.")
+		else
+			boutput(user, SPAN_ALERT("You are above such petty territorial squabbles!"))
+
 		return
 
 	if (user_nation == src.control_point.owner_nation)
-		boutput(user, SPAN_ALERT("Your nation already owns this control point!"))
+		if (user_nation.is_leader(user.mind))
+			src.print_passport_slip(user, "Your nation already owns this control point.")
+		else
+			boutput(user, SPAN_ALERT("Your nation already owns this control point!"))
+
 		return
 
 	var/duration = user_nation.is_leader(user.mind) ? 10 SECONDS : 20 SECONDS
@@ -156,6 +164,15 @@
 
 	SETUP_GENERIC_ACTIONBAR(user, src, duration, /obj/nations_control_point_computer/proc/capture, list(user_nation, user),\
 		null, null, "[user] successfully enters [his_or_her(user)] command code into \the [src]!", null)
+
+/obj/nations_control_point_computer/proc/print_passport_slip(mob/user, message)
+	playsound(src, 'sound/machines/keyboard3.ogg', 30, TRUE)
+	if (!global.tgui_alert(user, "[message] Print a passport slip?", "Confirmation", list("Yes", "No")) == "Yes")
+		return
+
+	playsound(src, 'sound/machines/printer_thermal.ogg', 50, TRUE)
+	SPAWN(3 SECONDS)
+		new /obj/item/paper/passport_slip(get_turf(src))
 
 
 /obj/nations_control_point_computer/clown
