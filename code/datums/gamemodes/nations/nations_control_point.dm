@@ -1,116 +1,182 @@
-/// Cargo cult from Pod Wars for now.
+// Cargo cult from Pod Wars.
+/datum/nations_control_point
+	var/name = "Control Point"
+	var/area/capture_area
+
+	var/datum/game_mode/nations/mode
+	var/datum/nation/owner_nation
+	var/obj/nations_control_point_computer/computer
+
+/datum/nations_control_point/New(obj/nations_control_point_computer/computer, area/capture_area, name, datum/game_mode/nations/mode)
+	..()
+	src.computer = computer
+	computer.control_point = src
+	src.capture_area = capture_area
+	src.name = name
+	src.mode = mode
+
+/datum/nations_control_point/proc/capture(datum/nation/capturing_nation, mob/capturer, silent = FALSE)
+	if (!istype(capturing_nation, /datum/nation))
+		return
+
+	var/datum/nation/former_nation
+	if (src.owner_nation)
+		former_nation = src.owner_nation
+		former_nation.control_points -= src
+
+	src.owner_nation = capturing_nation
+	capturing_nation.control_points |= src
+
+	if (length(src.capture_area.dynamic_map_colour_group))
+		global.minimap_renderer.recolor_area(src.capture_area.dynamic_map_colour_group, src.owner_nation.nation_color)
+
+	if (silent || !ismob(capturer))
+		return
+
+	message_ghosts("<b>[capturer]</b> successfully captured [src] for [capturing_nation.get_short_name()] [log_loc(src.computer, ghostjump=TRUE)].")
+
+	var/capture_announcement = "[capturing_nation.get_short_name()] has captured [src][former_nation ? " from [former_nation.get_short_name()]" : ""]!"
+	command_alert(capture_announcement, title = "Territory Captured!", sound_to_play = 'sound/machines/proximity_alarm.ogg', alert_origin = ALERT_UNITED_NATIONS)
+
+/datum/nations_control_point/proc/neutralize(mob/neutralizer, silent = FALSE)
+	if (src.owner_nation)
+		src.owner_nation.control_points -= src
+	src.owner_nation = null
+
+	if (silent || !ismob(neutralizer))
+		return
+
+	message_ghosts("<b>[neutralizer]</b> successfully neutralized [src] [log_loc(src.computer, ghostjump=TRUE)].")
+
+	var/neutralization_announcement = "[src] has been restored as a neutral territory!"
+	command_alert(neutralization_announcement, title = "Territory Neutralized!", sound_to_play = 'sound/machines/proximity_alarm.ogg', alert_origin = ALERT_UNITED_NATIONS)
+
 /obj/nations_control_point_computer
-	name = "computer"
+	name = "control point"
+	desc = "A computer terminal; control of which determines the owner of this territory."
 	icon = 'icons/obj/nations_control_point_computer.dmi'
 	icon_state = "control_point_computer"
 	density = 1
 	anchored = ANCHORED
 
-	var/image/screen
-	var/image/screen_light
-	var/image/name_overlay
+	/// Override area-based naming for the control point.
+	var/control_point_name = ""
 
-	var/datum/light/light
-	var/light_r =1
-	var/light_g = 1
-	var/light_b = 1
+	/// As type path.
+	var/datum/nation/roundstart_owner
+	var/datum/nations_control_point/control_point
+
+	var/image/screen_image
+	var/image/screen_image_light
 
 /obj/nations_control_point_computer/New()
 	..()
-	light = new/datum/light/point
-	light.set_brightness(0.8)
-	light.set_color(light_r, light_g, light_b)
-	light.attach(src)
 
-	src.update_screen("screen")
+	src.update_name()
+	src.update_screen()
 
-/obj/nations_control_point_computer/proc/update_screen(var/icon_state)
-	src.screen = image(src.icon, icon_state)
-	src.UpdateOverlays(src.screen, "screen")
+	START_TRACKING
 
-	src.screen_light = image(src.icon, icon_state)
-	src.screen_light.plane = PLANE_LIGHTING
-	src.screen_light.blend_mode = BLEND_ADD
-	src.screen_light.layer = LIGHTING_LAYER_BASE
-	src.screen_light.color = list(0.33,0.33,0.33, 0.33,0.33,0.33, 0.33,0.33,0.33)
-	src.UpdateOverlays(src.screen_light, "screen_light")
+/obj/nations_control_point_computer/disposing()
+	STOP_TRACKING
 
-/obj/nations_control_point_computer/proc/update_name_overlay(var/icon_state)
-	src.name_overlay = image(src.icon, icon_state)
-	src.UpdateOverlays(src.name_overlay, "name_overlay")
+	. = ..()
+
+/obj/nations_control_point_computer/get_desc(dist, mob/user)
+	. = ..()
+	. += " It [src.control_point.owner_nation ? "is controlled by [src.control_point.owner_nation.get_short_name()]" : "is neutral territory"]."
 
 /obj/nations_control_point_computer/ex_act()
 	return
 
-/obj/nations_control_point_computer/meteorhit(obj/O as obj)
+/obj/nations_control_point_computer/meteorhit(obj/O)
 	return
 
-/*
-//called from the action bar completion in src.Attackhand()
-/obj/nations_control_point_computer/proc/capture(var/mob/user)
-	var/team_num = get_pod_wars_team_num(user)
-	owner_team = team_num
-	update_light_color()
+/obj/nations_control_point_computer/proc/update_name()
+	if (!src.control_point)
+		return
 
-	ctrl_pt.capture(user, team_num)
-	switch(get_pod_wars_team_num(user))
-		if (TEAM_NANOTRASEN)
-			message_ghosts("<b>[user]</b> successfully captured [src] for Nanotrasen! [log_loc(src, ghostjump=TRUE)].")
-		if (TEAM_SYNDICATE)
-			message_ghosts("<b>[user]</b> successfully captured [src] for the Syndicate! [log_loc(src, ghostjump=TRUE)].")
+	var/owner_short_name = src.control_point.owner_nation?.get_short_name()
+	var/control_point_name = src.control_point.name
+	src.name = "[length(owner_short_name) ? "[owner_short_name] " : ""]control point[length(control_point_name) ? " ([control_point_name])" : ""]"
 
-/obj/nations_control_point_computer/proc/attack_hand(mob/user)
-	if (!can_be_captured)
-		var/cur_time
-		var/datum/game_mode/pod_wars/mode = ticker.mode
-		if (istype(mode))
-			cur_time = round((mode.activate_control_points_time-ticker.round_elapsed_ticks) / (1 MINUTES), 1)	//converts to minutes
-		else
-			cur_time = round( 15 MINUTES / 1 MINUTES, 1)
+/obj/nations_control_point_computer/proc/update_screen()
+	var/screen_image_icon_state = ""
+	var/list/final_light_color = list()
 
-
-		boutput(user, SPAN_NOTICE("This computer seems to be frozen on a space-weather tracking screen. It looks like a large ion storm will be passing this system in about <b class='alert'>[(cur_time)] minutes mission time</b>.<br>You can't input any commands to run the control protocols for this satelite..."))
-		playsound(src, 'sound/machines/buzz-sigh.ogg', 30, TRUE, flags = SOUND_IGNORE_SPACE)
-		return 0
-	if (owner_team != get_pod_wars_team_num(user))
-		var/duration = is_commander(user) ? 10 SECONDS : 20 SECONDS
-		playsound(get_turf(src), 'sound/machines/warning-buzzer.ogg', 150, 1, flags = SOUND_IGNORE_SPACE)	//loud
-
-		if(!ON_COOLDOWN(src, "ghostalert", 10 SECONDS))
-			message_ghosts("<b>[user]</b> is trying to capture <b>[src]</b>! [log_loc(src, ghostjump=TRUE)].")
-		SETUP_GENERIC_ACTIONBAR(user, src, duration, /obj/control_point_computer/proc/capture, list(user),\
-			null, null, "[user] successfully enters [his_or_her(user)] command code into \the [src]!", null)
+	if (istype(src.control_point?.owner_nation, /datum/nation))
+		screen_image_icon_state = src.control_point.owner_nation.control_point_icon_state
+		final_light_color = hex_to_rgb_list(src.control_point.owner_nation.nation_color)
 	else
+		screen_image_icon_state = "screen"
+		final_light_color = hex_to_rgb_list("#ffffff")
+
+	// There's no equivalent helper for getting an rgba list.
+	final_light_color = list(final_light_color[1], final_light_color[2], final_light_color[3], 255)
+
+	src.add_sm_light("screen_light", final_light_color)
+
+	src.screen_image = image(src.icon, screen_image_icon_state)
+	src.UpdateOverlays(src.screen_image, "screen_image")
+
+	src.screen_image_light = image(src.icon, screen_image_icon_state)
+	src.screen_image_light.plane = PLANE_LIGHTING
+	src.screen_image_light.blend_mode = BLEND_ADD
+	src.screen_image_light.layer = LIGHTING_LAYER_BASE
+	src.UpdateOverlays(src.screen_image_light, "screen_image_light")
+
+/obj/nations_control_point_computer/proc/capture(datum/nation/capturing_nation, mob/user, silent = FALSE)
+	if (!capturing_nation || !capturing_nation.can_capture)
+		src.control_point.neutralize(user, silent)
+	else
+		src.control_point.capture(capturing_nation, user, silent)
+	src.update_name()
+	src.update_screen()
+
+/obj/nations_control_point_computer/attack_hand(mob/user)
+	var/datum/nation/user_nation = src.control_point.mode.get_nation(user.mind)
+
+	if (!istype(user_nation, /datum/nation))
 		boutput(user, SPAN_ALERT("You can't think of anything else to do on this console..."))
+		return
 
-/obj/nations_control_point_computer/proc/is_commander(var/mob/user)
-	if (istype(ticker.mode, /datum/game_mode/pod_wars))
-		var/datum/game_mode/pod_wars/mode = ticker.mode
-		if (user.mind == mode.team_NT.commander)
-			return 1
-		else if (user.mind == mode.team_SY.commander)
-			return 1
-	return 0
+	if (!user_nation.can_capture && !src.control_point.owner_nation)
+		boutput(user, SPAN_ALERT("You are above such petty territorial squabbles!"))
+		return
 
-//change colour and owner team when captured.
-//this doesn't work right now. idc -kyle
-/obj/nations_control_point_computer/proc/update_light_color()
-	//blue for NT|1, red for SY|2, white for neutral|0.
-	if (owner_team == TEAM_NANOTRASEN)
-		light_r = 0
-		light_g = 0
-		light_b = 1
-		src.update_screen("nanotrasen")
-	else if (owner_team == TEAM_SYNDICATE)
-		light_r = 1
-		light_g = 0
-		light_b = 0
-		src.update_screen("syndicate")
-	else
-		light_r = 1
-		light_g = 1
-		light_b = 1
-		src.update_screen("screen")
+	if (user_nation == src.control_point.owner_nation)
+		boutput(user, SPAN_ALERT("Your nation already owns this control point!"))
+		return
 
-	light.set_color(light_r, light_g, light_b)
-*/
+	var/duration = user_nation.is_leader(user.mind) ? 10 SECONDS : 20 SECONDS
+	playsound(get_turf(src), 'sound/machines/warning-buzzer.ogg', 150, 1, flags = SOUND_IGNORE_SPACE)
+
+	if (!ON_COOLDOWN(src, "ghostalert", 10 SECONDS))
+		message_ghosts("<b>[user]</b> is trying to [user_nation.can_capture ? "capture" : "neutralize"] <b>[src]</b> [log_loc(src, ghostjump=TRUE)]!")
+
+	SETUP_GENERIC_ACTIONBAR(user, src, duration, /obj/nations_control_point_computer/proc/capture, list(user_nation, user),\
+		null, null, "[user] successfully enters [his_or_her(user)] command code into \the [src]!", null)
+
+
+/obj/nations_control_point_computer/clown
+	roundstart_owner = /datum/nation/clown
+
+/obj/nations_control_point_computer/engineering
+	control_point_name = "Engineering"
+	roundstart_owner = /datum/nation/engineering
+
+/obj/nations_control_point_computer/medical
+	control_point_name = "Medical"
+	roundstart_owner = /datum/nation/medical
+
+/obj/nations_control_point_computer/research
+	control_point_name = "Research"
+	roundstart_owner = /datum/nation/research
+
+/obj/nations_control_point_computer/service
+	control_point_name = "Service"
+	roundstart_owner = /datum/nation/service
+
+/obj/nations_control_point_computer/supply
+	control_point_name = "Supply"
+	roundstart_owner = /datum/nation/supply

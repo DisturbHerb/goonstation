@@ -52,5 +52,14 @@
 			J.limit = src.job_limits_override[J.type]
 			J.upper_limit = J.limit
 
+	// Using the same define for Z5 just for convenience.
+#ifndef SKIP_Z5_SETUP
+	var/startTime = TIME
+	var/datum/mapGenerator/asteroidsDistance/asteroid_generator = new()
+	asteroid_generator.generate(block(locate(1, 1, Z_LEVEL_STATION), locate(world.maxx, world.maxy, Z_LEVEL_STATION)))
+	boutput(world, SPAN_ALERT("Generated Station Level asteroids in [TO_SECONDS((TIME - startTime))] seconds!"))
+	logTheThing(LOG_DEBUG, null, "Generated Station Level asteroids in [TO_SECONDS((TIME - startTime))] seconds!")
+#endif
+
 	SPAWN(5 SECONDS)
 		src.set_cargo_shipping_method()

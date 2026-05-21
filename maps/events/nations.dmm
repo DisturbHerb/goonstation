@@ -2909,9 +2909,7 @@
 	layer = 9.1;
 	pixel_y = 21
 	},
-/obj/nations_control_point_computer{
-	dir = 4
-	},
+/obj/nations_control_point_computer/engineering,
 /obj/machinery/alarm/directional/west,
 /turf/simulated/floor/yellowblack{
 	dir = 4
@@ -4764,7 +4762,7 @@
 	},
 /area/station/hallway/primary/east)
 "chp" = (
-/obj/nations_control_point_computer,
+/obj/nations_control_point_computer/service,
 /turf/simulated/floor/wood,
 /area/station/crew_quarters/hop)
 "chB" = (
@@ -6476,7 +6474,7 @@
 	name = "Medical Concourse West"
 	})
 "cSO" = (
-/obj/nations_control_point_computer,
+/obj/nations_control_point_computer/medical,
 /obj/decal/tile_edge/line/black{
 	dir = 1;
 	icon_state = "line1"
@@ -7332,9 +7330,6 @@
 "dma" = (
 /obj/cable{
 	icon_state = "4-8"
-	},
-/obj/cable{
-	icon_state = "1-8"
 	},
 /turf/simulated/floor/carpet/clowncarpet/border{
 	dir = 4
@@ -24115,9 +24110,7 @@
 	},
 /area/station/quartermaster/cargobay)
 "kfv" = (
-/obj/nations_control_point_computer{
-	dir = 8
-	},
+/obj/nations_control_point_computer/research,
 /turf/simulated/floor/wood/two,
 /area/station/crew_quarters/hor)
 "kfQ" = (
@@ -30478,9 +30471,6 @@
 	name = "Cargo Hallway"
 	})
 "mPJ" = (
-/obj/cable{
-	icon_state = "1-2"
-	},
 /obj/stool/chair/office/blue{
 	dir = 8
 	},
@@ -31482,7 +31472,7 @@
 /turf/simulated/floor/wood/two,
 /area/station/crew_quarters/hop)
 "njk" = (
-/obj/machinery/computer/solar_control,
+/obj/nations_control_point_computer/clown,
 /turf/simulated/floor/caution/south,
 /area/station/maintenance/storage{
 	name = "The Fleur-de-Lys"
@@ -43170,6 +43160,12 @@
 /obj/cable{
 	icon_state = "1-4"
 	},
+/obj/machinery/computer/solar_control{
+	dir = 4
+	},
+/obj/cable{
+	icon_state = "0-4"
+	},
 /turf/simulated/floor/carpet/clowncarpet/border{
 	dir = 8
 	},
@@ -47891,7 +47887,7 @@
 	layer = 9.1;
 	pixel_y = 21
 	},
-/obj/nations_control_point_computer,
+/obj/nations_control_point_computer/supply,
 /turf/simulated/floor/terrazzo,
 /area/station/quartermaster/cargooffice{
 	name = "Cargonian High Court"
