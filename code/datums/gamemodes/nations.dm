@@ -10,6 +10,8 @@
 
 	/// A list of nation datums to assign minds to.
 	var/list/datum/nation/nations = list()
+	/// A list of available control point datums.
+	var/list/datum/nations_control_point/control_points = list()
 	/// An associative list of job datum types and the leader antagonist role that they should be assigned.
 	var/alist/leader_jobs_to_roles = alist()
 	/// An associative list of job datum types and the antagonist role that they should be assigned.
@@ -40,6 +42,8 @@
 			src.cats_to_roles[job_category] = nation.citizen_role
 
 /datum/game_mode/nations/post_setup()
+	src.setup_control_points()
+
 	var/list/datum/mind/client_minds = list()
 	for (var/client/C as anything in global.clients)
 		if (!isliving(C.mob) || !ismind(C.mob.mind))
@@ -52,8 +56,33 @@
 	for (var/datum/mind/mind as anything in client_minds)
 		src.assign_role(mind, global.find_job_in_controller_by_string(mind.assigned_role))
 
+/datum/game_mode/nations/on_human_death(mob/M)
+	var/datum/nation/deceaseds_nation = src.get_nation(M.mind)
+	if (!istype(deceaseds_nation, /datum/nation))
+		return
+
 /datum/game_mode/nations/send_intercept(badguy_list)
 	return
+
+/datum/game_mode/nations/proc/setup_control_points()
+	for_by_tcl(control_point_computer, /obj/nations_control_point_computer)
+		var/area/computer_area = get_area(control_point_computer)
+		if (!isarea(computer_area))
+			continue
+
+		var/control_point_name = control_point_computer.control_point_name ? control_point_computer.control_point_name : computer_area.name
+
+		var/datum/nations_control_point/new_control_point = new(control_point_computer, computer_area, control_point_name, src)
+
+		src.control_points += new_control_point
+		new_control_point.mode = src
+
+		if (!control_point_computer.roundstart_owner)
+			continue
+
+		var/datum/nation/roundstart_owner_instance = global.get_singleton(control_point_computer.roundstart_owner)
+		if (roundstart_owner_instance in src.nations)
+			control_point_computer.capture(roundstart_owner_instance, silent = TRUE)
 
 /datum/game_mode/nations/proc/assign_role(datum/mind/mind, datum/job/job)
 	if (!istype(job))
@@ -96,3 +125,10 @@
 
 	logTheThing(LOG_GAMEMODE, mind.current, "attempted to latejoin and was not assigned to the UN or any nation!")
 	message_admins("Nations: [key_name(mind)] attempted to latejoin and was not assigned to the UN or any nation!")
+
+/datum/game_mode/nations/proc/get_nation(datum/mind/mind)
+	RETURN_TYPE(/datum/nation)
+	. = null
+	for (var/datum/nation/nation as anything in src.nations)
+		if (mind in nation.citizens)
+			return nation

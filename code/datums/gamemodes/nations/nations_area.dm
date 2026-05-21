@@ -48,3 +48,8 @@
 	var/atom/movable/AM = A
 	if (isobj(AM) && (!istype(AM, /obj/landmark/map)) && (!istype(AM, /obj/overlay/tile_effect)) && (AM.anchored != ANCHORED_ALWAYS))
 		. = TRUE
+
+#if defined(MAP_OVERRIDE_NATIONS)
+/area/radiostation
+	minimaps_to_render_on = MAP_ALL
+#endif

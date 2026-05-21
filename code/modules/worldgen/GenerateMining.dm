@@ -317,7 +317,7 @@ TYPEINFO(/turf/variableTurf/clear)
 
 			var/list/placed = list()
 			for(var/turf/T in solidTiles)
-				if((T?.loc?.type == /area/space) || istype(T?.loc , /area/allowGenerate) || isgenplanet(T))
+				if(((T?.loc?.type == /area/space) && !istype(T?.loc, /area/space/asteroid_safe_zone)) || istype(T?.loc , /area/allowGenerate) || isgenplanet(T))
 					var/turf/simulated/wall/auto/asteroid/AST = T.ReplaceWith(/turf/simulated/wall/auto/asteroid, FALSE, TRUE, FALSE, TRUE)
 					placed.Add(AST)
 				LAGCHECK_IF_LIVE(LAG_INIT)

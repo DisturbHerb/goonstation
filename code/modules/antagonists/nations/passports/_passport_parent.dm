@@ -93,19 +93,19 @@ ABSTRACT_TYPE(/obj/item/passport)
 /obj/item/passport/ui_data(mob/user)
 	. = list(
 		"isLeader" = src.nation.is_leader(user.mind),
-		"isOwner" = (src.owner == user.mind),
-		"nationColor" = src.nation.nation_color,
-		"nationName" = src.nation.name,
-		"nationShortName" = src.nation.get_short_name(),
-		"ownerRoleType" = src.nation.get_role_type(owner),
 	)
 
 /obj/item/passport/ui_static_data(mob/user)
 	. = list(
 		"documentType" = src.document_type,
+		"isOwner" = (src.owner == user.mind),
 		"name" = src.name,
-		"ownerName" = src.owner_name,
+		"nationColor" = src.nation.nation_color,
+		"nationName" = src.nation.name,
+		"nationShortName" = src.nation.get_short_name(),
 		"ownerIcon" = icon2base64(src.owner_icon),
+		"ownerName" = src.owner_name,
+		"ownerRoleType" = src.nation.get_role_type(owner),
 	)
 
 /obj/item/passport/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
