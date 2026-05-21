@@ -20,6 +20,7 @@
 	var/alist/stamp_mode = alist(
 		"Captain"			= /datum/nation/un,
 		"Head of Security"	= /datum/nation/un,
+		"Clown"				= /datum/nation/clown,
 		"Chief Engineer"	= /datum/nation/engineering,
 		"Medical Director"	= /datum/nation/medical,
 		"Research Director"	= /datum/nation/research,

@@ -64,12 +64,14 @@
 #define ROLE_UN_UNDSEC "un_undsec"
 #define ROLE_UN_SECGEN "un_secgen"
 
+#define ROLE_NATION_CLN "nation_cln_citizen"
 #define ROLE_NATION_ENG "nation_eng_citizen"
 #define ROLE_NATION_MED "nation_med_citizen"
 #define ROLE_NATION_SCI "nation_sci_citizen"
 #define ROLE_NATION_SER "nation_ser_citizen"
 #define ROLE_NATION_SUP "nation_sup_citizen"
 
+#define ROLE_NATION_CLN_LEADER "nation_cln_leader"
 #define ROLE_NATION_ENG_LEADER "nation_eng_leader"
 #define ROLE_NATION_MED_LEADER "nation_med_leader"
 #define ROLE_NATION_SCI_LEADER "nation_sci_leader"

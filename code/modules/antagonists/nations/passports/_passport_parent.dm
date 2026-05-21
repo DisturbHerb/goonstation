@@ -3,7 +3,11 @@
 	var/obj/item/passport/passport = null
 
 /datum/mind/proc/set_passport(obj/item/passport/passport)
-	qdel(src.passport)
+	if (src.passport)
+		astype(src.passport.loc, /mob)?.u_equip(src.passport)
+		src.passport.set_loc(null)
+		qdel(src.passport)
+
 	src.passport = passport
 
 

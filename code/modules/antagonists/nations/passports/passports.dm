@@ -8,6 +8,12 @@
 	custom_name = TRUE
 	document_type = "Laissez-Passer"
 
+/obj/item/passport/clown
+	icon_state = "passport-clown"
+	nation_type = /datum/nation/clown
+	minimap_type = 0
+	minimap_marker = "dot_pink"
+
 /obj/item/passport/engineering
 	icon_state = "passport-engineering"
 	nation_type = /datum/nation/engineering
@@ -37,7 +43,3 @@
 	nation_type = /datum/nation/supply
 	minimap_type = MAP_NATIONS_SUP
 	minimap_marker = "dot_orange"
-
-/obj/item/passport/clown
-	icon_state = "passport-clown"
-	nation_type = /datum/nation/clown

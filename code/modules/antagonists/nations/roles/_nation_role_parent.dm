@@ -8,6 +8,8 @@ ABSTRACT_TYPE(/datum/antagonist/nation)
 	var/obj/item/passport/passport = null
 	/// Whether this role is a citizen or a leader.
 	var/role_type = null
+	/// Whether to use the definite or indefinite article.
+	var/article = ""
 
 /datum/antagonist/nation/New(datum/mind/new_owner)
 	for (var/datum/antagonist/nation/A in new_owner.antagonists)
@@ -33,6 +35,12 @@ ABSTRACT_TYPE(/datum/antagonist/nation)
 	src.UnregisterSignal(src.passport, COMSIG_PARENT_PRE_DISPOSING)
 	QDEL_NULL(src.passport)
 
+/datum/antagonist/nation/announce()
+	boutput(src.owner.current, SPAN_ALERT("<h2 class='system'>You are [src.article] [src.display_name]!</h2>"))
+
+/datum/antagonist/nation/announce_removal()
+	boutput(src.owner.current, SPAN_ALERT("<h2 class='system'>You are no longer [src.article] [src.display_name]!</h2>"))
+
 /datum/antagonist/nation/proc/remove_callback()
 	src.owner.remove_antagonist(src)
 
@@ -41,6 +49,7 @@ ABSTRACT_TYPE(/datum/antagonist/nation/citizen)
 /datum/antagonist/nation/citizen
 	succinct_end_of_round_antagonist_entry = TRUE
 	role_type = "Citizen"
+	article = "a"
 
 /datum/antagonist/nation/citizen/give_equipment()
 	. = ..()
@@ -54,6 +63,7 @@ ABSTRACT_TYPE(/datum/antagonist/nation/citizen)
 ABSTRACT_TYPE(/datum/antagonist/nation/leader)
 /datum/antagonist/nation/leader
 	role_type = "Leader"
+	article = "the"
 
 /datum/antagonist/nation/leader/give_equipment()
 	. = ..()
