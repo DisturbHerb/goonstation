@@ -115,7 +115,8 @@
 //rancher job
 #define access_ranch 83
 
-// Access 84 Unused
+//general civ access for nations
+#define access_civ_general 84
 
 //extra research access
 #define access_researchfoyer 85

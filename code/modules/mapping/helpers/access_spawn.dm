@@ -231,6 +231,11 @@
 	req_access = list(access_ranch)
 	color = MAINTENANCE
 
+/obj/mapping_helper/access/service
+	name = "service access spawn"
+	req_access = list(access_civ_general)
+	color = MAINTENANCE
+
 //////////// Command/Heads ////
 /obj/mapping_helper/access/ai_upload
 	name = "ai upload access spawn"

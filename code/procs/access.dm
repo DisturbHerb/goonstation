@@ -131,15 +131,15 @@
 		if("Captain")
 			return get_all_accesses() + list(access_maxsec)
 		if("Head of Personnel")
-			return list(access_heads, access_sysadmin, access_maint_tunnels,
+			return list(access_heads, access_sysadmin, access_maint_tunnels, access_civ_general,
 						access_chapel_office, access_crematorium, access_kitchen, access_bar, access_janitor, access_hydro, access_ranch,
 			)
 		if("Head of Security")
 			return list(access_security, access_carrypermit, access_contrabandpermit, access_maxsec, access_brig, access_securitylockers,
 						access_forensics_lockers, access_armory, access_ticket, access_tox, access_tox_storage, access_chemistry, access_medical,
 						access_morgue, access_change_ids, access_eva, access_heads, access_medical_lockers, access_medlab, access_pharmacy,
-						access_crematorium, access_kitchen, access_robotics, access_cargo, access_money,
-						access_research, access_sysadmin, access_hydro, access_ranch, access_ai_upload,
+						access_crematorium, access_kitchen, access_robotics, access_cargo, access_supply_general, access_money,
+						access_research, access_sysadmin, access_hydro, access_ranch, access_civ_general, access_ai_upload,
 						access_tech_storage, access_maint_tunnels, access_bar, access_janitor, access_fine_small, access_fine_large,
 						access_engineering, access_teleporter, access_engineering_engine, access_engineering_control,
 						access_mining, access_researchfoyer, access_chapel_office, access_telesci,
@@ -232,27 +232,27 @@
 
 		// --------------------------- Civilian
 		if("Chaplain")
-			return list(access_chapel_office, access_crematorium)
+			return list(access_chapel_office, access_crematorium, access_civ_general)
 		if("Janitor")
-			return list(access_janitor, access_maint_tunnels, access_crematorium)
+			return list(access_janitor, access_maint_tunnels, access_crematorium, access_civ_general)
 		if("Botanist", "Apiculturist")
-			return list(access_maint_tunnels, access_hydro)
+			return list(access_maint_tunnels, access_hydro, access_civ_general)
 		if("Rancher")
-			return list(access_maint_tunnels, access_hydro, access_ranch)
+			return list(access_maint_tunnels, access_hydro, access_ranch, access_civ_general)
 		if("Chef", "Sous-Chef")
-			return list(access_kitchen)
+			return list(access_kitchen, access_civ_general)
 		if("Bartender")
-			return list(access_bar)
+			return list(access_bar, access_civ_general)
 		if("Waiter")
 			return list(access_bar, access_kitchen)
 		if("Clown")
 			return list(access_maint_tunnels, access_clown)
 		if("Boxer", "Barber", "Mime", "Dungeoneer")
-			return list(access_maint_tunnels)
+			return list(access_maint_tunnels, access_civ_general)
 		if("Assistant", "Staff Assistant", "Radio Show Host")
-			return list(access_maint_tunnels)
+			return list(access_maint_tunnels, access_civ_general)
 		if("Mail Courier")
-			return list(access_heads, access_supply_general, access_medical, access_researchfoyer, access_research, access_engineering)
+			return list(access_heads, access_civ_general, access_supply_general, access_medical, access_researchfoyer, access_research, access_engineering)
 
 		// --------------------------- Other or gimmick
 		if("VIP")
@@ -288,7 +288,7 @@
 				access_teleporter, access_eva, access_heads, access_captain, access_head_of_personnel,
 				access_chapel_office, access_kitchen, access_medical_lockers,
 				access_bar, access_janitor, access_crematorium, access_robotics, access_cargo, access_supply_console, access_hydro, access_ranch,
-				access_engineering, access_maint_tunnels,
+				access_supply_general, access_civ_general, access_engineering, access_maint_tunnels,
 				access_tech_storage, access_engineering_storage,
 				access_engineering_power, access_engineering_engine, access_engineering_control, access_engineering_mechanic,
 				access_engineering_chief, access_mining, access_mining_outpost, access_supply_head,
@@ -383,6 +383,8 @@ var/list/access_all_actually = null
 			return "Hydroponics"
 		if(access_ranch)
 			return "Ranch"
+		if(access_civ_general)
+			return "Service Sector"
 		if(access_research)
 			return "Research Sector"
 		if(access_research_director)

@@ -2018,6 +2018,7 @@ ABSTRACT_TYPE(/datum/supply_packs/complex)
 	containertype = /obj/storage/crate
 	containername = "Genetics kit"
 
+#ifndef MAP_OVERRIDE_NATIONS
 /datum/supply_packs/complex/cloner_kit
 	name = "Cloning kit"
 	desc = "x1 Cloning Console Circuitboard, x1 Cloning Scanner Frame, x1 Cloning Pod Frame, x1 Enzymatic Reclaimer Frame, x1 Clone Rack Frame."
@@ -2030,6 +2031,7 @@ ABSTRACT_TYPE(/datum/supply_packs/complex)
 	cost = PAY_DOCTORATE*20
 	containertype = /obj/storage/crate
 	containername = "Cloning kit"
+#endif
 
 /datum/supply_packs/bureaucrat
 	name = "Bureaucracy Supply Crate"
