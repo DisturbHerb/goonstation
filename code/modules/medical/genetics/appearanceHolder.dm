@@ -24,6 +24,9 @@
 		"hair_bottom" = new /datum/customizationHolder/hair/bottom,
 		"hair_middle" = new /datum/customizationHolder/hair/middle,
 		"hair_top" = new /datum/customizationHolder/hair/top,
+		"undies_feet" = new /datum/customizationHolder/undies/feet,
+		"undies_bottom" = new /datum/customizationHolder/undies/bottom,
+		"undies_top" = new /datum/customizationHolder/undies/top,
 	)
 
 	/// Currently changes which sprite sheet is used

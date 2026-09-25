@@ -19,3 +19,12 @@
 
 /datum/customizationHolder/hair/top
 	style =  new /datum/customization_style/none
+
+/datum/customizationHolder/undies/feet
+	style =  new /datum/customization_style/none
+
+/datum/customizationHolder/undies/bottom
+	style =  new /datum/customization_style/none
+
+/datum/customizationHolder/undies/top
+	style =  new /datum/customization_style/undies/briefs
