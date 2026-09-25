@@ -123,15 +123,21 @@ var/global
 	"Mithril" = 'icons/mob/hud_human_quilty.dmi',
 	"Vaporized" = 'icons/mob/hud_human_vapor.dmi')
 
-	list/underwear_styles = list("No Underwear" = "none",
-	"Briefs" = "briefs",
-	"Boxers" = "boxers",
-	"Bra and Panties" = "brapan",
-	"Tanktop and Panties" = "tankpan",
-	"Bra and Boyshorts" = "braboy",
-	"Tanktop and Boyshorts" = "tankboy",
-	"Panties" = "panties",
-	"Boyshorts" = "boyshort")
+	alist/underwear_bottom_alias = alist("Boxers" = /datum/customization_style/undies/bottom/boxers,
+	"Boyshorts" = /datum/customization_style/undies/bottom/panties,
+	"Bra and Boyshorts" = /datum/customization_style/undies/bottom/boyshort,
+	"Bra and Panties" = /datum/customization_style/undies/bottom/panties,
+	"Briefs" = /datum/customization_style/undies/bottom/briefs,
+	"Panties" = /datum/customization_style/undies/bottom/panties,
+	"Tanktop and Boyshorts" = /datum/customization_style/undies/bottom/boyshort,
+	"Tanktop and Panties" = /datum/customization_style/undies/bottom/panties,
+	)
+
+	alist/underwear_top_alias = alist("Bra and Boyshorts" = /datum/customization_style/undies/top/bra,
+	"Bra and Panties" = /datum/customization_style/undies/top/bra,
+	"Tanktop and Boyshorts" =  /datum/customization_style/undies/top/tank,
+	"Tanktop and Panties" =  /datum/customization_style/undies/top/tank,
+	)
 
 	list/standard_skintones = list("Albino" = "#FAD7D0",
 	"White" = "#FFCC99",

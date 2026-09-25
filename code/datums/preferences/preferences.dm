@@ -268,8 +268,10 @@ var/list/removed_jobs = list(
 			"customStyle2" = src.AH.customizations["hair_middle"].style.name,
 			"customColor3" = src.AH.customizations["hair_top"].color,
 			"customStyle3" = src.AH.customizations["hair_top"].style.name,
-			"underwearColor" = src.AH.u_color,
-			"underwearStyle" = src.AH.underwear,
+			"underwearTopColor" = src.AH.customizations["undies_top"].color,
+			"underwearTopStyle" = src.AH.customizations["undies_top"].style.name,
+			"underwearBottomColor" = src.AH.customizations["undies_bottom"].color,
+			"underwearBottomStyle" = src.AH.customizations["undies_bottom"].style.name,
 			"randomAppearance" = src.be_random_look,
 
 			"jobFavourite" = src.job_favorite,
@@ -806,8 +808,8 @@ var/list/removed_jobs = list(
 				switch (params["id"])
 					if ("custom1", "custom2", "custom3")
 						new_style = select_custom_style(usr, CUSTOMIZATION::SLOT::HAIR, TRUE)
-					if ("underwear")
-						new_style = tgui_input_list(usr, "Select an underwear style", "Character Generation", underwear_styles)
+					if ("underwearTop", "underwearBottom")
+						new_style = select_custom_style(usr, CUSTOMIZATION::SLOT::UNDIES, TRUE)
 				if (new_style)
 					switch (params["id"])
 						if ("custom1")

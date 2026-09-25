@@ -211,6 +211,13 @@
 			F["radio_sounds"] << F["[profileNum]_radio_sounds"]
 			F["clickbuffer"] << F["[profileNum]_clickbuffer"]
 
+		if (version <= 9)
+			// Underwear rework.
+			F["[profileNum]_undies_bottom_name"] << global.underwear_bottom_alias[F["[profileNum]_underwear_style_name"]]
+			F["[profileNum]_undies_bottom_color"] << F["[profileNum]_underwear_color"]
+			F["[profileNum]_undies_top_name"] << global.underwear_top_alias[F["[profileNum]_underwear_style_name"]]
+			F["[profileNum]_undies_top_color"] << F["[profileNum]_underwear_color"]
+
 		// Character details
 		F["[profileNum]_profile_name"] >> src.profile_name
 		F["[profileNum]_real_name"] >> src.real_name
@@ -252,24 +259,35 @@
 				if (saved_pronouns == pronouns.name)
 					AH.pronouns = pronouns
 					break
+
 			F["[profileNum]_eye_color"] >> AH.e_color
+			F["[profileNum]_skin_tone"] >> AH.s_tone
+			F["[profileNum]_skin_tone"] >> AH.s_tone_original
+			F["[profileNum]_special_style"] >> AH.special_style
+
 			F["[profileNum]_hair_color"] >> AH.customizations["hair_bottom"].color
 			F["[profileNum]_hair_color"] >> AH.customizations["hair_bottom"].color_original
 			F["[profileNum]_facial_color"] >> AH.customizations["hair_middle"].color
 			F["[profileNum]_facial_color"] >> AH.customizations["hair_middle"].color_original
 			F["[profileNum]_detail_color"] >> AH.customizations["hair_top"].color
 			F["[profileNum]_detail_color"] >> AH.customizations["hair_top"].color_original
-			F["[profileNum]_skin_tone"] >> AH.s_tone
-			F["[profileNum]_skin_tone"] >> AH.s_tone_original
-			F["[profileNum]_special_style"] >> AH.special_style
+
 			F["[profileNum]_hair_style_name"] >> AH.customizations["hair_bottom"].style
 			F["[profileNum]_hair_style_name"] >> AH.customizations["hair_bottom"].style_original
 			F["[profileNum]_facial_style_name"] >> AH.customizations["hair_middle"].style
 			F["[profileNum]_facial_style_name"] >> AH.customizations["hair_middle"].style_original
 			F["[profileNum]_detail_style_name"] >> AH.customizations["hair_top"].style
 			F["[profileNum]_detail_style_name"] >> AH.customizations["hair_top"].style_original
-			F["[profileNum]_underwear_style_name"] >> AH.underwear
-			F["[profileNum]_underwear_color"] >> AH.u_color
+
+			F["[profileNum]_undies_bottom_color"] >> AH.customizations["undies_bottom"].color
+			F["[profileNum]_undies_bottom_color"] >> AH.customizations["undies_bottom"].color_original
+			F["[profileNum]_undies_top_color"] >> AH.customizations["undies_top"].color
+			F["[profileNum]_undies_top_color"] >> AH.customizations["undies_top"].color_original
+
+			F["[profileNum]_undies_bottom_name"] >> AH.customizations["undies_bottom"].style
+			F["[profileNum]_undies_bottom_name"] >> AH.customizations["undies_bottom"].style_original
+			F["[profileNum]_undies_top_name"] >> AH.customizations["undies_top"].style
+			F["[profileNum]_undies_top_name"] >> AH.customizations["undies_top"].style_original
 
 			if(!istype(src.AH.customizations["hair_bottom"].style, /datum/customization_style))
 				src.AH.customizations["hair_bottom"].style = find_style_by_name(src.AH.customizations["hair_bottom"].style, no_gimmick=TRUE)

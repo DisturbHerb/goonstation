@@ -276,7 +276,7 @@ TYPEINFO(/obj/machinery/sleeper/future)
 	initializeBioholder()
 		bioHolder.mobAppearance.customizations["hair_middle"].style =  new /datum/customization_style/hair/facial/tramp
 		bioHolder.mobAppearance.customizations["hair_top"].style =  new /datum/customization_style/hair/facial/longbeard
-		bioHolder.mobAppearance.underwear = "briefs"
+		bioHolder.mobAppearance.customizations["undies_bottom"].style = new /datum/customization_style/undies/bottom/briefs
 		bioHolder.age = 3500
 		. = ..()
 

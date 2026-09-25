@@ -103,9 +103,6 @@
 	// C5CFA9 - Zombie
 	// B0AC96 - Drained Husk
 
-	var/underwear = "No Underwear"
-	var/u_color = "#FFFFFF"
-
 	var/mob/owner = null
 	var/datum/bioHolder/parentHolder = null
 
@@ -186,9 +183,6 @@
 		s_tone_original = toCopy.s_tone_original
 
 		special_style = toCopy.special_style
-
-		underwear = toCopy.underwear
-		u_color = toCopy.u_color
 
 		mob_head_offset = toCopy.mob_head_offset
 		mob_hand_offset = toCopy.mob_hand_offset

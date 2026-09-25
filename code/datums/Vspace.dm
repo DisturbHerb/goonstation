@@ -233,13 +233,14 @@ datum/v_space
 		character.bioHolder.mobAppearance.customizations["hair_bottom"].color = user.bioHolder.mobAppearance.customizations["hair_bottom"].color
 		character.bioHolder.mobAppearance.customizations["hair_middle"].color = user.bioHolder.mobAppearance.customizations["hair_middle"].color
 		character.bioHolder.mobAppearance.customizations["hair_top"].color = user.bioHolder.mobAppearance.customizations["hair_top"].color
+		character.bioHolder.mobAppearance.customizations["undies_bottom"].color = user.bioHolder.mobAppearance.customizations["undies_bottom"].color
+		character.bioHolder.mobAppearance.customizations["undies_top"].color = user.bioHolder.mobAppearance.customizations["undies_top"].color
 		character.bioHolder.mobAppearance.s_tone = user.bioHolder.mobAppearance.s_tone
 		character.bioHolder.mobAppearance.customizations["hair_bottom"].style =  user.bioHolder.mobAppearance.customizations["hair_bottom"].style
 		character.bioHolder.mobAppearance.customizations["hair_middle"].style =  user.bioHolder.mobAppearance.customizations["hair_middle"].style
 		character.bioHolder.mobAppearance.customizations["hair_top"].style =  user.bioHolder.mobAppearance.customizations["hair_top"].style
-
-		character.bioHolder.mobAppearance.underwear = user.bioHolder.mobAppearance.underwear
-		character.bioHolder.mobAppearance.u_color = user.bioHolder.mobAppearance.u_color
+		character.bioHolder.mobAppearance.customizations["undies_bottom"].style = user.bioHolder.mobAppearance.customizations["undies_bottom"].style
+		character.bioHolder.mobAppearance.customizations["undies_top"].style = user.bioHolder.mobAppearance.customizations["undies_top"].style
 
 		character.bioHolder.mobAppearance.pronouns = user.bioHolder.mobAppearance.pronouns
 
