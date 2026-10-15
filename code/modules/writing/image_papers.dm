@@ -93,6 +93,14 @@
 	path = "images/pocket_guides/siphonguide.png"
 	scale_dir = -1
 
+/obj/item/paper/image/autumn_collection
+	name = "\improper \"Needle'n'Thread\" - 2053 Fall Fashion Collection"
+	desc = "A marketing copy for NT's 2053 Fall Fashion Collection. Very chic!"
+	// icon_state = "autumn_collection"
+	sizex = 576
+	sizey = 480
+	path = "images/arts/autumn_collection.png"
+
 // cogwerks - creepy picture things
 
 /obj/item/paper/image/sstv
