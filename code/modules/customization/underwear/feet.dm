@@ -1,5 +1,5 @@
 TYPEINFO(/datum/customization_style/undies/feet)
-	style_category = CUSTOMIZATION::LAYER::UNDIES_FEET
+	style_category = CUSTOMIZATION::CATEGORY::UNDIES_FEET
 ABSTRACT_TYPE(/datum/customization_style/undies/feet)
 /datum/customization_style/undies/feet
 	default_layer = MOB_UNDIES_FEET_LAYER

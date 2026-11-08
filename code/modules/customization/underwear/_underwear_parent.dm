@@ -1,5 +1,6 @@
 TYPEINFO(/datum/customization_style/undies)
-	style_category = CUSTOMIZATION::LAYER::UNDIES_BOTTOM
+	style_slot = CUSTOMIZATION::SLOT::UNDIES
+	style_category = CUSTOMIZATION::CATEGORY::UNDIES_BOTTOM
 ABSTRACT_TYPE(/datum/customization_style/undies)
 /datum/customization_style/undies
 	default_layer = MOB_UNDIES_BOTTOM_LAYER

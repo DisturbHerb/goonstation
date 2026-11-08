@@ -240,10 +240,16 @@ var/global/alist/undies_top_alias = alist(
 			var/datum/customization_style/undies_bottom = global.undies_bottom_alias[F["[profileNum]_underwear_style_name"]]
 			if (undies_bottom && find_style_by_name(undies_bottom::name, style_filter = CUSTOMIZATION::SLOT::UNDIES, allow_pref_blacklist = FALSE))
 				F["[profileNum]_undies_bottom_name"] << undies_bottom::name
+			else
+				F["[profileNum]_undies_bottom_name"] << "None"
 
 			var/datum/customization_style/undies_top = global.undies_top_alias[F["[profileNum]_underwear_style_name"]]
 			if (undies_top && find_style_by_name(undies_top::name, style_filter = CUSTOMIZATION::SLOT::UNDIES, allow_pref_blacklist = FALSE))
-				F["[profileNum]_undies_bottom_name"] << undies_top::name
+				F["[profileNum]_undies_top_name"] << undies_top::name
+			else
+				F["[profileNum]_undies_top_name"] << "None"
+
+			F["[profileNum]_undies_feet_name"] << "None"
 
 			F["[profileNum]_undies_bottom_color"] << F["[profileNum]_underwear_color"]
 			F["[profileNum]_undies_top_color"] << F["[profileNum]_underwear_color"]
