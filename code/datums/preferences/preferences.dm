@@ -313,12 +313,12 @@ var/list/removed_jobs = list(
 			"hairMiddleStyle" = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style.name,
 			"hairTopColor" = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color,
 			"hairTopStyle" = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style.name,
-			"undiesFeetColor" = src.AH.customizations["undies_feet"].color,
-			"undiesFeetStyle" = src.AH.customizations["undies_feet"].style.name,
-			"undiesBottomColor" = src.AH.customizations["undies_bottom"].color,
-			"undiesBottomStyle" = src.AH.customizations["undies_bottom"].style.name,
-			"undiesTopColor" = src.AH.customizations["undies_top"].color,
-			"undiesTopStyle" = src.AH.customizations["undies_top"].style.name,
+			"undiesFeetColor" = src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].color,
+			"undiesFeetStyle" = src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style.name,
+			"undiesBottomColor" = src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].color,
+			"undiesBottomStyle" = src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style.name,
+			"undiesTopColor" = src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].color,
+			"undiesTopStyle" = src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].style.name,
 			"randomAppearance" = src.be_random_look,
 
 			"jobFavourite" = src.job_favorite,
@@ -834,11 +834,11 @@ var/list/removed_jobs = list(
 					if ("hairTop")
 						current_color = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color
 					if ("undiesFeet")
-						current_color = src.AH.customizations["undies_feet"].color
+						current_color = src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].color
 					if ("undiesBottom")
-						current_color = src.AH.customizations["undies_bottom"].color
+						current_color = src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].color
 					if ("undiesTop")
-						current_color = src.AH.customizations["undies_top"].color
+						current_color = src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].color
 				var/new_color = tgui_color_picker(usr, "Please select a color.", "Character Generation", current_color)
 				if (new_color)
 					switch (params["id"])
@@ -849,11 +849,11 @@ var/list/removed_jobs = list(
 						if ("hairTop")
 							src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color = new_color
 						if ("undiesFeet")
-							src.AH.customizations["undies_feet"].color = new_color
+							src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].color = new_color
 						if ("undiesBottom")
-							src.AH.customizations["undies_bottom"].color = new_color
+							src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].color = new_color
 						if ("undiesTop")
-							src.AH.customizations["undies_top"].color = new_color
+							src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].color = new_color
 					src.update_preview_icon()
 					src.profile_modified = TRUE
 					return TRUE
@@ -882,11 +882,11 @@ var/list/removed_jobs = list(
 						if ("hairTop")
 							src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style = new_style
 						if ("undiesFeet")
-							src.AH.customizations["undies_feet"].style = new_style
+							src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style = new_style
 						if ("undiesBottom")
-							src.AH.customizations["undies_bottom"].style = new_style
+							src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style = new_style
 						if ("undiesTop")
-							src.AH.customizations["undies_top"].style = new_style
+							src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].style = new_style
 					src.update_preview_icon()
 					src.profile_modified = TRUE
 					return TRUE
@@ -905,11 +905,11 @@ var/list/removed_jobs = list(
 					if ("hairTop")
 						current_style = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style.type
 					if ("undiesFeet")
-						current_style = src.AH.customizations["undies_feet"].style.type
+						current_style = src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style.type
 					if ("undiesBottom")
-						current_style = src.AH.customizations["undies_bottom"].style.type
+						current_style = src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style.type
 					if ("undiesTop")
-						current_style = src.AH.customizations["undies_top"].style.type
+						current_style = src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].style.type
 
 				if (isnull(current_style))
 					return
@@ -942,11 +942,11 @@ var/list/removed_jobs = list(
 						if ("hairTop")
 							src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style = new new_style
 						if ("undiesFeet")
-							src.AH.customizations["undies_feet"].style = new new_style
+							src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style = new new_style
 						if ("undiesBottom")
-							src.AH.customizations["undies_bottom"].style = new new_style
+							src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style = new new_style
 						if ("undiesTop")
-							src.AH.customizations["undies_top"].style = new new_style
+							src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].style = new new_style
 					src.update_preview_icon()
 					src.profile_modified = TRUE
 					return TRUE
@@ -1216,16 +1216,16 @@ var/list/removed_jobs = list(
 				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style = new /datum/customization_style/hair/short/short
 				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style = new /datum/customization_style/none
 				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style = new /datum/customization_style/none
-				src.AH.customizations["undies_feet"].style = new /datum/customization_style/none
-				src.AH.customizations["undies_bottom"].style = new /datum/customization_style/none
-				src.AH.customizations["undies_top"].style = new /datum/customization_style/none
+				src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style = new /datum/customization_style/none
+				src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style = new /datum/customization_style/none
+				src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].style = new /datum/customization_style/none
 
 				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color = initial(src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color)
 				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color = initial(src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color)
 				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color = initial(src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color)
-				src.AH.customizations["undies_feet"].color = initial(src.AH.customizations["undies_feet"].color)
-				src.AH.customizations["undies_bottom"].color = initial(src.AH.customizations["undies_bottom"].color)
-				src.AH.customizations["undies_top"].color = initial(src.AH.customizations["undies_top"].color)
+				src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].color = initial(src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].color)
+				src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].color = initial(src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].color)
+				src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].color = initial(src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].color)
 
 				src.AH.e_color = "#101010"
 				src.AH.s_tone = "#FAD7D0"
@@ -1846,15 +1846,15 @@ var/list/removed_jobs = list(
 			src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color = "#101010"
 		if (src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style == null)
 			src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style = new /datum/customization_style/none
-		if (src.AH.customizations["undies_feet"].style == null)
-			src.AH.customizations["undies_feet"].style = new /datum/customization_style/none
-			src.AH.customizations["undies_feet"].color = "#FEFEFE"
-		if (src.AH.customizations["undies_bottom"].style == null)
-			src.AH.customizations["undies_bottom"].style = new /datum/customization_style/none
-			src.AH.customizations["undies_bottom"].color = "#FEFEFE"
-		if (src.AH.customizations["undies_top"].style == null)
-			src.AH.customizations["undies_top"].style = new /datum/customization_style/none
-			src.AH.customizations["undies_top"].color = "#FEFEFE"
+		if (src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style == null)
+			src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style = new /datum/customization_style/none
+			src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].color = "#FEFEFE"
+		if (src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style == null)
+			src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style = new /datum/customization_style/none
+			src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].color = "#FEFEFE"
+		if (src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].style == null)
+			src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].style = new /datum/customization_style/none
+			src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].color = "#FEFEFE"
 		if (src.AH.e_color == null)
 			src.AH.e_color = "#101010"
 		if (src.AH.s_tone == null || src.AH.s_tone == "#FFFFFF" || src.AH.s_tone == "#ffffff")

@@ -553,31 +553,31 @@
 	src.AddOverlays(src.detail_standing_oversuit, "detail_oversuit", TRUE)
 
 /mob/living/carbon/human/proc/update_undies(body_offset)
-	src.image_undies_bottom = SafeGetOverlayImage("undies_bottom", 'icons/mob/human_underwear.dmi', "blank", MOB_UNDIES_BOTTOM_LAYER)
-	src.image_undies_top = SafeGetOverlayImage("undies_top", 'icons/mob/human_underwear.dmi', "blank", MOB_UNDIES_TOP_LAYER)
-	src.image_undies_feet = SafeGetOverlayImage("undies_feet", 'icons/mob/human_underwear.dmi', "blank", MOB_UNDIES_FEET_LAYER)
+	src.image_undies_bottom = SafeGetOverlayImage(CUSTOMIZATION::LAYER::UNDIES_BOTTOM, 'icons/mob/human_underwear.dmi', "blank", MOB_UNDIES_BOTTOM_LAYER)
+	src.image_undies_top = SafeGetOverlayImage(CUSTOMIZATION::LAYER::UNDIES_TOP, 'icons/mob/human_underwear.dmi', "blank", MOB_UNDIES_TOP_LAYER)
+	src.image_undies_feet = SafeGetOverlayImage(CUSTOMIZATION::LAYER::UNDIES_FEET, 'icons/mob/human_underwear.dmi', "blank", MOB_UNDIES_FEET_LAYER)
 	src.image_undies_feet.overlays.len = 0
 
 	var/datum/appearanceHolder/appearance_holder = src?.bioHolder?.mobAppearance || null
 	if (!istype(appearance_holder, /datum/appearanceHolder))
 		return
 
-	src.image_undies_bottom = image(icon = appearance_holder.customizations["undies_bottom"].style.icon, \
-		icon_state = appearance_holder.customizations["undies_bottom"].style.id, layer = appearance_holder.customizations["undies_bottom"].style.default_layer)
-	src.image_undies_top = image(icon = appearance_holder.customizations["undies_top"].style.icon, \
-		icon_state = appearance_holder.customizations["undies_top"].style.id, layer = appearance_holder.customizations["undies_top"].style.default_layer)
-	var/image/image_foot_left = image(icon = appearance_holder.customizations["undies_feet"].style.icon, \
-		icon_state = "[appearance_holder.customizations["undies_feet"].style.id]-L", layer = appearance_holder.customizations["undies_feet"].style.default_layer)
-	var/image/image_foot_right = image(icon = appearance_holder.customizations["undies_feet"].style.icon, \
-		icon_state = "[appearance_holder.customizations["undies_feet"].style.id]-R", layer = appearance_holder.customizations["undies_feet"].style.default_layer)
+	src.image_undies_bottom = image(icon = appearance_holder.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style.icon, \
+		icon_state = appearance_holder.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style.id, layer = appearance_holder.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style.default_layer)
+	src.image_undies_top = image(icon = appearance_holder.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].style.icon, \
+		icon_state = appearance_holder.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].style.id, layer = appearance_holder.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].style.default_layer)
+	var/image/image_foot_left = image(icon = appearance_holder.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style.icon, \
+		icon_state = "[appearance_holder.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style.id]-L", layer = appearance_holder.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style.default_layer)
+	var/image/image_foot_right = image(icon = appearance_holder.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style.icon, \
+		icon_state = "[appearance_holder.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style.id]-R", layer = appearance_holder.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style.default_layer)
 
 	if (src.image_undies_bottom?.icon_state && src.image_undies_bottom.icon_state != "none")
-		src.image_undies_bottom.color = appearance_holder.customizations["undies_bottom"].color
+		src.image_undies_bottom.color = appearance_holder.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].color
 		src.image_undies_bottom.pixel_y = body_offset
 		src.body_standing.overlays += src.image_undies_bottom
 
 	if (src.image_undies_feet?.icon_state && src.image_undies_feet?.icon_state != "none")
-		src.image_undies_feet.color = appearance_holder.customizations["undies_feet"].color
+		src.image_undies_feet.color = appearance_holder.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].color
 		src.image_undies_feet.pixel_y = body_offset
 
 		if (src.limbs?.l_leg)
@@ -588,13 +588,13 @@
 		src.body_standing.overlays += src.image_undies_feet
 
 	if (src.image_undies_top?.icon_state && src.image_undies_top.icon_state != "none")
-		src.image_undies_top.color = appearance_holder.customizations["undies_top"].color
+		src.image_undies_top.color = appearance_holder.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].color
 		src.image_undies_top.pixel_y = body_offset
 		src.body_standing.overlays += src.image_undies_top
 
-	src.AddOverlays(src.image_undies_bottom, "undies_bottom", TRUE)
-	src.AddOverlays(src.image_undies_feet, "undies_feet", TRUE)
-	src.AddOverlays(src.image_undies_top, "undies_top", TRUE)
+	src.AddOverlays(src.image_undies_bottom, CUSTOMIZATION::LAYER::UNDIES_BOTTOM, TRUE)
+	src.AddOverlays(src.image_undies_feet, CUSTOMIZATION::LAYER::UNDIES_FEET, TRUE)
+	src.AddOverlays(src.image_undies_top, CUSTOMIZATION::LAYER::UNDIES_TOP, TRUE)
 
 /mob/living/carbon/human/update_face()
 	..()
@@ -849,9 +849,9 @@ var/list/update_body_limbs = list("r_leg" = "stump_leg_right", "l_leg" = "stump_
 		src.detail_standing_oversuit = SafeGetOverlayImage("detail_oversuit", 'icons/mob/human.dmi', "blank", MOB_OVERSUIT_LAYER2)
 		src.detail_standing_oversuit.overlays.len = 0
 
-		src.image_undies_bottom = SafeGetOverlayImage("undies_bottom", 'icons/mob/human_underwear.dmi', "blank", MOB_UNDIES_BOTTOM_LAYER)
-		src.image_undies_feet = SafeGetOverlayImage("undies_feet", 'icons/mob/human_underwear.dmi', "blank", MOB_UNDIES_FEET_LAYER)
-		src.image_undies_top = SafeGetOverlayImage("undies_top", 'icons/mob/human_underwear.dmi', "blank", MOB_UNDIES_TOP_LAYER)
+		src.image_undies_bottom = SafeGetOverlayImage(CUSTOMIZATION::LAYER::UNDIES_BOTTOM, 'icons/mob/human_underwear.dmi', "blank", MOB_UNDIES_BOTTOM_LAYER)
+		src.image_undies_feet = SafeGetOverlayImage(CUSTOMIZATION::LAYER::UNDIES_FEET, 'icons/mob/human_underwear.dmi', "blank", MOB_UNDIES_FEET_LAYER)
+		src.image_undies_top = SafeGetOverlayImage(CUSTOMIZATION::LAYER::UNDIES_TOP, 'icons/mob/human_underwear.dmi', "blank", MOB_UNDIES_TOP_LAYER)
 
 		var/eye_offset = AHOLD.e_offset_y // Monkey need human eyes to see good
 		var/body_offset = AHOLD.mob_body_offset // Monkey need human arms to hug good
@@ -1169,7 +1169,7 @@ var/list/update_body_limbs = list("r_leg" = "stump_leg_right", "l_leg" = "stump_
 				((AHOLD.mob_appearance_flags & WEARS_UNDERPANTS) || src.underpants_override)) // no more bikini werewolves
 				src.update_undies(body_offset)
 			else
-				ClearSpecificOverlays("undies_bottom", "undies_feet", "undies_top")
+				ClearSpecificOverlays(CUSTOMIZATION::LAYER::UNDIES_BOTTOM, CUSTOMIZATION::LAYER::UNDIES_FEET, CUSTOMIZATION::LAYER::UNDIES_TOP)
 
 			if (length(src.bandaged) > 0)
 				for (var/part in src.bandaged)

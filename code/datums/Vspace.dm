@@ -233,16 +233,16 @@ datum/v_space
 		character.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color = user.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color
 		character.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color = user.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color
 		character.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color = user.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color
-		character.bioHolder.mobAppearance.customizations["undies_feet"].color = user.bioHolder.mobAppearance.customizations["undies_feet"].color
-		character.bioHolder.mobAppearance.customizations["undies_bottom"].color = user.bioHolder.mobAppearance.customizations["undies_bottom"].color
-		character.bioHolder.mobAppearance.customizations["undies_top"].color = user.bioHolder.mobAppearance.customizations["undies_top"].color
+		character.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].color = user.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].color
+		character.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].color = user.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].color
+		character.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].color = user.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].color
 		character.bioHolder.mobAppearance.s_tone = user.bioHolder.mobAppearance.s_tone
 		character.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style =  user.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style
 		character.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style =  user.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style
 		character.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style =  user.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style
-		character.bioHolder.mobAppearance.customizations["undies_bottom"].style = user.bioHolder.mobAppearance.customizations["undies_bottom"].style
-		character.bioHolder.mobAppearance.customizations["undies_feet"].style = user.bioHolder.mobAppearance.customizations["undies_feet"].style
-		character.bioHolder.mobAppearance.customizations["undies_top"].style = user.bioHolder.mobAppearance.customizations["undies_top"].style
+		character.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style = user.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style
+		character.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style = user.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style
+		character.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].style = user.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].style
 		character.bioHolder.mobAppearance.pronouns = user.bioHolder.mobAppearance.pronouns
 
 		sanitize_null_values(character)
@@ -267,15 +267,15 @@ datum/v_space
 			AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color = "#101010"
 		if (AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style == null)
 			AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style =  new /datum/customization_style/none
-		if (AH.customizations["undies_feet"].style == null)
-			AH.customizations["undies_feet"].style = new /datum/customization_style/none
-			AH.customizations["undies_feet"].color = "#FEFEFE"
-		if (AH.customizations["undies_bottom"].style == null)
-			AH.customizations["undies_bottom"].style = new /datum/customization_style/none
-			AH.customizations["undies_bottom"].color = "#FEFEFE"
-		if (AH.customizations["undies_top"].style == null)
-			AH.customizations["undies_top"].style = new /datum/customization_style/none
-			AH.customizations["undies_top"].color = "#FEFEFE"
+		if (AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style == null)
+			AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style = new /datum/customization_style/none
+			AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].color = "#FEFEFE"
+		if (AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style == null)
+			AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style = new /datum/customization_style/none
+			AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].color = "#FEFEFE"
+		if (AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].style == null)
+			AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].style = new /datum/customization_style/none
+			AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].color = "#FEFEFE"
 		if (AH.e_color == null)
 			AH.e_color = "#101010"
 		if (AH.s_tone == null  || AH.s_tone == "#ffffff")

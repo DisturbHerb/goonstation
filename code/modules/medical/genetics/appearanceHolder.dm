@@ -24,9 +24,9 @@
 		CUSTOMIZATION::LAYER::HAIR_BOTTOM = new /datum/customization_slot/hair/bottom,
 		CUSTOMIZATION::LAYER::HAIR_MIDDLE = new /datum/customization_slot/hair/middle,
 		CUSTOMIZATION::LAYER::HAIR_TOP = new /datum/customization_slot/hair/top,
-		"undies_feet" = new /datum/customizationHolder/undies/feet,
-		"undies_bottom" = new /datum/customizationHolder/undies/bottom,
-		"undies_top" = new /datum/customizationHolder/undies/top,
+		CUSTOMIZATION::LAYER::UNDIES_FEET = new /datum/customization_slot/undies/feet,
+		CUSTOMIZATION::LAYER::UNDIES_BOTTOM = new /datum/customization_slot/undies/bottom,
+		CUSTOMIZATION::LAYER::UNDIES_TOP = new /datum/customization_slot/undies/top,
 	)
 
 	/// Currently changes which sprite sheet is used

@@ -947,9 +947,9 @@
 		var/datum/customization_slot/hair_bottom = AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM]
 		var/datum/customization_slot/hair_middle = AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE]
 		var/datum/customization_slot/hair_top = AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP]
-		var/datum/customization_slot/undies_feet = AH.customizations["undies_feet"]
-		var/datum/customization_slot/undies_bottom = AH.customizations["undies_bottom"]
-		var/datum/customization_slot/undies_top = AH.customizations["undies_top"]
+		var/datum/customization_slot/undies_feet = AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET]
+		var/datum/customization_slot/undies_bottom = AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM]
+		var/datum/customization_slot/undies_top = AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP]
 		if (!src.tf_holder.mobAppearance.gender || !(src.tf_holder.mobAppearance.gender == MALE || src.tf_holder.mobAppearance.gender == FEMALE))
 			src.tf_holder.mobAppearance.gender = MALE
 		if (!AH)

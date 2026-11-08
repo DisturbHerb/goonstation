@@ -118,7 +118,7 @@
 		bioHolder.age = 400
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style = new /datum/customization_style/hair/short/pomp
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color = "#000000"
-		bioHolder.mobAppearance.customizations["undies_bottom"].style = new /datum/customization_style/undies/bottom/boxers
+		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style = new /datum/customization_style/undies/bottom/boxers
 		bioHolder.mobAppearance.gender = "male"
 		. = ..()
 
@@ -417,7 +417,7 @@ proc/empty_mouse_params()//TODO MOVE THIS!!!
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color = "#292929"
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style = new /datum/customization_style/hair/gimmick/shitty_hair
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style =  new /datum/customization_style/hair/gimmick/shitty_beard
-		bioHolder.mobAppearance.customizations["undies_bottom"].style = new /datum/customization_style/undies/bottom/briefs
+		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style = new /datum/customization_style/undies/bottom/briefs
 		bioHolder.age = 62
 		bioHolder.bloodType = "A-"
 		bioHolder.mobAppearance.gender = "male"
@@ -842,7 +842,7 @@ proc/empty_mouse_params()//TODO MOVE THIS!!!
 		bioHolder.bloodType = "Worchestershire"
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style = new /datum/customization_style/hair/short/pomp
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color = "#F6D646"
-		bioHolder.mobAppearance.customizations["undies_bottom"].style = new /datum/customization_style/undies/bottom/boxers
+		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style = new /datum/customization_style/undies/bottom/boxers
 		bioHolder.mobAppearance.gender = "male"
 
 	attackby(obj/item/W, mob/M)
@@ -1009,7 +1009,7 @@ proc/empty_mouse_params()//TODO MOVE THIS!!!
 		bioHolder.age = 49
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style = new /datum/customization_style/hair/facial/beard/fullbeard
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color = "#555555"
-		bioHolder.mobAppearance.customizations["undies_bottom"].style = new /datum/customization_style/undies/bottom/boxers
+		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style = new /datum/customization_style/undies/bottom/boxers
 		bioHolder.mobAppearance.gender = "male"
 		real_name = "[pick("Chut","Brendt","Franko","Steephe","Geames","Whitney","Thom","Cheddar")] \"Big Yank\" Whitney"
 
@@ -1060,7 +1060,7 @@ proc/empty_mouse_params()//TODO MOVE THIS!!!
 		bioHolder.age = 52
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style = new /datum/customization_style/hair/short/balding
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color = "#555555"
-		bioHolder.mobAppearance.customizations["undies_bottom"].style = new /datum/customization_style/undies/bottom/boxers
+		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style = new /datum/customization_style/undies/bottom/boxers
 		bioHolder.mobAppearance.gender = "male"
 
 	Life(datum/controller/process/mobs/parent)

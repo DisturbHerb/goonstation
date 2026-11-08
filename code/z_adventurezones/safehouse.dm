@@ -99,8 +99,8 @@
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color = "#241200"
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style =  new /datum/customization_style/none
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color = "#241200"
-		bioHolder.mobAppearance.customizations["undies_bottom"].style = new /datum/customization_style/none
-		bioHolder.mobAppearance.customizations["undies_bottom"].color = "#FFFFFF"
+		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style = new /datum/customization_style/none
+		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].color = "#FFFFFF"
 		bioHolder.mobAppearance.e_color = "#363978"
 		bioHolder.mobAppearance.s_tone = "#FFCC99"
 		bioHolder.age = 52

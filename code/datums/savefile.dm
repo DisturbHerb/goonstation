@@ -97,16 +97,16 @@ var/global/alist/undies_top_alias = alist(
 			F["[profileNum]_hair_color"] << AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color
 			F["[profileNum]_facial_color"] << AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color
 			F["[profileNum]_detail_color"] << AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color
-			F["[profileNum]_undies_feet_color"] << AH.customizations["undies_feet"].color
-			F["[profileNum]_undies_bottom_color"] << AH.customizations["undies_bottom"].color
-			F["[profileNum]_undies_top_color"] << AH.customizations["undies_top"].color
+			F["[profileNum]_undies_feet_color"] << AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].color
+			F["[profileNum]_undies_bottom_color"] << AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].color
+			F["[profileNum]_undies_top_color"] << AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].color
 
 			F["[profileNum]_hair_style_name"] << AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style
 			F["[profileNum]_facial_style_name"] << AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style
 			F["[profileNum]_detail_style_name"] << AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style
-			F["[profileNum]_undies_feet_name"] << AH.customizations["undies_feet"].style
-			F["[profileNum]_undies_bottom_name"] << AH.customizations["undies_bottom"].style
-			F["[profileNum]_undies_top_name"] << AH.customizations["undies_top"].style
+			F["[profileNum]_undies_feet_name"] << AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style
+			F["[profileNum]_undies_bottom_name"] << AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style
+			F["[profileNum]_undies_top_name"] << AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].style
 
 		// Job prefs
 		F["[profileNum]_job_prefs_1"] << src.job_favorite
@@ -310,19 +310,19 @@ var/global/alist/undies_top_alias = alist(
 			F["[profileNum]_detail_style_name"] >> AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style
 			F["[profileNum]_detail_style_name"] >> AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style_original
 
-			F["[profileNum]_undies_feet_color"] >> AH.customizations["undies_feet"].color
-			F["[profileNum]_undies_feet_color"] >> AH.customizations["undies_feet"].color_original
-			F["[profileNum]_undies_bottom_color"] >> AH.customizations["undies_bottom"].color
-			F["[profileNum]_undies_bottom_color"] >> AH.customizations["undies_bottom"].color_original
-			F["[profileNum]_undies_top_color"] >> AH.customizations["undies_top"].color
-			F["[profileNum]_undies_top_color"] >> AH.customizations["undies_top"].color_original
+			F["[profileNum]_undies_feet_color"] >> AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].color
+			F["[profileNum]_undies_feet_color"] >> AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].color_original
+			F["[profileNum]_undies_bottom_color"] >> AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].color
+			F["[profileNum]_undies_bottom_color"] >> AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].color_original
+			F["[profileNum]_undies_top_color"] >> AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].color
+			F["[profileNum]_undies_top_color"] >> AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].color_original
 
-			F["[profileNum]_undies_feet_name"] >> AH.customizations["undies_feet"].style
-			F["[profileNum]_undies_feet_name"] >> AH.customizations["undies_feet"].style_original
-			F["[profileNum]_undies_bottom_name"] >> AH.customizations["undies_bottom"].style
-			F["[profileNum]_undies_bottom_name"] >> AH.customizations["undies_bottom"].style_original
-			F["[profileNum]_undies_top_name"] >> AH.customizations["undies_top"].style
-			F["[profileNum]_undies_top_name"] >> AH.customizations["undies_top"].style_original
+			F["[profileNum]_undies_feet_name"] >> AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style
+			F["[profileNum]_undies_feet_name"] >> AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style_original
+			F["[profileNum]_undies_bottom_name"] >> AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style
+			F["[profileNum]_undies_bottom_name"] >> AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style_original
+			F["[profileNum]_undies_top_name"] >> AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].style
+			F["[profileNum]_undies_top_name"] >> AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].style_original
 
 			if(!istype(src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style, /datum/customization_style))
 				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style = find_style_by_name(src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style, allow_pref_blacklist=FALSE)
@@ -330,14 +330,14 @@ var/global/alist/undies_top_alias = alist(
 				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style = find_style_by_name(src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style, allow_pref_blacklist=FALSE)
 			if(!istype(src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style, /datum/customization_style))
 				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style = find_style_by_name(src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style, allow_pref_blacklist=FALSE)
-			if(!istype(src.AH.customizations["undies_feet"].style, /datum/customization_style))
-				src.AH.customizations["undies_feet"].style = find_style_by_name(src.AH.customizations["undies_feet"].style, \
+			if(!istype(src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style, /datum/customization_style))
+				src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style = find_style_by_name(src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style, \
 				style_filter = CUSTOMIZATION::SLOT::UNDIES, allow_pref_blacklist = FALSE)
-			if(!istype(src.AH.customizations["undies_bottom"].style, /datum/customization_style))
-				src.AH.customizations["undies_bottom"].style = find_style_by_name(src.AH.customizations["undies_bottom"].style, \
+			if(!istype(src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style, /datum/customization_style))
+				src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style = find_style_by_name(src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style, \
 				style_filter = CUSTOMIZATION::SLOT::UNDIES, allow_pref_blacklist = FALSE)
-			if(!istype(src.AH.customizations["undies_top"].style, /datum/customization_style))
-				src.AH.customizations["undies_top"].style = find_style_by_name(src.AH.customizations["undies_top"].style, \
+			if(!istype(src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].style, /datum/customization_style))
+				src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].style = find_style_by_name(src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].style, \
 				style_filter = CUSTOMIZATION::SLOT::UNDIES, allow_pref_blacklist = FALSE)
 
 			if(!istype(src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style_original, /datum/customization_style))
@@ -346,14 +346,14 @@ var/global/alist/undies_top_alias = alist(
 				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style_original = find_style_by_name(src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style_original, allow_pref_blacklist=FALSE)
 			if(!istype(src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style_original, /datum/customization_style))
 				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style_original = find_style_by_name(src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style_original, allow_pref_blacklist=FALSE)
-			if(!istype(src.AH.customizations["undies_feet"].style_original, /datum/customization_style))
-				src.AH.customizations["undies_feet"].style_original = find_style_by_name(src.AH.customizations["undies_feet"].style_original, \
+			if(!istype(src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style_original, /datum/customization_style))
+				src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style_original = find_style_by_name(src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_FEET].style_original, \
 				style_filter = CUSTOMIZATION::SLOT::UNDIES, allow_pref_blacklist = FALSE)
-			if(!istype(src.AH.customizations["undies_bottom"].style_original, /datum/customization_style))
-				src.AH.customizations["undies_bottom"].style_original = find_style_by_name(src.AH.customizations["undies_bottom"].style_original, \
+			if(!istype(src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style_original, /datum/customization_style))
+				src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style_original = find_style_by_name(src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_BOTTOM].style_original, \
 				style_filter = CUSTOMIZATION::SLOT::UNDIES, allow_pref_blacklist = FALSE)
-			if(!istype(src.AH.customizations["undies_top"].style_original, /datum/customization_style))
-				src.AH.customizations["undies_top"].style_original = find_style_by_name(src.AH.customizations["undies_top"].style_original, \
+			if(!istype(src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].style_original, /datum/customization_style))
+				src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].style_original = find_style_by_name(src.AH.customizations[CUSTOMIZATION::LAYER::UNDIES_TOP].style_original, \
 				style_filter = CUSTOMIZATION::SLOT::UNDIES, allow_pref_blacklist = FALSE)
 
 		// Job prefs
