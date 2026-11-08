@@ -27,3 +27,12 @@ ABSTRACT_TYPE(/datum/customization_slot/hair)
 
 /datum/customization_slot/hair/top
 	style =  new /datum/customization_style/none
+
+/datum/customization_slot/undies/feet
+	style =  new /datum/customization_style/none
+
+/datum/customization_slot/undies/bottom
+	style =  new /datum/customization_style/none
+
+/datum/customization_slot/undies/top
+	style =  new /datum/customization_style/none

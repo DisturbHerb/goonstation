@@ -32,7 +32,6 @@ ADD_TO_NAMESPACE(CUSTOMIZATION, CATEGORY)(var/const/HAIR_EYEBROWS = "cat_hair-ey
 ADD_TO_NAMESPACE(CUSTOMIZATION, CATEGORY)(var/const/HAIR_MAKEUP = "cat_hair-makeup")
 ADD_TO_NAMESPACE(CUSTOMIZATION, CATEGORY)(var/const/HAIR_BIOLOGICAL = "cat_hair-biological")
 
-//------------ Customization style groups ------------//
 /// Head hair types. Can be cut with scissors.
 ADD_TO_NAMESPACE(CUSTOMIZATION)(var/list/group__hair_head = list(
 	CUSTOMIZATION::CATEGORY::HAIR_SHORT,
@@ -56,6 +55,17 @@ ADD_TO_NAMESPACE(CUSTOMIZATION)(var/list/group__hair_razor = list(
 	CUSTOMIZATION::CATEGORY::HAIR_EYEBROWS,
 ))
 
+//------------ Undies ------------//
+ADD_TO_NAMESPACE(CUSTOMIZATION, SLOT)(var/const/UNDIES = "slot-undies")
+
+ADD_TO_NAMESPACE(CUSTOMIZATION, LAYER)(var/const/UNDIES_FEET = "layer_undies-feet")
+ADD_TO_NAMESPACE(CUSTOMIZATION, LAYER)(var/const/UNDIES_BOTTOM = "layer_undies-bottom")
+ADD_TO_NAMESPACE(CUSTOMIZATION, LAYER)(var/const/UNDIES_TOP = "layer_undies-top")
+
+ADD_TO_NAMESPACE(CUSTOMIZATION, CATEGORY)(var/const/UNDIES_FEET = "cat_undies-feet")
+ADD_TO_NAMESPACE(CUSTOMIZATION, CATEGORY)(var/const/UNDIES_BOTTOM = "cat_undies-bottom")
+ADD_TO_NAMESPACE(CUSTOMIZATION, CATEGORY)(var/const/UNDIES_TOP = "cat_undies-top")
+
 //------------ Helpers ------------//
 /// Sort order for hair types. Always mirror with any new `/datum/customization_style` types.
 ADD_TO_NAMESPACE(CUSTOMIZATION)(var/list/sort_order = list(
@@ -69,4 +79,8 @@ ADD_TO_NAMESPACE(CUSTOMIZATION)(var/list/sort_order = list(
 	CUSTOMIZATION::CATEGORY::HAIR_EYEBROWS,
 	CUSTOMIZATION::CATEGORY::HAIR_MAKEUP,
 	CUSTOMIZATION::CATEGORY::HAIR_BIOLOGICAL,
+
+	CUSTOMIZATION::CATEGORY::UNDIES_TOP,
+	CUSTOMIZATION::CATEGORY::UNDIES_BOTTOM,
+	CUSTOMIZATION::CATEGORY::UNDIES_FEET,
 ))

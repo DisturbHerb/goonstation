@@ -193,11 +193,11 @@ ABSTRACT_TYPE(/obj/machinery/vending/meat)
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color = "#241200"
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style =  new /datum/customization_style/hair/gimmick/shitty_beard_stains
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color = "#663300"
+		bioHolder.mobAppearance.customizations["undies_bottom"].style = new /datum/customization_style/undies/bottom/briefs
+		bioHolder.mobAppearance.customizations["undies_bottom"].color = "#996633"
 		bioHolder.age = 63
 		bioHolder.bloodType = "A+"
 		bioHolder.mobAppearance.gender = "male"
-		bioHolder.mobAppearance.underwear = "briefs"
-		bioHolder.mobAppearance.u_color = "#996633"
 		. = ..()
 
 	// John Bill always goes to the afterlife bar.

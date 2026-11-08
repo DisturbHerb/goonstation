@@ -90,19 +90,6 @@ var/global/list/hair_details = list("einstein" = /datum/customization_style/hair
 	"wavy_tail" = /datum/customization_style/hair/hairup/wavy_tail_half\
 	)
 
-// all these icon state names are ridiculous
-var/global/list/feminine_ustyles = list("No Underwear" = "none",\
-	"Bra and Panties" = "brapan",\
-	"Tanktop and Panties" = "tankpan",\
-	"Bra and Boyshorts" = "braboy",\
-	"Tanktop and Boyshorts" = "tankboy",\
-	"Panties" = "panties",\
-	"Boyshorts" = "boyshort")
-var/global/list/masculine_ustyles = list("No Underwear" = "none",\
-	"Briefs" = "briefs",\
-	"Boxers" = "boxers",\
-	"Boyshorts" = "boyshort")
-
 var/global/list/male_screams = list("male", "malescream4", "malescream5", "malescream6", "malescream7")
 var/global/list/female_screams = list("female", "femalescream1", "femalescream2", "femalescream3", "femalescream4")
 
@@ -160,6 +147,9 @@ var/global/list/female_screams = list("female", "femalescream1", "femalescream2"
 	var/datum/customization_slot/hair_bottom = AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM]
 	var/datum/customization_slot/hair_middle = AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE]
 	var/datum/customization_slot/hair_top = AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP]
+	var/datum/customization_slot/undies_feet = AH.customizations["undies_feet"]
+	var/datum/customization_slot/undies_bottom = AH.customizations["undies_bottom"]
+	var/datum/customization_slot/undies_top = AH.customizations["undies_top"]
 
 	var/list/hair_colors = list("#101010", "#924D28", "#61301B", "#E0721D", "#D7A83D",\
 	"#D8C078", "#E3CC88", "#F2DA91", "#664F3C", "#8C684A", "#EE2A22", "#B89778", "#3B3024", "#A56b46")
@@ -253,17 +243,30 @@ var/global/list/female_screams = list("female", "femalescream1", "femalescream2"
 			hair_top.style = new /datum/customization_style/none
 
 	if (change_underwear)
+		// Maintains parity. This choice predates open-source. - @DisturbHerb
 		if (AH.gender == MALE)
 			if (prob(1))
-				AH.underwear = pick(feminine_ustyles)
+				undies_feet.style = pick(get_available_custom_style_types(H?.client, CUSTOMIZATION::LAYER::UNDIES_FEET, FEMALE, TRUE))
+				undies_top.style = pick(get_available_custom_style_types(H?.client, CUSTOMIZATION::LAYER::UNDIES_TOP, FEMALE, TRUE))
+				undies_bottom.style = pick(get_available_custom_style_types(H?.client, CUSTOMIZATION::LAYER::UNDIES_BOTTOM, FEMALE, TRUE))
 			else
-				AH.underwear = pick(masculine_ustyles)
+				undies_feet.style = pick(get_available_custom_style_types(H?.client, CUSTOMIZATION::LAYER::UNDIES_FEET, MALE, TRUE))
+				undies_top.style = pick(get_available_custom_style_types(H?.client, CUSTOMIZATION::LAYER::UNDIES_TOP, MALE, TRUE))
+				undies_bottom.style = pick(get_available_custom_style_types(H?.client, CUSTOMIZATION::LAYER::UNDIES_BOTTOM, MALE, TRUE))
 		else
 			if (prob(5))
-				AH.underwear = pick(masculine_ustyles)
+				undies_feet.style = pick(get_available_custom_style_types(H?.client, CUSTOMIZATION::LAYER::UNDIES_FEET, MALE, TRUE))
+				undies_top.style = pick(get_available_custom_style_types(H?.client, CUSTOMIZATION::LAYER::UNDIES_TOP, MALE, TRUE))
+				undies_bottom.style = pick(get_available_custom_style_types(H?.client, CUSTOMIZATION::LAYER::UNDIES_BOTTOM, MALE, TRUE))
 			else
-				AH.underwear = pick(feminine_ustyles)
-		AH.u_color = random_saturated_hex_color()
+				undies_feet.style = pick(get_available_custom_style_types(H?.client, CUSTOMIZATION::LAYER::UNDIES_FEET, FEMALE, TRUE))
+				undies_top.style = pick(get_available_custom_style_types(H?.client, CUSTOMIZATION::LAYER::UNDIES_TOP, FEMALE, TRUE))
+				undies_bottom.style = pick(get_available_custom_style_types(H?.client, CUSTOMIZATION::LAYER::UNDIES_BOTTOM, FEMALE, TRUE))
+		var/sock_color = random_saturated_hex_color() // I didn't think they should all match. Sue me.
+		var/undies_color = random_saturated_hex_color()
+		undies_feet.color = sock_color
+		undies_bottom.color = undies_color
+		undies_top.color =  undies_color
 
 	if (H && change_blood)
 		H.bioHolder.bloodType = random_blood_type(1)

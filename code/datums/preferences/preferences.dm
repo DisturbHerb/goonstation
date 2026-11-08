@@ -313,8 +313,12 @@ var/list/removed_jobs = list(
 			"hairMiddleStyle" = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style.name,
 			"hairTopColor" = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color,
 			"hairTopStyle" = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style.name,
-			"underwearColor" = src.AH.u_color,
-			"underwearStyle" = src.AH.underwear,
+			"undiesFeetColor" = src.AH.customizations["undies_feet"].color,
+			"undiesFeetStyle" = src.AH.customizations["undies_feet"].style.name,
+			"undiesBottomColor" = src.AH.customizations["undies_bottom"].color,
+			"undiesBottomStyle" = src.AH.customizations["undies_bottom"].style.name,
+			"undiesTopColor" = src.AH.customizations["undies_top"].color,
+			"undiesTopStyle" = src.AH.customizations["undies_top"].style.name,
 			"randomAppearance" = src.be_random_look,
 
 			"jobFavourite" = src.job_favorite,
@@ -829,8 +833,12 @@ var/list/removed_jobs = list(
 						current_color = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color
 					if ("hairTop")
 						current_color = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color
-					if ("underwear")
-						current_color = src.AH.u_color
+					if ("undiesFeet")
+						current_color = src.AH.customizations["undies_feet"].color
+					if ("undiesBottom")
+						current_color = src.AH.customizations["undies_bottom"].color
+					if ("undiesTop")
+						current_color = src.AH.customizations["undies_top"].color
 				var/new_color = tgui_color_picker(usr, "Please select a color.", "Character Generation", current_color)
 				if (new_color)
 					switch (params["id"])
@@ -840,8 +848,12 @@ var/list/removed_jobs = list(
 							src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color = new_color
 						if ("hairTop")
 							src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color = new_color
-						if ("underwear")
-							src.AH.u_color = new_color
+						if ("undiesFeet")
+							src.AH.customizations["undies_feet"].color = new_color
+						if ("undiesBottom")
+							src.AH.customizations["undies_bottom"].color = new_color
+						if ("undiesTop")
+							src.AH.customizations["undies_top"].color = new_color
 					src.update_preview_icon()
 					src.profile_modified = TRUE
 					return TRUE
@@ -855,8 +867,12 @@ var/list/removed_jobs = list(
 						new_style = select_custom_style(usr, src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].slot_type, FALSE)
 					if ("hairTop")
 						new_style = select_custom_style(usr, src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].slot_type, FALSE)
-					if ("underwear")
-						new_style = tgui_input_list(usr, "Select an underwear style", "Character Generation", underwear_styles)
+					if ("undiesFeet")
+						new_style = select_custom_style(usr, CUSTOMIZATION::LAYER::UNDIES_FEET, TRUE)
+					if ("undiesBottom")
+						new_style = select_custom_style(usr, CUSTOMIZATION::LAYER::UNDIES_BOTTOM, TRUE)
+					if ("undiesTop")
+						new_style = select_custom_style(usr, CUSTOMIZATION::LAYER::UNDIES_TOP, TRUE)
 				if (new_style)
 					switch (params["id"])
 						if ("hairBottom")
@@ -865,8 +881,12 @@ var/list/removed_jobs = list(
 							src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style = new_style
 						if ("hairTop")
 							src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style = new_style
-						if ("underwear")
-							src.AH.underwear = new_style
+						if ("undiesFeet")
+							src.AH.customizations["undies_feet"].style = new_style
+						if ("undiesBottom")
+							src.AH.customizations["undies_bottom"].style = new_style
+						if ("undiesTop")
+							src.AH.customizations["undies_top"].style = new_style
 					src.update_preview_icon()
 					src.profile_modified = TRUE
 					return TRUE
@@ -884,8 +904,12 @@ var/list/removed_jobs = list(
 						current_style = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style.type
 					if ("hairTop")
 						current_style = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style.type
-					if ("underwear")
-						current_style = src.AH.underwear
+					if ("undiesFeet")
+						current_style = src.AH.customizations["undies_feet"].style.type
+					if ("undiesBottom")
+						current_style = src.AH.customizations["undies_bottom"].style.type
+					if ("undiesTop")
+						current_style = src.AH.customizations["undies_top"].style.type
 
 				if (isnull(current_style))
 					return
@@ -893,8 +917,12 @@ var/list/removed_jobs = list(
 				switch (params["id"])
 					if ("hairBottom", "hairMiddle", "hairTop")
 						style_list = get_available_custom_style_types(usr.client, CUSTOMIZATION::SLOT::HAIR, allow_pref_blacklist=FALSE)
-					if ("underwear")
-						style_list = underwear_styles
+					if ("undiesFeet")
+						style_list = get_available_custom_style_types(usr.client, CUSTOMIZATION::CATEGORY::UNDIES_FEET, allow_pref_blacklist=FALSE)
+					if ("undiesBottom")
+						style_list = get_available_custom_style_types(usr.client, CUSTOMIZATION::CATEGORY::UNDIES_BOTTOM, allow_pref_blacklist=FALSE)
+					if ("undiesTop")
+						style_list = get_available_custom_style_types(usr.client, CUSTOMIZATION::CATEGORY::UNDIES_TOP, allow_pref_blacklist=FALSE)
 
 				if (isnull(style_list))
 					return
@@ -913,8 +941,12 @@ var/list/removed_jobs = list(
 							src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style = new new_style
 						if ("hairTop")
 							src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style = new new_style
-						if ("underwear")
-							src.AH.underwear = new_style
+						if ("undiesFeet")
+							src.AH.customizations["undies_feet"].style = new new_style
+						if ("undiesBottom")
+							src.AH.customizations["undies_bottom"].style = new new_style
+						if ("undiesTop")
+							src.AH.customizations["undies_top"].style = new new_style
 					src.update_preview_icon()
 					src.profile_modified = TRUE
 					return TRUE
@@ -1184,14 +1216,18 @@ var/list/removed_jobs = list(
 				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style = new /datum/customization_style/hair/short/short
 				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style = new /datum/customization_style/none
 				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style = new /datum/customization_style/none
-				src.AH.underwear = "No Underwear"
+				src.AH.customizations["undies_feet"].style = new /datum/customization_style/none
+				src.AH.customizations["undies_bottom"].style = new /datum/customization_style/none
+				src.AH.customizations["undies_top"].style = new /datum/customization_style/none
 
 				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color = initial(src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color)
 				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color = initial(src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color)
 				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color = initial(src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color)
-				src.AH.e_color = "#101010"
-				src.AH.u_color = "#FEFEFE"
+				src.AH.customizations["undies_feet"].color = initial(src.AH.customizations["undies_feet"].color)
+				src.AH.customizations["undies_bottom"].color = initial(src.AH.customizations["undies_bottom"].color)
+				src.AH.customizations["undies_top"].color = initial(src.AH.customizations["undies_top"].color)
 
+				src.AH.e_color = "#101010"
 				src.AH.s_tone = "#FAD7D0"
 				src.AH.s_tone_original = "#FAD7D0"
 
@@ -1810,10 +1846,17 @@ var/list/removed_jobs = list(
 			src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color = "#101010"
 		if (src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style == null)
 			src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style = new /datum/customization_style/none
+		if (src.AH.customizations["undies_feet"].style == null)
+			src.AH.customizations["undies_feet"].style = new /datum/customization_style/none
+			src.AH.customizations["undies_feet"].color = "#FEFEFE"
+		if (src.AH.customizations["undies_bottom"].style == null)
+			src.AH.customizations["undies_bottom"].style = new /datum/customization_style/none
+			src.AH.customizations["undies_bottom"].color = "#FEFEFE"
+		if (src.AH.customizations["undies_top"].style == null)
+			src.AH.customizations["undies_top"].style = new /datum/customization_style/none
+			src.AH.customizations["undies_top"].color = "#FEFEFE"
 		if (src.AH.e_color == null)
 			src.AH.e_color = "#101010"
-		if (src.AH.u_color == null)
-			src.AH.u_color = "#FEFEFE"
 		if (src.AH.s_tone == null || src.AH.s_tone == "#FFFFFF" || src.AH.s_tone == "#ffffff")
 			src.AH.s_tone = "#FEFEFE"
 		if (!src.preferred_uplink)

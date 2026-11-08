@@ -52,8 +52,12 @@ export interface CharacterPreferencesData {
   hairTopColor: string;
   hairTopStyle: string;
 
-  underwearColor: string;
-  underwearStyle: string;
+  undiesTopColor: string;
+  undiesTopStyle: string;
+  undiesBottomColor: string;
+  undiesBottomStyle: string;
+  undiesFeetColor: string;
+  undiesFeetStyle: string;
 
   randomAppearance: BooleanLike;
 

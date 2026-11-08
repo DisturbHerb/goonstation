@@ -863,6 +863,7 @@
 		dat += "Update ID/PDA/Manifest: <a href='byond://?src=\ref[src];updateid=1'>[src.update_wearid ? "YES" : "NO"]</a><br>"
 		dat += "</td><td><b>Preview</b><br><img src=polymorphicon.png height=64 width=64></td></tr></table>"
 
+		// TODO: UNDIES
 		dat += "<hr><b>Bottom Hair</b><br>"
 		dat += "<a href='byond://?src=\ref[src];hair=input'>Change Color</a> <font face=\"fixedsys\" size=\"3\" color=\"[src.tf_holder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color]\"><table bgcolor=\"[src.tf_holder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color]\"><tr><td>C1</td></tr></table></font>"
 		dat += "Style: <a href='byond://?src=\ref[src];hair_bottom=input'>[src.tf_holder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style.name]</a>"
@@ -946,6 +947,9 @@
 		var/datum/customization_slot/hair_bottom = AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM]
 		var/datum/customization_slot/hair_middle = AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE]
 		var/datum/customization_slot/hair_top = AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP]
+		var/datum/customization_slot/undies_feet = AH.customizations["undies_feet"]
+		var/datum/customization_slot/undies_bottom = AH.customizations["undies_bottom"]
+		var/datum/customization_slot/undies_top = AH.customizations["undies_top"]
 		if (!src.tf_holder.mobAppearance.gender || !(src.tf_holder.mobAppearance.gender == MALE || src.tf_holder.mobAppearance.gender == FEMALE))
 			src.tf_holder.mobAppearance.gender = MALE
 		if (!AH)
@@ -964,12 +968,21 @@
 			hair_top.color = "#101010"
 		if (hair_top.style == null)
 			hair_top.style = new /datum/customization_style/none
+		if (undies_bottom.color == null)
+			undies_bottom.color = "#FEFEFE"
+		if (undies_bottom.style == null)
+			undies_bottom.style = new /datum/customization_style/none
+		if (undies_feet.color == null)
+			undies_feet.color = "#FEFEFE"
+		if (undies_feet.style == null)
+			undies_feet.style = new /datum/customization_style/none
+		if (undies_top.color == null)
+			undies_top.color = "#FEFEFE"
+		if (undies_top.style == null)
+			undies_top.style = new /datum/customization_style/none
 		if (AH.e_color == null)
 			AH.e_color = "#101010"
-		if (AH.u_color == null)
-			AH.u_color = "#FEFEFE"
 		return
-
 
 	proc/process() //Oh no what if we get orphaned!! (Also don't garbage collect us as soon as we spawn you fuk)
 		while(!disposed)
@@ -979,6 +992,7 @@
 			sleep(2 SECONDS)
 		return
 
+	// TODO: UNDIES
 	proc/update_preview_icon()
 		src.preview_icon = null
 
