@@ -243,7 +243,7 @@ TYPEINFO(/mob/living/carbon/human/npc/monkey)
 		..()
 		START_TRACKING
 		if (!src.disposed)
-			src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style = new /datum/customization_style/none
+			src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].clear_style()
 			if (src.name == "monkey" || !src.name)
 				src.name = pick_string_autokey("names/monkey.txt")
 			src.real_name = src.name

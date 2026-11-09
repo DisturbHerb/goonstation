@@ -256,15 +256,15 @@ datum/v_space
 		if (AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color == null)
 			AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color = "#101010"
 		if (AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style == null)
-			AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style =  new /datum/customization_style/none
+			AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].clear_style()
 		if (AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color == null)
 			AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color = "#101010"
 		if (AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style == null)
-			AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style =  new /datum/customization_style/none
+			AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].clear_style()
 		if (AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color == null)
 			AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color = "#101010"
 		if (AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style == null)
-			AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style =  new /datum/customization_style/none
+			AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].clear_style()
 		if (AH.e_color == null)
 			AH.e_color = "#101010"
 		if (AH.u_color == null)

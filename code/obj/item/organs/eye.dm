@@ -48,11 +48,11 @@
 
 	proc/update_color(datum/appearanceHolder/AH, side)
 		if(src.change_iris)
-			if (AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style.id == "hetcro[side]")
+			if (AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style::id == "hetcro[side]")
 				src.iris_color = AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color
-			else if (AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style.id == "hetcro[side]")
+			else if (AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style::id == "hetcro[side]")
 				src.iris_color = AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color
-			else if (AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style.id == "hetcro[side]")
+			else if (AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style::id == "hetcro[side]")
 				src.iris_color = AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color
 			else
 				src.iris_color = AH.e_color

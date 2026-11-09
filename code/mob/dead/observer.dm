@@ -115,11 +115,11 @@ TYPEINFO(/mob/dead/observer)
 			is_mutantrace = TRUE
 			break
 
-	var/hair_bottom_state = P.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style.id
-	var/hair_middle_state = P.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style.id
-	var/hair_top_state = P.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style.id
+	var/hair_bottom_state = P.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style::id
+	var/hair_middle_state = P.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style::id
+	var/hair_top_state = P.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style::id
 
-	var/image/hair = image(P.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style.icon, hair_bottom_state)
+	var/image/hair = image(P.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style::icon, hair_bottom_state)
 	hair.color = P.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color
 	hair.alpha = GHOST_HAIR_ALPHA
 
@@ -133,12 +133,12 @@ TYPEINFO(/mob/dead/observer)
 	if (!is_mutantrace || force_hair || (is_mutantrace && ("bald" in P.traitPreferences.traits_selected)))
 		src.AddOverlays(hair, "hair")
 
-		var/image/beard = image(P.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style.icon, hair_middle_state)
+		var/image/beard = image(P.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style::icon, hair_middle_state)
 		beard.color = P.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color
 		beard.alpha = GHOST_HAIR_ALPHA
 		src.AddOverlays(beard, "beard")
 
-		var/image/detail = image(P.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style.icon, hair_top_state)
+		var/image/detail = image(P.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style::icon, hair_top_state)
 		detail.color = P.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color
 		detail.alpha = GHOST_HAIR_ALPHA
 		src.AddOverlays(detail, "detail")
@@ -453,22 +453,22 @@ TYPEINFO(/mob/dead/observer)
 				temp_holder = src.bioHolder.mobAppearance
 		else
 			temp_holder = src.AH_we_spawned_with
-		var/image/hair = image(temp_holder.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style.icon, temp_holder.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style.id)
+		var/image/hair = image(temp_holder.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style.icon, temp_holder.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style::id)
 		hair.color = src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color
 		hair.alpha = GHOST_HAIR_ALPHA
 		O.AddOverlays(hair, "hair")
 
-		var/image/beard = image(temp_holder.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style.icon, temp_holder.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style.id)
+		var/image/beard = image(temp_holder.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style.icon, temp_holder.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style::id)
 		beard.color = src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color
 		beard.alpha = GHOST_HAIR_ALPHA
 		O.AddOverlays(beard, "beard")
 
-		var/image/detail = image(temp_holder.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style.icon, temp_holder.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style.id)
+		var/image/detail = image(temp_holder.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style.icon, temp_holder.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style::id)
 		detail.color = src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color
 		detail.alpha = GHOST_HAIR_ALPHA
 		O.AddOverlays(detail, "detail")
 
-		var/hair_bottom = src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style.id
+		var/hair_bottom = src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style::id
 		if(hair_bottom && hair_bottom != "none")
 			O.wig = new
 			O.wig.mat_changename = 0

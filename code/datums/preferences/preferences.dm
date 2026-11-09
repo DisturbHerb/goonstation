@@ -269,6 +269,10 @@ var/list/removed_jobs = list(
 				"default" = client.getDefaultVolume(i - 1),
 			))
 
+		var/datum/customization_style/hair/hair_bottom_style = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style
+		var/datum/customization_style/hair/hair_middle_style = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style
+		var/datum/customization_style/hair/hair_top_style = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style
+
 		. = list(
 			"isMentor" = client.is_mentor(),
 
@@ -308,11 +312,11 @@ var/list/removed_jobs = list(
 			"specialStyle" = src.AH.special_style,
 			"eyeColor" = src.AH.e_color,
 			"hairBottomColor" = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color,
-			"hairBottomStyle" = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style.name,
+			"hairBottomStyle" = hair_bottom_style::name,
 			"hairMiddleColor" = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color,
-			"hairMiddleStyle" = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style.name,
+			"hairMiddleStyle" = hair_middle_style::name,
 			"hairTopColor" = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color,
-			"hairTopStyle" = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style.name,
+			"hairTopStyle" = hair_top_style::name,
 			"underwearColor" = src.AH.u_color,
 			"underwearStyle" = src.AH.underwear,
 			"randomAppearance" = src.be_random_look,
@@ -860,11 +864,11 @@ var/list/removed_jobs = list(
 				if (new_style)
 					switch (params["id"])
 						if ("hairBottom")
-							src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style = new_style
+							src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].set_style(new_style)
 						if ("hairMiddle")
-							src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style = new_style
+							src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].set_style(new_style)
 						if ("hairTop")
-							src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style = new_style
+							src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].set_style(new_style)
 						if ("underwear")
 							src.AH.underwear = new_style
 					src.update_preview_icon()
@@ -879,11 +883,11 @@ var/list/removed_jobs = list(
 
 				switch (params["id"])
 					if ("hairBottom")
-						current_style = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style.type
+						current_style = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style
 					if ("hairMiddle")
-						current_style = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style.type
+						current_style = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style
 					if ("hairTop")
-						current_style = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style.type
+						current_style = src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style
 					if ("underwear")
 						current_style = src.AH.underwear
 
@@ -908,11 +912,11 @@ var/list/removed_jobs = list(
 				if (new_style)
 					switch (params["id"])
 						if ("hairBottom")
-							src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style = new new_style
+							src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style = new_style
 						if ("hairMiddle")
-							src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style = new new_style
+							src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style = new_style
 						if ("hairTop")
-							src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style = new new_style
+							src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style = new_style
 						if ("underwear")
 							src.AH.underwear = new_style
 					src.update_preview_icon()
@@ -1181,9 +1185,9 @@ var/list/removed_jobs = list(
 				src.AH.gender = MALE
 				src.randomize_name()
 
-				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style = new /datum/customization_style/hair/short/short
-				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style = new /datum/customization_style/none
-				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style = new /datum/customization_style/none
+				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].set_style("short")
+				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].clear_style()
+				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].clear_style()
 				src.AH.underwear = "No Underwear"
 
 				src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color = initial(src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color)
@@ -1801,15 +1805,15 @@ var/list/removed_jobs = list(
 		if (src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color == null)
 			src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color = "#101010"
 		if (src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style == null)
-			src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style = new  /datum/customization_style/none
+			src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].clear_style()
 		if (src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color == null)
 			src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color = "#101010"
 		if (src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style == null)
-			src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style = new /datum/customization_style/none
+			src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].clear_style()
 		if (src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color == null)
 			src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color = "#101010"
 		if (src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style == null)
-			src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style = new /datum/customization_style/none
+			src.AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].clear_style()
 		if (src.AH.e_color == null)
 			src.AH.e_color = "#101010"
 		if (src.AH.u_color == null)

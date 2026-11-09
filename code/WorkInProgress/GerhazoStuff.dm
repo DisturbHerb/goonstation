@@ -37,9 +37,9 @@
 		abilityHolder.updateButtons()
 
 	initializeBioholder()
-		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style =  new /datum/customization_style/hair/short/short
-		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style =  new /datum/customization_style/hair/facial/beard/fullbeard
-		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style =  new /datum/customization_style/hair/eyebrows/regular
+		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].set_style("short")
+		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].set_style("fullbeard")
+		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].set_style("eyebrows")
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color = "#555555"
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color = "#555555"
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color = "#555555"

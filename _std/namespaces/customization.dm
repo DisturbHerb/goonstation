@@ -11,6 +11,9 @@ CREATE_NAMESPACE(CUSTOMIZATION, LAYER)
 /// `/datum/customization_style` categories. E.g. short, long hair.
 CREATE_NAMESPACE(CUSTOMIZATION, CATEGORY)
 
+/// Universal none/empty style ID.
+ADD_TO_NAMESPACE(CUSTOMIZATION)(var/const/NONE = "none")
+
 //------------ Hair ------------//
 /// Hair slot.
 ADD_TO_NAMESPACE(CUSTOMIZATION, SLOT)(var/const/HAIR = "slot-hair")

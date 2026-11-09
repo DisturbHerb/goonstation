@@ -744,9 +744,12 @@
 		src.image_hair_middle?.layer = MOB_HAIR_LAYER1
 		src.image_hair_top?.layer = MOB_HAIR_LAYER1
 	else
-		src.image_hair_bottom?.layer = src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style.default_layer
-		src.image_hair_middle?.layer = src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style.default_layer
-		src.image_hair_top?.layer = src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style.default_layer
+		var/datum/customization_style/hair/bottom_style = src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style
+		var/datum/customization_style/hair/middle_style = src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style
+		var/datum/customization_style/hair/top_style = src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style
+		src.image_hair_bottom?.layer = bottom_style::default_layer
+		src.image_hair_middle?.layer = middle_style::default_layer
+		src.image_hair_top?.layer = top_style::default_layer
 
 
 var/list/update_body_limbs = list("r_leg" = "stump_leg_right", "l_leg" = "stump_leg_left", "r_arm" = "stump_arm_right", "l_arm" = "stump_arm_left")

@@ -2425,10 +2425,13 @@ Tries to put an item in an available backpack, belt storage, pocket, or hand slo
 	return ret
 
 /mob/living/carbon/human/proc/is_bald()
+	. = FALSE
 	var/datum/appearanceHolder/AH = src.bioHolder.mobAppearance
-	return istype(AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style, /datum/customization_style/none) \
-	&& istype(AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style, /datum/customization_style/none) \
-	&& istype(AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style, /datum/customization_style/none)
+	for (var/datum/customization_slot/slot as anything in AH.customizations)
+		if (!slot.is_empty())
+			continue
+		. = TRUE
+		break
 
 /mob/living/carbon/human/proc/create_wig(var/keep_hair = FALSE)
 	if (!src.bioHolder || !src.bioHolder.mobAppearance)
@@ -2440,16 +2443,16 @@ Tries to put an item in an available backpack, belt storage, pocket, or hand slo
 	W.icon_state = "bald" // Let's give the actual hair a chance to shine
 
 	var/hair_list = list()
-	hair_list[src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style.id] = src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color
-	hair_list[src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style.id] = src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color
-	hair_list[src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style.id] = src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color
+	hair_list[src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style::id] = src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color
+	hair_list[src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style::id] = src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color
+	hair_list[src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style::id] = src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color
 
 	W.setup_wig(hair_list)
 
 	if (!keep_hair)
-		src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style = new /datum/customization_style/none
-		src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style = new /datum/customization_style/none
-		src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style = new /datum/customization_style/none
+		src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].clear_style()
+		src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].clear_style()
+		src.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].clear_style()
 		src.update_colorful_parts()
 	return W
 

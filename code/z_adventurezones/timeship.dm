@@ -274,8 +274,8 @@ TYPEINFO(/obj/machinery/sleeper/future)
 		src.equip_new_if_possible(/obj/item/clothing/under/color/white, SLOT_W_UNIFORM)
 
 	initializeBioholder()
-		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style =  new /datum/customization_style/hair/facial/beard/tramp
-		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style =  new /datum/customization_style/hair/facial/beard/longbeard
+		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].set_style("tramp")
+		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].set_style("longbeard")
 		bioHolder.mobAppearance.underwear = "briefs"
 		bioHolder.age = 3500
 		. = ..()

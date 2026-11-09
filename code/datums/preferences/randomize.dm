@@ -193,41 +193,41 @@ var/global/list/female_screams = list("female", "femalescream1", "femalescream2"
 	if (AH.gender == MALE)
 		if (prob(5)) // small chance to have a hairstyle more geared to the other gender
 			type_first = pick(get_available_custom_style_types(H?.client, CUSTOMIZATION.group__hair_head, FEMALE, FALSE, TRUE))
-			hair_bottom.style = new type_first
+			hair_bottom.style = type_first
 		else // otherwise just use one standard to the current gender
 			type_first = pick(get_available_custom_style_types(H?.client, CUSTOMIZATION.group__hair_head, MALE, FALSE, TRUE))
-			hair_bottom.style = new type_first
+			hair_bottom.style = type_first
 
 		if (prob(33)) // since we're a guy, a chance for facial hair
 			var/type_second = pick(get_available_custom_style_types(H?.client, CUSTOMIZATION.group__hair_facial))
-			hair_middle.style = new type_second
+			hair_middle.style = type_second
 			has_second = TRUE // so the detail check doesn't do anything - we already got a secondary thing!!
 
 	else // if FEMALE
 		if (prob(8)) // same as above for guys, just reversed and with a slightly higher chance since it's ~more appropriate~ for ladies to have guy haircuts than vice versa  :I
 			type_first = pick(get_available_custom_style_types(H?.client, CUSTOMIZATION.group__hair_head, MALE, FALSE, TRUE))
-			hair_bottom.style = new type_first
+			hair_bottom.style = type_first
 		else // ss13 is coded with gender stereotypes IN ITS VERY CORE
 			type_first = pick(get_available_custom_style_types(H?.client, CUSTOMIZATION.group__hair_head, FEMALE, FALSE, TRUE))
-			hair_bottom.style = new type_first
+			hair_bottom.style = type_first
 
 	if (!has_second)
-		var/hair_detail = hair_details[hair_bottom.style.name] // check for detail styles for our chosen style
+		var/hair_detail = hair_details[hair_bottom.style::name] // check for detail styles for our chosen style
 
 		if (hair_detail && prob(50)) // found something in the list
-			hair_middle.style = new hair_detail // default to being whatever we found
+			hair_middle.style = hair_detail // default to being whatever we found
 
 			if (islist(hair_detail)) // if we found a bunch of things in the list
 				var/type_second = pick(hair_detail) // let's choose just one (we don't need to assign a list as someone's hair detail)
-				hair_middle.style = new type_second
+				hair_middle.style = type_second
 				if (prob(20)) // with a small chance for another detail thing
 					var/type_third = pick(hair_detail)
-					hair_top.style = new type_third
+					hair_top.style = type_third
 					hair_top.color = random_saturated_hex_color()
 					if (prob(5))
 						hair_top.color = randomize_hair_color(pick(hair_colors))
 				else
-					hair_top.style = new /datum/customization_style/none
+					hair_top.clear_style()
 
 			hair_middle.color = random_saturated_hex_color() // if you have a detail style you're likely to want a crazy color
 			if (prob(15))
@@ -235,16 +235,16 @@ var/global/list/female_screams = list("female", "femalescream1", "femalescream2"
 
 		else if (prob(5)) // chance for a special eye color
 			var/type_second = pick(/datum/customization_style/hair/biological/hetcroL, /datum/customization_style/hair/biological/hetcroR)
-			hair_middle.style = new type_second
+			hair_middle.style = type_second
 			if (prob(75))
 				hair_middle.color = random_saturated_hex_color()
 			else
 				hair_middle.color = randomize_eye_color(pick(eye_colors))
-			hair_top.style = new /datum/customization_style/none
+			hair_top.clear_style()
 
 		else // otherwise, nada
-			hair_middle.style = new /datum/customization_style/none
-			hair_top.style = new /datum/customization_style/none
+			hair_middle.clear_style()
+			hair_top.clear_style()
 
 	if (change_underwear)
 		if (AH.gender == MALE)

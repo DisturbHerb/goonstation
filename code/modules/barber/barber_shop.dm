@@ -268,12 +268,12 @@
 
 		. = ..()
 
-	proc/spawn_hair_clipping(var/mob/living/carbon/human/M, var/color, var/old_style)
+	proc/spawn_hair_clipping(var/mob/living/carbon/human/M, var/color, var/datum/customization_style/hair/old_style)
 		if (!M || !M.loc)
 			return
 		if (!color)
 			return
-		if (istype(old_style, /datum/customization_style/none))
+		if (old_style::id == CUSTOMIZATION::NONE)
 			return
 
 		var/obj/decal/cleanable/hair/hair = new(M.loc)

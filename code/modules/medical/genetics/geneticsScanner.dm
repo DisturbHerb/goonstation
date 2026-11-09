@@ -269,9 +269,9 @@ TYPEINFO(/obj/machinery/genetics_scanner)
 	var/mob/living/carbon/human/target_mob = null
 	var/direction = SOUTH
 
-	var/datum/customization_style/hair_bottom_style = new /datum/customization_style/hair/short/short
-	var/datum/customization_style/hair_middle_style = new /datum/customization_style/none
-	var/datum/customization_style/hair_top_style = new /datum/customization_style/none
+	var/datum/customization_style/hair_bottom_style = /datum/customization_style/hair/short/short
+	var/datum/customization_style/hair_middle_style = /datum/customization_style/none
+	var/datum/customization_style/hair_top_style = /datum/customization_style/none
 
 	var/hair_bottom_color = "#FFFFFF"
 	var/hair_middle_color = "#FFFFFF"
@@ -383,13 +383,13 @@ TYPEINFO(/obj/machinery/genetics_scanner)
 			src.hair_top_color = H.bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color
 
 			if(!istype(src.hair_bottom_style, /datum/customization_style))
-				src.hair_bottom_style = new /datum/customization_style/none
+				src.hair_bottom_style = /datum/customization_style/none
 
 			if(!istype(src.hair_middle_style, /datum/customization_style))
-				src.hair_middle_style = new /datum/customization_style/none
+				src.hair_middle_style = /datum/customization_style/none
 
 			if(!istype(src.hair_top_style, /datum/customization_style))
-				src.hair_top_style = new /datum/customization_style/none
+				src.hair_top_style = /datum/customization_style/none
 
 			src.e_color = H.bioHolder.mobAppearance.e_color
 
@@ -436,15 +436,15 @@ TYPEINFO(/obj/machinery/genetics_scanner)
 			if (hair_bottom_color == null)
 				hair_bottom_color = "#101010"
 			if (hair_bottom_style == null)
-				hair_bottom_style = new /datum/customization_style/none
+				hair_bottom_style = /datum/customization_style/none
 			if (hair_middle_color == null)
 				hair_middle_color = "#101010"
 			if (hair_middle_style == null)
-				hair_middle_style = new /datum/customization_style/none
+				hair_middle_style = /datum/customization_style/none
 			if (hair_top_color == null)
 				hair_top_color = "#101010"
 			if (hair_top_style == null)
-				hair_top_style = new /datum/customization_style/none
+				hair_top_style = /datum/customization_style/none
 			if (e_color == null)
 				e_color = "#101010"
 			if (s_tone == null || s_tone == "#ffffff")

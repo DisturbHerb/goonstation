@@ -23,29 +23,29 @@ ABSTRACT_TYPE(/datum/customization_slot)
 	. = ..()
 
 /// Checks if its input corresponds to the `name` or `id` of a valid `/datum/customization_style` type.
-/datum/customization_slot/proc/check_style_validity(style_input)
+/datum/customization_slot/proc/check_style_validity(style_input, style_filter = null, pref_blacklist = TRUE, bypass_lock = FALSE)
 	. = null
 
 	if (!style_input)
 		return
 
-	// Weed out the cases where we really do just want the none style.
-	var/datum/customization_style/none_style = /datum/customization_style/none
-	if (none_style::name = style_input || none_style::id = style_input)
-		return none_style
-
 	// Return a valid style, if found.
-	for (var/datum/customization_style/style_type as anything in global.get_available_custom_style_types(style_filter = null, bypass_lock = TRUE))
-		if (style_type::name == style_input)
-			return style_type
-		if (style_type::id == style_input)
-			return style_type
+	for (var/datum/customization_style/style_type as anything in global.get_available_custom_style_types(style_filter = null, pref_blacklist = pref_blacklist, bypass_lock = TRUE))
+		if ((style_type::id != style_input) && (style_type::name != style_input))
+			continue
+
+		// Check slot compatibility.
+		var/typeinfo/datum/customization_style/style_type_typeinfo = get_type_typeinfo(style_type)
+		if (style_type_typeinfo.style_slot != src.slot_type)
+			continue
+
+		return style_type
 
 /// For changing this slot's current style.
-/datum/customization_slot/proc/set_style(style_input)
+/datum/customization_slot/proc/set_style(style_input, style_filter = null, pref_blacklist = TRUE, bypass_lock = FALSE)
 	. = FALSE
 
-	var/datum/customization_style/style_type = src.check_style_validity(style_input)
+	var/datum/customization_style/style_type = src.check_style_validity(style_input, style_filter, pref_blacklist, bypass_lock)
 	if (!style_type)
 		return
 
@@ -53,15 +53,24 @@ ABSTRACT_TYPE(/datum/customization_slot)
 	. = TRUE
 
 /// For styles originally applied in a player's character preferences.
-/datum/customization_slot/proc/set_style_original(style_input)
+/datum/customization_slot/proc/set_style_original(style_input, style_filter = null, pref_blacklist = TRUE, bypass_lock = FALSE)
 	. = FALSE
 
-	var/datum/customization_style/style_type = src.check_style_validity(style_input)
+	var/datum/customization_style/style_type = src.check_style_validity(style_input, style_filter, pref_blacklist, bypass_lock)
 	if (!style_type)
 		return
 
 	src.style = style_input
 	. = TRUE
+
+/datum/customization_slot/proc/clear_style()
+	src.style = /datum/customization_style/none
+
+/datum/customization_slot/proc/clear_style_original()
+	src.style_original = /datum/customization_style/none
+
+/datum/customization_slot/proc/is_empty()
+	return src.style::id == CUSTOMIZATION::NONE ? TRUE : FALSE
 
 ABSTRACT_TYPE(/datum/customization_slot/hair)
 /datum/customization_slot/hair

@@ -132,10 +132,10 @@ proc/Create_Tommyname()
 		if(src.bioHolder.mobAppearance)
 			var/datum/appearanceHolder/AH = src.bioHolder.mobAppearance
 			AH.gender = "male"
-			AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style =  new /datum/customization_style/hair/long/dreads
+			AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].set_style("dreads")
 			AH.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color = "#101010"
-			AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style =  new /datum/customization_style/none
-			AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style =  new /datum/customization_style/none
+			AH.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].clear_style()
+			AH.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].clear_style()
 			AH.s_tone = "#FAD7D0"
 			src.bioHolder.AddEffect("accent_tommy")
 

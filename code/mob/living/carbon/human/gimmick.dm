@@ -116,7 +116,7 @@
 
 	initializeBioholder()
 		bioHolder.age = 400
-		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style = new /datum/customization_style/hair/short/pomp
+		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].set_style("pomp")
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color = "#000000"
 		bioHolder.mobAppearance.gender = "male"
 		bioHolder.mobAppearance.underwear = "boxers"
@@ -415,8 +415,8 @@ proc/empty_mouse_params()//TODO MOVE THIS!!!
 		. = ..()
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color = "#292929"
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].color = "#292929"
-		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style = new /datum/customization_style/hair/gimmick/shitty_hair
-		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].style =  new /datum/customization_style/hair/gimmick/shitty_beard
+		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].set_style("shitty_hair")
+		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_MIDDLE].set_style("shitty_beard")
 		bioHolder.age = 62
 		bioHolder.bloodType = "A-"
 		bioHolder.mobAppearance.gender = "male"
@@ -840,7 +840,7 @@ proc/empty_mouse_params()//TODO MOVE THIS!!!
 		. = ..()
 		bioHolder.age = 44
 		bioHolder.bloodType = "Worchestershire"
-		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style = new /datum/customization_style/hair/short/pomp
+		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].set_style("pomp")
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color = "#F6D646"
 		bioHolder.mobAppearance.gender = "male"
 		bioHolder.mobAppearance.underwear = "boxers"
@@ -894,7 +894,7 @@ proc/empty_mouse_params()//TODO MOVE THIS!!!
 		src.real_name = Create_Tommyname()
 
 		src.gender = "male"
-		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style = new /datum/customization_style/hair/long/dreads
+		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].set_style("dreads")
 		bioHolder.mobAppearance.gender = "male"
 		bioHolder.mobAppearance.s_tone = "#FAD7D0"
 		bioHolder.mobAppearance.s_tone_original = "#FAD7D0"
@@ -1007,7 +1007,7 @@ proc/empty_mouse_params()//TODO MOVE THIS!!!
 	initializeBioholder()
 		. = ..()
 		bioHolder.age = 49
-		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].style = new /datum/customization_style/hair/facial/beard/fullbeard
+		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].set_style("fullbeard")
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_BOTTOM].color = "#555555"
 		bioHolder.mobAppearance.gender = "male"
 		bioHolder.mobAppearance.underwear = "boxers"
@@ -1058,7 +1058,7 @@ proc/empty_mouse_params()//TODO MOVE THIS!!!
 	initializeBioholder()
 		. = ..()
 		bioHolder.age = 52
-		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].style = new /datum/customization_style/hair/short/balding
+		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].set_style("balding")
 		bioHolder.mobAppearance.customizations[CUSTOMIZATION::LAYER::HAIR_TOP].color = "#555555"
 		bioHolder.mobAppearance.gender = "male"
 		bioHolder.mobAppearance.underwear = "boxers"
