@@ -132,6 +132,7 @@ var/global/list/locked_styles = list()
 
 	var/list/datum/customization_style/options = list()
 	for (var/datum/customization_style/style_type as anything in get_available_custom_style_types(user.client, style_filter, pref_blacklist = pref_blacklist, bypass_lock = bypass_lock))
+	for (var/datum/customization_style/style_type as anything in get_available_custom_style_types(user.client, style_filter, pref_blacklist = pref_blacklist, bypass_lock = bypass_lock))
 		options[initial(style_type.name)] = style_type
 
 	var/new_style = tgui_input_list(user, "Please select style", "Style", options)
