@@ -106,28 +106,36 @@ var/global/list/locked_styles = list()
 
 	return cmp_numeric_asc(CUSTOMIZATION.sort_order.Find(typeinfo_a.style_category), CUSTOMIZATION.sort_order.Find(typeinfo_b.style_category))
 
-/proc/select_custom_style(mob/living/carbon/human/user, style_filter = CUSTOMIZATION::SLOT::HAIR, pref_blacklist = TRUE)
+/proc/select_custom_style(mob/living/carbon/human/user, style_filter = CUSTOMIZATION::SLOT::HAIR, pref_blacklist = TRUE, bypass_lock = FALSE)
+	. = /datum/customization_style/none
+
 	var/list/datum/customization_style/options = list()
-	for (var/datum/customization_style/style_type as anything in get_available_custom_style_types(user.client, style_filter, pref_blacklist = pref_blacklist))
+	for (var/datum/customization_style/style_type as anything in get_available_custom_style_types(user.client, style_filter, pref_blacklist = pref_blacklist, bypass_lock = bypass_lock))
 		options[initial(style_type.name)] = style_type
+
 	var/new_style = tgui_input_list(user, "Please select style", "Style", options)
+
 	var/selected_type = options[new_style]
 	if (selected_type)
-		return new selected_type
+		. = selected_type
 
-/proc/find_style_by_name(var/target_name, client/C, style_filter = CUSTOMIZATION::SLOT::HAIR, pref_blacklist = TRUE)
-	for (var/datum/customization_style/style_type as anything in get_available_custom_style_types(C, style_filter, pref_blacklist = pref_blacklist))
-		if (cmptext(initial(style_type.name), target_name))
-			return new style_type
+/proc/find_style_by_name(var/target_name, client/C, style_filter = CUSTOMIZATION::SLOT::HAIR, pref_blacklist = TRUE, bypass_lock = FALSE)
+	. = /datum/customization_style/none
+
+	for (var/datum/customization_style/style_type as anything in get_available_custom_style_types(C, style_filter, pref_blacklist = pref_blacklist, bypass_lock = bypass_lock))
+		if (style_type::name == target_name)
+			return style_type
+
 	stack_trace("Couldn't find a customization_style with the name \"[target_name]\".")
-	return new /datum/customization_style/none
 
-/proc/find_style_by_id(var/target_id, client/C, style_filter = CUSTOMIZATION::SLOT::HAIR, pref_blacklist = TRUE)
-	for (var/datum/customization_style/style_type as anything in get_available_custom_style_types(C, style_filter, pref_blacklist = pref_blacklist))
-		if (initial(style_type.id) == target_id)
-			return new style_type
+/proc/find_style_by_id(var/target_id, client/C, style_filter = CUSTOMIZATION::SLOT::HAIR, pref_blacklist = TRUE, bypass_lock = FALSE)
+	. = /datum/customization_style/none
+
+	for (var/datum/customization_style/style_type as anything in get_available_custom_style_types(C, style_filter, pref_blacklist = pref_blacklist, bypass_lock = bypass_lock))
+		if (style_type::id == target_id)
+			return style_type
+
 	stack_trace("Couldn't find a customization_style with the id \"[target_id]\".")
-	return new /datum/customization_style/none
 
 TYPEINFO(/datum/customization_style)
 	/// Affects which `/datum/customization_slot/`s this can be equipped in.
@@ -139,7 +147,7 @@ TYPEINFO(/datum/customization_style)
 	var/style_category = null
 
 /// /datum/customization_style
-/// Used in customizing physical appearance in character preferences, genetics, barber interactions, etc.
+/// Static data used in customizing physical appearance in character preferences, genetics, barber interactions, etc.
 ABSTRACT_TYPE(/datum/customization_style)
 /datum/customization_style
 	/// Display name.
