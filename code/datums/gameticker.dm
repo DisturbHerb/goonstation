@@ -175,6 +175,8 @@ var/global/game_force_started = FALSE
 		SPAWN(0) pregame()
 		return 0
 
+	global.time_controls.set_time_as_realtime()
+
 	if(hide_mode)
 		#ifdef RP_MODE
 		boutput(world, "<B>Have fun and RP!</B>")

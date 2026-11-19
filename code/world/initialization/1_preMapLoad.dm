@@ -173,6 +173,8 @@
 	camera_coverage_controller = new /datum/controller/camera_coverage()
 	Z_LOG_DEBUG("Preload", " instrumnt_sound_bank")
 	instrument_sound_bank = new()
+	Z_LOG_DEBUG("Preload", "  time_controls")
+	time_controls = new /datum/time_controls()
 
 	Z_LOG_DEBUG("Preload", "hydro_controls set_up")
 	hydro_controls.set_up()
